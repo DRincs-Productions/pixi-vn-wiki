@@ -108,8 +108,10 @@ For example:
 
 ( **It's in basic html**, you will need to replace the basic html elements with UI components from your favorite library to improve the graphics. )
 
-::: sandbox {template=ryzljv entry=/src/screens/HistoryScreen.tsx}
-:::
+<sandbox
+template="ryzljv"
+entry="/src/screens/HistoryScreen.tsx"
+/>
 
 <!-- TODO: add addCurrentStepToHistory
 
