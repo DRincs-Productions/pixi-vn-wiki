@@ -1,23 +1,25 @@
-# PixiJS Canvas
+# PixiJS canvas
 
 <img src="https://pixijs.com/images/logo.svg" alt="drawing" width="200" style="margin-top: 10px;" />
 
 Pixi’VN uses [PixiJS](https://pixijs.com/8.x/guides/basics/what-pixijs-is) to render the visual novel. You can use the Pixi’VN API to add images, text, and animations to the canvas PixiJS.
 
-If In addition to being able to interact with the canvas from JavaScript/TypeScript, you can also use other narrative languages:
+In addition to being able to interact with the canvas from JavaScript/TypeScript, you can also use other narrative languages:
 
 - [***ink***](/ink/ink-canvas.md)
 - Ren'Py (Under development)
 
 ## What is PixiJS?
 
-PixiJS is a rendering engine that allows you to create rich, interactive graphics and animations. It is used in games like [Good Pizza, Great Pizza](https://www.goodpizzagreatpizza.com/) and [The Enchanted Cave 2](https://store.steampowered.com/app/368610/The_Enchanted_Cave_2/).
+PixiJS is the fastest, most lightweight 2D library available for the web, working across all devices and allowing you to create rich, interactive graphics and cross-platform applications using WebGL and WebGPU. It is fast, flexible, and easy to use. It is used in games like [Good Pizza, Great Pizza](https://www.goodpizzagreatpizza.com/) and [The Enchanted Cave 2](https://store.steampowered.com/app/368610/The_Enchanted_Cave_2/).
 
-PixiJS is a powerful tool for creating games and interactive experiences. It is fast, flexible, and easy to use. You can learn more about PixiJS on the [PixiJS website](https://www.pixijs.com/).
+You can learn more about PixiJS on the [PixiJS website](https://www.pixijs.com/).
 
 ## Differences between Pixi’VN and PixiJS
 
-Use `PixiJS Canvas` in Pixi’VN is very similar to use PixiJS in a normal project. The only differences are as follows:
+Pixi’VN provides a API object called `canvas` used to interface with Pixi’VN's PixiJS application. So you don't need to install pixi.js and the features of Pixi'VN is not equivalent to that of PixiJS. Although not recommended, you can still install pixi.js and use canvas.app to access the PixiJS application.
+
+The use of Pixi’VN, in rendering, is very similar to that of PixiJS. The only differences are as follows:
 
 - All the components added in the canvas will be linked to an [alias](/start/canvas-alias.md) of your choice. This alias will be used to identify the component and to manipulate it.
 - Compared to PixiJS, Pixi’VN saves the current canvas state at each [step](/start/labels.md).

@@ -8,16 +8,16 @@ Pixi’VN is a very versatile and powerful visual novel/2D game engine. It is ba
 
 Its great versatility is due to the fact that Pixi’VN is a npm package, that provides various core features to manage story steps, dialogues, character, canvas, variable storage, saving and loading, and much more. This means that it can be used both to create visual novels and to create other types of 2D games (such as Point and Click Adventure Games, RPGs, etc...), with your favorite JavaScript framework (React, Vue, Angular, etc...).
 
-Pixi’VN provides the ability to use [Templates](/start/getting-started.md#pivivn-templates) to get started quickly. Less experienced developers can use these templates to create a visual novel without much knowledge of JavaScript/TypeScript.
+Pixi’VN provides the ability to use [project templates](/start/getting-started.md#pivivn-templates) to get started quickly. Less experienced developers can use these templates to create a visual novel without much knowledge of JavaScript/TypeScript.
 
-With the [PixiVNJson](/other-topics/pixi-vn-json.md) implementation you have the option to use various types of narrative languages ​​(in addition to JavaScript/TypeScript). Currently you can use the following:
+You have the option to use various types of narrative languages ​​(in addition to JavaScript/TypeScript). Currently you can use the following:
 
 * [*ink*](/ink/ink.md)
 * [Ren'Py](/renpy/renpy.md)
 
 ## Ren'Py vs Pixi’VN
 
-Making a comparison between Ren'Py and Pixi’VN is necessary because Ren'Py is currently the most popular engine for creating visual novels.
+Making a comparison between Ren'Py and Pixi’VN is necessary because Ren'Py is currently the most widely used engine for creating visual novels.
 
 (This comparison was made by the Pixi’VN team, trying to be unbiased. If you disagree with this comparison or if you think other features should be compared, create an [new discussion](https://github.com/DRincs-Productions/pixi-vn/discussions/categories/wiki).)
 
@@ -37,7 +37,7 @@ Pixi’VN uses JavaScript/TypeScript, which is a very powerful and popular langu
 
 | Programming language | Ren'Py | Pixi’VN |
 |---|---|---|
-| Ease of learning | It is intended for people who do not know how to program | You can use templates to get started, but you will need some knowledge of JavaScript/TypeScript, NodeJS and npm |
+| Ease of learning | It is intended for people who do not know how to program | You can use templates to get started, but as you progress with development you will need basic knowledge of JavaScript/TypeScript, NodeJS and npm |
 | Is it a typed language? | ❌ (Using Python you can use types, but the Ren'Py compiler does not have type checking. Also, much of the native Ren'Py code does not use types.) | ✅ |
 | Can you use the debug? | ❌ | ✅ |
 | Package/libraries manager | ❌ | npm |
@@ -50,7 +50,7 @@ Pixi’VN uses JavaScript/TypeScript, which is a very powerful and popular langu
 
 In Ren'Py, for creating dialogues, you need to use the `Ren'Py language`. This language is very simple and easy to learn. It is based on Python and you can use Python statements in Ren'Py language.
 
-In Pixi’VN, you can use JavaScript/TypeScript to create dialogues. You can also use various narrative languages ​​(with the [PixiVNJson](/other-topics/pixi-vn-json.md)).
+In Pixi’VN, you can use JavaScript/TypeScript to create dialogues. You can also use various narrative languages ​​(potentially you can integrate any narrative language using [PixiVNJson](/other-topics/pixi-vn-json.md)).
 
 Example of Ren'Py:
 
@@ -93,7 +93,7 @@ CDD is not very intuitive and complicated to use. There are very few examples an
 
 In Pixi’VN, you can use PixiJS to create minigames. PixiJS is a very powerful library that allows you to create complex animations and mechanics. The documentation and examples are very detailed and there are many developers using PixiJS.
 
-You can try some Ren'py and PIxiJS games to understand the difference:
+You can try some Ren'py and PIxiJS minigames to understand the difference:
 
 * Ren'Py minigames: <https://itch.io/game-assets/free/tag-minigames/tag-renpy>
 * PixiJS minigames: <https://github.com/pixijs/open-games>
@@ -101,7 +101,7 @@ You can try some Ren'py and PIxiJS games to understand the difference:
 
 #### UI implementation
 
-In Ren'Py, for creating the UI, you need to create screens and styles. The most recommended implementation is to create a series of images that are positioned within the canvas across graphic objects. The graphic tools are very few, limiting and not very intuitive.
+In Ren'Py, for creating the UI, you need to create screens and styles. The most recommended implementation is to create a series of images that are positioned within the canvas across graphic components. The graphic components are very few, limiting and not very intuitive.
 
 In Pixi’VN, in addition to being able to use the components of PixiJS, you can also use systems such as React, Vue, Angular, etc. and install component libraries such as Material-UI, Bootstrap, etc. This allows you to create much more complex UI screens with excellent performance.
 
@@ -111,7 +111,7 @@ The performance and size of the project are very important factors to consider w
 
 **Canvas libraries used:**
 
-* [`Pygame_sdl2`](https://github.com/renpy/pygame_sdl2): This canvas is absolutely underperforming. This can be tested by inserting more moving graphic elements into Renpy.
+* [`Pygame_sdl2`](https://github.com/renpy/pygame_sdl2): This canvas is absolutely underperforming. This can be tested by inserting more moving graphic elements into Ren'py.
 * PixiJS: It is based on more modern systems and has great performance. This can be tested directly from this example:
 
 ::: sandbox {template=jrlkrt entry=/src/labels/startLabel.ts}
@@ -120,18 +120,18 @@ The performance and size of the project are very important factors to consider w
 **UI performance:**
 
 * Ren'Py's UI is based on canvas components that use images within the project.
-* In Pixi’VN you can use HTML and/or JavaScript frameworks, known for their performance and usability, or cancas. HTML/JavaScript components are not necessarily based on images, which leads to a smaller project size.
+* In Pixi’VN you can use HTML and/or JavaScript frameworks, known for their performance and usability, or the canvas. HTML/JavaScript components are not necessarily based on images, which leads to a smaller project size.
 
 **Project size:**
 
-* The entire UI of Renpy is based on "physical images" and this makes the size of the project very large.
-* In a Pixi’VN project, you can choose whether and which graphics component library to use or use a canvas with a "physical images". Being a library it does not determine the size of the project, but if you use [vite](https://vitejs.dev/) or other tools, the size of the project will be very small.
+* The entire UI of Ren'py is based on "physical images" and this makes the size of the project very large.
+* In a Pixi’VN project, you can choose whether and which graphics component library to use the canvas with a "physical images". Being a library it does not determine the size of the project, but if you use [vite](https://vitejs.dev/) or other tools, the size of the project will be very small.
 
-### Device Distribution
+### Device distribution
 
 Ren'Py framework is directly responsible for distributing the game on various devices.
 
-Pixi’VN is a library that does not deal with distributing the project. You can use various tools (Tauri, Electron, Cordova, etc...) to distribute the project on various devices. Pixi’VN provides templates that already include the necessary configurations for distribution.
+Pixi’VN does not deal with distributing the project. You can use various frameworks (Tauri, Electron, Cordova, etc...) to distribute the project on various devices. Pixi’VN provides templates that already include the necessary configurations for distribution.
 
 | Device Distribution | Ren'Py | Pixi’VN |
 |---|---|---|
