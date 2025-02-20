@@ -10,8 +10,10 @@ The alias corresponds to `PixiJSComponent.label`, so do not modify `label`, use 
 
 If a component is added using an existing alias the new component, in addition to replacing the old one, will inherit the properties, the zIndex and the [tickers](/start/canvas-tickers.md) of the old component.
 
-::: sandbox {template=6yql5k entry=/src/ink/start.ink,/src/utils/assets-utility.ts}
-:::
+<sandbox
+template="6yql5k"
+entry="/src/ink/start.ink,/src/utils/assets-utility.ts"
+/>
 
 ## Edit canvas component alias
 
