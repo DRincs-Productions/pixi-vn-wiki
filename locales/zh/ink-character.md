@@ -54,47 +54,10 @@ return (
 
 :::
 
-:::sandbox {template=gxxp47 entry=/src/ink/start.ink,/src/values/characters.ts}
-:::## Use Character Emotions in _ink_You can use the [Pixi’VN Character Emotions](/start/character.md#character-emotions) in _**ink**_. To use the character emotions in _**ink**_, you need to create a or more characters with an emotion in **Typescript** and, after that, in the **_ink_ script**, you can use following syntax:`character_id` + `@` + `emotion`For example, you can associate this character with a dialogue using the following syntax:`character_id` + `@` + `emotion` + `:` + `SPACE` + `text`:::tabs
-\== start.ink```ink
-=== start ===
-liam@happy: Hi, I'm Liam. I'm very happy today.
--> DONE
-```== characters.ts```ts
-import { CharacterBaseModel, saveCharacter } from "@drincs/pixi-vn";
-
-export const liam = new CharacterBaseModel("liam", {
-  name: "Liam",
-});
-
-export const liamHappy = new CharacterBaseModel(
-  { id: "liam", emotion: "happy" },
-  {
-    name: "Liam Happy",
-  }
-);
-
-saveCharacter([liam, liamHappy]);
-```== App.tsx```ts
-import BackButton from "./components/BackButton";
-import NextButton from "./components/NextButton";
-import TextInput from "./screens/modals/TextInput";
-import NarrationScreen from "./screens/NarrationScreen";
-
-// Remember to import the character file at least once into your project. // [!code focus]
-import "./values/characters"; // [!code focus]
-
-export default function App() {
-return (
-    <>
-        <NarrationScreen />
-        <TextInput />
-        <NextButton />
-        <BackButton />
-    </>
-);
-}
-```:::
+<sandbox
+template="gxxp47"
+entry="/src/ink/start.ink,/src/values/characters.ts"
+/>
 
 ## Use Character Emotions in _ink_
 
@@ -159,9 +122,10 @@ return (
 
 :::
 
-:::sandbox {template=fdj2lt entry=/src/ink/start.ink,/src/values/characters.ts}
-:::## Use Character how variable in _ink_Having the ability to rename a character and use their name in dialogues greatly simplifies the development of a Visual Novel. Since the [character](/start/character.md) is an object based on a [customizable model](/start/character.md#custom-character), it is not possible to use the character as a [variable](/ink/ink-variables.md) simply with the `{}` syntax.But you can take advantage of the [possibility of replacing portions of text](/ink/ink-replacement.md) and [customizing hashtag scripts](/ink/ink-hashtag.md) to implement this feature.::: sandbox {template=s57g59 entry=/src/ink/start.ink,/src/values/characters.ts,/src/utils/characters-utility.ts}
-:::
+<sandbox
+template="fdj2lt"
+entry="/src/ink/start.ink,/src/values/characters.ts"
+/>
 
 ## Use Character how variable in _ink_
 
@@ -169,8 +133,10 @@ Having the ability to rename a character and use their name in dialogues greatly
 
 But you can take advantage of the [possibility of replacing portions of text](/ink/ink-replacement.md) and [customizing hashtag scripts](/ink/ink-hashtag.md) to implement this feature.
 
-::: sandbox {template=s57g59 entry=/src/ink/start.ink,/src/values/characters.ts,/src/utils/characters-utility.ts}
-:::
+<sandbox
+template="s57g59"
+entry="/src/ink/start.ink,/src/values/characters.ts,/src/utils/characters-utility.ts"
+/>
 
 ### Use character name in dialogues
 
