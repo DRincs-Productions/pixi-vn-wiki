@@ -54,8 +54,10 @@ export default function App() {
 
 :::
 
-::: sandbox {template=7pg6dy entry=/src/ink/start.ink}
-:::
+<sandbox
+template="7pg6dy"
+entry="/src/ink/start.ink"
+/>
 
 ## Auto-generation of translation files
 
