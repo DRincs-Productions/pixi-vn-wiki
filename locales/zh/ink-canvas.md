@@ -25,23 +25,10 @@ Where:
   - If the parameters include spaces, you must use double quotes.
   - If the parameters is a object, you must use the JSON format and the first character must be `\{` and the last character must be `\}`. Example: `\{ "color": "red", isVisble: true, position: { x: 100, y: 100 } \}`
 
-:::sandbox {template=rxzx5z entry=/src/ink/start.ink,/src/utils/assets-utility.ts}
-:::## Show a canvas component in _ink_You can use the `show` to show a [canvas component](/start/canvas-components.md) in _**ink**_.Is raccomended to [initialize the asset matrix at project start](/start/assets-management.md#initialize-the-asset-matrix-at-project-start) to use the alias of texture in `[URL/path of the image]`.The syntax is as follows:`#` + `show` + `[type of the canvas component]` + `[alias]` + `[URL/path of the image]` + `[parameters]`- `[URL/path of the image]` (Optional): It is the URL/path of the image that you want to show. If you have initialized the asset matrix at project start, you can use the alias of the texture. If you don't provide the URL/path of the image, this parameter is equal to `[alias]`. Keep in mind that to write `https://` in _**ink**_ you must use `https:\/\/` because the `//` is considered a comment in _**ink**_.
-- `[parameters]` (Optional): Afer the URL/path of the image, you can add the `parameters` of the [canvas component](/start/canvas-components.md) that you want to set. The `parameters` must be set as follows: `parameterName` + `SPACE` + `value`. If the `value` is a string and includes spaces, you must use double quotes.:::tabs
-\== start.ink```ink
-# show image eggHead
-# show image "eggHead 2" eggHead x 20 y 30
-# show image flowerTop x 20 y 30 visible true cursor "pointer" alpha 0.5
-# show video my_video
-```== assets-utility.ts```ts
-import { Assets } from "@drincs/pixi-vn";
-
-export async function defineAssets() {
-    Assets.add({ alias: 'eggHead', src: "https://pixijs.com/assets/eggHead.png" })
-    Assets.add({ alias: 'flowerTop', src: "https://pixijs.com/assets/flowerTop.png" })
-    Assets.add({ alias: "my_video", src: "https://pixijs.com/assets/video.mp4" });
-}
-```:::
+<sandbox
+template="rxzx5z"
+entry="/src/ink/start.ink,/src/utils/assets-utility.ts"
+/>
 
 ## Show a canvas component in _ink_
 
@@ -121,29 +108,10 @@ export async function defineAssets() {
 
 :::
 
-:::sandbox {template=sndrvv entry=/src/ink/start.ink,/src/utils/assets-utility.ts}
-:::### Show a canvas component with transition in _ink_If you want to show the canvas component with a [transition](/start/canvas-transition.md), you can add into the parameters the `with [transitionType]`.`#` + `show` + `[type of the canvas component]` + `[alias]` + `[URL/path of the image]` + `[parameters]` + `with` + `[transitionType]`After the `transitionType`, you can add the `transition parameters`. the `transition parameters` must be set as follows: `parameterName` + `SPACE` + `value`. If the `value` is a string and includes spaces, you must use double quotes.The syntax is as follows:`#` + `show` + `[type of the canvas component]` + `[alias]` + `[URL/path of the image]` + `[parameters]` + `with` + `[transitionType]` + `[transition parameters]`The available transitions are:* `dissolve`: The canvas component appears with a [dissolve transition](/start/canvas-transition.md#dissolve-transition). You can add all the parameters you would use in JS/TS.
-* `fade`: The canvas component appears with a [fade transition](/start/canvas-transition.md#fade-transition). You can add all the parameters you would use in JS/TS.
-* `movein`: The canvas component appears with a [movein transition](/start/canvas-transition.md#move-inout-transition). You can add all the parameters you would use in JS/TS.
-* `zoomin`: The canvas component appears with a [zoomin transition](/start/canvas-transition.md#zoom-inout-transition). You can add all the parameters you would use in JS/TS.
-* `pushin`: The canvas component appears with a [pushin transition](/start/canvas-transition.md#push-inout-transition). You can add all the parameters you would use in JS/TS.:::tabs
-\== start.ink```ink
-# show eggHead with dissolve duration 3
-temp durationVar = 3
-# show eggHead eggHead2 with fade duration {durationVar}
-# show flowerTop x 20 y 30 with movein
-# show helmlok x 20 y 30 with zoomin
-# show skully x 20 y 30 with pushin
-```== assets-utility.ts```ts
-import { Assets } from "@drincs/pixi-vn";
-
-export async function defineAssets() {
-    Assets.add({ alias: 'eggHead', src: "https://pixijs.com/assets/eggHead.png" })
-    Assets.add({ alias: 'flowerTop', src: "https://pixijs.com/assets/flowerTop.png" })
-    Assets.add({ alias: 'helmlok', src: "https://pixijs.com/assets/helmlok.png" })
-    Assets.add({ alias: 'skully', src: "https://pixijs.com/assets/skully.png" })
-}
-```:::
+<sandbox
+template="sndrvv"
+entry="/src/ink/start.ink,/src/utils/assets-utility.ts"
+/>
 
 ### Show a canvas component with transition in _ink_
 
@@ -305,8 +273,10 @@ export async function defineAssets() {
 
 :::
 
-::: sandbox {template=p3qgjq entry=/src/ink/start.ink,/src/utils/assets-utility.ts}
-:::
+<sandbox
+template="p3qgjq"
+entry="/src/ink/start.ink,/src/utils/assets-utility.ts"
+/>
 
 ### Pause a video in _ink_
 
