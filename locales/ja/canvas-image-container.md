@@ -75,34 +75,10 @@ export async function defineAssets() {
 
 :::
 
-:::sandbox {template=qz66sg entry=/src/labels/startLabel.ts,/src/utils/assets-utility.ts}
-:::## Add a images containerTo add a group of images to the canvas, you can use the `addImageCointainer` function. It is important to take into account that this function only adds the component to the canvas but does **not show it and does not load its texture**. This function use [`canvas.add`](/start/canvas-functions.md#add-a-canvas-component) functions to add the image to the canvas.This function will return a `ImageContainer`, that you can use to manipulate the image, and it has the following parameters:* `alias`: Is a [alias](/start/canvas-alias.md) for the image.
-* `imageUrls` (Optional): The array of URLs or paths of the images. If you have initialized the [asset matrix](/start/assets-management.md#initialize-the-asset-matrix-at-project-start), you can use the alias of the texture. If you don't provide the urls, then the alias is used as the url.
-* `options` (Optional): It corresponds to the `ImageContainerOptions<ImageSprite>` interface.:::tabs
-\== startLabel.ts```ts
-import { addImageCointainer, canvas, ImageContainer, newLabel } from "@drincs/pixi-vn";
-
-export const startLabel = newLabel("start_label", [
-    () => {
-        let james = await addImageCointainer("james", ["m01-body", "m01-eyes", "m01-mouth"], { // [!code focus]
-            xAlign: 0.5, // [!code focus]
-            yAlign: 1, // [!code focus]
-        }); // [!code focus]
-    },
-    async () => {
-        let james = canvas.find<ImageContainer>("james");
-        james && (await james.load());
-    },
-]);
-```== assets-utility.ts```ts
-import { Assets } from "@drincs/pixi-vn";
-
-export async function defineAssets() {
-    Assets.add({ alias: 'm01-body', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media" })
-    Assets.add({ alias: 'm01-eyes', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media" })
-    Assets.add({ alias: 'm01-mouth', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media" })
-}
-```:::
+<sandbox
+template="qz66sg"
+entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
+/>
 
 ## Add a images container
 
@@ -148,8 +124,10 @@ export async function defineAssets() {
 
 :::
 
-::: sandbox {template=ptqws3 entry=/src/labels/startLabel.ts,/src/utils/assets-utility.ts}
-:::
+<sandbox
+template="ptqws3"
+entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
+/>
 
 ## Remove a images container
 
