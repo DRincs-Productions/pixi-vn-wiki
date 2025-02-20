@@ -12,9 +12,10 @@ Hello, this is a test. \\n\\n<>
 This is a new line.
 ```
 
-:::sandbox {template=tqr6v5 entry=/src/ink/start.ink,/src/components/MarkdownComponent.tsx}
-:::## Markdown syntax in _ink_On Pixi’VN it is recommended to use Markdown to add style to your text. If you have [implemented Markdown in your project](/start/markup-markdown.md) then you will be able to use Markdown syntax to style your text in _**ink**_.To do this you need to keep in mind that many symbols of Markdown syntax are also used by **_ink_ syntax**, such as: `#`, `*`, `/`, `~`, `-`, `|` etc. To avoid conflicts you can use the escape character `\` before the Markdown symbol.Here's an example:::: sandbox {template=nprnlk entry=/src/ink/start.ink,/src/components/MarkdownComponent.tsx}
-:::
+<sandbox
+template="tqr6v5"
+entry="/src/ink/start.ink,/src/components/MarkdownComponent.tsx"
+/>
 
 ## Markdown syntax in _ink_
 
@@ -24,8 +25,10 @@ To do this you need to keep in mind that many symbols of Markdown syntax are als
 
 Here's an example:
 
-::: sandbox {template=nprnlk entry=/src/ink/start.ink,/src/components/MarkdownComponent.tsx}
-:::
+<sandbox
+template="nprnlk"
+entry="/src/ink/start.ink,/src/components/MarkdownComponent.tsx"
+/>
 
 :::tabs
 \== On ink
