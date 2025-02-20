@@ -51,16 +51,10 @@ export const startLabel = newLabel("start_label", [
 
 :::
 
-:::sandbox {template=6968x8 entry=/src/labels/startLabel.ts,/src/screens/modals/TextInput.tsx}
-:::## Getting input informationTo get the input information, you must use:* `narration.isRequiredInput`: Returns a boolean indicating whether the player must enter a value.
-* `narration.inputType`: Returns a string indicating the type of input requested.```typescript
-if (narration.isRequiredInput) {
-    openInputModal(narration.inputType)
-}
-```## Removing input requestTo remove the input request, you must use the `narration.removeInputRequest()` function.```typescript
-narration.removeInputRequest()
-```## How to create the input dialog UIFor example:( **It's in basic html**, you will need to replace the basic html elements with UI components from your favorite library to improve the graphics. )::: sandbox {template=mjn5c8 entry=/src/screens/modals/TextInput.tsx}
-:::
+<sandbox
+template="6968x8"
+entry="/src/labels/startLabel.ts,/src/screens/modals/TextInput.tsx"
+/>
 
 ## Getting input information
 
@@ -89,5 +83,7 @@ For example:
 
 ( **It's in basic html**, you will need to replace the basic html elements with UI components from your favorite library to improve the graphics. )
 
-::: sandbox {template=mjn5c8 entry=/src/screens/modals/TextInput.tsx}
-:::
+<sandbox
+template="mjn5c8"
+entry="/src/screens/modals/TextInput.tsx"
+/>
