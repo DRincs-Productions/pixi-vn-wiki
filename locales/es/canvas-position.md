@@ -127,38 +127,10 @@ export async function defineAssets() {
 
 :::
 
-:::sandbox {template=8sd94f entry=/src/labels/startLabel.ts,/src/utils/assets-utility.ts}
-:::## AlignUntil now we have seen positioning methods influenced by [anchor/pivot](#anchor-and-pivot). The disadvantage of these methods is that if for example you want to add your component to the center of the screen you will first have to set the anchor to 0.5 and then set the position to half the width and height of the screen. This is where the align property comes in.Align is a feature originally created for _**Ren'py**_, which was also introduced in Pixi’VN. Align combines [position](#position-pixel) and [anchor/pivot](#anchor-and-pivot) to give you a more intuitive way to position your components at the beginning, in the center or in the end of the screen.Align are specified in percentages, from 0.0 to 1.0, in each dimension. For example if you use 0.25 as a percentage, your component will be positioned at 25% of the screen with anchor at 0.25.The calculation that is used to calculate the location is the following:```ts
-myComponent.x = (align * (fatherComponent.width - myComponent.width)) + myComponent.pivot + (myComponent.anchor * myComponent.width)
-myComponent.y = (align * (fatherComponent.height - myComponent.height)) + myComponent.pivot + (myComponent.anchor * myComponent.height)
-```You can modify it with a property:* `xAlign`, for moving things left-to-right (along the x-axis)
-* `yAlign`, for moving things top-to-bottom (along the y-axis).
-* `align`, is an object that corresponds to `{ x: number, y: number }`. Then you can also use it to set x and y to the same value, `conponent.align = 0.5`.:::tabs
-\== startLabel.ts```ts
-import { newLabel, showImage } from "@drincs/pixi-vn";
-
-export const startLabel = newLabel("start_label", [
-    async () => {
-        await showImage("egg_head", "egg_head", { align: 0.5 });
-        await showImage("flower_top", "flower_top", { align: 0 });
-        await showImage("panda", "panda", { xAlign: 1, yAlign: 0 });
-        await showImage("skully", "skully", { xAlign: 0, yAlign: 1 });
-        await showImage("helmlok", "helmlok", { align: 1 });
-        await showImage("bunny", "bunny", { xAlign: 0.5, yAlign: 1 });
-    },
-]);
-```== assets-utility.ts```ts
-import { Assets } from "@drincs/pixi-vn";
-
-export async function defineAssets() {
-    Assets.add({ alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" });
-    Assets.add({ alias: "flower_top", src: "https://pixijs.com/assets/flowerTop.png" });
-    Assets.add({ alias: "panda", src: "https://pixijs.com/assets/panda.png" });
-    Assets.add({ alias: "skully", src: "https://pixijs.com/assets/skully.png" });
-    Assets.add({ alias: "helmlok", src: "https://pixijs.com/assets/helmlok.png" });
-    Assets.add({ alias: "bunny", src: "https://pixijs.com/assets/bunny.png" });
-}
-```:::
+<sandbox
+template="8sd94f"
+entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
+/>
 
 ## Align
 
@@ -216,5 +188,7 @@ export async function defineAssets() {
 
 :::
 
-::: sandbox {template=yrwkf5 entry=/src/labels/startLabel.ts,/src/utils/assets-utility.ts}
-:::
+<sandbox
+template="yrwkf5"
+entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
+/>
