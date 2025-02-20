@@ -21,20 +21,10 @@ Where:
   - If the parameters include spaces, you must use double quotes.
   - If the parameters is a object, you must use the JSON format and the first character must be `\{` and the last character must be `\}`. Example: `\{ "volume": 100, name: "Music" \}`
 
-:::sandbox {template=nqflhd entry=/src/ink/start.ink,/src/utils/assets-utility.ts}
-:::## Play a sound in _ink_You can use the `play` to play a sound in _**ink**_.The syntax is as follows:`#` + `play` + `sound` + `[alias]` + `[parameters]`- `[parameters] (Optional)`: In the `parameters` you must include the properties of `SoundPlayOptions` that you want to set. The `parameters` must be set as follows: `parameterName` + `SPACE` + `value`. If the `value` is a string and includes spaces, you must use double quotes.:::tabs
-\== start.ink```ink
-# play sound bird
-Now the bird is singing.
-# play sound bird volume 100
-Now the bird is singing louder.
-```== assets-utility.ts```ts
-import { sound } from "@drincs/pixi-vn";
-
-export async function defineAssets() {
-    sound.add('bird', 'https://pixijs.io/sound/examples/resources/bird.mp3');
-}
-```:::
+<sandbox
+template="nqflhd"
+entry="/src/ink/start.ink,/src/utils/assets-utility.ts"
+/>
 
 ## Play a sound in _ink_
 
