@@ -25,5 +25,7 @@ export default function MarkdownComponent({ text }: {
 };
 ```
 
-::: sandbox {template=4h8wst entry=/src/components/MarkdownComponent.tsx}
-:::
+<sandbox
+template="4h8wst"
+entry="/src/components/MarkdownComponent.tsx"
+/>
