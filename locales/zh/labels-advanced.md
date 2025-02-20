@@ -108,5 +108,7 @@ export const startLabel = newLabel("start_label",
 )
 ```
 
-::: sandbox {template=mzw5n2 entry=/src/labels/startLabel.ts}
-:::
+<sandbox
+template="mzw5n2"
+entry="/src/labels/startLabel.ts"
+/>
