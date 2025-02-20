@@ -3,19 +3,19 @@ layout: home
 hero:
   name: Pixi’VN
   text: PixiJS & Visual Novel engine
-  tagline: Create visual novels with the modern 2D rendering engine PixiJS, and your favorite JavaScript framework.
+  tagline: Crea visual novel con il moderno rendering engine 2D PixiJS e il tuo framework JavaScript preferito.
   image:
     src: /logo.webp
-    alt: Pixi’VN Logo
+    alt: Logo Pixi’VN
   actions:
     - theme: brand
-      text: Quick start
+      text: Inizia rapidamente
       link: /start/getting-started
     - theme: alt
-      text: Why Pixi’VN?
+      text: Perché Pixi’VN?
       link: /start/why
     - theme: alt
-      text: Make your first Visual Novel
+      text: Crea la tua prima Visual Novel
       link: /start/make-visual-novel
 ---
 
@@ -24,8 +24,8 @@ hero:
 <div class="grid">
 <div class="right">
   <h2>
-    Write your narrative <br />
-    <span>As you like!!!</span>
+    Scrivi la tua narrazione <br />
+    <span>Come desideri!!!</span>
   </h2>
 
 Write your story in your favorite storytelling language. Such as _ink_ or Ren'py or TS/JS. <br />
