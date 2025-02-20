@@ -66,40 +66,10 @@ export async function defineAssets() {
 
 :::
 
-:::sandbox {template=m9q8zk entry=/src/labels/startLabel.ts,/src/utils/assets-utility.ts}
-:::## Add a imageTo add an image to the canvas, you can use the `addImage` function. It is important to take into account that this function only adds the component to the canvas but does **not show it and does not load its texture**. This function use [`canvas.add`](/start/canvas-functions.md#add-a-canvas-component) to add the image to the canvas.This function will return a `ImageSprite`, that you can use to manipulate the image, and it has the following parameters:* `alias`: Is a [alias](/start/canvas-alias.md) for the image.
-* `imageUrl` (Optional): The URL or path of the image. If you have initialized the [asset matrix](/start/assets-management.md#initialize-the-asset-matrix-at-project-start), you can use the alias of the texture. If you don't provide the url, then the alias is used as the url.
-* `options` (Optional): It corresponds to the `ImageSpriteOptions` interface.:::tabs
-\== startLabel.ts```ts
-import { addImage, canvas, ImageSprite, newLabel } from "@drincs/pixi-vn";
-
-export const startLabel = newLabel("start_label", [
-    () => {
-        let alien1 = addImage("alien"); // [!code focus]
-        let alien2 = addImage("alien2", "alien", { // [!code focus]
-            xAlign: 0.5, // [!code focus]
-        }); // [!code focus]
-        let alien3 = addImage("alien3", "https://pixijs.com/assets/eggHead.png", { // [!code focus]
-            xAlign: 1, // [!code focus]
-        }); // [!code focus]
-    },
-    async () => {
-        let alien1 = canvas.find<ImageSprite>("alien");
-        let alien2 = canvas.find<ImageSprite>("alien2");
-        let alien3 = canvas.find<ImageSprite>("alien3");
-        // Load the textures
-        alien1 && (await alien1.load());
-        alien2 && (await alien2.load());
-        alien3 && (await alien3.load());
-    },
-]);
-```== assets-utility.ts```ts
-import { Assets } from "@drincs/pixi-vn";
-
-export async function defineAssets() {
-    Assets.add({ alias: "alien", src: "https://pixijs.com/assets/eggHead.png" });
-}
-```:::
+<sandbox
+template="m9q8zk"
+entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
+/>
 
 ## Add a image
 
@@ -151,8 +121,10 @@ export async function defineAssets() {
 
 :::
 
-::: sandbox {template=5f3jcr entry=/src/labels/startLabel.ts,/src/utils/assets-utility.ts}
-:::
+<sandbox
+template="5f3jcr"
+entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
+/>
 
 ## Remove a image
 
