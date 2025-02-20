@@ -35,17 +35,10 @@ He insisted that we hurried home to Savile Row
 -> start
 ```
 
-:::sandbox {template=v4rkdl entry=/src/ink/start.ink}
-:::## Why use _ink_ integration?Write a narrative in **Javascript/Typescript** slows you down a lot, because you have to write a lot of code, and is also not suitable for novice developers. So _**ink**_ is a good alternative to write the narrative, because it is very simple to learn and write.The novice developers can use a [_ink_ template](/start/getting-started.md#project-initialization) to start developing just with _**ink**_, and then gradually learn Javascript/Typescript to create more complex features.## Start using _ink_ in Pixi’VNIf you have not created a project yet then it is recommended to use a [Pixi’VN + _ink_ template](/start/getting-started.md#project-initialization) to start developing with _**ink**_.Otherwise to add _**ink**_ to your Pixi’VN project you need to install the `@drincs/pixi-vn-ink` package.:::tabs
-\== npm```bash
-npm install @drincs/pixi-vn-ink
-```== yarn```bash
-yarn add @drincs/pixi-vn-ink
-```== pnpm```bash
-pnpm add @drincs/pixi-vn-ink
-```== bun```bash
-bun add @drincs/pixi-vn-ink
-```:::
+<sandbox
+template="v4rkdl"
+entry="/src/ink/start.ink"
+/>
 
 ## Why use _ink_ integration?
 
