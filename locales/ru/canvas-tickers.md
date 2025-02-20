@@ -69,41 +69,10 @@ export async function defineAssets() {
 
 :::
 
-:::sandbox {template=vl986g entry=/src/labels/startLabel.ts,/src/utils/assets-utility.ts}
-:::## RotateFor rotating a canvas component you can use the `RotateTicker` class.
-This ticker will edit the `rotation` property to rotate the canvas component.`RotateTicker` have a constructor that takes following properties:* `props`: the properties of the shake effect. The properties are:
-  - `speed` (Optional): is a number that represents the speed of the rotation.
-  - `clockwise` (Optional): is a boolean that represents the direction of the rotation. If `true`, the rotation will be clockwise, otherwise it will be counterclockwise.
-  - `limit` (Optional): is a number that represents the limit of the rotation. It is in degrees.
-  - `speedProgression` (Optional): in case the rotation needs to increase/decrease in speed over time, this property can be used. You can read more about it [here](#speed-progression-property).
-  - `startOnlyIfHaveTexture` (Optional): is a boolean that represents if the animation should start only if the canvas component have a texture not empty. If `true` and the canvas component not have a texture, the animation will not edit the `rotation` property, but will be executed. You can read more about it [here](#start-only-if-have-texture-property).
-  - `aliasToRemoveAfter` (Optional): is a string[] that contains the aliases of the [canvas component](/start/canvas-components) that will be removed after the movement. You can read more about it [here](#alias-to-remove-after-property).
-  - `tickerAliasToResume` (Optional): in case you want to continue some tickers that were previously paused, you can pass the aliases of the canvas components that have the tickers to be resumed. You can read more about it [here](#ticker-alias-to-resume-property).
-* `duration` (Optional): the maximum duration of the ticker in seconds.
-* `priority` (Optional): the priority of the ticker.:::tabs
-\== startLabel.ts```ts
-import { canvas, newLabel, Repeat, RotateTicker, showImage } from "@drincs/pixi-vn";
-
-export const startLabel = newLabel("start_label", [
-    async () => {
-        await showImage("alien", "alien", { align: 0.5, anchor: 0.5 });
-        canvas.addTickersSequence("alien", [
-            new RotateTicker({}, 2), // [!code focus]
-            new RotateTicker({ // [!code focus]
-                clockwise: false, // [!code focus]
-                speed: 10, // [!code focus]
-            }, 3), // [!code focus]
-            Repeat,
-        ]);
-    },
-]);
-```== assets-utility.ts```ts
-import { Assets } from "@drincs/pixi-vn";
-
-export async function defineAssets() {
-    Assets.add({ alias: "alien", src: "https://pixijs.com/assets/eggHead.png" });
-}
-```:::
+<sandbox
+template="vl986g"
+entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
+/>
 
 ## Rotate
 
@@ -156,42 +125,10 @@ export async function defineAssets() {
 
 :::
 
-:::sandbox {template=6zc9js entry=/src/labels/startLabel.ts,/src/utils/assets-utility.ts}
-:::## FadeFor fading a canvas component you can use the `FadeAlphaTicker` class.
-This ticker will edit the `alpha` property of the canvas component to fade in/out.`FadeAlphaTicker` have a constructor that takes following properties:* `props`: the properties of the shake effect. The properties are:
-  - `speed` (Optional): is a number that represents the speed of the fade.
-  - `type` (Optional): is a string that represents the type of the fade. Possible values are `hide` and `show`:
-  - `hide`: The canvas component will fade out.
-  - `show`: The canvas component will fade in.
-  - `limit` (Optional): is a number that represents the limit of the fade. If `type` is `hide`, the limit will be `0`, otherwise it will be `1`.
-  - `speedProgression` (Optional): in case the fade needs to increase/decrease in speed over time, this property can be used. You can read more about it [here](#speed-progression-property).
-  - `startOnlyIfHaveTexture` (Optional): is a boolean that represents if the animation should start only if the canvas component have a texture not empty. If `true` and the canvas component not have a texture, the animation will not edit the `alpha` property, but will be executed. You can read more about it [here](#start-only-if-have-texture-property).
-  - `aliasToRemoveAfter` (Optional): is a string[] that contains the aliases of the [canvas component](/start/canvas-components) that will be removed after the movement. You can read more about it [here](#alias-to-remove-after-property).
-  - `tickerAliasToResume` (Optional): in case you want to continue some tickers that were previously paused, you can pass the aliases of the canvas components that have the tickers to be resumed. You can read more about it [here](#ticker-alias-to-resume-property).
-* `duration` (Optional): the maximum duration of the ticker in seconds.
-* `priority` (Optional): the priority of the ticker.:::tabs
-\== startLabel.ts```ts
-import { canvas, FadeAlphaTicker, newLabel, Repeat, showImage } from "@drincs/pixi-vn";
-
-export const startLabel = newLabel("start_label", [
-    async () => {
-        await showImage("alien", "alien", { align: 0.5, anchor: 0.5 });
-        canvas.addTickersSequence("alien", [
-            new FadeAlphaTicker({}), // [!code focus]
-            new FadeAlphaTicker({ // [!code focus]
-                type: "show", // [!code focus]
-            }), // [!code focus]
-            Repeat,
-        ]);
-    },
-]);
-```== assets-utility.ts```ts
-import { Assets } from "@drincs/pixi-vn";
-
-export async function defineAssets() {
-    Assets.add({ alias: "alien", src: "https://pixijs.com/assets/eggHead.png" });
-}
-```:::
+<sandbox
+template="6zc9js"
+entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
+/>
 
 ## Fade
 
@@ -245,45 +182,10 @@ export async function defineAssets() {
 
 :::
 
-:::sandbox {template=gj3pdp entry=/src/labels/startLabel.ts,/src/utils/assets-utility.ts}
-:::## ZoomFor zooming a canvas component you can use the `ZoomTicker` class.
-This ticker will edit the `scale.x` and `scale.y` properties of the canvas component to zoom in/out.`ZoomTicker`  have a constructor that takes following properties:* `props`: the properties of the shake effect. The properties are:
-  - `speed` (Optional): is a number that represents the speed of the zoom effect.
-  - `type` (Optional): is a string that represents the type of the zoom effect. Possible values are `zoom` and `unzoom`:
-  - `zoom`: The canvas component will zoom in.
-  - `unzoom`: The canvas component will zoom out.
-  - `limit` (Optional): is a number that represents the limit of the effect. If `type` is `zoom`, the limit will be `Infinity`, otherwise it will be `0`.
-  - `speedProgression` (Optional): in case the zoom effect needs to increase/decrease in speed over time, this property can be used. You can read more about it [here](#speed-progression-property).
-  - `startOnlyIfHaveTexture` (Optional): is a boolean that represents if the animation should start only if the canvas component have a texture not empty. If `true` and the canvas component not have a texture, the animation will not edit the `scale.x` and `scale.y` properties, but will be executed. You can read more about it [here](#start-only-if-have-texture-property).
-  - `aliasToRemoveAfter` (Optional): is a string[] that contains the aliases of the [canvas component](/start/canvas-components) that will be removed after the movement. You can read more about it [here](#alias-to-remove-after-property).
-  - `tickerAliasToResume` (Optional): in case you want to continue some tickers that were previously paused, you can pass the aliases of the canvas components that have the tickers to be resumed. You can read more about it [here](#ticker-alias-to-resume-property).
-* `duration` (Optional): the maximum duration of the ticker in seconds.
-* `priority` (Optional): the priority of the ticker.:::tabs
-\== startLabel.ts```ts
-import { canvas, newLabel, Repeat, showImage, ZoomTicker } from "@drincs/pixi-vn";
-
-export const startLabel = newLabel("start_label", [
-    async () => {
-        await showImage("alien", "alien", { align: 0.5, anchor: 0.5 });
-        canvas.addTickersSequence("alien", [
-            new ZoomTicker({ // [!code focus]
-                limit: 3, // [!code focus]
-            }), // [!code focus]
-            new ZoomTicker({ // [!code focus]
-                type: "unzoom", // [!code focus]
-                limit: -3, // [!code focus]
-            }), // [!code focus]
-            Repeat,
-        ]);
-    },
-]);
-```== assets-utility.ts```ts
-import { Assets } from "@drincs/pixi-vn";
-
-export async function defineAssets() {
-    Assets.add({ alias: "alien", src: "https://pixijs.com/assets/eggHead.png" });
-}
-```:::
+<sandbox
+template="gj3pdp"
+entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
+/>
 
 ## Zoom
 
@@ -340,34 +242,10 @@ export async function defineAssets() {
 
 :::
 
-:::sandbox {template=wxn3qm entry=/src/labels/startLabel.ts,/src/utils/assets-utility.ts}
-:::### MirrorYou can use the `ZoomTicker` class to mirror a canvas component.For example, if you want to mirror a canvas component horizontally, you can use the following code::::tabs
-\== startLabel.ts```ts
-import { canvas, newLabel, Repeat, showImage, ZoomTicker } from "@drincs/pixi-vn";
-
-export const startLabel = newLabel("start_label", [
-    async () => {
-        await showImage("alien", "alien", { align: 0.5, anchor: 0.5 });
-        canvas.addTickersSequence("alien", [
-            new ZoomTicker({
-                type: "unzoom",
-                limit: { x: -1, y: 0 },
-                speed: { x: 1, y: 0 },
-            }),
-            new ZoomTicker({
-                limit: 1,
-            }),
-            Repeat,
-        ]);
-    },
-]);
-```== assets-utility.ts```ts
-import { Assets } from "@drincs/pixi-vn";
-
-export async function defineAssets() {
-    Assets.add({ alias: "alien", src: "https://pixijs.com/assets/eggHead.png" });
-}
-```:::
+<sandbox
+template="wxn3qm"
+entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
+/>
 
 ### Mirror
 
@@ -411,36 +289,10 @@ export async function defineAssets() {
 
 :::
 
-:::sandbox {template=lyj52j entry=/src/labels/startLabel.ts,/src/utils/assets-utility.ts}
-:::## Special propertiesAll the tickers, provided by Pixi’VN, have the following properties:### Speed progression propertyYou can use the `speedProgression` property to increase/decrease the speed of the effect over time.Existent types are `linear` and `exponential`. The `linear` type will increase the speed by a fixed amount every frame, while the `exponential` type will increase the speed by a percentage every frame.The `speedProgression` property is an object that contains the following properties:* `type`: is a string that represents the type of the progression. Possible values are `linear` and `exponential`.If the `type` is `linear`, the object must contain the following properties:* `amt`: is a number that represents the amount of the speed to increase every frame.
-* `limit` (Optional): is a number that represents the limit of the effect.If the `type` is `exponential`, the object must contain the following properties:* `percentage`: is a number that represents the percentage of the speed to increase every frame. If the percentage is `0.1`, the speed will increase by `10%` every frame.
-* `limit` (Optional): is a number that represents the limit of the effect.:::tabs
-\== startLabel.ts```ts
-import { canvas, MoveTicker, newLabel, Repeat, showImage } from "@drincs/pixi-vn";
-
-export const startLabel = newLabel("start_label", [
-async () => {
-    await showImage("alien");
-    canvas.addTickersSequence("alien", [
-        new MoveTicker({
-            destination: { x: 1, y: 0, type: "align" },
-            speedProgression: { type: "linear", amt: -10, limit: 5 }, // [!code focus]
-        }),
-        new MoveTicker({
-            destination: { x: 0, y: 0, type: "align" },
-            speedProgression: { type: "exponential", percentage: 1.5, limit: 1000 }, // [!code focus]
-        }),
-        Repeat,
-    ]);
-},
-]);
-```== assets-utility.ts```ts
-import { Assets } from "@drincs/pixi-vn";
-
-export async function defineAssets() {
-    Assets.add({ alias: "alien", src: "https://pixijs.com/assets/eggHead.png" });
-}
-```:::
+<sandbox
+template="lyj52j"
+entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
+/>
 
 ## Special properties
 
@@ -502,8 +354,10 @@ export async function defineAssets() {
 
 :::
 
-::: sandbox {template=ts4dfc entry=/src/labels/startLabel.ts,/src/utils/assets-utility.ts}
-:::
+<sandbox
+template="ts4dfc"
+entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
+/>
 
 ### Start only if have texture property
 
