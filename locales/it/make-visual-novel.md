@@ -1,4 +1,4 @@
-# Make your first Visual Novel
+# Crea la tua prima Visual Novel
 
 This tutorial will guide you through the process of creating your first Visual Novel.
 
