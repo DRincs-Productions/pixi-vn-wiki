@@ -88,13 +88,13 @@ const startLabel = newLabel("start_label_id", [
 <div class="grid">
 <div class="left">
   <h2>
-    Create your own assets <br />
-    <span>Show your creativity!</span>
+    Show your creativity <br />
+    <span>To the whole world!</span>
   </h2>
 
-Create your own assets with your favorite tools. Like Daz 3D, Blender, Photoshop, Krita, GIMP, Cinema 4D, Spine 2D etc. <br />
-Pixi’VN uses the power of [PixiJS](/start/canvas.md) to render your assets. <br />
-You can also create 2D animations with [Spine 2D](/start/canvas-spine2d.md) or interact with 3D elements with [Three.js](/start/canvas-threejs.md).
+Crea i tuoi assets con i tuoi strumenti preferiti. Come Daz 3D, Blender, Photoshop, Krita, GIMP, Cinema 4D, Spine 2D ecc. <br />
+Pixi’VN sfrutta la potenza di [PixiJS](/start/canvas.md) per il rendering dei tuoi assets. <br />
+Puoi anche creare animazioni 2D con [Spine 2D](/start/canvas-spine2d.md) o interagire con elementi 3D con [Three.js](/start/canvas-threejs.md).
 
 </div>
 
@@ -120,12 +120,12 @@ You can also create 2D animations with [Spine 2D](/start/canvas-spine2d.md) or i
 <div class="grid">
 <div class="left">
   <h2>
-    Build the UI<br />
-    <span>Use your favorite framework</span>
+    Crea l'interfaccia utente<br />
+    <span>Usa il tuo framework preferito</span>
   </h2>
 
-Build the UI with your favorite JavaScript framework. Like React, Vue, Preact, Qwik, lit, Solid, Svelte, Angular, PixiJS etc. <br />
-You can read more about it [here](/start/interface.md).
+Crea l'interfaccia utente con il tuo framework JavaScript preferito. Come React, Vue, Preact, Qwik, lit, Solid, Svelte, Angular, PixiJS ecc. <br />
+Per saperne di più, clicca [qui](/start/interface.md).
 
 </div>
 
@@ -151,11 +151,11 @@ You can read more about it [here](/start/interface.md).
 <div class="grid">
 <div class="right">
   <h2>
-    Welcome to the Web App<br />
-    <span>Use your favorite tools</span>
+    Welcome to the Web World<br />
+    <span>With infinite possibilities</span>
   </h2>
 
-Use your favorite tools to build your web app. Like TypeScript, Tauri, VS Code, Vite.js, i18n, NodeJS, Astro, AWS, Bootstrap, Electron, ESLint, Firebase, Gatsby, Gulp, Bit, Jest, MUI, Netlify, Nextjs, npm, Nuxt, Rollup, Supabase, Webpack, Fluent etc.
+Choose which tools to use from the vast possibilities of the world of Web apps. Come TypeScript, Tauri, VS Code, Vite.js, i18n, NodeJS, Astro, AWS, Bootstrap, Electron, ESLint, Firebase, Gatsby, Gulp, Bit, Jest, MUI, Netlify, Nextjs, npm, Nuxt, Rollup, Supabase, Webpack, Fluent ecc.
 
 </div>
 
