@@ -1,40 +1,41 @@
 # Perché Pixi’VN?
 
-The reason why Pixi’VN was born is that the current systems for creating visual novels or 2D RPGs are based on old systems and have many shortcomings.
+Il motivo per cui è nato Pixi’VN è che gli attuali sistemi per la creazione di visual novel o RPG 2D si basano su vecchi sistemi e presentano molte carenze.
 
-Pixi’VN combines the development of various 2D games in a single engine, bringing video game development closer to web applications in order to take advantage of their great compatibility and cloud services.
+Pixi’VN combina lo sviluppo di vari giochi 2D in un unico motore, avvicinando lo sviluppo di videogiochi alle applicazioni web per sfruttare la loro grande compatibilità e i servizi cloud.
 
 ## Che cos'è Pixi’VN?
 
-Pixi’VN is a very versatile and powerful 2D game engine. It is based on JavaScript/TypeScript and [PixiJS](https://pixijs.com/).
+Pixi’VN è un motore di gioco 2D molto versatile e potente. Si basa su JavaScript/TypeScript e [PixiJS](https://pixijs.com/).
 
-It provides the following features:
+Offre le seguenti funzionalità:
 
-- narrative management
-- providing a 2D soundtrack
-- providing functionality to play sounds and music
-- providing a storage device to save the game loadable
-- saves the current state of the entire game at each "story step" also giving the possibility to go back
-- functionality to save and load the current state of the game.
+- gestione della narrazione
+- provides a 2D canvas
+- fornire funzionalità per riprodurre suoni e musica
+- storage to set and get game variables.
+- saves the current state of the entire game at each "story step" giving the possibility to go back
+- funzionalità per salvare e caricare lo stato attuale del gioco.
 
-For a quick start, various [project templates](/start/getting-started.md#pivivn-templates) are available. Less experienced developers can use these templates without much knowledge of JavaScript/TypeScript.
+Per un avvio rapido, sono disponibili vari [template di progetto](/start/getting-started.md#pivivn-templates). Gli sviluppatori meno esperti possono utilizzare questi template anche senza avere grandi conoscenze di JavaScript/TypeScript.
 
-You have the option to use various types of narrative languages ​​(in addition to JavaScript/TypeScript). Attualmente è possibile usare le seguenti:
+Hai la possibilità di utilizzare vari tipi di linguaggi narrativi (oltre a JavaScript/TypeScript). Attualmente è possibile usare le seguenti:
 
 - [_ink_](/ink/ink.md)
 - [Ren'Py](/renpy/renpy.md)
 
-## Features of Pixi’VN
+## Caratteristiche di Pixi’VN
 
-Its great **versatility** is due to the fact that Pixi’VN is an npm package, and not a framework. This means that it can be installed on any Node.js project, coupled with your favorite JavaScript framework (React, Vue, Angular, etc.) and use the provided features (even if only partially) for a specific purpose, which can be for example the creation of a visual novel or another type of 2D game (such as Point and Click Adventure Games, RPGs, etc...), use only the narrative features in a 3D game, display an animation in a website etc...
+La sua grande **versatilità** è dovuta al fatto che Pixi’VN è un pacchetto npm e non un framework. This means that it can be installed on any Node.js project and coupled with your favorite JavaScript framework (React, Vue, Angular, etc.).
+You may use the provided functionality (even if only partially) for a variety of purposes, from creating a visual novel or other type of 2D game (such as point-and-click adventure, RPGs, etc.), using only the narrative features in a 3D game, displaying an animation on a website, etc.
 
-To be as **light** as possible, it only takes care of certain essential features, giving the possibility to increase them with other libraries. It is not necessary to use heavy IDEs to develop, but any code editor can be enough.
+To be as **lightweight** as possible, it only takes care of certain specific features, giving the possibility to add more with other libraries. It is not necessary to use heavy IDEs for development, any code editor can be sufficient.
 
-It does **not reinvent things** that already exist. Pixi’VN binds together several very popular libraries and provides APIs to interact with them and have full access to them. It does not invent new programming/narrative languages.
+**Non reinventa cose** che già esistono. Pixi'VN unisce diverse librerie molto popolari e fornisce API per interagire con esse e averne pieno accesso. Non inventa nuovi linguaggi di programmazione/narrativi.
 
 ## Ren'Py vs Pixi’VN
 
-Making a comparison between Ren'Py and Pixi’VN is necessary because Ren'Py is currently the most widely used engine for creating visual novels.
+È necessario fare un paragone tra Ren'Py e Pixi'VN perché Ren'Py è attualmente il motore più utilizzato per la creazione di visual novel.
 
 (Questo confronto è stato effettuato dal team di Pixi'VN, cercando di essere imparziale. Se non sei d'accordo con questo confronto o se ritieni che altre funzionalità dovrebbero essere confrontate, crea una [nuova discussione](https://github.com/DRincs-Productions/pixi-vn/discussions/categories/wiki).)
 
@@ -50,20 +51,20 @@ Ren'Py è un engine di visual novel, utilizzato da migliaia di creatori in tutto
 
 Ren'Py utilizza un linguaggio proprio, `Ren'Py language`, basato sul superset di Python. È possibile usare istruzioni Python nel linguaggio Ren'Py.
 
-Pixi’VN utilizza JavaScript/TypeScript, un linguaggio molto potente e popolare. To write narrative instead of using a specific language, you can use various narrative languages ​​(with the [PixiVNJson](/other-topics/pixi-vn-json.md)).
+Pixi’VN utilizza JavaScript/TypeScript, un linguaggio molto potente e popolare. To write a narrative, you can choose a narrative language that has been integrated or use more than one in the same project.
 
-| Linguaggio di programmazione   | Ren'Py                                                                                                                                                                                                                               | Pixi’VN                                                                                                                                                                         |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ease of learning               | È destinato a persone che non sanno programmare                                                                                                                                                                                      | You can use templates to get started, but as you progress with development you will need basic knowledge of JavaScript/TypeScript, NodeJS and npm                               |
-| Is it a typed language?        | ❌ (Utilizzando Python è possibile utilizzare i tipi, ma il compilatore Ren'Py non ha il controllo dei tipi. Inoltre, gran parte del codice nativo di Ren'Py non utilizza i tipi.) | ✅                                                                                                                                                                               |
-| Puoi usare il debug?           | ❌                                                                                                                                                                                                                                    | ✅                                                                                                                                                                               |
-| Gestore pacchetti/librerie     | ❌                                                                                                                                                                                                                                    | npm                                                                                                                                                                             |
-| Linguaggio narrativo           | Linguaggio Ren'Py e istruzioni Python                                                                                                                                                                                                | JavaScript/TypeScript e vari linguaggi narrativi (tra cui il linguaggio Ren'Py)                                                                              |
-| Implementazione dei minigiochi | Puoi usare i Creator-Defined Displayables (CDD) di Ren'Py                                                                                                                                                         | Puoi usare PixiJS o installare altre librerie                                                                                                                                   |
-| Implementazione dell'UI        | Puoi usare gli screens di Ren'Py                                                                                                                                                                                                     | Puoi usare PixiJS, React, Vue, Angular, ecc.                                                                                                                    |
-| Componenti dell'UI             | Puoi utilizzare i componenti forniti da Ren'Py. Di solito si basano su immagini.                                                                                                                     | A seconda del framework UI scelto, puoi utilizzare la libreria di componenti che preferisci. Ad esempio Material-UI, Bootstrap, PixiJS UI, ecc. |
+| Linguaggio di programmazione   | Ren'Py                                                                                                                                                                                                                               | Pixi’VN                                                                                                                                                                                                   |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ease of learning               | È destinato a persone che non sanno programmare                                                                                                                                                                                      | You can get started quickly using a template, but as you progress in development and need to integrate new features, you will need to learn some basic knowledge of JavaScript/TypeScript, NodeJS and npm |
+| Is it a typed language?        | ❌ (Utilizzando Python è possibile utilizzare i tipi, ma il compilatore Ren'Py non ha il controllo dei tipi. Inoltre, gran parte del codice nativo di Ren'Py non utilizza i tipi.) | ✅                                                                                                                                                                                                         |
+| Puoi usare il debug?           | ❌                                                                                                                                                                                                                                    | ✅                                                                                                                                                                                                         |
+| Gestore pacchetti/librerie     | ❌                                                                                                                                                                                                                                    | npm                                                                                                                                                                                                       |
+| Linguaggio narrativo           | Linguaggio Ren'Py e istruzioni Python                                                                                                                                                                                                | JavaScript/TypeScript e vari linguaggi narrativi (tra cui il linguaggio Ren'Py)                                                                                                        |
+| Implementazione dei minigiochi | Puoi usare i Creator-Defined Displayables (CDD) di Ren'Py                                                                                                                                                         | Puoi usare PixiJS o installare altre librerie                                                                                                                                                             |
+| Implementazione dell'UI        | Puoi usare gli screens di Ren'Py                                                                                                                                                                                                     | Puoi usare PixiJS, React, Vue, Angular, ecc.                                                                                                                                              |
+| Componenti dell'UI             | Puoi utilizzare i componenti forniti da Ren'Py. Di solito si basano su immagini.                                                                                                                     | A seconda del framework UI scelto, puoi utilizzare la libreria di componenti che preferisci. Ad esempio Material-UI, Bootstrap, PixiJS UI, ecc.                           |
 
-#### Dialogues implementation
+#### Writing the narrative
 
 In Ren'Py, for creating dialogues, you need to use the `Ren'Py language`. Questo linguaggio è molto semplice e facile da imparare. Si basa su Python ed è possibile utilizzare le istruzioni Python nel linguaggio Ren'Py.
 
