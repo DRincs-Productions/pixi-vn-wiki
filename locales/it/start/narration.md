@@ -1,19 +1,19 @@
-# Narration
+# Narrazione
 
-The narrative is the set of [dialogues](/start/dialogue.md), [choices](/start/choices.md) and [input requests](/start/input.md) shown to the player as the game progresses.
+La narrazione è l'insieme di [dialoghi](/start/dialogue.md), [scelte](/start/choices.md) e [richieste di input](/start/input.md) mostrati al giocatore man mano che il gioco procede.
 
-You have the option to use various types of narrative languages (thanks to the [PixiVNJson](/other-topics/pixi-vn-json.md)). You can also switch from one language to another to take advantage of the features of each one.
+With Pixi’VN, you have the option to use various types of narrative languages (thanks to the [PixiVNJson](/other-topics/pixi-vn-json.md)). Puoi anche passare da una lingua all'altra per sfruttare le funzionalità di entrambe.
 
-- **JavaScript/TypeScript** is a programming language. You can use it to write your narrative, but it will lead you to write a lot of code. It has the advantage that it can access all functions of the project.
-- **[_ink_](/ink/ink.md)** is a narrative language that allows you to write a narrative easily, without having to write a lot of code.
-- **[Ren'Py](/renpy/renpy.md)** is a narrative language that allows you to write a narrative easily, without having to write a lot of code.
+- **JavaScript/TypeScript** è un linguaggio di programmazione. Puoi usarlo per scrivere la tua narrazione, ma ti porterà a scrivere molto codice. Ha il vantaggio di poter accedere a tutte le funzioni del progetto.
+- **[_ink_](/ink/ink.md)** è un linguaggio narrativo che consente di scrivere una narrazione in modo semplice, senza dover scrivere molto codice.
+- **[Ren'Py](/renpy/renpy.md)** è un linguaggio narrativo che consente di scrivere una narrazione in modo semplice, senza dover scrivere molto codice.
 
-| Language skills                      | JavaScript/TypeScript | _ink_                                                                                                   | Ren'Py                                             |
-| ------------------------------------ | --------------------- | ------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| Ease of learning                     | ❌                     | ✅                                                                                                       | ✅                                                  |
-| Is it a typed language?              | ✅                     | ❌                                                                                                       | ❌                                                  |
-| Visual Studio Code extension         | ✅                     | ✅                                                                                                       | ✅                                                  |
-| Translation possibility              | ✅                     | ✅                                                                                                       | ✅                                                  |
-| Auto-generation of translation files | ❌                     | ✅ ([Under development](https://github.com/DRincs-Productions/pixi-vn-json/issues/3)) | ✅ (Under development)           |
-| Ability to use non-Pixi’VN features  | ✅                     | ✅  ([custom # script](/ink/ink-hashtag.md))                                          | ✅ (using $ - Under development) |
-| Debugging                            | ✅                     | ❌                                                                                                       | ❌                                                  |
+| Language skills                                   | JavaScript/TypeScript | _ink_                                                                                                   | Ren'Py                                             |
+| ------------------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| Facilità di apprendimento                         | ❌                     | ✅                                                                                                       | ✅                                                  |
+| È un linguaggio tipizzato?                        | ✅                     | ❌                                                                                                       | ❌                                                  |
+| Visual Studio Code extension                      | ✅                     | ✅                                                                                                       | ✅                                                  |
+| Translation possibility                           | ✅                     | ✅                                                                                                       | ✅                                                  |
+| Auto-generation of translation files              | ❌                     | ✅ ([Under development](https://github.com/DRincs-Productions/pixi-vn-json/issues/3)) | ✅ (Under development)           |
+| Possibilità di utilizzare funzioni non di Pixi'VN | ✅                     | ✅  ([custom # script](/ink/ink-hashtag.md))                                          | ✅ (using $ - Under development) |
+| Debug                                             | ✅                     | ❌                                                                                                       | ❌                                                  |
