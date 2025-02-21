@@ -155,10 +155,10 @@ Ren'Py is a engine designed only for creating visual novels. Adding complex func
 
 Pixi’VN is an [npm](https://www.npmjs.com/) library that allows you to create visual novels. So if you want you can use this library in a project that is not natively a visual novel. [npm](https://www.npmjs.com/) is a package manager for JavaScript and the world's largest software registry.
 
-### Longevity and ease of internal development
+### Longevità e facilità di sviluppo interno
 
-Ren'py born in 2004 and is still used today. It is a very stable and mature project.
-Ren'Py in addition to including the development of its own library for visual novels also includes the development of `Ren'Py language` and `Pygame_sdl2`. Furthermore, since it also deals with distributing the project on various devices, this means that Ren'Py must also keep the system updated based on the devices on which it is distributed.
+Ren'py born in 2004 and is still used today. È un progetto molto stabile e maturo.
+Ren'Py, oltre allo sviluppo della propria libreria per le visual novels, include anche lo sviluppo del `linguaggio Ren'Py` e di `Pygame_sdl2`. Furthermore, since it also deals with distributing the project on various devices, this means that Ren'Py must also keep the system updated based on the devices on which it is distributed.
 
 This means that keeping Ren'Py updated is a constant and very complex process that "touches" many types of programming (Parsing, Graphics, etc...).
 
