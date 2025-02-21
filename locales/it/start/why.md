@@ -1,12 +1,23 @@
 # Perché Pixi’VN?
 
-Il motivo per cui è nato Pixi’VN è che gli attuali sistemi per la creazione di visual novel si basano su sistemi datati e presentano numerose carenze.
+The reason why Pixi’VN was born is that the current systems for creating visual novels or 2D RPGs are based on old systems and have many shortcomings.
+
+Pixi’VN combines the development of various 2D games in a single engine, bringing video game development closer to web applications in order to take advantage of their great compatibility and cloud services.
 
 ## Che cos'è Pixi’VN?
 
-Pixi’VN è un engine per visual novel/giochi 2D molto versatile e potente. Si basa su JavaScript/TypeScript e utilizza la libreria [PixiJS](https://pixijs.com/) per il rendering.
+Pixi’VN is a very versatile and powerful 2D game engine. It is based on JavaScript/TypeScript and [PixiJS](https://pixijs.com/).
 
-Pixi’VN provides the ability to use [project templates](/start/getting-started.md#pivivn-templates) to get started quickly. Gli sviluppatori meno esperti possono utilizzare questi templates per creare una visual novel senza avere grandi conoscenze di JavaScript/TypeScript.
+It provides the following features:
+
+- narrative management
+- providing a 2D soundtrack
+- providing functionality to play sounds and music
+- providing a storage device to save the game loadable
+- saves the current state of the entire game at each "story step" also giving the possibility to go back
+- functionality to save and load the current state of the game.
+
+For a quick start, various [project templates](/start/getting-started.md#pivivn-templates) are available. Less experienced developers can use these templates without much knowledge of JavaScript/TypeScript.
 
 You have the option to use various types of narrative languages ​​(in addition to JavaScript/TypeScript). Attualmente è possibile usare le seguenti:
 
@@ -17,14 +28,7 @@ You have the option to use various types of narrative languages ​​(in additi
 
 Its great **versatility** is due to the fact that Pixi’VN is an npm package, and not a framework. This means that it can be installed on any Node.js project, coupled with your favorite JavaScript framework (React, Vue, Angular, etc.) and use the provided features (even if only partially) for a specific purpose, which can be for example the creation of a visual novel or another type of 2D game (such as Point and Click Adventure Games, RPGs, etc...), use only the narrative features in a 3D game, display an animation in a website etc...
 
-In order to be as **light** as possible, it only deals with the following essential features:
-
-- narrative management
-- providing a 2D soundtrack
-- providing functionality to play sounds and music
-- providing a storage device to save the game loadable
-- saves the current state of the entire game at each "story step" also giving the possibility to go back
-- functionality to save and load the current state of the game.
+To be as **light** as possible, it only takes care of certain essential features, giving the possibility to increase them with other libraries. It is not necessary to use heavy IDEs to develop, but any code editor can be enough.
 
 It does **not reinvent things** that already exist. Pixi’VN binds together several very popular libraries and provides APIs to interact with them and have full access to them. It does not invent new programming/narrative languages.
 
