@@ -24,11 +24,11 @@ hero:
 <div class="grid">
 <div class="right">
   <h2>
-    Write your narrative <br />
+    Write your story <br />
     <span>As you like!!!</span>
   </h2>
 
-Write your story in your favorite storytelling language. Such as _ink_ or Ren'py or TS/JS. <br />
+Write your story in your favorite narrative language. Such as _ink_ or Ren'py or TS/JS. <br />
 In all cases you can also interact with the canvas and sounds, or create custom features. <br />
 You can read more about it [here](/start/narration.md).
 
