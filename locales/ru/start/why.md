@@ -6,14 +6,27 @@ The reason why Pixi’VN was born is that current systems for creating a visual 
 
 Pixi’VN is a very versatile and powerful visual novel/2D game engine. It is based on JavaScript/TypeScript and uses the [PixiJS](https://pixijs.com/) library for rendering.
 
-Its great versatility is due to the fact that Pixi’VN is a npm package, that provides various core features to manage story steps, dialogues, character, canvas, variable storage, saving and loading, and much more. This means that it can be used both to create visual novels and to create other types of 2D games (such as Point and Click Adventure Games, RPGs, etc...), with your favorite JavaScript framework (React, Vue, Angular, etc...).
-
 Pixi’VN provides the ability to use [project templates](/start/getting-started.md#pivivn-templates) to get started quickly. Less experienced developers can use these templates to create a visual novel without much knowledge of JavaScript/TypeScript.
 
 You have the option to use various types of narrative languages ​​(in addition to JavaScript/TypeScript). Currently you can use the following:
 
 - [_ink_](/ink/ink.md)
 - [Ren'Py](/renpy/renpy.md)
+
+## Features of Pixi’VN
+
+Its great **versatility** is due to the fact that Pixi’VN is an npm package, and not a framework. This means that it can be installed on any Node.js project, coupled with your favorite JavaScript framework (React, Vue, Angular, etc.) and use the provided features (even if only partially) for a specific purpose, which can be for example the creation of a visual novel or another type of 2D game (such as Point and Click Adventure Games, RPGs, etc...), use only the narrative features in a 3D game, display an animation in a website etc...
+
+In order to be as **light** as possible, it only deals with the following essential features:
+
+- narrative management
+- providing a 2D soundtrack
+- providing functionality to play sounds and music
+- providing a storage device to save the game loadable
+- saves the current state of the entire game at each "story step" also giving the possibility to go back
+- functionality to save and load the current state of the game.
+
+It does **not reinvent things** that already exist. Pixi’VN binds together several very popular libraries and provides APIs to interact with them and have full access to them. It does not invent new programming/narrative languages.
 
 ## Ren'Py vs Pixi’VN
 
