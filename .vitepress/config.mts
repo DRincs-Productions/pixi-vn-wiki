@@ -98,7 +98,12 @@ export default defineConfig({
                 {
                     text: "Getting Started",
                     items: [
-                        { text: "Why Pixi’VN?", link: "/start/why" },
+                        {
+                            text: "Why Pixi’VN?",
+                            link: "/start/why",
+                            collapsed: true,
+                            items: [{ text: "Ren'Py vs Pixi’VN", link: "/start/versus-renpy" }],
+                        },
                         { text: "Getting Started", link: "/start/getting-started" },
                         {
                             text: "Make your first",

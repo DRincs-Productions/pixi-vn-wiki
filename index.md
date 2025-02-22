@@ -26,11 +26,11 @@ hero:
 <div class="grid">
 <div class="right">
   <h2>
-    Write your narrative <br />
+    Write your story <br />
     <span>As you like!!!</span>
   </h2>
 
-  Write your story in your favorite storytelling language. Such as *ink* or Ren'py or TS/JS. <br />
+  Write your story in your favorite narrative language. Such as *ink* or Ren'py or TS/JS. <br />
   In all cases you can also interact with the canvas and sounds, or create custom features. <br />
   You can read more about it [here](/start/narration.md).
 
@@ -90,8 +90,8 @@ const startLabel = newLabel("start_label_id", [
 <div class="grid">
 <div class="left">
   <h2>
-    Create your own assets <br />
-    <span>Show your creativity!</span>
+    Show your creativity <br />
+    <span>To the whole world!</span>
   </h2>
 
   Create your own assets with your favorite tools. Like Daz 3D, Blender, Photoshop, Krita, GIMP, Cinema 4D, Spine 2D etc. <br />
@@ -153,11 +153,11 @@ const startLabel = newLabel("start_label_id", [
 <div class="grid">
 <div class="right">
   <h2>
-    Welcome to the Web App<br />
-    <span>Use your favorite tools</span>
+    Welcome to the Web World<br />
+    <span>With infinite possibilities</span>
   </h2>
 
-  Use your favorite tools to build your web app. Like TypeScript, Tauri, VS Code, Vite.js, i18n, NodeJS, Astro, AWS, Bootstrap, Electron, ESLint, Firebase, Gatsby, Gulp, Bit, Jest, MUI, Netlify, Nextjs, npm, Nuxt, Rollup, Supabase, Webpack, Fluent etc.
+  Choose which tools to use from the vast possibilities of the world of Web apps. Like TypeScript, Tauri, VS Code, Vite.js, i18n, NodeJS, Astro, AWS, Bootstrap, Electron, ESLint, Firebase, Gatsby, Gulp, Bit, Jest, MUI, Netlify, Nextjs, npm, Nuxt, Rollup, Supabase, Webpack, Fluent etc.
 
 </div>
 
