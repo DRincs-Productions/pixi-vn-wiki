@@ -12,30 +12,6 @@ Since Pixi’VN gives you the ability to write your [narration in different type
 
 The first step is to create a new project. You can find more information on how to create a new project starting from a template [here](/start/getting-started.md#project-initialization). We will use the "Visual Novel - React Template".
 
-::: code-group
-
-```sh [npm]
-npm create pixi-vn@latest
-```
-
-```sh [yarn]
-yarn create pixi-vn
-```
-
-```sh [pnpm]
-pnpm create pixi-vn
-```
-
-```sh [bun]
-bun create pixi-vn
-```
-
-```sh [deno]
-deno init --npm pixi-vn
-```
-
-:::
-
 `Visual Novel -> React`
 
 After the creation is complete, it is very important to read the `README.md` file that is in the root of the project. This file contains important information about the project and how to use it.
