@@ -66,7 +66,7 @@ Into all templates there is a `README.md` file with more information about the p
 
 ## Installation
 
-For installing the Pixi’VN package in an existing (node.js) project, you can use the following command:
+For installing the Pixi’VN package in an existing Javascript project, you can use the following command:
 
 ::: code-group
 
