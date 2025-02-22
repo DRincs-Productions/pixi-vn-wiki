@@ -86,6 +86,10 @@ pnpm add @drincs/pixi-vn
 bun add @drincs/pixi-vn
 ```
 
+```sh [deno]
+deno install npm:@drincs/pixi-vn
+```
+
 :::
 
 For using the Pixi’VN package in a browser, you can use the following script tag:
