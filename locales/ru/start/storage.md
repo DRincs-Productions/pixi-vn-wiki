@@ -1,12 +1,14 @@
 # Game storage
 
-The game storage is a place where you can save variables that you want to keep between game sessions.
+**What is the game storage?** The game storage is a place where you can save variables that you want to keep between game sessions.
 
 It is essential to understand that if the variables are not saved in the game memory, when [loading a save](/start/save#load) or when [going back](/start/labels-flow.md#go-back), they will not be handled.
 
-Furthermore, only primary type variables can be saved in the game storage. The primary types are `string`, `number`, `boolean`, `object`, `array`...  and not `function`, `class`...
+Furthermore, only primary type variables can be saved in the game storage. The primary types are `string`, `number`, `boolean`, `object`, `array`...  and not `function`, `class`... If you want to save flags (boolean) it is recommended to use the [flags functionality](/start/flags), a very high-performance flag management system.
 
-( For boolean values, you can use the [flags management](/start/flags) )
+<img src="https://cacheable.org/logo.svg" alt="drawing" width="200" style="margin-top: 10px;" />
+
+The entire storage system was developed using [Cacheable](https://cacheable.org/docs/cacheable/#cacheablememory---in-memory-cache), a very efficient library based on [Keyv](https://keyv.org/) that allows you to save variables in memory, in a file, or in a database. If you want to access the Cacheable object you can do so using `storage.storage`.
 
 ## Set a variable in the game storage
 
