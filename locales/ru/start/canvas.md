@@ -1,4 +1,4 @@
-# PixiJS canvas
+# Game canvas
 
 <img src="https://pixijs.com/images/logo.svg" alt="drawing" width="200" style="margin-top: 10px;" />
 
