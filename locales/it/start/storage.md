@@ -1,8 +1,8 @@
-# Game storage
+# Storage di gioco
 
-**What is the game storage?** The game storage is a place where you can save variables that you want to keep between game sessions.
+\*\*Che cos'è lo storage di gioco? \*\* Lo storage di gioco è un luogo in cui è possibile salvare le variabili che si desidera conservare tra le sessioni di gioco.
 
-It is essential to understand that if the variables are not saved in the game memory, when [loading a save](/start/save#load) or when [going back](/start/labels-flow.md#go-back), they will not be handled.
+It is essential to understand that if variables are not saved in the game memory, the engine will not be able to handle them, when you [load a save](/start/save#load) or when you [go back](/start/labels-flow.md#go-back).
 
 Furthermore, only primary type variables can be saved in the game storage. The primary types are `string`, `number`, `boolean`, `object`, `array`...  and not `function`, `class`... If you want to save flags (boolean) it is recommended to use the [flags functionality](/start/flags), a very high-performance flag management system.
 
