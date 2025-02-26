@@ -1,6 +1,6 @@
 # Assets
 
-**What are assets?** Assets are all the files that are not code, such as images, sounds, and videos.
+**What are assets?** The assets are all the files that are not code, such as images, sounds, and videos.
 
 You can use assets saved locally in the project or online (For the second option you will need to make sure that the cloud service you are using allows _CORS requests_). Of course, if your assets are online, a requirement of the game will be to be connected online. Then you will have to notify the user and block the game where there is no connection.
 
