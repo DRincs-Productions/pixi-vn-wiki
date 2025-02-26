@@ -16,24 +16,24 @@ Ren'Py is a visual novel engine – used by thousands of creators from around th
 
 Ren'Py uses its own language, `Ren'Py language`, which is based on superset of Python. You can use Python statements in Ren'Py language.
 
-Pixi’VN uses JavaScript/TypeScript, which is a very powerful and popular language. To write a narrative, you can choose a narrative language that has been integrated or use more than one in the same project.
+Pixi’VN uses JavaScript/TypeScript, which is a very powerful and popular language. To write the narrative, you can choose a narrative language that has been integrated or use more than one in the same project.
 
-| Programming language      | Ren'Py                                                                                                                                                                                               | Pixi’VN                                                                                                                                                                                                   |
-| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ease of learning          | It is intended for people who do not know how to program                                                                                                                                             | You can get started quickly using a template, but as you progress in development and need to integrate new features, you will need to learn some basic knowledge of JavaScript/TypeScript, NodeJS and npm |
-| Is it a typed language?   | ❌ (Using Python you can use types, but the Ren'Py compiler does not have type checking. Also, much of the native Ren'Py code does not use types.) | ✅                                                                                                                                                                                                         |
-| Can you use the debug?    | ❌                                                                                                                                                                                                    | ✅                                                                                                                                                                                                         |
-| Package/libraries manager | ❌                                                                                                                                                                                                    | npm                                                                                                                                                                                                       |
-| Narrative Language        | Ren'Py language and Python Statements                                                                                                                                                                | JavaScript/TypeScript and various narrative languages ​​(including Ren'Py language)                                                                                                    |
-| Mini-games implementation | You can use Ren'Py Creator-Defined Displayables (CDD)                                                                                                                             | You can use PixiJS or install other libraries                                                                                                                                                             |
-| UI implementation         | You can use Ren'Py screens                                                                                                                                                                           | You can use PixiJS, React, Vue, Angular, etc.                                                                                                                                             |
-| UI components             | You can use components provided by Ren'Py. They are usually based on images.                                                                                         | Depending on the UI framework you choose, you can use the component library you prefer. For example Material-UI, Bootstrap, PixiJS UI, etc.                               |
+| Programming language      | Ren'Py                                                                                                                                                                                               | Pixi’VN                                                                                                                                                                                                |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Ease of learning          | It is intended for people who do not know how to program                                                                                                                                             | You can get started quickly using a template, but as you progress in development and need to integrate new features, you will need to learn some basic skills in JavaScript/TypeScript, NodeJS and npm |
+| Is it a typed language?   | ❌ (Using Python you can use types, but the Ren'Py compiler does not have type checking. Also, much of the native Ren'Py code does not use types.) | ✅                                                                                                                                                                                                      |
+| Can you use the debug?    | ❌                                                                                                                                                                                                    | ✅                                                                                                                                                                                                      |
+| Package/libraries manager | ❌                                                                                                                                                                                                    | npm                                                                                                                                                                                                    |
+| Narrative Language        | Ren'Py language and Python Statements                                                                                                                                                                | JavaScript/TypeScript and various narrative languages ​​(including Ren'Py language)                                                                                                 |
+| Mini-games implementation | You can use Ren'Py Creator-Defined Displayables (CDD)                                                                                                                             | You can use PixiJS or install other libraries                                                                                                                                                          |
+| UI implementation         | You can use Ren'Py screens                                                                                                                                                                           | You can use PixiJS, React, Vue, Angular, etc.                                                                                                                                          |
+| UI components             | You can use components provided by Ren'Py. They are usually based on images.                                                                                         | Depending on the UI framework you choose, you can use the component library you prefer. For example Material-UI, Bootstrap, PixiJS UI, etc.                            |
 
 ### Writing the narrative
 
-In Ren'Py, for creating dialogues, you need to use the `Ren'Py language`. This language is very simple and easy to learn. It is based on Python and you can use Python statements in Ren'Py language.
+With Ren'Py, to write the narrative, you need to use the `Ren'Py language`. This language is very simple and easy to learn. It is based on Python and you can use Python statements in Ren'Py language.
 
-In Pixi’VN, you can use JavaScript/TypeScript to create dialogues. You can also use various narrative languages ​​(potentially you can integrate any narrative language using [PixiVNJson](/other-topics/pixi-vn-json.md)).
+With Pixi’VN you can use JavaScript/TypeScript to write the narration. You can also use various narrative languages ​​(potentially you can integrate any narrative language using [PixiVNJson](/other-topics/pixi-vn-json.md)).
 
 Example of Ren'Py:
 
@@ -69,12 +69,12 @@ label start:
     "I hope you enjoy it!"
 ```
 
-### Minigame implementation
+### Implementation of minigames
 
-In Ren'Py, for creating minigames with complex mechanics/animations, you need to use the [`Creator-Defined Displayables (CDD)`](https://www.renpy.org/doc/html/cdd.html), this is necessary because otherwise you will have big performance problems. With CDD you can create/control one or more graphic elements through a render loop.
+With Ren'Py, for creating minigames with complex mechanics/animations, you need to use the [`Creator-Defined Displayables (CDD)`](https://www.renpy.org/doc/html/cdd.html), this is necessary because otherwise you will have big performance problems. With CDD you can create/control one or more graphic elements through a render loop.
 CDD is not very intuitive and complicated to use. There are very few examples and few developers using CDD. In fact, most of the minigames do not have complex logic and animations.
 
-In Pixi’VN, you can use PixiJS to create minigames. PixiJS is a very powerful library that allows you to create complex animations and mechanics. The documentation and examples are very detailed and there are many developers using PixiJS.
+With Pixi’VN, you can use PixiJS to create minigames. PixiJS is a very powerful library that allows you to create complex animations and mechanics. The documentation and examples are very detailed and there are many developers using PixiJS.
 
 You can try some Ren'py and PIxiJS minigames to understand the difference:
 
@@ -84,9 +84,9 @@ You can try some Ren'py and PIxiJS minigames to understand the difference:
 
 ### UI implementation
 
-In Ren'Py, for creating the UI, you need to create screens and styles. The most recommended implementation is to create a series of images that are positioned within the canvas across graphic components. The graphic components are very few, limiting and not very intuitive.
+With Ren'Py, to create the user interface, you need to use screenshots and styles. The recommended implementation is to draw a series of images and add them inside the canvas through the graphics components. The graphic components are very few, limiting and not very intuitive.
 
-In Pixi’VN, in addition to being able to use the components of PixiJS, you can also use systems such as React, Vue, Angular, etc. and install component libraries such as Material-UI, Bootstrap, etc. This allows you to create much more complex UI screens with excellent performance.
+With Pixi’VN, in addition to being able to use the components of PixiJS, you can also use systems such as React, Vue, Angular, etc. and install component libraries such as Material-UI, Bootstrap, etc. This allows you to create much more complex UI screens with excellent performance.
 
 ## Performance and project size
 
@@ -94,7 +94,7 @@ The performance and size of the project are very important factors to consider w
 
 **Canvas libraries used:**
 
-- [`Pygame_sdl2`](https://github.com/renpy/pygame_sdl2): This canvas is absolutely underperforming. This can be tested by inserting more moving graphic elements into Ren'py.
+- [`Pygame_sdl2`](https://github.com/renpy/pygame_sdl2): This canvas is absolutely underperforming. You can test this by inserting lots of moving graphics into Ren'py.
 - PixiJS: It is based on more modern systems and has great performance. This can be tested directly from this example:
 
 <sandbox
@@ -105,14 +105,14 @@ entry="/src/labels/startLabel.ts"
 **UI performance:**
 
 - Ren'Py's UI is based on canvas components that use images within the project.
-- In Pixi’VN you can use HTML and/or JavaScript frameworks, known for their performance and usability, or the canvas. HTML/JavaScript components are not necessarily based on images, which leads to a smaller project size.
+- With Pixi’VN you can use HTML and/or JavaScript frameworks, known for their performance and usability, or the canvas. HTML/JavaScript components are not necessarily based on images, which leads to a smaller project size.
 
 **Project size:**
 
 - The entire UI of Ren'py is based on "physical images" and this makes the size of the project very large.
-- In a Pixi’VN project, you can choose whether and which graphics component library to use the canvas with a "physical images". Being a library it does not determine the size of the project, but if you use [vite](https://vitejs.dev/) or other tools, the size of the project will be very small.
+- In a Pixi’VN project, you can choose whether and which graphics component library to use the canvas with a "physical images". Being a library it does not determine the size of the project, but if you use [vite](https://vitejs.dev/) or other tools, the size of the project will be very light.
 
-## Device distribution
+## Distribution on multiple devices
 
 Ren'Py framework is directly responsible for distributing the game on various devices.
 
@@ -152,4 +152,4 @@ This means that keeping Pixi’VN updated is a very simple process and once it r
 
 ## Conclusion
 
-Finally my personal conclusion is that, you know object-oriented programming and you want to create a visual novel with various features (minigames, etc...) you should use Pixi’VN. If you are not a programmer and you want to create a visual novel quickly and easily, you can use Ren'Py.
+Finally my personal conclusion is that, if you know object oriented programming and want to create a visual novel with many features, minigames, a very complex UI etc... you should use Pixi’VN. If you are not a programmer and you want to create a visual novel quickly and easily, you can use Ren'Py.
