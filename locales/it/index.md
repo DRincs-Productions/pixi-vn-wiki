@@ -24,12 +24,12 @@ hero:
 <div class="grid">
 <div class="right">
   <h2>
-    Write your story <br />
-    <span>As you like!!!</span>
+    Scrivi la tua storia <br />
+    <span>Come vuoi!!!</span>
   </h2>
 
-Write your story in your favorite narrative language. Such as _ink_ or Ren'py or TS/JS. <br />
-In all cases you can also interact with the canvas and sounds, or create custom features. <br />
+Scrivete la vostra storia nel linguaggio narrativo che preferite. Ad esempio _ink_ o Ren'py o TS/JS. <br />
+In all cases you can also interact with the canvas and sounds, or create custom narrative scripts. <br />
 Per saperne di più, clicca [qui](/start/narration.md).
 
 </div>
@@ -88,8 +88,8 @@ const startLabel = newLabel("start_label_id", [
 <div class="grid">
 <div class="left">
   <h2>
-    Show your creativity <br />
-    <span>To the whole world!</span>
+    Mostra la tua creatività <br />
+    <span>Al mondo intero!</span>
   </h2>
 
 Crea i tuoi assets con i tuoi strumenti preferiti. Come Daz 3D, Blender, Photoshop, Krita, GIMP, Cinema 4D, Spine 2D ecc. <br />
