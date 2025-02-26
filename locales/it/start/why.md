@@ -11,10 +11,10 @@ Pixi’VN è un motore di gioco 2D molto versatile e potente. Si basa su JavaScr
 Offre le seguenti funzionalità:
 
 - gestione della narrazione
-- provides a 2D canvas
+- fornisce un canvas 2D
 - fornire funzionalità per riprodurre suoni e musica
-- storage to set and get game variables.
-- saves the current state of the entire game at each "story step" giving the possibility to go back
+- storage per impostare e ottenere le variabili di gioco.
+- salva lo stato attuale dell'intero gioco ad ogni "passo della storia", dando la possibilità di tornare indietro
 - funzionalità per salvare e caricare lo stato attuale del gioco.
 
 Per un avvio rapido, sono disponibili vari [template di progetto](/start/getting-started.md#pivivn-templates). Gli sviluppatori meno esperti possono utilizzare questi template anche senza avere grandi conoscenze di JavaScript/TypeScript.
@@ -26,9 +26,9 @@ Hai la possibilità di utilizzare vari tipi di linguaggi narrativi (oltre a Java
 
 ## Caratteristiche di Pixi’VN
 
-La sua grande **versatilità** è dovuta al fatto che Pixi’VN è un pacchetto npm e non un framework. This means that it can be installed on any JavaScript project and coupled with your favorite JavaScript framework (React, Vue, Angular, etc.).
-You may use the provided functionality (even if only partially) for a variety of purposes, from creating a visual novel or other type of 2D game (such as point-and-click adventure, RPGs, etc.), using only the narrative features in a 3D game, displaying an animation on a website, etc.
+La sua grande **versatilità** è dovuta al fatto che Pixi’VN è un pacchetto npm e non un framework. Ciò significa che può essere installato su qualsiasi progetto JavaScript e associato con il tuo framework JavaScript preferito (React, Vue, Angular, ecc.).
+You may use the provided functionality for a variety of purposes, from creating a visual novel or other type of 2D game (such as point-and-click adventure, RPGs, etc.), using only the narrative features in a 3D game, displaying an animation on a website, etc.
 
-To be as **lightweight** as possible, it only takes care of certain specific features, giving the possibility to add more with other libraries. It is not necessary to use heavy IDEs for development, any code editor can be sufficient.
+To be as **lightweight** as possible, it only deals with specific features, adding or giving the possibility to add more with other libraries. There is no need to use heavy IDEs for development, any code editor will do.
 
 **Non reinventa cose** che già esistono. Pixi'VN unisce diverse librerie molto popolari e fornisce API per interagire con esse e averne pieno accesso. Non inventa nuovi linguaggi di programmazione/narrativi.
