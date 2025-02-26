@@ -13,8 +13,9 @@ To add a React UI to Pixi’VN, you need to create a new React application and a
 import { canvas } from '@drincs/pixi-vn'
 import { createRoot } from 'react-dom/client'
 
-// canvas.initialize...
-canvas.initialize(body, 1920, 1080, {
+canvas.initialize(body, {
+    width: 1920,
+    height: 1080,
     backgroundColor: "#303030"
 }).then(() => {
     // React setup with ReactDOM
