@@ -151,11 +151,11 @@ Per saperne di più, clicca [qui](/start/interface.md).
 <div class="grid">
 <div class="right">
   <h2>
-    Welcome to the Web World<br />
-    <span>With infinite possibilities</span>
+    Benvenuto nel Mondo Web<br />
+    <span>Con infinite possibilità</span>
   </h2>
 
-Choose which tools to use from the vast possibilities of the world of Web apps. Come TypeScript, Tauri, VS Code, Vite.js, i18n, NodeJS, Astro, AWS, Bootstrap, Electron, ESLint, Firebase, Gatsby, Gulp, Bit, Jest, MUI, Netlify, Nextjs, npm, Nuxt, Rollup, Supabase, Webpack, Fluent ecc.
+Scegli quali strumenti utilizzare dalle vaste possibilità del mondo delle applicazioni Web. Come TypeScript, Tauri, VS Code, Vite.js, i18n, NodeJS, Astro, AWS, Bootstrap, Electron, ESLint, Firebase, Gatsby, Gulp, Bit, Jest, MUI, Netlify, Nextjs, npm, Nuxt, Rollup, Supabase, Webpack, Fluent ecc.
 
 </div>
 
