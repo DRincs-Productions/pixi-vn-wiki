@@ -4,7 +4,7 @@
 
 It is essential to understand that if variables are not saved in the game memory, the engine will not be able to handle them, when you [load a save](/start/save#load) or when you [go back](/start/labels-flow.md#go-back).
 
-Furthermore, only primary type variables can be saved in the game storage. The primary types are `string`, `number`, `boolean`, `object`, `array`...  and not `function`, `class`... If you want to save flags (boolean) it is recommended to use the [flags functionality](/start/flags), a very high-performance flag management system.
+Additionally, in the game archive you can save any type of variable, except `class` and `function` (because they cannot be converted to JSON), such as: `string`, `number`, `boolean`, `object`, `array`... If you want to save "flags" (boolean) it is recommended to use the [flags functionality](/start/flags), a very high-performance flag management system.
 
 <img src="https://cacheable.org/logo.svg" alt="drawing" width="200" style="margin-top: 10px;" />
 
