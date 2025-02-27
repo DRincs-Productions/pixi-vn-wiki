@@ -17,7 +17,7 @@ Where:
   - `type` (Optional): It is the type of the value that you want to request. You can use any string of your choice. You can use this value to get more information about the type of value that is requested.
   - `default` (Optional): It is the default value of the input element.
 
-The value will be saved in storage with the following system key `storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY`, that is `_input_value_`. So you can access the value with `_input_value_`.
+The value will be saved in storage with the following system key `SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY`, that is `_input_value_`. So you can access the value with `_input_value_`.
 
 Example:
 
