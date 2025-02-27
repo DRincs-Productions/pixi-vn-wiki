@@ -27,8 +27,8 @@ Hai la possibilità di utilizzare vari tipi di linguaggi narrativi (oltre a Java
 ## Caratteristiche di Pixi’VN
 
 La sua grande **versatilità** è dovuta al fatto che Pixi’VN è un pacchetto npm e non un framework. Ciò significa che può essere installato su qualsiasi progetto JavaScript e associato con il tuo framework JavaScript preferito (React, Vue, Angular, ecc.).
-You may use the provided functionality for a variety of purposes, from creating a visual novel or other type of 2D game (such as point-and-click adventure, RPGs, etc.), using only the narrative features in a 3D game, displaying an animation on a website, etc.
+È possibile utilizzare le funzionalità fornite per vari scopi, dalla creazione di una visual novel o di un altro tipo di gioco 2D (come avventure punta e clicca, giochi di ruolo, ecc.), all'utilizzo delle sole funzionalità narrative in un gioco 3D, alla visualizzazione di un'animazione su un sito web, ecc.
 
-To be as **lightweight** as possible, it only deals with specific features, adding or giving the possibility to add more with other libraries. There is no need to use heavy IDEs for development, any code editor will do.
+Per essere il più **leggero** possibile, si occupa solo di funzionalità specifiche, aggiungendone o dando la possibilità di aggiungerne altre con altre librerie. Non è necessario utilizzare IDE pesanti per lo sviluppo, qualsiasi editor di codice andrà bene.
 
 **Non reinventa cose** che già esistono. Pixi'VN unisce diverse librerie molto popolari e fornisce API per interagire con esse e averne pieno accesso. Non inventa nuovi linguaggi di programmazione/narrativi.
