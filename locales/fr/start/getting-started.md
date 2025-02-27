@@ -97,19 +97,19 @@ For using the Pixi’VN package in a browser, you can use the following script t
 ::: code-group
 
 ```html [script tag]
-<script src="https://cdn.jsdelivr.net/npm/@drincs/pixi-vn/+esm"></script>
+<script src="https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@<version>/+esm"></script>
 ```
 
 ```html [import map]
 <script type="importmap">
   { "imports": {
-      "@drincs/pixi-vn":        "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn/+esm"
+      "@drincs/pixi-vn@<version>":        "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn/+esm"
   } }
 </script>
 ```
 
 ```js [js import]
-import pixivn from "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn/+esm";
+import pixivn from "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@<version>/+esm";
 ```
 
 :::
