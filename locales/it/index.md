@@ -29,7 +29,7 @@ hero:
   </h2>
 
 Scrivete la vostra storia nel linguaggio narrativo che preferite. Ad esempio _ink_ o Ren'py o TS/JS. <br />
-In all cases you can also interact with the canvas and sounds, or create custom narrative scripts. <br />
+In tutti i casi è possibile interagire con il canvas e i suoni o creare script narrativi personalizzati. <br />
 Per saperne di più, clicca [qui](/start/narration.md).
 
 </div>
