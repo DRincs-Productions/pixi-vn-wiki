@@ -1,33 +1,33 @@
 # Crea la tua prima Visual Novel
 
-This tutorial will guide you through the process of creating your first Visual Novel.
+Questo tutorial ti guiderà attraverso il processo di creazione della tua prima Visual Novel.
 
-**What is a Visual Novel?** A visual novel is a type of video game that is similar to an interactive story. It is a game that is mostly text-based and has a lot of dialogue. Visual novels are popular in Japan and are often used to tell stories that are too complex for a traditional video game.
+**What is a Visual Novel?** A visual novel (VN) is a form of digital interactive fiction. Visual novels are often associated with the medium of video games, but are not always labeled as such themselves. They combine a textual narrative with static or animated illustrations and a varying degree of interactivity. The format is more rarely referred to as novel game, a retranscription of the wasei-eigo term noberu gēmu (ノベルゲーム), which is more often used in Japanese.
 
-For testing purposes we will recreate the visual novel [Breakdown](https://joshpowlison.itch.io/breakdown) with Pixi’VN in this guide. Breakdown is a short story that has all the features that a visual novel should have. Josh Powlison, the creator of Breakdown, has given us permission to use his narration for educational purposes❤️.
+For testing purposes, in this guide we will be recreating the visual novel [Breakdown](https://joshpowlison.itch.io/breakdown) using Pixi'VN. Breakdown è un racconto breve che ha tutte le caratteristiche che una visual novel dovrebbe avere. Josh Powlison, il creatore di Breakdown, ci ha dato il permesso di utilizzare la sua narrazione per scopi didattici❤️.
 
-Since Pixi’VN gives you the ability to write your [narration in different types of languages](/start/narration.md), it will be explained at each step how to do it with each language.
+Since Pixi’VN gives you the ability to write your own narration by choosing one or more [available narrative languages](/start/narration.md), examples will be made for each currently available language at each development step.
 
-## Create a new project
+## Crea un nuovo progetto
 
-The first step is to create a new project. You can find more information on how to create a new project starting from a template [here](/start/getting-started.md#project-initialization). We will use the "Visual Novel - React Template".
+Il primo passo è creare un nuovo progetto. Puoi trovare maggiori informazioni su come creare un nuovo progetto partendo da un template [qui](/start/getting-started.md#project-initialization). We will use the template "Visual Novel - React".
 
 `Visual Novel -> React`
 
-After the creation is complete, it is very important to read the `README.md` file that is in the root of the project. This file contains important information about the project and how to use it.
+Una volta completata la creazione, è molto importante leggere il file `README.md` che si trova nella cartella principale del progetto. Questo file contiene informazioni importanti sul progetto e su come utilizzarlo.
 
-In our case, to start the project we will simply need to execute the following commands:
+Nel nostro caso, per avviare il progetto dovremo semplicemente eseguire i seguenti comandi:
 
 ```bash
 npm install
 npm start
 ```
 
-## Character creation
+## Creazione del personaggio
 
-Now we will define the characters of this story. To do this we will define in the `/values/characters.ts` file the characters that we will be using. For more information on how to create and use characters you can consult: [Characters](/start/character.md) & [Use the characters in _ink_](/ink/ink-character.md)
+Adesso definiremo i personaggi di questa storia. To do this, we will define in the `/values/characters.ts` file the characters that we will be using. For more information on how to create and use characters you can consult: [Characters](/start/character.md)
 
-What does `mc` mean? `mc` is a common abbreviation for "Main Character". It is a common practice in visual novels to use `mc` as the main character's name.
+Cosa significa `mc`? `mc` è un'abbreviazione comune per "Main Character". Nelle visual novel è prassi comune usare `mc` come nome del personaggio principale.
 
 ::: code-group
 
@@ -68,14 +68,14 @@ return // ...
 
 :::
 
-## First draft of the narrative
+## Prima bozza della narrazione
 
-Now we can start drafting the [narrative](/start/narration.md) of the visual novel.
-We will create the first ["label"](/start/labels.md) called `start`, which will be the beginning of the game.
+Now we can start writing the "first draft" of the [narration](/start/narration.md) of the visual novel.
+Creeremo la prima ["label"](/start/labels.md) chiamata `start`, che sarà l'inizio del gioco.
 
-After that we can write the [dialogues](/start/dialogue.md) that will follow in our visual novel. The template we have chosen supports the [markup language markdown](/start/markup-markdown.md) ([Markup language in ink](/ink/ink-markup.md)) so we will use it for our narration.
+Dopodiché potremo scrivere i [dialoghi](/start/dialogue.md) che seguiranno nella nostra visual novel. The template we have chosen supports the [markup language markdown](/start/markup-markdown.md) ([Markup language in _ink_](/ink/ink-markup.md)) so we will use it for our narration.
 
-This is the example:
+Questo è l'esempio:
 
 ::: code-group
 
@@ -140,13 +140,13 @@ export default startLabel;
 
 :::
 
-### Split the narrative into labels
+### Dividi la narrazione in più label
 
-It is not recommended to create very long labels (even for linear visual novels), but it is recommended to create many small labels and open them as needed with pixi's [features to control the flow of the game](/start/labels-flow.md) ([ink knot (or label)](/ink/ink-label.md)).
+It is not recommended to create very long labels (even for linear visual novels), but it is recommended to create many small labels and open them as needed with pixi's [features to control the flow of the game](/start/labels-flow.md) ([_ink_ knot (or label)](/ink/ink-label.md)).
 
-For this reason, even if in our case our story is linear, it will be divided into two labels, the first one will be the one we have already created, and the second one will be called `second_part`.
+For this reason, even if in our case our story is linear, it will be divided into two labels, the first will be the one we just created, while the second will be called `second_part`.
 
-This is the example:
+Questo è l'esempio:
 
 ::: code-group
 
@@ -205,13 +205,13 @@ const secondPart = newLabel("second_part", [
 
 :::
 
-## Choice Menus
+## Choice menus
 
-Now we would ask the player if he wants to continue with the second part of the visual novel.
+Now we will ask the player if he wants to continue with the second part of the visual novel, in the last `start` step.
 
-To do this we will use the [choice menus](/start/choices.md).
+To do this, we will use the [choice menu](/start/choices.md).
 
-This is the example:
+Questo è l'esempio:
 
 ::: code-group
 
@@ -251,15 +251,15 @@ const secondPart = newLabel("second_part", [
 
 :::
 
-## Edit character information and use it as variables
+## Edit character information and use it as a variable
 
-Now I give the player the opportunity to choose the name of the `mc`.
+Now I will give the player the ability to change the name of the `mc`.
 
-To do this, I request the player to [enter an inputs using Pixi’VN's features](/start/input.md) ([Use input in _ink_](/ink/ink-input.md)).
+To do this, I will ask the player to [complete an input box using Pixi'VN's features](/start/input.md) ([Use the input prompt in _ink_](/ink/ink-input.md)).
 
-After obtaining the value of the input you can [set the name of the character](/start/character.md#edit-characters-in-the-game) equal to the value obtained ([Edit character name in _ink_](/ink/ink-character.md#edit-character-name-in-dialogues)).
+After getting the input value you can [set the character name](/start/character.md#edit-characters-in-the-game) using the obtained value ([Edit character name in _ink_](/ink/ink-character.md#edit-character-name-in-dialogues)).
 
-This is the example:
+Questo è l'esempio:
 
 ::: code-group
 
@@ -296,9 +296,9 @@ export default startLabel;
 
 :::
 
-Now we could use character names within dialogues ([Use character name in dialogues in _ink_](/ink/ink-character.md#use-character-name-in-dialogues)).
+Ora potremmo usare i nomi dei personaggi nei dialoghi ([Usa il nome del personaggio nei dialoghi in _ink_](/ink/ink-character.md#use-character-name-in-dialogues)).
 
-This is the example:
+Questo è l'esempio:
 
 ::: code-group
 
@@ -351,11 +351,11 @@ export default startLabel;
 
 :::
 
-## Use dialogue glue
+## Use the "glue" feature of dialogues
 
-To improve the narrative, it can be useful to break up a dialogue and continue it in the next step. To do this we can use the [glue functionality](/start/dialogue.md#dialogue-glue).
+To improve the narrative, it can be useful to break up a dialogue and continue it in the next step. To do this, we can use the [glue functionality](/start/dialogue.md#dialogue-glue).
 
-This is the example:
+Questo è l'esempio:
 
 ::: code-group
 
@@ -398,7 +398,7 @@ One of the first steps is to choose whether you want to save the assets of the v
 
 Before using an asset it is highly recommended to [initialize the asset matrix](/start/assets-management.md#initialize-the-asset-matrix-at-project-start).
 
-This is the example:
+Questo è l'esempio:
 
 ```ts [assets/defineAssets.ts]
 import { Assets } from "@drincs/pixi-vn"
@@ -445,7 +445,7 @@ In our case the character sprites are composed of 3 images: the body, the eyes a
 
 You can find more information on how to add canvas components in [this documentation](/start/canvas-components.md) ([Use canvas components in _ink_](/ink/ink-canvas.md)).
 
-This is the example:
+Questo è l'esempio:
 
 ::: code-group
 
@@ -493,7 +493,7 @@ In order for the player not to perceive too many loadings we should group them i
 
 You can find more information on how to manage the loadings [here](/start/assets-management.md).
 
-This is the example:
+Questo è l'esempio:
 
 ::: code-group
 
@@ -538,7 +538,7 @@ export default startLabel;
 
 To make the visual novel more dynamic, you can use transitions between images. You can find more information on how to use transitions in the [documentation](/start/canvas-transition.md) ([Use transitions in _ink_](/ink/ink-canvas.md#show-a-canvas-component-with-transition-in-ink)).
 
-This is the example:
+Questo è l'esempio:
 
 ::: code-group
 
