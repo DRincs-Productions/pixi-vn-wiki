@@ -2,15 +2,15 @@
 
 This tutorial will guide you through the process of creating your first Visual Novel.
 
-**What is a Visual Novel?** A visual novel is a type of video game that is similar to an interactive story. It is a game that is mostly text-based and has a lot of dialogue. Visual novels are popular in Japan and are often used to tell stories that are too complex for a traditional video game.
+**What is a Visual Novel?** A visual novel (VN) is a form of digital interactive fiction. Visual novels are often associated with the medium of video games, but are not always labeled as such themselves. They combine a textual narrative with static or animated illustrations and a varying degree of interactivity. The format is more rarely referred to as novel game, a retranscription of the wasei-eigo term noberu gēmu (ノベルゲーム), which is more often used in Japanese.
 
-For testing purposes we will recreate the visual novel [Breakdown](https://joshpowlison.itch.io/breakdown) with Pixi’VN in this guide. Breakdown is a short story that has all the features that a visual novel should have. Josh Powlison, the creator of Breakdown, has given us permission to use his narration for educational purposes❤️.
+For testing purposes, in this guide we will be recreating the visual novel [Breakdown](https://joshpowlison.itch.io/breakdown) using Pixi'VN. Breakdown is a short story that has all the features that a visual novel should have. Josh Powlison, the creator of Breakdown, has given us permission to use his narration for educational purposes❤️.
 
-Since Pixi’VN gives you the ability to write your [narration in different types of languages](/start/narration.md), it will be explained at each step how to do it with each language.
+Since Pixi’VN gives you the ability to write your own narration by choosing one or more [available narrative languages](/start/narration.md), examples will be made for each currently available language at each development step.
 
 ## Create a new project
 
-The first step is to create a new project. You can find more information on how to create a new project starting from a template [here](/start/getting-started.md#project-initialization). We will use the "Visual Novel - React Template".
+The first step is to create a new project. You can find more information on how to create a new project starting from a template [here](/start/getting-started.md#project-initialization). We will use the template "Visual Novel - React".
 
 `Visual Novel -> React`
 
@@ -25,7 +25,7 @@ npm start
 
 ## Character creation
 
-Now we will define the characters of this story. To do this we will define in the `/values/characters.ts` file the characters that we will be using. For more information on how to create and use characters you can consult: [Characters](/start/character.md) & [Use the characters in _ink_](/ink/ink-character.md)
+Now we will define the characters of this story. To do this, we will define in the `/values/characters.ts` file the characters that we will be using. For more information on how to create and use characters you can consult: [Characters](/start/character.md)
 
 What does `mc` mean? `mc` is a common abbreviation for "Main Character". It is a common practice in visual novels to use `mc` as the main character's name.
 
@@ -70,10 +70,10 @@ return // ...
 
 ## First draft of the narrative
 
-Now we can start drafting the [narrative](/start/narration.md) of the visual novel.
+Now we can start writing the "first draft" of the [narration](/start/narration.md) of the visual novel.
 We will create the first ["label"](/start/labels.md) called `start`, which will be the beginning of the game.
 
-After that we can write the [dialogues](/start/dialogue.md) that will follow in our visual novel. The template we have chosen supports the [markup language markdown](/start/markup-markdown.md) ([Markup language in ink](/ink/ink-markup.md)) so we will use it for our narration.
+After that we can write the [dialogues](/start/dialogue.md) that will follow in our visual novel. The template we have chosen supports the [markup language markdown](/start/markup-markdown.md) ([Markup language in _ink_](/ink/ink-markup.md)) so we will use it for our narration.
 
 This is the example:
 
@@ -142,9 +142,9 @@ export default startLabel;
 
 ### Split the narrative into labels
 
-It is not recommended to create very long labels (even for linear visual novels), but it is recommended to create many small labels and open them as needed with pixi's [features to control the flow of the game](/start/labels-flow.md) ([ink knot (or label)](/ink/ink-label.md)).
+It is not recommended to create very long labels (even for linear visual novels), but it is recommended to create many small labels and open them as needed with pixi's [features to control the flow of the game](/start/labels-flow.md) ([_ink_ knot (or label)](/ink/ink-label.md)).
 
-For this reason, even if in our case our story is linear, it will be divided into two labels, the first one will be the one we have already created, and the second one will be called `second_part`.
+For this reason, even if in our case our story is linear, it will be divided into two labels, the first will be the one we just created, while the second will be called `second_part`.
 
 This is the example:
 
@@ -205,11 +205,11 @@ const secondPart = newLabel("second_part", [
 
 :::
 
-## Choice Menus
+## Choice menus
 
-Now we would ask the player if he wants to continue with the second part of the visual novel.
+Now we will ask the player if he wants to continue with the second part of the visual novel, in the last `start` step.
 
-To do this we will use the [choice menus](/start/choices.md).
+To do this, we will use the [choice menu](/start/choices.md).
 
 This is the example:
 
@@ -251,13 +251,13 @@ const secondPart = newLabel("second_part", [
 
 :::
 
-## Edit character information and use it as variables
+## Edit character information and use it as a variable
 
-Now I give the player the opportunity to choose the name of the `mc`.
+Now I will give the player the ability to change the name of the `mc`.
 
-To do this, I request the player to [enter an inputs using Pixi’VN's features](/start/input.md) ([Use input in _ink_](/ink/ink-input.md)).
+To do this, I will ask the player to [complete an input box using Pixi'VN's features](/start/input.md) ([Use the input prompt in _ink_](/ink/ink-input.md)).
 
-After obtaining the value of the input you can [set the name of the character](/start/character.md#edit-characters-in-the-game) equal to the value obtained ([Edit character name in _ink_](/ink/ink-character.md#edit-character-name-in-dialogues)).
+After getting the input value you can [set the character name](/start/character.md#edit-characters-in-the-game) using the obtained value ([Edit character name in _ink_](/ink/ink-character.md#edit-character-name-in-dialogues)).
 
 This is the example:
 
@@ -351,9 +351,9 @@ export default startLabel;
 
 :::
 
-## Use dialogue glue
+## Use the "glue" feature of dialogues
 
-To improve the narrative, it can be useful to break up a dialogue and continue it in the next step. To do this we can use the [glue functionality](/start/dialogue.md#dialogue-glue).
+To improve the narrative, it can be useful to break up a dialogue and continue it in the next step. To do this, we can use the [glue functionality](/start/dialogue.md#dialogue-glue).
 
 This is the example:
 
