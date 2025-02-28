@@ -92,7 +92,7 @@ deno install npm:@drincs/pixi-vn
 
 :::
 
-For using the Pixi’VN package in a browser, you can use the following script tag:
+You can use the CDN version of this plugin:
 
 ::: code-group
 
