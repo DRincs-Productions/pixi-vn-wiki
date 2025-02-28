@@ -353,7 +353,7 @@ export default startLabel;
 
 ## Use the "glue" feature of dialogues
 
-To improve the narrative, it can be useful to break up a dialogue and continue it in the next step. To do this, we can use the [glue functionality](/start/dialogue.md#dialogue-glue).
+In visual novels it is often useful to paste text into the current dialogue, in the next step. For example, to pause a conversation and have it continue in a subsequent step. To do this, we can use the [glue functionality](/start/dialogue.md#dialogue-glue).
 
 Questo è l'esempio:
 
@@ -392,11 +392,11 @@ export default startLabel;
 
 :::
 
-## Define assets and load them
+## Definisci le assets e caricale
 
-One of the first steps is to choose whether you want to save the assets of the visual novel. In this case, we will save the assets in the Firebase storage.
+One of the first steps is choosing where to save your visual novel assets. In this case, we will save the assets in the Firebase storage (a hosting service).
 
-Before using an asset it is highly recommended to [initialize the asset matrix](/start/assets-management.md#initialize-the-asset-matrix-at-project-start).
+Prima di utilizzare una assets, si consiglia vivamente di [inizializzare la matrice delle risorse](/start/assets-management.md#initialize-the-asset-matrix-at-project-start).
 
 Questo è l'esempio:
 
@@ -437,13 +437,15 @@ export async function defineAssets() {
 }
 ```
 
-## Add a background and character images
+## Add background and character images
 
-Now it's time to think about the visual part too. We will add the background and the characters to the visual novel.
+Ora è il momento di pensare anche all'aspetto visivo. We will add the background and character sprites to the visual novel canvas.
 
-In our case the character sprites are composed of 3 images: the body, the eyes and the mouth. So we use the [ImageContainer](/start/canvas-image-container.md) to create the character.
+**What is a sprite?** In computer graphics, a sprite is a two-dimensional bitmap that is integrated into a larger scene, most often in a 2D video game.
 
-You can find more information on how to add canvas components in [this documentation](/start/canvas-components.md) ([Use canvas components in _ink_](/ink/ink-canvas.md)).
+Nel nostro caso gli sprite dei personaggi sono composti da 3 immagini: il corpo, gli occhi e la bocca. Then we use [ImageContainer](/start/canvas-image-container.md) to compose the character.
+
+Puoi trovare maggiori informazioni su come aggiungere componenti canvas in [questa documentazione](/start/canvas-components.md) ([Utilizza componenti canvas in _ink_](/ink/ink-canvas.md)).
 
 Questo è l'esempio:
 
@@ -485,13 +487,13 @@ export default startLabel;
 
 :::
 
-## Smart asset loading
+## Caricamento intelligente degli assets
 
-In our case we saved the game images on a hosting service (Firebase). For this reason the asset loading is not timely.
+Nel nostro caso abbiamo salvato le immagini del gioco su un servizio di hosting (Firebase). Per questo motivo il caricamento delle risorse non avviene tempestivamente.
 
-In order for the player not to perceive too many loadings we should group them in certain phases of the game. In my case I will load the most used images at the start of the label.
+Per evitare che il giocatore percepisca troppi caricamenti, dovremmo raggrupparli in determinate fasi del gioco. Nel mio caso caricherò le immagini più utilizzate all'inizio della label.
 
-You can find more information on how to manage the loadings [here](/start/assets-management.md).
+Puoi trovare maggiori informazioni su come gestire i caricamenti [qui](/start/assets-management.md).
 
 Questo è l'esempio:
 
@@ -534,9 +536,9 @@ export default startLabel;
 
 :::
 
-## Use transitions
+## Utilizzare le transizioni
 
-To make the visual novel more dynamic, you can use transitions between images. You can find more information on how to use transitions in the [documentation](/start/canvas-transition.md) ([Use transitions in _ink_](/ink/ink-canvas.md#show-a-canvas-component-with-transition-in-ink)).
+To make the visual novel more dynamic, you can use transitions to show images. You can find more information about using transitions [here](/start/canvas-transition.md) ([Using transitions in _ink_](/ink/ink-canvas.md#show-a-canvas-component-with-transition-in-ink)).
 
 Questo è l'esempio:
 
@@ -583,11 +585,11 @@ export default startLabel;
 
 :::
 
-## Building animations
+## Building an animation
 
-To make the visual novel more dynamic, you can use animations. You can find more information on how to use animations in the [documentation](/start/canvas-animations-effects.md) ([Use animations in _ink_](/ink/ink-canvas.md#use-the-effects-in-ink)).
+Per rendere più dinamica la visual novel, è possibile utilizzare le animazioni. You can find more information about how to use animations [here](/start/canvas-animations-effects.md) ([Using animations in _ink_](/ink/ink-canvas.md#use-the-effects-in-ink)).
 
-I recommend using Typescript if you need to set a lot of properties, this way you have more control over the animation, more features and types.
+I recommend using Typescript if you need to set a lot of properties, this way you have more control over the animation, more functionality and feedback with the types.
 
 In my case my animation will take steph out of the scene and reinsert her in the next step. I will also mirror it on the x-axis to make sure it is facing the right way.
 
