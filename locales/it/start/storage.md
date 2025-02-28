@@ -6,10 +6,6 @@ It is essential to understand that if variables are not saved in the game memory
 
 Additionally, in the game archive you can save any type of variable, except `class` and `function` (because they cannot be converted to JSON), such as: `string`, `number`, `boolean`, `object`, `array`... If you want to save "flags" (boolean) it is recommended to use the [flags functionality](/start/flags), a very high-performance flag management system.
 
-<img src="https://cacheable.org/logo.svg" alt="drawing" width="200" style="margin-top: 10px;" />
-
-The entire storage system was developed using [Cacheable](https://cacheable.org/docs/cacheable/#cacheablememory---in-memory-cache), a very efficient library based on [Keyv](https://keyv.org/) that allows you to save variables in memory, in a file, or in a database. If you want to access the Cacheable object you can do so using `storage.storage`.
-
 ## Set a variable in the game storage
 
 To set a variable in the game storage, you can use the `storage.setVariable`, which takes two parameters: the variable name and the value.
@@ -78,3 +74,24 @@ So please avoid using this prefix in your variables.
 You can get all the system variables keys with the `SYSTEM_RESERVED_STORAGE_KEYS` function.
 
 <!-- TODO Temp storage -->
+
+## Keyv
+
+<img src="https://keyv.org/logo.svg" alt="drawing" height="150" style="margin-top: 10px;" />
+
+The entire storage system was developed using Map, a native JavaScript object, so you can use [Keyv](https://keyv.org/) interact with game storage.
+
+**What is Keyv?** Keyv is a simple key-value storage. It is a very easy-to-use system and very popular in the Node.js community. Keyv can be combined with other libraries, such as [Cacheable](https://cacheable.org/) (Caching for Nodejs based on Keyv).
+
+**How to use Keyv with Pixi’VN?** You can use Keyv with Pixi’VN by creating a new instance of Keyv and passing the storage object as a parameter.
+
+```typescript
+import { storage } from '@drincs/pixi-vn'
+import Keyv from 'keyv';
+
+const keyvStorage = new Keyv({ store: storage.storage });
+
+keyvStorage.get<string>("myValue").then((value) => {
+    console.log(value);
+});
+```
