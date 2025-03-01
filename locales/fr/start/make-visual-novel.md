@@ -142,7 +142,7 @@ export default startLabel;
 
 ### Split the narrative into labels
 
-It is not recommended to create very long labels (even for linear visual novels), but it is recommended to create many small labels and open them as needed with pixi's [features to control the flow of the game](/start/labels-flow.md) ([_ink_ knot (or label)](/ink/ink-label.md)).
+It is not recommended to create very long labels (even for linear visual novels), but it is recommended to create many small labels and open them as needed [features to control the flow of the game](/start/labels-flow.md) ([_ink_ knot (or label)](/ink/ink-label.md)).
 
 For this reason, even if in our case our story is linear, it will be divided into two labels, the first will be the one we just created, while the second will be called `second_part`.
 
@@ -207,7 +207,7 @@ const secondPart = newLabel("second_part", [
 
 ## Choice menus
 
-Now we will ask the player if he wants to continue with the second part of the visual novel, in the last `start` step.
+Now we will ask the player if he wants to continue with the second part of the visual novel.
 
 To do this, we will use the [choice menu](/start/choices.md).
 
