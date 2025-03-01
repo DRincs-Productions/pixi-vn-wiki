@@ -589,17 +589,17 @@ export default startLabel;
 
 To make the visual novel more dynamic, you can use animations. You can find more information about how to use animations [here](/start/canvas-animations-effects.md) ([Using animations in _ink_](/ink/ink-canvas.md#use-the-effects-in-ink)).
 
-I recommend using Typescript if you need to set a lot of properties, this way you have more control over the animation, more functionality and feedback with the types.
+I recommend using Typescript if you need to set a lot of properties, this way you have more control over the animation, more functionality and type feedback.
 
-In my case my animation will take steph out of the scene and reinsert her in the next step. I will also mirror it on the x-axis to make sure it is facing the right way.
+In my case my animation will take steph out of the scene and reinsert her in the next step. I'll also mirror her on the x-axis to make sure she's facing the right way.
 
 For taking steph out/in I will use the `moveOut` and `moveIn` functions. For the mirror effect I will use the `ZoomTicker` ticker.
 
 An important feature of transitions is that they momentarily pause all animations connected to that component and resume them when the transition is complete.
 
-So, in my case, I will use before the `moveIn` function the `addTicker` function to add the `ZoomTicker` ticker. This way steph will be mirrored on the x-axis after the transition is complete.
+So, in my case, I will use before the `moveIn` function the `addTicker` function to add the `ZoomTicker` ticker. This way Steph will be mirrored on the x-axis after the transition is complete.
 
-Also since I will use typescript for this animation, I created a special label for this animation. So that it can be called also from other languages ​​that are not JS/TS.
+Also since I will use typescript for this animation, I created a label for this animation. So that it can be called also from other languages ​​that are not JS/TS.
 
 ```ts [labels/animation01.ts]
 import { canvas, moveIn, newLabel, ZoomTicker } from "@drincs/pixi-vn";
@@ -702,7 +702,7 @@ This page is under construction.
 
 Well, now you know how to create a visual novel with Pixi’VN. With great power comes great responsibility, so use it wisely and create a great story! 🚀
 
-Here is an interactive example with a minimal template (HTML). Scrolling down you can see the same result using a complete UI (React template).
+Here is an interactive example with a minimal UI (HTML). Scrolling down you can see the same result using a complete UI (React template).
 
 :::tabs
 
