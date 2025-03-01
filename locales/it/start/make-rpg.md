@@ -1,5 +1,5 @@
-# Make your first RPG game
+# Crea il tuo primo gioco RPG
 
-:::warning This page is under construction
-The toolkit for creating an RPG on Pixi’VN is still in development. You can follow the development and show your interest in the following thread <https://github.com/DRincs-Productions/pixi-vn/discussions/285>.
+:::warning Questa pagina è in fase di costruzione
+Il toolkit per creare un RPG su Pixi'VN è ancora in fase di sviluppo. Potete seguire lo sviluppo e mostrare il vostro interesse nel seguente thread <https://github.com/DRincs-Productions/pixi-vn/discussions/285>.
 :::
