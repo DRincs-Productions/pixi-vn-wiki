@@ -142,7 +142,7 @@ export default startLabel;
 
 ### Split the narrative into labels
 
-It is not recommended to create very long labels (even for linear visual novels), but it is recommended to create many small labels and open them as needed [features to control the flow of the game](/start/labels-flow.md) ([_ink_ knot (or label)](/ink/ink-label.md)).
+It is not advisable to create very long labels (even for linear visual novels), but it is advisable to create multiple small labels and "call" them when needed with the [game flow control features](/start/labels-flow.md) ([_ink_ knot (or label)](/ink/ink-label.md)).
 
 For this reason, even if in our case our story is linear, it will be divided into two labels, the first will be the one we just created, while the second will be called `second_part`.
 
@@ -257,7 +257,7 @@ Now I will give the player the ability to change the name of the `mc`.
 
 To do this, I will ask the player to [complete an input box using Pixi'VN's features](/start/input.md) ([Use the input prompt in _ink_](/ink/ink-input.md)).
 
-After getting the input value you can [set the character name](/start/character.md#edit-characters-in-the-game) using the obtained value ([Edit character name in _ink_](/ink/ink-character.md#edit-character-name-in-dialogues)).
+After getting the input value, you can [set the character name](/start/character.md#edit-characters-in-the-game) using the obtained value ([Edit character name in _ink_](/ink/ink-character.md#edit-character-name-in-dialogues)).
 
 This is the example:
 
@@ -353,7 +353,7 @@ export default startLabel;
 
 ## Use the "glue" feature of dialogues
 
-In visual novels it is often useful to paste text into the current dialogue, in the next step. For example, to pause a conversation and have it continue in a subsequent step. To do this, we can use the [glue functionality](/start/dialogue.md#dialogue-glue).
+In visual novels, it is often useful to paste text into the current dialogue. For example, to pause a conversation and have it continue in a subsequent step. To do this, we can use the [glue functionality](/start/dialogue.md#dialogue-glue).
 
 This is the example:
 
