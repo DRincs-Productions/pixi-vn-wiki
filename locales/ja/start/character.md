@@ -10,7 +10,7 @@ To initialize a character, you need to create a new instance of the `CharacterBa
 For create a new instance of `CharacterBaseModel` you need the following parameters:
 
 - `id`: A unique identifier for the character (string). It is used to reference the character in the game (must be unique).
-  If you want to create a [character with an emotion, you can pass an object](#character-emotions).
+  If you want to create a [character with an "emotion", you can pass an object](#character-emotions).
 - `props`: An object with the character's properties.
   The properties are:
   - `name`: The character's name. ( Required )
