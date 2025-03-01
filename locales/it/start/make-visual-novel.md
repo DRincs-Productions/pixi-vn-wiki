@@ -441,9 +441,9 @@ export async function defineAssets() {
 
 Ora è il momento di pensare anche all'aspetto visivo. Aggiungeremo lo sfondo e gli sprite dei personaggi al canvas della visual novel.
 
-**What is a sprite?** In computer graphics, a sprite is a two-dimensional bitmap that is integrated into a larger scene, most often in a 2D video game.
+**Cos'è uno sprite?** In computer grafica, uno sprite è una bitmap bidimensionale integrata in una scena più grande, il più delle volte in un videogioco 2D.
 
-Nel nostro caso gli sprite dei personaggi sono composti da 3 immagini: il corpo, gli occhi e la bocca. Then we use [ImageContainer](/start/canvas-image-container.md) to compose the character.
+Nel nostro caso gli sprite dei personaggi sono composti da 3 immagini: il corpo, gli occhi e la bocca. Quindi utilizziamo [ImageContainer](/start/canvas-image-container.md) per comporre il personaggio.
 
 Puoi trovare maggiori informazioni su come aggiungere componenti canvas in [questa documentazione](/start/canvas-components.md) ([Utilizza componenti canvas in _ink_](/ink/ink-canvas.md)).
 
@@ -538,7 +538,7 @@ export default startLabel;
 
 ## Utilizzare le transizioni
 
-To make the visual novel more dynamic, you can use transitions to show images. You can find more information about using transitions [here](/start/canvas-transition.md) ([Using transitions in _ink_](/ink/ink-canvas.md#show-a-canvas-component-with-transition-in-ink)).
+Per rendere più dinamica la visual novel, è possibile utilizzare le transizioni per mostrare le immagini. Puoi trovare maggiori informazioni sull'utilizzo delle transizioni [qui](/start/canvas-transition.md) ([Utilizzo delle transizioni in _ink_](/ink/ink-canvas.md#show-a-canvas-component-with-transition-in-ink)).
 
 Questo è l'esempio:
 
@@ -585,21 +585,21 @@ export default startLabel;
 
 :::
 
-## Building an animation
+## Creare un'animazione
 
-Per rendere più dinamica la visual novel, è possibile utilizzare le animazioni. You can find more information about how to use animations [here](/start/canvas-animations-effects.md) ([Using animations in _ink_](/ink/ink-canvas.md#use-the-effects-in-ink)).
+Per rendere più dinamica la visual novel, è possibile utilizzare le animazioni. Puoi trovare maggiori informazioni su come utilizzare le animazioni [qui](/start/canvas-animations-effects.md) ([Utilizzo delle animazioni in _ink_](/ink/ink-canvas.md#use-the-effects-in-ink)).
 
-I recommend using Typescript if you need to set a lot of properties, this way you have more control over the animation, more functionality and feedback with the types.
+I recommend using Typescript if you need to set a lot of properties, this way you have more control over the animation, more functionality and type feedback.
 
-In my case my animation will take steph out of the scene and reinsert her in the next step. I will also mirror it on the x-axis to make sure it is facing the right way.
+Nel mio caso l'animazione rimuoverà Steph dalla scena e la reinserirà nel passaggio successivo. I'll also mirror her on the x-axis to make sure she's facing the right way.
 
-For taking steph out/in I will use the `moveOut` and `moveIn` functions. For the mirror effect I will use the `ZoomTicker` ticker.
+Per far entrare/uscire Steph userò le funzioni `moveOut` e `moveIn`. Per l'effetto specchio userò il ticker `ZoomTicker`.
 
-An important feature of transitions is that they momentarily pause all animations connected to that component and resume them when the transition is complete.
+Una caratteristica importante delle transizioni è che mettono momentaneamente in pausa tutte le animazioni collegate a quel componente e le riprendono al termine della transizione.
 
-So, in my case, I will use before the `moveIn` function the `addTicker` function to add the `ZoomTicker` ticker. This way steph will be mirrored on the x-axis after the transition is complete.
+Quindi, nel mio caso, userò prima della funzione `moveIn` la funzione `addTicker` per aggiungere il ticker `ZoomTicker`. This way Steph will be mirrored on the x-axis after the transition is complete.
 
-Also since I will use typescript for this animation, I created a special label for this animation. So that it can be called also from other languages ​​that are not JS/TS.
+Also since I will use typescript for this animation, I created a label for this animation. In modo che possa essere chiamato anche da altri linguaggi che non siano JS/TS.
 
 ```ts [labels/animation01.ts]
 import { canvas, moveIn, newLabel, ZoomTicker } from "@drincs/pixi-vn";
@@ -620,7 +620,7 @@ export const animation01 = newLabel("animation_01", [
 ]);
 ```
 
-Now I can call this label `animation_01` from the main label `start`. (As explained [here](/ink/ink-label.md#use-the-call-script) from _ink_ I can call labels written in ts and vice versa.)
+Ora posso chiamare questa etichetta `animation_01` dall'etichetta principale `start`. (Come spiegato [qui](/ink/ink-label.md#use-the-call-script) da _ink_ posso chiamare le etichette scritte in ts e viceversa.)
 
 ::: code-group
 
@@ -700,9 +700,9 @@ This page is under construction.
 
 ## Conclusione
 
-Well, now you know how to create a visual novel with Pixi’VN. With great power comes great responsibility, so use it wisely and create a great story! 🚀
+Bene, ora sai come creare una visual novel con Pixi'VN. Da un grande potere derivano grandi responsabilità, quindi usalo saggiamente e crea una grande storia! 🚀
 
-Here is an interactive example with a minimal template (HTML). Scrolling down you can see the same result using a complete UI (React template).
+Here is an interactive example with a minimal UI (HTML). Scorrendo verso il basso è possibile vedere lo stesso risultato utilizzando un'interfaccia utente completa (template React).
 
 :::tabs
 
