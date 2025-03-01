@@ -29,7 +29,7 @@ import { storage } from '@drincs/pixi-vn'
 const flag1 = storage.getFlag('flag1')
 ```
 
-## Development possibilities
+## Possibilità di sviluppo
 
 ### Connect flag to class boolean property
 
