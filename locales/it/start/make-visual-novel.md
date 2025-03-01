@@ -2,15 +2,15 @@
 
 Questo tutorial ti guiderà attraverso il processo di creazione della tua prima Visual Novel.
 
-**What is a Visual Novel?** A visual novel (VN) is a form of digital interactive fiction. Visual novels are often associated with the medium of video games, but are not always labeled as such themselves. They combine a textual narrative with static or animated illustrations and a varying degree of interactivity. The format is more rarely referred to as novel game, a retranscription of the wasei-eigo term noberu gēmu (ノベルゲーム), which is more often used in Japanese.
+**Cos'è una visual novel?** Una visual novel (VN) è una forma di narrativa interattiva digitale. Le visual novel sono spesso associate al medium dei videogiochi, ma non sempre vengono etichettate come tali. Combinano una narrazione testuale con illustrazioni statiche o animate e un grado variabile di interattività. Il formato è più raramente indicato come novel game, una ritrascrizione del termine wasei-eigo noberu gēmu (ノベルゲーム), che è più spesso usato in giapponese.
 
-For testing purposes, in this guide we will be recreating the visual novel [Breakdown](https://joshpowlison.itch.io/breakdown) using Pixi'VN. Breakdown è un racconto breve che ha tutte le caratteristiche che una visual novel dovrebbe avere. Josh Powlison, il creatore di Breakdown, ci ha dato il permesso di utilizzare la sua narrazione per scopi didattici❤️.
+A scopo di test, in questa guida ricreeremo la visual novel [Breakdown](https://joshpowlison.itch.io/breakdown) utilizzando Pixi'VN. Breakdown è un racconto breve che ha tutte le caratteristiche che una visual novel dovrebbe avere. Josh Powlison, il creatore di Breakdown, ci ha dato il permesso di utilizzare la sua narrazione per scopi didattici❤️.
 
-Since Pixi’VN gives you the ability to write your own narration by choosing one or more [available narrative languages](/start/narration.md), examples will be made for each currently available language at each development step.
+Poiché Pixi’VN ti dà la possibilità di scrivere la tua narrazione scegliendo un o più [linguaggio narrative disponibili](/start/narration.md), verranno realizzati esempi per ciascun linguaggio attualmente disponibile in ogni fase di sviluppo.
 
 ## Crea un nuovo progetto
 
-Il primo passo è creare un nuovo progetto. Puoi trovare maggiori informazioni su come creare un nuovo progetto partendo da un template [qui](/start/getting-started.md#project-initialization). We will use the template "Visual Novel - React".
+Il primo passo è creare un nuovo progetto. Puoi trovare maggiori informazioni su come creare un nuovo progetto partendo da un template [qui](/start/getting-started.md#project-initialization). Utilizzeremo il template "Visual Novel - React".
 
 `Visual Novel -> React`
 
@@ -25,7 +25,7 @@ npm start
 
 ## Creazione del personaggio
 
-Adesso definiremo i personaggi di questa storia. To do this, we will define in the `/values/characters.ts` file the characters that we will be using. For more information on how to create and use characters you can consult: [Characters](/start/character.md)
+Adesso definiremo i personaggi di questa storia. Per fare ciò, definiremo nel file `/values/characters.ts` i personaggi che utilizzeremo. Per maggiori informazioni su come creare e utilizzare i personaggi puoi consultare: [Personaggi](/start/character.md)
 
 Cosa significa `mc`? `mc` è un'abbreviazione comune per "Main Character". Nelle visual novel è prassi comune usare `mc` come nome del personaggio principale.
 
@@ -70,10 +70,10 @@ return // ...
 
 ## Prima bozza della narrazione
 
-Now we can start writing the "first draft" of the [narration](/start/narration.md) of the visual novel.
+Ora possiamo iniziare a scrivere la "prima bozza" della [narrazione](/start/narration.md) della visual novel.
 Creeremo la prima ["label"](/start/labels.md) chiamata `start`, che sarà l'inizio del gioco.
 
-Dopodiché potremo scrivere i [dialoghi](/start/dialogue.md) che seguiranno nella nostra visual novel. The template we have chosen supports the [markup language markdown](/start/markup-markdown.md) ([Markup language in _ink_](/ink/ink-markup.md)) so we will use it for our narration.
+Dopodiché potremo scrivere i [dialoghi](/start/dialogue.md) che seguiranno nella nostra visual novel. Il template che abbiamo scelto supporta il [linguaggio di markup markdown](/start/markup-markdown.md) ([Linguaggio di markup in _ink_](/ink/ink-markup.md)), quindi lo useremo per la nostra narrazione.
 
 Questo è l'esempio:
 
@@ -142,9 +142,9 @@ export default startLabel;
 
 ### Dividi la narrazione in più label
 
-It is not recommended to create very long labels (even for linear visual novels), but it is recommended to create many small labels and open them as needed with pixi's [features to control the flow of the game](/start/labels-flow.md) ([_ink_ knot (or label)](/ink/ink-label.md)).
+It is not recommended to create very long labels (even for linear visual novels), but it is recommended to create many small labels and open them as needed [features to control the flow of the game](/start/labels-flow.md) ([_ink_ knot (or label)](/ink/ink-label.md)).
 
-For this reason, even if in our case our story is linear, it will be divided into two labels, the first will be the one we just created, while the second will be called `second_part`.
+Per questo motivo, anche se nel nostro caso la nostra storia è lineare, verrà divisa in due etichette, la prima sarà quella che abbiamo appena creato, mentre la seconda si chiamerà `second_part`.
 
 Questo è l'esempio:
 
@@ -205,9 +205,9 @@ const secondPart = newLabel("second_part", [
 
 :::
 
-## Choice menus
+## Menù a scelta
 
-Now we will ask the player if he wants to continue with the second part of the visual novel, in the last `start` step.
+Now we will ask the player if he wants to continue with the second part of the visual novel.
 
 To do this, we will use the [choice menu](/start/choices.md).
 
@@ -698,7 +698,7 @@ This page is under construction.
 
 ::: -->
 
-## Conclusion
+## Conclusione
 
 Well, now you know how to create a visual novel with Pixi’VN. With great power comes great responsibility, so use it wisely and create a great story! 🚀
 
