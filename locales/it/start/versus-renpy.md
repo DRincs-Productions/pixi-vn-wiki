@@ -141,15 +141,15 @@ Pixi’VN è una libreria [npm](https://www.npmjs.com/) che consente di creare r
 ## Longevità e facilità di sviluppo interno
 
 Ren'py è nato nel 2004 ed è ancora utilizzato oggi. È un progetto molto stabile e maturo.
-Ren'Py, oltre allo sviluppo della propria libreria per le visual novels, include anche lo sviluppo del `linguaggio Ren'Py` e di `Pygame_sdl2`. Since Ren'Py also handles the distribution of the project on various devices, it is necessary to keep the system up to date with updates for supported operating systems.
+Ren'Py, oltre allo sviluppo della propria libreria per le visual novels, include anche lo sviluppo del `linguaggio Ren'Py` e di `Pygame_sdl2`. Poiché Ren'Py gestisce anche la distribuzione del progetto su vari dispositivi, è necessario mantenere il sistema aggiornato con gli aggiornamenti per i sistemi operativi supportati.
 
 Ciò significa che mantenere aggiornato Ren'Py è un processo costante e molto complesso che "tocca" molti tipi di programmazione (Parsing, Grafica, ecc...).
 
-Pixi’VN was born in 2024. È un progetto molto giovane.
+Pixi’VN è nato nel 2024. È un progetto molto giovane.
 Pixi’VN è solo una libreria che utilizza PixiJS per il canvas. Oltre a fornire funzionalità per le visual novel, non gli importa di nient'altro.
 
 Ciò significa che mantenere Pixi’VN aggiornato è un processo molto semplice e una volta che raggiungerà una versione stabile non avrà bisogno di aggiornamenti costanti per essere compatibile con i dispositivi più recenti.
 
-## Conclusion
+## Conclusione
 
-Infine, la mia conclusione personale è che se conosci la programmazione orientata agli oggetti e vuoi creare una visual novel con molte funzionalità, minigiochi, un'interfaccia utente molto complessa, ecc... dovresti usare Pixi'VN. If you are not a programmer, want to create your visual novel quickly and are willing to learn knowledge over time that you can reuse later from this project, forget Ren'Py, use Pixi'VN. If you want a unified framework that takes care of everything without you having to decide which libraries to use, then Pixi'VN is not for you, Ren'Py is a valid option. If you want a no-code framework, currently, neither Ren'Py nor Pixi'VN are for you.
+Infine, la mia conclusione personale è che se conosci la programmazione orientata agli oggetti e vuoi creare una visual novel con molte funzionalità, minigiochi, un'interfaccia utente molto complessa, ecc... dovresti usare Pixi'VN. Se non sei un programmatore, vuoi creare rapidamente la tua visual novel e sei disposto ad apprendere nel tempo nozioni che potrai riutilizzare in seguito da questo progetto, dimentica Ren'Py e usa Pixi'VN. Se desideri un framework unificato che si occupi di tutto senza che tu debba decidere quali librerie utilizzare, allora Pixi'VN non fa per te. Ren'Py è una valida opzione. Se cerchi un framework senza codice, al momento né Ren'Py né Pixi'VN fanno per te.
