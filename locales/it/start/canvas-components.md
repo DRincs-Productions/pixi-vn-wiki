@@ -2,7 +2,7 @@
 
 Pixi’VN provides a set of canvas components. These components are based on [Pixi.js](https://pixijs.com/), a modern 2D rendering engine.
 
-**What is a sprite?** In computer graphics, a sprite is a two-dimensional bitmap that is integrated into a larger scene, most often in a 2D video game.
+**Cos'è uno sprite?** In computer grafica, uno sprite è una bitmap bidimensionale integrata in una scena più grande, il più delle volte in un videogioco 2D.
 
 ## Base Components
 
