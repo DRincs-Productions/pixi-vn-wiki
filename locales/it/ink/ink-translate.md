@@ -59,6 +59,6 @@ template="7pg6dy"
 entry="/src/ink/start.ink"
 />
 
-## Auto-generation of translation files
+## Generazione automatica dei file di traduzione
 
 ( Under development )
