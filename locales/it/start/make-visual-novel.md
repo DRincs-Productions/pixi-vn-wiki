@@ -142,7 +142,7 @@ export default startLabel;
 
 ### Dividi la narrazione in più label
 
-It is not recommended to create very long labels (even for linear visual novels), but it is recommended to create many small labels and open them as needed [features to control the flow of the game](/start/labels-flow.md) ([_ink_ knot (or label)](/ink/ink-label.md)).
+It is not advisable to create very long labels (even for linear visual novels), but it is advisable to create multiple small labels and "call" them when needed with the [game flow control features](/start/labels-flow.md) ([_ink_ knot (or label)](/ink/ink-label.md)).
 
 Per questo motivo, anche se nel nostro caso la nostra storia è lineare, verrà divisa in due etichette, la prima sarà quella che abbiamo appena creato, mentre la seconda si chiamerà `second_part`.
 
@@ -209,7 +209,7 @@ const secondPart = newLabel("second_part", [
 
 Ora chiederemo al giocatore se desidera continuare con la seconda parte della visual novel.
 
-To do this, we will use the [choice menu](/start/choices.md).
+Per fare ciò, utilizzeremo il [menu di scelta](/start/choices.md).
 
 Questo è l'esempio:
 
@@ -251,13 +251,13 @@ const secondPart = newLabel("second_part", [
 
 :::
 
-## Edit character information and use it as a variable
+## Modifica le informazioni del personaggio e usalo come variabile
 
-Now I will give the player the ability to change the name of the `mc`.
+Ora darò al giocatore la possibilità di cambiare il nome del `mc`.
 
-To do this, I will ask the player to [complete an input box using Pixi'VN's features](/start/input.md) ([Use the input prompt in _ink_](/ink/ink-input.md)).
+Per fare ciò, chiederò al giocatore di [completare una casella di input utilizzando le funzionalità di Pixi'VN](/start/input.md) ([Utilizzare il prompt di input in _ink_](/ink/ink-input.md)).
 
-After getting the input value you can [set the character name](/start/character.md#edit-characters-in-the-game) using the obtained value ([Edit character name in _ink_](/ink/ink-character.md#edit-character-name-in-dialogues)).
+After getting the input value, you can [set the character name](/start/character.md#edit-characters-in-the-game) using the obtained value ([Edit character name in _ink_](/ink/ink-character.md#edit-character-name-in-dialogues)).
 
 Questo è l'esempio:
 
@@ -351,9 +351,9 @@ export default startLabel;
 
 :::
 
-## Use the "glue" feature of dialogues
+## Utilizzare la funzionalità "glue" dei dialoghi
 
-In visual novels it is often useful to paste text into the current dialogue, in the next step. For example, to pause a conversation and have it continue in a subsequent step. To do this, we can use the [glue functionality](/start/dialogue.md#dialogue-glue).
+In visual novels, it is often useful to paste text into the current dialogue. Ad esempio, per mettere in pausa una conversazione e farla proseguire in uno step successivo. Per farlo, possiamo usare la [funzionalità glue](/start/dialogue.md#dialogue-glue).
 
 Questo è l'esempio:
 
@@ -394,7 +394,7 @@ export default startLabel;
 
 ## Definisci le assets e caricale
 
-One of the first steps is choosing where to save your visual novel assets. In this case, we will save the assets in the Firebase storage (a hosting service).
+Uno dei primi passi è scegliere dove salvare le risorse della tua visual novel. In questo caso salveremo gli assets nello storage Firebase (un servizio di hosting).
 
 Prima di utilizzare una assets, si consiglia vivamente di [inizializzare la matrice delle risorse](/start/assets-management.md#initialize-the-asset-matrix-at-project-start).
 
@@ -437,9 +437,9 @@ export async function defineAssets() {
 }
 ```
 
-## Add background and character images
+## Aggiungere lo sfondo e le immagini dei personaggi
 
-Ora è il momento di pensare anche all'aspetto visivo. We will add the background and character sprites to the visual novel canvas.
+Ora è il momento di pensare anche all'aspetto visivo. Aggiungeremo lo sfondo e gli sprite dei personaggi al canvas della visual novel.
 
 **What is a sprite?** In computer graphics, a sprite is a two-dimensional bitmap that is integrated into a larger scene, most often in a 2D video game.
 
