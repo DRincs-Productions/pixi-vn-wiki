@@ -3,14 +3,14 @@
 **What are characters?** The characters are the actors that appear in the visual novel.
 In Pixi'VN, i personaggi vengono creati utilizzando la classe `CharacterBaseModel` o una [classe personalizzata](#custom-character).
 
-## Initialize characters
+## Definisci i personaggi
 
-To initialize a character, you need to create a new instance of the `CharacterBaseModel` class and add it into a game character dictionary, when the game is initialized.
+Per definire un personaggio, è necessario creare una nuova istanza della classe `CharacterBaseModel` e aggiungerla al dizionario dei personaggi di gioco, quando il gioco viene inizializzato.
 
-For create a new instance of `CharacterBaseModel` you need the following parameters:
+Per creare una nuova istanza di `CharacterBaseModel` sono necessari i seguenti parametri:
 
-- `id`: A unique identifier for the character (string). It is used to reference the character in the game (must be unique).
-  If you want to create a [character with an emotion, you can pass an object](#character-emotions).
+- `id`: Un identificatore univoco per il personaggio (stringa). Viene utilizzato per fare riferimento al personaggio nel gioco (deve essere univoco).
+  If you want to create a [character with an "emotion", you can pass an object](#character-emotions).
 - `props`: An object with the character's properties.
   The properties are:
   - `name`: The character's name. ( Required )
