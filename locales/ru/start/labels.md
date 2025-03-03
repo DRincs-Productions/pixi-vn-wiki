@@ -2,7 +2,7 @@
 
 Visual Novels are usually a succession of screenshots with images and text.
 
-In Pixi’VN, you can manage this succession of screens with the "**steps**". The steps they are functions that are executed every time the [Next Step](/start/labels.md#next-step) function is called. In these steps you can add images, dialogues etc...
+In Pixi’VN, you can manage this succession of screens with the "**steps**". The steps they are functions that are executed every time the [Next Step](/start/labels.md#next-step) function is called. In these steps you can add images, set who and what is saying etc...
 
 The **labels** are containers of steps, they are used to organize the steps in a more readable way.
 
