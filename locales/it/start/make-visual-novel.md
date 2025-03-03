@@ -257,7 +257,7 @@ Ora darò al giocatore la possibilità di cambiare il nome del `mc`.
 
 Per fare ciò, chiederò al giocatore di [completare una casella di input utilizzando le funzionalità di Pixi'VN](/start/input.md) ([Utilizzare il prompt di input in _ink_](/ink/ink-input.md)).
 
-After getting the input value, you can [set the character name](/start/character.md#edit-characters-in-the-game) using the obtained value ([Edit character name in _ink_](/ink/ink-character.md#edit-character-name-in-dialogues)).
+Dopo aver ottenuto il valore di input, puoi [impostare il nome del personaggio](/start/character.md#edit-characters-in-the-game) utilizzando il valore ottenuto ([Modifica il nome del personaggio in _ink_](/ink/ink-character.md#edit-character-name-in-dialogues)).
 
 Questo è l'esempio:
 
@@ -353,7 +353,7 @@ export default startLabel;
 
 ## Utilizzare la funzionalità "glue" dei dialoghi
 
-In visual novels, it is often useful to paste text into the current dialogue. Ad esempio, per mettere in pausa una conversazione e farla proseguire in uno step successivo. Per farlo, possiamo usare la [funzionalità glue](/start/dialogue.md#dialogue-glue).
+Nelle visual novel è spesso utile incollare del testo nel dialogo corrente. Ad esempio, per mettere in pausa una conversazione e farla proseguire in uno step successivo. Per farlo, possiamo usare la [funzionalità glue](/start/dialogue.md#dialogue-glue).
 
 Questo è l'esempio:
 
@@ -589,17 +589,17 @@ export default startLabel;
 
 Per rendere più dinamica la visual novel, è possibile utilizzare le animazioni. Puoi trovare maggiori informazioni su come utilizzare le animazioni [qui](/start/canvas-animations-effects.md) ([Utilizzo delle animazioni in _ink_](/ink/ink-canvas.md#use-the-effects-in-ink)).
 
-I recommend using Typescript if you need to set a lot of properties, this way you have more control over the animation, more functionality and type feedback.
+Consiglio di utilizzare Typescript se è necessario impostare molte proprietà, in questo modo si ha un maggiore controllo sull'animazione, più funzionalità e feedback sul tipo.
 
-Nel mio caso l'animazione rimuoverà Steph dalla scena e la reinserirà nel passaggio successivo. I'll also mirror her on the x-axis to make sure she's facing the right way.
+Nel mio caso l'animazione rimuoverà Steph dalla scena e la reinserirà nel passaggio successivo. La specchierò anche sull'asse x per assicurarmi che sia rivolta nella direzione giusta.
 
 Per far entrare/uscire Steph userò le funzioni `moveOut` e `moveIn`. Per l'effetto specchio userò il ticker `ZoomTicker`.
 
 Una caratteristica importante delle transizioni è che mettono momentaneamente in pausa tutte le animazioni collegate a quel componente e le riprendono al termine della transizione.
 
-Quindi, nel mio caso, userò prima della funzione `moveIn` la funzione `addTicker` per aggiungere il ticker `ZoomTicker`. This way Steph will be mirrored on the x-axis after the transition is complete.
+Quindi, nel mio caso, userò prima della funzione `moveIn` la funzione `addTicker` per aggiungere il ticker `ZoomTicker`. In questo modo Steph verrà specchiato sull'asse x una volta completata la transizione.
 
-Also since I will use typescript for this animation, I created a label for this animation. In modo che possa essere chiamato anche da altri linguaggi che non siano JS/TS.
+Inoltre, poiché per questa animazione utilizzerò TypeScript, ho creato un'label per questa animazione. In modo che possa essere chiamato anche da altri linguaggi che non siano JS/TS.
 
 ```ts [labels/animation01.ts]
 import { canvas, moveIn, newLabel, ZoomTicker } from "@drincs/pixi-vn";
@@ -702,7 +702,7 @@ This page is under construction.
 
 Bene, ora sai come creare una visual novel con Pixi'VN. Da un grande potere derivano grandi responsabilità, quindi usalo saggiamente e crea una grande storia! 🚀
 
-Here is an interactive example with a minimal UI (HTML). Scorrendo verso il basso è possibile vedere lo stesso risultato utilizzando un'interfaccia utente completa (template React).
+Ecco un esempio interattivo con un'interfaccia utente minimale (HTML). Scorrendo verso il basso è possibile vedere lo stesso risultato utilizzando un'interfaccia utente completa (template React).
 
 :::tabs
 
