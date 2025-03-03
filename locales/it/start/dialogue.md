@@ -1,9 +1,8 @@
-# Dialogue
+# Dialogo
 
-The dialogue/narration is the core of the visual novel.
+**What is dialogue and example?** A written composition in which two or more characters are represented as conversing.
 
-In Pixi’VN, is possible to set/get the current dialogue.
-A dialogue can link to a [character](/start/character#use-characters-in-the-game) or a string and will be used to indicate who is speaking.
+In Pixi’VN, dialogue is an object that contains information about _who_ and _what_ is currently being said. Its functionality can be broader as it can also be used for other purposes, such as monologues, soliloquies or to display a message to the player. For this reason, it is more appropriate to consider it as a text that can be linked to a [character](/start/character#use-characters-in-the-game).
 
 ## Set the current Dialogue
 
