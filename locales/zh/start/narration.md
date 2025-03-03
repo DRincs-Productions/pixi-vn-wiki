@@ -1,6 +1,6 @@
 # Narration
 
-The narrative is the set of [dialogues](/start/dialogue.md), [choices](/start/choices.md) and [input requests](/start/input.md) shown to the player as the game progresses.
+The narration is the core of the visual novel. The narrative is the set of [dialogues](/start/dialogue.md), [choices](/start/choices.md) and [input requests](/start/input.md) shown to the player as the game progresses.
 
 With Pixi’VN, you have the option to use various types of narrative languages. You can also switch from one language to another to take advantage of the features of each one.
 
