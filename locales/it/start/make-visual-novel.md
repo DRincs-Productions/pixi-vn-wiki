@@ -142,7 +142,7 @@ export default startLabel;
 
 ### Dividi la narrazione in più label
 
-It is not advisable to create very long labels (even for linear visual novels), but it is advisable to create multiple small labels and "call" them when needed with the [game flow control features](/start/labels-flow.md) ([_ink_ knot (or label)](/ink/ink-label.md)).
+Non è consigliabile creare label molto lunghe (anche per visual novel lineari), ma è consigliabile creare più label piccole e "chiamarle" quando necessario con le [funzionalità di controllo del flusso di gioco](/start/labels-flow.md) ([_ink_ knot (o label)](/ink/ink-label.md)).
 
 Per questo motivo, anche se nel nostro caso la nostra storia è lineare, verrà divisa in due etichette, la prima sarà quella che abbiamo appena creato, mentre la seconda si chiamerà `second_part`.
 
