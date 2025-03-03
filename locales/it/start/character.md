@@ -139,9 +139,12 @@ narration.dialogue = { character: "liam_id", text: "Hello" }
 
 Spesso può essere utile avere più tipi dello stesso personaggio.
 
-A classic example in visual novels is to have a character "Alice" a subtype related to his/her emotional state "Angry Alice". The character and the subtype have the same characteristics apart from one or more properties, such as the icon.
+A classic example in visual novels is to have a character "Alice" a subtype related to his/her emotional state "Angry Alice". The character and the subtype have the same characteristics, except for one or more properties, such as the icon.
 
-For this reason, in Pixi’VN it is possible to create a "character with an emotion". This is possible by passing the id as an object with two properties: the `id`, that corresponds to the id of an already existing character, and the `emotion`, that corresponds to the emotion of the character.
+For this reason, with Pixi’VN it is possible to create a "character with an emotion". This is possible by passing an object, instead of the id, with the following properties:
+
+- `id`, which corresponds to the id of an existing character.
+- `emotion`, which corresponds to the character's emotion.
 
 ```typescript [characters.ts]
 import { CharacterBaseModel, saveCharacter } from "@drincs/pixi-vn";
@@ -171,16 +174,15 @@ console.log(alice.name); // Eleonora
 console.log(angryAlice.name); // Angry Eleonora
 ```
 
-## Custom character
+## Personaggio personalizzato
 
-It recommend creating your own class `Character` that extends `CharacterStoredClass` and "override" the interface `CharacterInterface`
-to add/edit/remove properties or methods.
+Si consiglia di creare la propria classe `Character` che estende `CharacterStoredClass` e di "sovrascrivere" l'interfaccia `CharacterInterface` per aggiungere/modificare/rimuovere proprietà o metodi.
 
-For example, you want to create a class `Character`, you must "override" the interface `CharacterInterface` to use your properties or methods. ( See the following file `pixi-vn.types.ts` )
+Ad esempio, se vuoi creare una classe `Character`, devi "sovrascrivere" l'interfaccia `CharacterInterface` per utilizzare le tue proprietà o metodi. ( See the file `pixi-vn.types.ts` )
 
-Now you can create a class `Character` that extends `CharacterStoredClass` and implements the `CharacterInterface`.
+Ora puoi creare una classe `Character` che estende `CharacterStoredClass` e implementa `CharacterInterface`.
 
-For set the properties and store them in the game storage, you must use the `setStorageProperty` method. ( See the following file `Character.ts` )
+To save property changes to the game storage, you can use the `setStorageProperty` method. ( See the file `Character.ts` )
 
 ::: code-group
 
