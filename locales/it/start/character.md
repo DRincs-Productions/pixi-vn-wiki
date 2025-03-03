@@ -14,10 +14,10 @@ Per creare una nuova istanza di `CharacterBaseModel` sono necessari i seguenti p
 - `props`: Un oggetto con le proprietà del personaggio.
   Le proprietà sono:
   - `name`: Il nome del personaggio. ( Necessario )
-  - `surname`: The character's surname. ( Optional )
-  - `age`: The character's age. ( Optional )
-  - `icon`: The character's icon image URL. ( Optional )
-  - `color`: The character's color. ( Optional )
+  - `surname`: Il cognome del personaggio. ( Opzionale )
+  - `age`: L'età del personaggio. ( Opzionale )
+  - `icon`: URL dell'immagine dell'icona del personaggio. ( Opzionale )
+  - `color`: Il colore del personaggio. ( Opzionale )
 
 ```typescript [characters.ts]
 import { CharacterBaseModel, saveCharacter } from "@drincs/pixi-vn";
@@ -41,39 +41,13 @@ export const emma = new CharacterBaseModel('emma', {
 saveCharacter([liam, emma]);
 ```
 
-`saveCharacter` is required to save the characters in the game.
+`saveCharacter` is **required** to save the characters in the game.
 
-It is also possible to create a function for loading characters. The important thing is that it is started at least once before the characters are used in the game, otherwise they will not be available.
+È anche possibile creare una funzione per il caricamento dei personaggi. L'importante è che venga avviato almeno una volta prima di utilizzare i personaggi nel gioco, altrimenti non saranno disponibili.
 
-```typescript [characters.ts]
-import { CharacterBaseModel, saveCharacter } from "@drincs/pixi-vn";
+## Ottieni i personaggi tramite id
 
-export function loadCharacters() {
-    const liam = new CharacterBaseModel('liam', {
-        name: 'Liam',
-        surname: 'Smith',
-        age: 25,
-        icon: "https://example.com/liam.png",
-        color: "#9e2e12"
-    });
-
-    const emma = new CharacterBaseModel('emma', {
-        name: 'Emma',
-        surname: 'Johnson',
-        age: 23,
-        icon: "https://example.com/emma.png",
-        color: "#9e2e12"
-    });
-
-    saveCharacter([liam, emma]);
-}
-
-loadCharacters();
-```
-
-## Get characters by id
-
-To get a character by its `id`, you can use the `getCharacterById` function.
+Per ottenere un personaggio tramite il suo `id`, puoi usare la funzione `getCharacterById`.
 
 ```typescript
 import { getCharacterById } from "@drincs/pixi-vn";
@@ -81,9 +55,9 @@ import { getCharacterById } from "@drincs/pixi-vn";
 const liam = getCharacterById('liam');
 ```
 
-## Get all characters
+## Ottieni tutti i personaggi
 
-To get all characters, you can use the `getAllCharacters` function.
+Per ottenere tutti i personaggi, puoi usare la funzione `getAllCharacters`.
 
 ```typescript
 import { getAllCharacters } from "@drincs/pixi-vn";
@@ -91,27 +65,27 @@ import { getAllCharacters } from "@drincs/pixi-vn";
 const characters = getAllCharacters();
 ```
 
-## Edit characters in the game
+## Modifica i personaggi nel gioco
 
-`CharacterBaseModel` is a [stored class](/start/stored-classes), which means that it is possible to save and load the character's properties from the [game storage](/start/storage).
+`CharacterBaseModel` is a [stored class](/start/stored-classes), which means that its properties are saved in [game storage](/start/storage).
 
-It means that if the character's name is changed during the game, the new character name will be saved in the game storage by linking it to his `id`.
+Ciò significa che se il nome del personaggio viene modificato durante il gioco, il nuovo nome del personaggio verrà salvato nella memoria del gioco collegandolo al suo `id`.
 
-Furthermore, it is important to consider that if the **character's  id is changed**, from one version to another, the system will **not** move the data linked to the previous `id` to the new `id`.
+Furthermore, it is important to consider that if the **character's  id is changed**, from one version to another, the system will **not** move the data linked from the previous `id` to the new `id`.
 
-The properties of the `CharacterBaseModel` that are stored in the game storage are:
+Le proprietà del `CharacterBaseModel` che vengono memorizzate nella memoria del gioco sono:
 
 - `name`: Il nome del personaggio.
-- `surname`: The character's surname.
-- `age`: The character's age.
+- `surname`: Il cognome del personaggio.
+- `age`: L'età del personaggio.
 
-To get the properties used when instantiating the class you can use:
+Per ottenere le proprietà utilizzate durante l'istanziazione della classe è possibile utilizzare:
 
-- `defaultName`: The character's name.
-- `defaultSurname`: The character's surname.
-- `defaultAge`: The character's age.
+- `defaultName`: Il nome del personaggio.
+- `defaultSurname`: Il cognome del personaggio.
+- `defaultAge`: L'età del personaggio.
 
-Here's a simplified implementation of the `CharacterBaseModel` class for better understanding of the properties that are stored in the game storage:
+Ecco un'implementazione semplificata della classe `CharacterBaseModel` per comprendere meglio le proprietà storicizzate nell'archivio del gioco:
 
 ```typescript
 export default class CharacterBaseModel extends StoredClassModel implements CharacterBaseModelProps {
@@ -140,9 +114,9 @@ export default class CharacterBaseModel extends StoredClassModel implements Char
 }
 ```
 
-## Use characters in the game
+## Usa i personaggi nel gioco
 
-You can use the characters in the game for example to [set a dialogue](/start/dialogue#set-the-current-dialogue). You can use the character's `id` or the character's instance, but it is recommended to use the instance.
+You can use game characters for example to [link it to the current dialogue](/start/dialogue#set-the-current-dialogue). Puoi usare l'`id` del personaggio o l'istanza del personaggio, ma è consigliabile usare l'istanza.
 
 ```typescript [characters.ts]
 export const liam = new CharacterBaseModel('liam_id', {
@@ -161,11 +135,11 @@ narration.dialogue = { character: liam, text: "Hello" }
 narration.dialogue = { character: "liam_id", text: "Hello" }
 ```
 
-## Character emotions
+## Emozioni del personaggio
 
-It can often be useful to have multiple types of the same character.
+Spesso può essere utile avere più tipi dello stesso personaggio.
 
-A classic example of visual novels is to have a character "Alice" a subtype related to his/her emotional state "Angry Alice". The character and the subtype have the same characteristics apart from one or more properties, such as the icon.
+A classic example in visual novels is to have a character "Alice" a subtype related to his/her emotional state "Angry Alice". The character and the subtype have the same characteristics apart from one or more properties, such as the icon.
 
 For this reason, in Pixi’VN it is possible to create a "character with an emotion". This is possible by passing the id as an object with two properties: the `id`, that corresponds to the id of an already existing character, and the `emotion`, that corresponds to the emotion of the character.
 
