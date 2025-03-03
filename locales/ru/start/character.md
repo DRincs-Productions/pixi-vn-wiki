@@ -41,35 +41,9 @@ export const emma = new CharacterBaseModel('emma', {
 saveCharacter([liam, emma]);
 ```
 
-`saveCharacter` is required to save the characters in the game.
+`saveCharacter` is **required** to save the characters in the game.
 
 It is also possible to create a function for loading characters. The important thing is that it is started at least once before the characters are used in the game, otherwise they will not be available.
-
-```typescript [characters.ts]
-import { CharacterBaseModel, saveCharacter } from "@drincs/pixi-vn";
-
-export function loadCharacters() {
-    const liam = new CharacterBaseModel('liam', {
-        name: 'Liam',
-        surname: 'Smith',
-        age: 25,
-        icon: "https://example.com/liam.png",
-        color: "#9e2e12"
-    });
-
-    const emma = new CharacterBaseModel('emma', {
-        name: 'Emma',
-        surname: 'Johnson',
-        age: 23,
-        icon: "https://example.com/emma.png",
-        color: "#9e2e12"
-    });
-
-    saveCharacter([liam, emma]);
-}
-
-loadCharacters();
-```
 
 ## Get characters by id
 
@@ -93,11 +67,11 @@ const characters = getAllCharacters();
 
 ## Edit characters in the game
 
-`CharacterBaseModel` is a [stored class](/start/stored-classes), which means that it is possible to save and load the character's properties from the [game storage](/start/storage).
+`CharacterBaseModel` is a [stored class](/start/stored-classes), which means that its properties are saved in [game storage](/start/storage).
 
 It means that if the character's name is changed during the game, the new character name will be saved in the game storage by linking it to his `id`.
 
-Furthermore, it is important to consider that if the **character's  id is changed**, from one version to another, the system will **not** move the data linked to the previous `id` to the new `id`.
+Furthermore, it is important to consider that if the **character's  id is changed**, from one version to another, the system will **not** move the data linked from the previous `id` to the new `id`.
 
 The properties of the `CharacterBaseModel` that are stored in the game storage are:
 
@@ -142,7 +116,7 @@ export default class CharacterBaseModel extends StoredClassModel implements Char
 
 ## Use characters in the game
 
-You can use the characters in the game for example to [set a dialogue](/start/dialogue#set-the-current-dialogue). You can use the character's `id` or the character's instance, but it is recommended to use the instance.
+You can use game characters for example to [link it to the current dialogue](/start/dialogue#set-the-current-dialogue). You can use the character's `id` or the character's instance, but it is recommended to use the instance.
 
 ```typescript [characters.ts]
 export const liam = new CharacterBaseModel('liam_id', {
@@ -165,7 +139,7 @@ narration.dialogue = { character: "liam_id", text: "Hello" }
 
 It can often be useful to have multiple types of the same character.
 
-A classic example of visual novels is to have a character "Alice" a subtype related to his/her emotional state "Angry Alice". The character and the subtype have the same characteristics apart from one or more properties, such as the icon.
+A classic example in visual novels is to have a character "Alice" a subtype related to his/her emotional state "Angry Alice". The character and the subtype have the same characteristics apart from one or more properties, such as the icon.
 
 For this reason, in Pixi’VN it is possible to create a "character with an emotion". This is possible by passing the id as an object with two properties: the `id`, that corresponds to the id of an already existing character, and the `emotion`, that corresponds to the emotion of the character.
 
