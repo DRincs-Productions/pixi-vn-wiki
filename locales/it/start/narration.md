@@ -1,6 +1,6 @@
 # Narrazione
 
-The narration is the core of the visual novel. La narrazione è l'insieme di [dialoghi](/start/dialogue.md), [scelte](/start/choices.md) e [richieste di input](/start/input.md) mostrati al giocatore man mano che il gioco procede.
+La narrazione è il fulcro della visual novel. La narrazione è l'insieme di [dialoghi](/start/dialogue.md), [scelte](/start/choices.md) e [richieste di input](/start/input.md) mostrati al giocatore man mano che il gioco procede.
 
 Con Pixi’VN hai la possibilità di utilizzare vari tipi di linguaggi narrativi. Puoi anche passare da una lingua all'altra per sfruttare le funzionalità di entrambe.
 
