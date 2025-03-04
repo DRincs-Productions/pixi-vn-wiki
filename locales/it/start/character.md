@@ -41,7 +41,7 @@ export const emma = new CharacterBaseModel('emma', {
 saveCharacter([liam, emma]);
 ```
 
-`saveCharacter` is **required** to save the characters in the game.
+`saveCharacter` è **necessario** per salvare i personaggi nel gioco.
 
 È anche possibile creare una funzione per il caricamento dei personaggi. L'importante è che venga avviato almeno una volta prima di utilizzare i personaggi nel gioco, altrimenti non saranno disponibili.
 
@@ -67,11 +67,11 @@ const characters = getAllCharacters();
 
 ## Modifica i personaggi nel gioco
 
-`CharacterBaseModel` is a [stored class](/start/stored-classes), which means that its properties are saved in [game storage](/start/storage).
+`CharacterBaseModel` è una [classe storicizzata](/start/stored-classes), il che significa che le sue proprietà sono salvate nella [memoria di gioco](/start/storage).
 
 Ciò significa che se il nome del personaggio viene modificato durante il gioco, il nuovo nome del personaggio verrà salvato nella memoria del gioco collegandolo al suo `id`.
 
-Furthermore, it is important to consider that if the **character's  id is changed**, from one version to another, the system will **not** move the data linked from the previous `id` to the new `id`.
+Inoltre, è importante considerare che se l'**id del personaggio viene modificato** da una versione all'altra, il sistema **non** sposterà i dati collegati dal precedente `id` al nuovo `id`.
 
 Le proprietà del `CharacterBaseModel` che vengono memorizzate nella memoria del gioco sono:
 
@@ -116,7 +116,7 @@ export default class CharacterBaseModel extends StoredClassModel implements Char
 
 ## Usa i personaggi nel gioco
 
-You can use game characters for example to [link it to the current dialogue](/start/dialogue#set-the-current-dialogue). Puoi usare l'`id` del personaggio o l'istanza del personaggio, ma è consigliabile usare l'istanza.
+Ad esempio, puoi usare i personaggi del gioco per [collegarli al dialogo corrente](/start/dialogue#set-the-current-dialogue). Puoi usare l'`id` del personaggio o l'istanza del personaggio, ma è consigliabile usare l'istanza.
 
 ```typescript [characters.ts]
 export const liam = new CharacterBaseModel('liam_id', {
