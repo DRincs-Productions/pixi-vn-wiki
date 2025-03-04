@@ -139,9 +139,9 @@ narration.dialogue = { character: "liam_id", text: "Hello" }
 
 Spesso può essere utile avere più tipi dello stesso personaggio.
 
-A classic example in visual novels is to have a character "Alice" a subtype related to his/her emotional state "Angry Alice". The character and the subtype have the same characteristics, except for one or more properties, such as the icon.
+Un esempio classico nelle visual novel è quello in cui il personaggio "Alice" ha un sottotipo correlato al suo stato emotivo, "Alice arrabbiata". Il personaggio e il sottotipo hanno le stesse caratteristiche, ad eccezione di una o più proprietà, come l'icona.
 
-For this reason, with Pixi’VN it is possible to create a "character with an emotion". This is possible by passing an object, instead of the id, with the following properties:
+Per questo motivo con Pixi’VN è possibile creare un “personaggio con un’emozione”. This is possible by passing an object, instead of the id, with the following properties:
 
 - `id`, which corresponds to the id of an existing character.
 - `emotion`, which corresponds to the character's emotion.
