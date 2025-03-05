@@ -144,7 +144,7 @@ A classic example in visual novels is to have a character "Alice" a subtype rela
 For this reason, with Pixi’VN it is possible to create a "character with an emotion". This is possible by passing an object, instead of the id, with the following properties:
 
 - `id`, which corresponds to the id of an existing character.
-- `emotion`, which corresponds to the character's emotion.
+- `emotion`, which corresponds to the character's subcategory (e.g. the character's emotion).
 
 ```typescript [characters.ts]
 import { CharacterBaseModel, saveCharacter } from "@drincs/pixi-vn";
@@ -181,9 +181,9 @@ to add/edit/remove properties or methods.
 
 For example, you want to create a class `Character`, you must "override" the interface `CharacterInterface` to use your properties or methods. ( See the file `pixi-vn.types.ts` )
 
-Now you can create a class `Character` that extends `CharacterStoredClass` and implements the `CharacterInterface`.
+Now you can create a class `Character` that extends `CharacterStoredClass` and implements the `CharacterInterface`. (For more information on how to create a class in Typescript read [here](https://www.typescriptlang.org/docs/handbook/2/classes.html))
 
-To save property changes to the game storage, you can use the `setStorageProperty` method. ( See the file `Character.ts` )
+To create a "property" that stores its value in the game storage you can create a [Getters/Setters](https://www.typescriptlang.org/docs/handbook/2/classes.html#getters--setters) and use the `this.getStorageProperty()`/`this.setStorageProperty()` methods. ( See the file `Character.ts` )
 
 ::: code-group
 
