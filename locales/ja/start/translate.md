@@ -11,10 +11,9 @@ It is recommended to divide the translations into two parts (See `strings_es.jso
 - The [UI](/start/interface.md) texts, that is, the texts that are contained in menus, settings, quick buttons, etc... that is, everything that is not part of the narration.
 - The [narration](/start/narration.md) texts, that is, the texts that are contained in dialogues, monologues, etc...
 
-:::tabs
-\== i18n.ts
+::: code-group
 
-```typescript
+```typescript [i18n.ts]
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
@@ -48,23 +47,13 @@ export const useI18n = () => {
 }
 ```
 
-\== App.tsx
+```ts [main.ts]
+import { useI18n } from './i18n';
 
-```tsx
-import { useI18n } from './i18n'; // [!code focus]
-
-export default function App() {
-    useI18n() // [!code focus]
-
-    return (
-        // ...
-    );
-}
+useI18n()
 ```
 
-\== strings_es.json
-
-```json
+```json [locales/strings_es.json]
 {
     "ui": {
         "text_speed": "Velocidad del texto",
@@ -94,19 +83,47 @@ Is recommended to use as translation key the a lowercase string with underscores
 
 For example in React:
 
-```tsx
-import { useTranslation } from 'react-i18next'; // [!code focus]
+::: code-group
+
+```tsx [React]
+import { useTranslation } from 'react-i18next';
 
 export default function MyComponent() {
-    const { t } = useTranslation("ui"); // [!code focus]
+    const { t } = useTranslation("ui");
 
     return (
         <div>
-            <Button>{t("text_speed")}</Button> // [!code focus]
+            <Button>{t("text_speed")}</Button>
         </div>
     );
 }
 ```
+
+```vue [Vue]
+<script setup>
+    import { useTranslation } from "i18next-vue";
+    const { t } = useTranslation();
+</script>
+
+<template>
+    <div>
+        <button>{{ t('text_speed') }}</button>
+    </div>
+</template>
+```
+
+```svelte [Svelte]
+<script>
+    import { useTranslation } from 'svelte-i18n';
+    const { t } = useTranslation();
+</script>
+
+<div>
+    <button>{t('text_speed')}</button>
+</div>
+```
+
+:::
 
 ## Translate the narration (TypeScript/JavaScript)
 
@@ -116,10 +133,9 @@ This way you can use the `t` function in [labels](/start/labels.md) to translate
 
 Is recommended to use as translation key the native string from which the translation is made.
 
-:::tabs
-\== pixi-vn.types.ts
+::: code-group
 
-```typescript
+```typescript [pixi-vn.d.ts]
 declare module '@drincs/pixi-vn' {
     interface StepLabelProps {
         /**
@@ -133,9 +149,7 @@ declare module '@drincs/pixi-vn' {
 }
 ```
 
-\== startLabel.ts
-
-```typescript
+```typescript [labels/startLabel.ts]
 export const startLabel = newLabel("start_label",
     [
         ({ t }) => { // [!code focus]
