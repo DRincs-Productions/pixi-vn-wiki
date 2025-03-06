@@ -46,7 +46,7 @@ All the [functionality to control the flow of labels](/start/labels-flow.md) req
 By default `StepLabelProps` corresponds to `{ [key: string]: any }`. You can "override" the interface `StepLabelProps` to set required parameters.
 
 :::tabs
-\== pixi-vn.types.ts
+\== pixi-vn.d.ts
 
 ```typescript
 import { narration } from '@drincs/pixi-vn'
@@ -106,7 +106,7 @@ The steps can return a `StepLabelResult` object, by default the `StepLabelResult
 You can "override" the interface `StepLabelResult` to set your custom properties in the result of the steps.
 
 :::tabs
-\== pixi-vn.types.ts
+\== pixi-vn.d.ts
 
 ```typescript
 declare module '@drincs/pixi-vn' {
