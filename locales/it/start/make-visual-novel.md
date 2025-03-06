@@ -75,7 +75,9 @@ Creeremo la prima ["label"](/start/labels.md) chiamata `start`, che sarà l'iniz
 
 Dopodiché potremo scrivere i [dialoghi](/start/dialogue.md) che seguiranno nella nostra visual novel. Il template che abbiamo scelto supporta il [linguaggio di markup markdown](/start/markup-markdown.md) ([Linguaggio di markup in _ink_](/ink/ink-markup.md)), quindi lo useremo per la nostra narrazione.
 
-Questo è l'esempio:
+<!-- TODO: use Tailwind CSS -->
+
+This is the example:
 
 ::: code-group
 
@@ -140,13 +142,13 @@ export default startLabel;
 
 :::
 
-### Dividi la narrazione in più label
+### Split the narrative into labels
 
-Non è consigliabile creare label molto lunghe (anche per visual novel lineari), ma è consigliabile creare più label piccole e "chiamarle" quando necessario con le [funzionalità di controllo del flusso di gioco](/start/labels-flow.md) ([_ink_ knot (o label)](/ink/ink-label.md)).
+It is not advisable to create very long labels (even for linear visual novels), but it is advisable to create multiple small labels and "call" them when needed with the [game flow control features](/start/labels-flow.md) ([_ink_ knot (or label)](/ink/ink-label.md)).
 
-Per questo motivo, anche se nel nostro caso la nostra storia è lineare, verrà divisa in due etichette, la prima sarà quella che abbiamo appena creato, mentre la seconda si chiamerà `second_part`.
+For this reason, even if in our case our story is linear, it will be divided into two labels, the first will be the one we just created, while the second will be called `second_part`.
 
-Questo è l'esempio:
+This is the example:
 
 ::: code-group
 
@@ -205,13 +207,13 @@ const secondPart = newLabel("second_part", [
 
 :::
 
-## Menù a scelta
+## Choice menus
 
-Ora chiederemo al giocatore se desidera continuare con la seconda parte della visual novel.
+Now we will ask the player if he wants to continue with the second part of the visual novel.
 
-Per fare ciò, utilizzeremo il [menu di scelta](/start/choices.md).
+To do this, we will use the [choice menu](/start/choices.md).
 
-Questo è l'esempio:
+This is the example:
 
 ::: code-group
 
@@ -251,15 +253,15 @@ const secondPart = newLabel("second_part", [
 
 :::
 
-## Modifica le informazioni del personaggio e usalo come variabile
+## Edit character information and use it as a variable
 
-Ora darò al giocatore la possibilità di cambiare il nome del `mc`.
+Now I will give the player the ability to change the name of the `mc`.
 
-Per fare ciò, chiederò al giocatore di [completare una casella di input utilizzando le funzionalità di Pixi'VN](/start/input.md) ([Utilizzare il prompt di input in _ink_](/ink/ink-input.md)).
+To do this, I will ask the player to [complete an input box using Pixi'VN's features](/start/input.md) ([Use the input prompt in _ink_](/ink/ink-input.md)).
 
-Dopo aver ottenuto il valore di input, puoi [impostare il nome del personaggio](/start/character.md#edit-characters-in-the-game) utilizzando il valore ottenuto ([Modifica il nome del personaggio in _ink_](/ink/ink-character.md#edit-character-name-in-dialogues)).
+After getting the input value, you can [set the character name](/start/character.md#edit-characters-in-the-game) using the obtained value ([Edit character name in _ink_](/ink/ink-character.md#edit-character-name-in-dialogues)).
 
-Questo è l'esempio:
+This is the example:
 
 ::: code-group
 
@@ -296,9 +298,9 @@ export default startLabel;
 
 :::
 
-Ora potremmo usare i nomi dei personaggi nei dialoghi ([Usa il nome del personaggio nei dialoghi in _ink_](/ink/ink-character.md#use-character-name-in-dialogues)).
+Now we could use character names within dialogues ([Use character name in dialogues in _ink_](/ink/ink-character.md#use-character-name-in-dialogues)).
 
-Questo è l'esempio:
+This is the example:
 
 ::: code-group
 
@@ -351,11 +353,11 @@ export default startLabel;
 
 :::
 
-## Utilizzare la funzionalità "glue" dei dialoghi
+## Use the "glue" feature of dialogues
 
-Nelle visual novel è spesso utile incollare del testo nel dialogo corrente. Ad esempio, per mettere in pausa una conversazione e farla proseguire in uno step successivo. Per farlo, possiamo usare la [funzionalità glue](/start/dialogue.md#dialogue-glue).
+In visual novels, it is often useful to paste text into the current dialogue. For example, to pause a conversation and have it continue in a subsequent step. To do this, we can use the [glue functionality](/start/dialogue.md#dialogue-glue).
 
-Questo è l'esempio:
+This is the example:
 
 ::: code-group
 
@@ -392,13 +394,13 @@ export default startLabel;
 
 :::
 
-## Definisci le assets e caricale
+## Define assets and load them
 
-Uno dei primi passi è scegliere dove salvare le risorse della tua visual novel. In questo caso salveremo gli assets nello storage Firebase (un servizio di hosting).
+One of the first steps is choosing where to save your visual novel assets. In this case, we will save the assets in the Firebase storage (a hosting service).
 
-Prima di utilizzare una assets, si consiglia vivamente di [inizializzare la matrice delle risorse](/start/assets-management.md#initialize-the-asset-matrix-at-project-start).
+Before using an asset it is highly recommended to [initialize the asset matrix](/start/assets-management.md#initialize-the-asset-matrix-at-project-start).
 
-Questo è l'esempio:
+This is the example:
 
 ```ts [assets/defineAssets.ts]
 import { Assets } from "@drincs/pixi-vn"
@@ -437,17 +439,17 @@ export async function defineAssets() {
 }
 ```
 
-## Aggiungere lo sfondo e le immagini dei personaggi
+## Add background and character images
 
-Ora è il momento di pensare anche all'aspetto visivo. Aggiungeremo lo sfondo e gli sprite dei personaggi al canvas della visual novel.
+Now it's time to think about the visual part too. We will add the background and character sprites to the visual novel canvas.
 
-**Cos'è uno sprite?** In computer grafica, uno sprite è una bitmap bidimensionale integrata in una scena più grande, il più delle volte in un videogioco 2D.
+**What is a sprite?** In computer graphics, a sprite is a two-dimensional bitmap that is integrated into a larger scene, most often in a 2D video game.
 
-Nel nostro caso gli sprite dei personaggi sono composti da 3 immagini: il corpo, gli occhi e la bocca. Quindi utilizziamo [ImageContainer](/start/canvas-image-container.md) per comporre il personaggio.
+In our case the character sprites are composed of 3 images: the body, the eyes and the mouth. Then we use [ImageContainer](/start/canvas-image-container.md) to compose the character.
 
-Puoi trovare maggiori informazioni su come aggiungere componenti canvas in [questa documentazione](/start/canvas-components.md) ([Utilizza componenti canvas in _ink_](/ink/ink-canvas.md)).
+You can find more information on how to add canvas components in [this documentation](/start/canvas-components.md) ([Use canvas components in _ink_](/ink/ink-canvas.md)).
 
-Questo è l'esempio:
+This is the example:
 
 ::: code-group
 
@@ -487,15 +489,15 @@ export default startLabel;
 
 :::
 
-## Caricamento intelligente degli assets
+## Smart asset loading
 
-Nel nostro caso abbiamo salvato le immagini del gioco su un servizio di hosting (Firebase). Per questo motivo il caricamento delle risorse non avviene tempestivamente.
+In our case we saved the game images on a hosting service (Firebase). For this reason the asset loading is not timely.
 
-Per evitare che il giocatore percepisca troppi caricamenti, dovremmo raggrupparli in determinate fasi del gioco. Nel mio caso caricherò le immagini più utilizzate all'inizio della label.
+In order for the player not to perceive too many loadings we should group them in certain phases of the game. In my case I will load the most used images at the start of the label.
 
-Puoi trovare maggiori informazioni su come gestire i caricamenti [qui](/start/assets-management.md).
+You can find more information on how to manage the loadings [here](/start/assets-management.md).
 
-Questo è l'esempio:
+This is the example:
 
 ::: code-group
 
@@ -536,11 +538,11 @@ export default startLabel;
 
 :::
 
-## Utilizzare le transizioni
+## Use transitions
 
-Per rendere più dinamica la visual novel, è possibile utilizzare le transizioni per mostrare le immagini. Puoi trovare maggiori informazioni sull'utilizzo delle transizioni [qui](/start/canvas-transition.md) ([Utilizzo delle transizioni in _ink_](/ink/ink-canvas.md#show-a-canvas-component-with-transition-in-ink)).
+To make the visual novel more dynamic, you can use transitions to show images. You can find more information about using transitions [here](/start/canvas-transition.md) ([Using transitions in _ink_](/ink/ink-canvas.md#show-a-canvas-component-with-transition-in-ink)).
 
-Questo è l'esempio:
+This is the example:
 
 ::: code-group
 
@@ -585,21 +587,21 @@ export default startLabel;
 
 :::
 
-## Creare un'animazione
+## Building an animation
 
-Per rendere più dinamica la visual novel, è possibile utilizzare le animazioni. Puoi trovare maggiori informazioni su come utilizzare le animazioni [qui](/start/canvas-animations-effects.md) ([Utilizzo delle animazioni in _ink_](/ink/ink-canvas.md#use-the-effects-in-ink)).
+To make the visual novel more dynamic, you can use animations. You can find more information about how to use animations [here](/start/canvas-animations-effects.md) ([Using animations in _ink_](/ink/ink-canvas.md#use-the-effects-in-ink)).
 
-Consiglio di utilizzare Typescript se è necessario impostare molte proprietà, in questo modo si ha un maggiore controllo sull'animazione, più funzionalità e feedback sul tipo.
+I recommend using Typescript if you need to set a lot of properties, this way you have more control over the animation, more functionality and type feedback.
 
-Nel mio caso l'animazione rimuoverà Steph dalla scena e la reinserirà nel passaggio successivo. La specchierò anche sull'asse x per assicurarmi che sia rivolta nella direzione giusta.
+In my case my animation will take steph out of the scene and reinsert her in the next step. I'll also mirror her on the x-axis to make sure she's facing the right way.
 
-Per far entrare/uscire Steph userò le funzioni `moveOut` e `moveIn`. Per l'effetto specchio userò il ticker `ZoomTicker`.
+For taking steph out/in I will use the `moveOut` and `moveIn` functions. For the mirror effect I will use the `ZoomTicker` ticker.
 
-Una caratteristica importante delle transizioni è che mettono momentaneamente in pausa tutte le animazioni collegate a quel componente e le riprendono al termine della transizione.
+An important feature of transitions is that they momentarily pause all animations connected to that component and resume them when the transition is complete.
 
-Quindi, nel mio caso, userò prima della funzione `moveIn` la funzione `addTicker` per aggiungere il ticker `ZoomTicker`. In questo modo Steph verrà specchiato sull'asse x una volta completata la transizione.
+So, in my case, I will use before the `moveIn` function the `addTicker` function to add the `ZoomTicker` ticker. This way Steph will be mirrored on the x-axis after the transition is complete.
 
-Inoltre, poiché per questa animazione utilizzerò TypeScript, ho creato un'label per questa animazione. In modo che possa essere chiamato anche da altri linguaggi che non siano JS/TS.
+Also since I will use typescript for this animation, I created a label for this animation. So that it can be called also from other languages ​​that are not JS/TS.
 
 ```ts [labels/animation01.ts]
 import { canvas, moveIn, newLabel, ZoomTicker } from "@drincs/pixi-vn";
@@ -620,7 +622,7 @@ export const animation01 = newLabel("animation_01", [
 ]);
 ```
 
-Ora posso chiamare questa etichetta `animation_01` dall'etichetta principale `start`. (Come spiegato [qui](/ink/ink-label.md#use-the-call-script) da _ink_ posso chiamare le etichette scritte in ts e viceversa.)
+Now I can call this label `animation_01` from the main label `start`. (As explained [here](/ink/ink-label.md#use-the-call-script) from _ink_ I can call labels written in ts and vice versa.)
 
 ::: code-group
 
@@ -698,11 +700,11 @@ This page is under construction.
 
 ::: -->
 
-## Conclusione
+## Conclusion
 
-Bene, ora sai come creare una visual novel con Pixi'VN. Da un grande potere derivano grandi responsabilità, quindi usalo saggiamente e crea una grande storia! 🚀
+Well, now you know how to create a visual novel with Pixi’VN. With great power comes great responsibility, so use it wisely and create a great story! 🚀
 
-Ecco un esempio interattivo con un'interfaccia utente minimale (HTML). Scorrendo verso il basso è possibile vedere lo stesso risultato utilizzando un'interfaccia utente completa (template React).
+Here is an interactive example with a minimal UI (HTML). Scrolling down you can see the same result using a complete UI (React template).
 
 :::tabs
 
