@@ -1,6 +1,8 @@
 # How translate the visual novel?
 
-In visual novels it is common to have the option to translate the game into different languages. Pixi’VN does not have any built-in functionality to handle translations. So you will have to use external libraries to perform translations and you have total freedom of implementation.
+In visual novels, or other types of games, it is common to have the ability to select the game language.
+
+In your Pixi’VN project you need to use external libraries to handle translations. So you are free to choose the implementation that suits you best.
 
 The most used library and compatible with many frameworks is [i18next](https://www.i18next.com/). **What is i18next?** i18next is an internationalization-framework written in and for JavaScript.
 
