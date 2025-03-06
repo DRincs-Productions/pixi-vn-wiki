@@ -149,11 +149,11 @@ The following features are in development and will be added in the future:
 ( Add a like or comment to the issue to show your interest )
 
 - [Functions and Game Queries](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#9-game-queries-and-functions) (issue [#11](https://github.com/DRincs-Productions/pixi-vn-ink/issues/11)):
-  - [User-created functions](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#5-functions) (issue [#32](https://github.com/DRincs-Productions/pixi-vn-ink/issues/32))
-  - `CHOICE_COUNT()`
-  - `TURNS()`
-  - `TURNS_SINCE()`
-  - `SEED_RANDOM()`
+ - [User-created functions](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#5-functions) (issue [#32](https://github.com/DRincs-Productions/pixi-vn-ink/issues/32))
+ - `CHOICE_COUNT()`
+ - `TURNS()`
+ - `TURNS_SINCE()`
+ - `SEED_RANDOM()`
 - [`LIST`](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#1-basic-lists) (issue [#15](https://github.com/DRincs-Productions/pixi-vn-ink/issues/15))
 - [`Tunnels`](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#1-tunnels) (issue [#38](https://github.com/DRincs-Productions/pixi-vn-ink/issues/38))
 - [`Threads`](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#2-threads) (issue [#39](https://github.com/DRincs-Productions/pixi-vn-ink/issues/39))
@@ -185,52 +185,52 @@ My name is John // ✅ This will be handled
 
 - in this case:
 
-  ```ink
-  { shuffle:
-    -  2 of Diamonds.
-      'You lose this time!' crowed the croupier.
-  }
-  ```
+ ```ink
+ { shuffle:
+   -  2 of Diamonds.
+     'You lose this time!' crowed the croupier.
+ }
+ ```
 
-  **In native _ink_**, you will see 2 different dialogues, the first one will be `2 of Diamonds.` and the second one will be `'You lose this time!' crowed the croupier.`.
+ **In native _ink_**, you will see 2 different dialogues, the first one will be `2 of Diamonds.` and the second one will be `'You lose this time!' crowed the croupier.`.
 
-  **In Pixi’VN _ink_**, you will not see 2 different dialogues, but the following dialogue: `2 of Diamonds.\n\n'You lose this time!' crowed the croupier.`. In [Markdown](/ink/ink-markup.md#markdown-on-ink) it will be displayed as:
+ **In Pixi’VN _ink_**, you will not see 2 different dialogues, but the following dialogue: `2 of Diamonds.\n\n'You lose this time!' crowed the croupier.`. In [Markdown](/ink/ink-markup.md#markdown-on-ink) it will be displayed as:
 
-  ```txt
-  2 of Diamonds.
-  'You lose this time!' crowed the croupier.
-  ```
+ ```txt
+ 2 of Diamonds.
+ 'You lose this time!' crowed the croupier.
+ ```
 
 - if a `weave` (In following example `shove`) is attached to a one time choice, and it is opened with `-> shove` it will not invalidate the one time choice. To invalidate it you will have to select the choice as usual.
 
-  Here is an example:
+ Here is an example:
 
-  ```ink
-  -> start
-  === start ===
-  * [1] -> shove
-  * (shove) [2] 2
-  * {shove} [3] -> END
-  -  -> start
-  -> DONE
-  ```
+ ```ink
+ -> start
+ === start ===
+ * [1] -> shove
+ * (shove) [2] 2
+ * {shove} [3] -> END
+ -  -> start
+ -> DONE
+ ```
 
-  In case you take choice 1, the second time it will be opened `start`:
+ In case you take choice 1, the second time it will be opened `start`:
 
-  - if you use **native _ink_**, you will only be able to choose choice `3`. The choice `2` is hidden because being "one time" **native _ink_** will know that you have already made this decision with `-> shove`.
-  - if you use **Pixi’VN _ink_**, you will be able to choose choice `2` or `3`. The choice `2` is not hidden because **Pixi’VN _ink_** doesn't know that `shove` is paired with a choice.
+ - if you use **native _ink_**, you will only be able to choose choice `3`. The choice `2` is hidden because being "one time" **native _ink_** will know that you have already made this decision with `-> shove`.
+ - if you use **Pixi’VN _ink_**, you will be able to choose choice `2` or `3`. The choice `2` is not hidden because **Pixi’VN _ink_** doesn't know that `shove` is paired with a choice.
 
-  To get the same logic as `start` both in **native _ink_** and **Pixi’VN _ink_** you will have to write the following code:
+ To get the same logic as `start` both in **native _ink_** and **Pixi’VN _ink_** you will have to write the following code:
 
-  ```ink
-  -> start
-  === start ===
-  * [1] -> shove
-  * (shove) {!shove} [2] 2
-  * {shove} [3] -> END
-  -  -> start
-  -> DONE
-  ```
+ ```ink
+ -> start
+ === start ===
+ * [1] -> shove
+ * (shove) {!shove} [2] 2
+ * {shove} [3] -> END
+ -  -> start
+ -> DONE
+ ```
 
 ## Using Pixi’VN Features from _ink_
 
