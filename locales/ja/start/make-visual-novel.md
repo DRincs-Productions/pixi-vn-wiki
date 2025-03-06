@@ -75,6 +75,8 @@ We will create the first ["label"](/start/labels.md) called `start`, which will 
 
 After that we can write the [dialogues](/start/dialogue.md) that will follow in our visual novel. The template we have chosen supports the [markup language markdown](/start/markup-markdown.md) ([Markup language in _ink_](/ink/ink-markup.md)) so we will use it for our narration.
 
+<!-- TODO: use Tailwind CSS -->
+
 This is the example:
 
 ::: code-group
