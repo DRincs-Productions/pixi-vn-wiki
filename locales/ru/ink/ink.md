@@ -10,7 +10,7 @@ _**ink**_ is a scripting language for writing interactive narrative. It is used 
 
 This language is very simple to learn. Go on [_ink_ website](https://www.inklestudios.com/ink/) to learn more about it.
 
-```ink
+```ink [ink/start.ink]
 === start ===
 We arrived into London at 9.45pm exactly.
 
@@ -52,37 +52,33 @@ If you have not created a project yet then it is recommended to use a [Pixi’VN
 
 Otherwise to add _**ink**_ to your Pixi’VN project you need to install the `@drincs/pixi-vn-ink` package.
 
-:::tabs
-\== npm
+::: code-group
 
-```bash
+```sh [npm]
 npm install @drincs/pixi-vn-ink
 ```
 
-\== yarn
-
-```bash
+```sh [yarn]
 yarn add @drincs/pixi-vn-ink
 ```
 
-\== pnpm
-
-```bash
+```sh [pnpm]
 pnpm add @drincs/pixi-vn-ink
 ```
 
-\== bun
-
-```bash
+```sh [bun]
 bun add @drincs/pixi-vn-ink
+```
+
+```sh [deno]
+deno install npm:@drincs/pixi-vn-ink
 ```
 
 :::
 
 After installing the package you need to use the `importInkText()` function to import the **_ink_ script** into your project.
 
-```typescript
-// main.ts
+```typescript [main.ts]
 import { importInkText } from '@drincs/pixi-vn-ink'
 
 const inkText = `
@@ -96,7 +92,7 @@ importInkText([inkText, ...])
 
 Now you can run the **_ink_ knot** (or label) with [Pixi’VN functions](/start/labels.md#run-a-label).
 
-```typescript
+```typescript [main.ts]
 import { narration } from '@drincs/pixi-vn'
 
 narration.callLabel(`start`, {})
@@ -112,28 +108,23 @@ After that you need to add the `.ink` extension to the `assetsInclude` option in
 
 After that you can import the _ink_ file and add `?raw` at the end of the import to get the text content.
 
-:::tabs
-\== main.ts
+::: code-group
 
-```typescript
+```typescript [main.ts]
 import { importInkText } from '@drincs/pixi-vn-ink'
 import startLabel from './ink/start.ink?raw'
 
 importInkText([startLabel, ...])
 ```
 
-\== vite.config.ts
-
-```typescript
+```typescript [vite.config.ts]
 export default defineConfig({
   // ...
   assetsInclude: ['**/*.ink'],
 })
 ```
 
-\== ink.d.ts
-
-```typescript
+```typescript [ink.d.ts]
 declare module '*.ink' {
     const value: string
     export default value
@@ -172,7 +163,7 @@ In Pixi’VN you can use the `importInkText()` function to import the **_ink_ fi
 
 The narration outside the knots (or labels) will be ignored, except for variables. So for example:
 
-```ink
+```ink [ink]
 VAR my_var = false // ✅ This will be handled (because it is a variable)
 Hello // ❌ This will be ignored // [!code warning]
 -> start // ❌ This will be ignored // [!code warning]
@@ -185,7 +176,7 @@ My name is John // ✅ This will be handled
 
 - in this case:
 
- ```ink
+ ```ink [ink]
  { shuffle:
    -  2 of Diamonds.
      'You lose this time!' crowed the croupier.
@@ -205,7 +196,7 @@ My name is John // ✅ This will be handled
 
  Here is an example:
 
- ```ink
+ ```ink [ink]
  -> start
  === start ===
  * [1] -> shove
@@ -222,7 +213,7 @@ My name is John // ✅ This will be handled
 
  To get the same logic as `start` both in **native _ink_** and **Pixi’VN _ink_** you will have to write the following code:
 
- ```ink
+ ```ink [ink]
  -> start
  === start ===
  * [1] -> shove
