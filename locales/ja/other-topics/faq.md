@@ -7,7 +7,7 @@ It is recommended to overwrite the `StepLabelProps` interface to add the `naviga
 For example:
 
 ```typescript
-// pixi-vn.types.ts
+// pixi-vn.d.ts
 declare module '@drincs/pixi-vn' {
     interface StepLabelProps {
         /**
