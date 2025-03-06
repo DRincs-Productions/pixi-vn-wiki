@@ -178,7 +178,7 @@ console.log(angryAlice.name); // Angry Eleonora
 
 Si consiglia di creare la propria classe `Character` che estende `CharacterStoredClass` e di "sovrascrivere" l'interfaccia `CharacterInterface` per aggiungere/modificare/rimuovere proprietà o metodi.
 
-Ad esempio, se vuoi creare una classe `Character`, devi "sovrascrivere" l'interfaccia `CharacterInterface` per utilizzare le tue proprietà o metodi. ( Guarda il file `pixi-vn.types.ts` )
+Ad esempio, se vuoi creare una classe `Character`, devi "sovrascrivere" l'interfaccia `CharacterInterface` per utilizzare le tue proprietà o metodi. ( See the file `pixi-vn.d.ts` )
 
 Now you can create a class `Character` that extends `CharacterStoredClass` and implements the `CharacterInterface`. (For more information on how to create a class in Typescript read [here](https://www.typescriptlang.org/docs/handbook/2/classes.html))
 
