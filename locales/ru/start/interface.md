@@ -4,7 +4,7 @@ Pixi’VN offers the possibility of adding an HTML Element with the same dimensi
 
 By "UI" is meant the elements that are above the canvas, such as buttons, forms, etc.
 
-![Frame\_Aufbau](https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2FPixiVN_interface.png?alt=media)
+![Frame_Aufbau](https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2FPixiVN_interface.png?alt=media)
 
 This allows the use of systems such as React, Vue, Angular, etc. to create much more complex **UI screens** with excellent performance.
 
