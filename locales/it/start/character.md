@@ -144,7 +144,7 @@ Un esempio classico nelle visual novel è quello in cui il personaggio "Alice" h
 Per questo motivo con Pixi’VN è possibile creare un “personaggio con un’emozione”. This is possible by passing an object, instead of the id, with the following properties:
 
 - `id`, che corrisponde all'id di un personaggio esistente.
-- `emotion`, which corresponds to the character's subcategory (e.g. the character's emotion).
+- `emotion`, che corrisponde alla sottocategoria del personaggio (ad esempio l'emozione del personaggio).
 
 ```typescript [characters.ts]
 import { CharacterBaseModel, saveCharacter } from "@drincs/pixi-vn";
@@ -178,11 +178,11 @@ console.log(angryAlice.name); // Angry Eleonora
 
 Si consiglia di creare la propria classe `Character` che estende `CharacterStoredClass` e di "sovrascrivere" l'interfaccia `CharacterInterface` per aggiungere/modificare/rimuovere proprietà o metodi.
 
-Ad esempio, se vuoi creare una classe `Character`, devi "sovrascrivere" l'interfaccia `CharacterInterface` per utilizzare le tue proprietà o metodi. ( See the file `pixi-vn.d.ts` )
+Ad esempio, se vuoi creare una classe `Character`, devi "sovrascrivere" l'interfaccia `CharacterInterface` per utilizzare le tue proprietà o metodi. ( Guarda il file `pixi-vn.d.ts` )
 
-Now you can create a class `Character` that extends `CharacterStoredClass` and implements the `CharacterInterface`. (For more information on how to create a class in Typescript read [here](https://www.typescriptlang.org/docs/handbook/2/classes.html))
+Ora puoi creare una classe `Character` che estende `CharacterStoredClass` e implementa `CharacterInterface`. (Per maggiori informazioni su come creare una classe in Typescript leggi [qui](https://www.typescriptlang.org/docs/handbook/2/classes.html))
 
-To create a "property" that stores its value in the game storage you can create a [Getters/Setters](https://www.typescriptlang.org/docs/handbook/2/classes.html#getters--setters) and use the `this.getStorageProperty()`/`this.setStorageProperty()` methods. ( See the file `Character.ts` )
+Per creare una "proprietà" che memorizzi il suo valore nell'archivio del gioco, puoi creare un [Getters/Setters](https://www.typescriptlang.org/docs/handbook/2/classes.html#getters--setters) e utilizzare i metodi `this.getStorageProperty()`/`this.setStorageProperty()`. ( Guarda il file `Character.ts` )
 
 ::: code-group
 
