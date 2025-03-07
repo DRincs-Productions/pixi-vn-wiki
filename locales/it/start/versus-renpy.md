@@ -150,6 +150,6 @@ Pixi’VN è solo una libreria che utilizza PixiJS per il canvas. Oltre a fornir
 
 Ciò significa che mantenere Pixi’VN aggiornato è un processo molto semplice e una volta che raggiungerà una versione stabile non avrà bisogno di aggiornamenti costanti per essere compatibile con i dispositivi più recenti.
 
-## Conclusion
+## Conclusione
 
 Infine, la mia conclusione personale è che se conosci la programmazione orientata agli oggetti e vuoi creare una visual novel con molte funzionalità, minigiochi, un'interfaccia utente molto complessa, ecc... dovresti usare Pixi'VN. Se non sei un programmatore, vuoi creare rapidamente la tua visual novel e sei disposto ad apprendere nel tempo nozioni che potrai riutilizzare in seguito da questo progetto, dimentica Ren'Py e usa Pixi'VN. Se desideri un framework unificato che si occupi di tutto senza che tu debba decidere quali librerie utilizzare, allora Pixi'VN non fa per te. Ren'Py è una valida opzione. Se cerchi un framework senza codice, al momento né Ren'Py né Pixi'VN fanno per te.
