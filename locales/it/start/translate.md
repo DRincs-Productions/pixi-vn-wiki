@@ -1,17 +1,17 @@
 # Come tradurre la visual novel?
 
-In visual novels, or other types of games, it is common to have the ability to select the game language.
+Nelle visual novel o in altri tipi di giochi è comune avere la possibilità di selezionare la lingua del gioco.
 
-In your Pixi’VN project you need to use external libraries to handle translations. So you are free to choose the implementation that suits you best.
+Nel progetto Pixi'VN è necessario utilizzare librerie esterne per gestire le traduzioni. Quindi sei libero di scegliere l'implementazione che più ti si addice.
 
-The most used library and compatible with many frameworks is [i18next](https://www.i18next.com/). **What is i18next?** i18next is an internationalization-framework written in and for JavaScript.
+La libreria più utilizzata e compatibile con molti framework è [i18next](https://www.i18next.com/). **Cos'è i18next?** i18next è un framework di internazionalizzazione scritto in e per JavaScript.
 
-In order to use i18n you have to initialize it and load the translations.
+In order to use i18n you need to install and initialize it.
 
-It is recommended to divide the translations into two parts (See `strings_es.json` tab):
+The translations will be inserted into multiple json files (one json file for each language) with the key value correspondence. Where the key is a unique key of the text (or the text to be translated) and the value is the text that will be displayed. It is recommended to split the translations into two parts (see `strings_es.json` file):
 
-- The [UI](/start/interface.md) texts, that is, the texts that are contained in menus, settings, quick buttons, etc... that is, everything that is not part of the narration.
-- The [narration](/start/narration.md) texts, that is, the texts that are contained in dialogues, monologues, etc...
+- I testi [UI](/start/interface.md), ovvero i testi contenuti nei menu, nelle impostazioni, nei pulsanti rapidi, ecc... cioè tutto ciò che non fa parte della narrazione.
+- The [narration](/start/narration.md) texts, i.e. the texts contained in the dialogues, the texts in the choice menu, etc...
 
 ::: code-group
 
@@ -70,20 +70,20 @@ useI18n()
 
 :::
 
-Depending on what you want to translate, it is recommended to use the following guides:
+A seconda di cosa si desidera tradurre, si consiglia di utilizzare le seguenti guide:
 
-- [Translate the UI](#translate-the-ui)
-- [Translate the narration (TypeScript/JavaScript)](#translate-the-narration-typescriptjavascript)
-- [Translate the narration (_ink_)](/ink/ink-translate.md)
-- Translate the dialogue (Ren'Py) (Under development)
+- [Tradurre l'UI](#translate-the-ui)
+- [Traduci la narrazione (TypeScript/JavaScript)](#translate-the-narration-typescriptjavascript)
+- [Traduci la narrazione (_ink_)](/ink/ink-translate.md)
+- Traduci il dialogo (Ren'Py) (In fase di sviluppo)
 
-## Translate the UI
+## Tradurre l'UI
 
-To translate the UI, you need to use the `t` function that is provided by i18next. The `t` function is a function that will be called with the key of the translation, so you can use it to translate the text.
+Per tradurre l'UI, è necessario utilizzare la funzione `t` fornita da i18next. The `t` function is a function that will be called with the key of the translation, so you can use it to translate the text.
 
 Is recommended to use as translation key the a lowercase string with underscores.
 
-For example in React:
+For example:
 
 ::: code-group
 
