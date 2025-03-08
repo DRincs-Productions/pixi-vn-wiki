@@ -101,7 +101,7 @@ narration.choiceMenuOptions = undefined;
 
 ## How to create the choice menu UI screen
 
-For example:
+Ad esempio:
 
 ( **It's in basic html**, you will need to replace the basic html elements with UI components from your favorite library to improve the graphics. )
 
