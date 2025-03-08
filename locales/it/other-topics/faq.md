@@ -4,7 +4,7 @@
 
 It is recommended to overwrite the `StepLabelProps` interface to add the `navigate` function. `navigate` function is a function that will be called with the URL Path or Route of the next step, so you can use it to navigate to the next UI screen.
 
-For example:
+Ad esempio:
 
 ```typescript
 // pixi-vn.d.ts
@@ -78,7 +78,7 @@ Linking a character to an image to add to the canvas is a common feature in visu
 To do this, you just need to create a [custom character](/start/character.md#custom-character) or modify the existing one (it is already present in the templates).
 I recommend adding an array of strings containing the links/aliases of the images that make up the character (body, head...), and using an [ImageContainer](/start/canvas-image-container.md) when you need to display the character.
 
-For example:
+Ad esempio:
 
 ::: code-group
 
