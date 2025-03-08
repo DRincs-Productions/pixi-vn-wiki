@@ -76,7 +76,7 @@ CDD is not very intuitive and complicated to use. There are very few examples an
 
 With Pixi’VN, you can use PixiJS to create minigames. PixiJS is a very powerful library that allows you to create complex animations and mechanics. The documentation and examples are very detailed and there are many developers using PixiJS.
 
-You can try some Ren'py and PIxiJS minigames to understand the difference:
+You can try some Ren'Py and PIxiJS minigames to understand the difference:
 
 - Ren'Py minigames: <https://itch.io/game-assets/free/tag-minigames/tag-renpy>
 - PixiJS minigames: <https://github.com/pixijs/open-games>
@@ -94,7 +94,7 @@ The performance and size of the project are very important factors to consider w
 
 **Canvas libraries used:**
 
-- [`Pygame_sdl2`](https://github.com/renpy/pygame_sdl2): This canvas is absolutely underperforming. You can test this by inserting lots of moving graphics into Ren'py.
+- [`Pygame_sdl2`](https://github.com/renpy/pygame_sdl2): This canvas is absolutely underperforming. You can test this by inserting lots of moving graphics into Ren'Py.
 - PixiJS: It is based on more modern systems and has great performance. This can be tested directly from this example:
 
 <sandbox
@@ -109,7 +109,7 @@ entry="/src/labels/startLabel.ts"
 
 **Project size:**
 
-- The entire UI of Ren'py is based on "physical images" and this makes the size of the project very large.
+- The entire UI of Ren'Py is based on "physical images" and this makes the size of the project very large.
 - Since Pixi’VN is a library it does not determine the size of the project, but if you use [vite](https://vitejs.dev/) or other tools, the size of the project will be very light.
 
 ## Distribution on multiple devices
@@ -140,7 +140,7 @@ Pixi’VN is an [npm](https://www.npmjs.com/) library that allows you to create 
 
 ## Longevity and ease of internal development
 
-Ren'py born in 2004 and is still used today. It is a very stable and mature project.
+Ren'Py born in 2004 and is still used today. It is a very stable and mature project.
 Ren'Py in addition to including the development of its own library for visual novels also includes the development of `Ren'Py language` and `Pygame_sdl2`. Since Ren'Py also handles the distribution of the project on various devices, it is necessary to keep the system up to date with updates for supported operating systems.
 
 This means that keeping Ren'Py updated is a constant and very complex process that "touches" many types of programming (Parsing, Graphics, etc...).
