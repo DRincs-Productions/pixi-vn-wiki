@@ -2,9 +2,11 @@
 
 <img src="https://tailwindcss.com/_next/static/media/tailwindcss-mark.d52e9897.svg" alt="drawing" width="100" style="margin-top: 10px;" />
 
-**What is Tailwind CSS?** [Tailwind CSS](https://tailwindcss.com/) is a utility-first CSS framework for rapidly building custom designs. It is a low-level framework that provides a set of utility classes that can be used to build custom designs without having to leave the HTML. You can get more information on how install it [here](https://tailwindcss.com/docs/installation).
+**What is Tailwind CSS?** Tailwind CSS is a utility-first CSS framework for rapidly building custom designs. It is a low-level framework that provides a set of utility classes that can be used to build custom designs without having to leave the HTML. You can get more information on how install it [here](https://tailwindcss.com/docs/installation).
 
-it is also possible to install Tailwind CSS Plugins. Here is a list of some of them:
+You can learn more about Tailwind CSS on the [Tailwind CSS website](https://tailwindcss.com/).
+
+It is also possible to install Tailwind CSS Plugins. Here is a list of some of them:
 
 - [Tailwind CSS Motion](https://docs.rombo.co/tailwind): Add animations to your Tailwind CSS project.
 
