@@ -1,6 +1,6 @@
 # Position properties
 
-( Most of the texts and images on this page were copied from Position Properties – [Pos and Anchor](https://feniksdev.com/renpy-position-properties-pos-and-anchor/) and [align, xycenter, and offset](https://feniksdev.com/renpy-position-properties-align-xycenter-and-offset/). Feniks in these two pages explained very well the properties of Ren'py positioning, common to many other canvases including Pixi’VN )
+( Most of the texts and images on this page were copied from Position Properties – [Pos and Anchor](https://feniksdev.com/renpy-position-properties-pos-and-anchor/) and [align, xycenter, and offset](https://feniksdev.com/renpy-position-properties-align-xycenter-and-offset/). Feniks in these two pages explained very well the properties of Ren'Py positioning, common to many other canvases including Pixi’VN )
 
 ---
 
@@ -136,7 +136,7 @@ entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
 
 Until now we have seen positioning methods influenced by [anchor/pivot](#anchor-and-pivot). The disadvantage of these methods is that if for example you want to add your component to the center of the screen you will first have to set the anchor to 0.5 and then set the position to half the width and height of the screen. This is where the align property comes in.
 
-Align is a feature originally created for _**Ren'py**_, which was also introduced in Pixi’VN. Align combines [position](#position-pixel) and [anchor/pivot](#anchor-and-pivot) to give you a more intuitive way to position your components at the beginning, in the center or in the end of the screen.
+Align is a feature originally created for _**Ren'Py**_, which was also introduced in Pixi’VN. Align combines [position](#position-pixel) and [anchor/pivot](#anchor-and-pivot) to give you a more intuitive way to position your components at the beginning, in the center or in the end of the screen.
 
 Align are specified in percentages, from 0.0 to 1.0, in each dimension. For example if you use 0.25 as a percentage, your component will be positioned at 25% of the screen with anchor at 0.25.
 
