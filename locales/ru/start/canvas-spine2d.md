@@ -1,4 +1,4 @@
-# Spine 2D
+# ![icon](/spine.svg){style="width:40px;height:40px;margin-right:10px;float:left;border-radius:10px"} Spine 2D
 
 :::warning This page is under construction
 Currently, this functionality is not available in Pixi'VN, but we plan to implement it. You can follow the development and show your interest in the following thread <https://github.com/DRincs-Productions/pixi-vn/discussions/284>.
