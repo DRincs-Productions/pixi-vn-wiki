@@ -1,5 +1,7 @@
 # Ren'Py Language Integration
 
+<img src="/renpy.svg" alt="drawing" width="100" style="margin-top: 10px;" />
+
 Pixi’VN gives you the ability to write your own narrative using Ren'Py Language.
 
 :::warning This page is under construction
