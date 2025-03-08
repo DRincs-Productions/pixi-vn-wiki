@@ -1,5 +1,7 @@
 # _ink_ Language Integration
 
+<img src="/ink.svg" alt="drawing" width="100" style="margin-top: 10px;" />
+
 Pixi’VN gives you the ability to write your own narrative using _**ink**_, a scripting language for writing interactive narrative.
 
 The **_ink_ + Pixi’VN integration**, exploits the [inkjs](https://github.com/inkle/inkjs) and [PixiVNJson](/other-topics/pixi-vn-json.md) libraries, to parse **_ink_ code** and generate a Json that can be interpreted by Pixi’VN. So Javascript/Typescript and _**ink**_ share the same storage and canvas, and it is also possible to launch _**ink**_ labels (or knots) from Javascript/Typescript and vice versa. This allows you to use the best of both languages. You can use _**ink**_ to write the narration, while using Javascript/Typescript to create minigames or complex animations.
@@ -229,7 +231,7 @@ My name is John // ✅ This will be handled
 - [_ink_ knot (or label)](/ink/ink-label.md)
 - [_ink_ variables](/ink/ink-variables.md)
 - [Markup language in _ink_ (to add text style)](/ink/ink-markup.md)
-- [Use input in _ink_](/ink/ink-input.md)
+- [Use input prompt in _ink_](/ink/ink-input.md)
 - [Use canvas in _ink_](/ink/ink-canvas.md)
 - [Using sounds and music in _ink_](/ink/ink-sound.md)
 - [Using pause in _ink_](/ink/ink-pause.md)
