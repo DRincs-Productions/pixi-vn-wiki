@@ -4,6 +4,8 @@ There are many ways to distribute your game on desktop and mobile devices. You c
 
 However, if you do not want to create a project with large customizations, I recommend using the [multi-device templates](/start/getting-started.md#project-initialization), in which Tauri has been added in order to allow both the development of a Web app and the development of desktop and mobile applications.
 
+## ![icon](/tauri.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Tauri
+
 **What is Tauri?** Tauri is a framework that allows you to create desktop applications with web technologies. Tauri uses **Rust** to create a secure and fast application, and it uses a WebView to render the HTML, CSS, and JavaScript of your application.
 
 You can learn more about Tauri on the [Tauri website](https://v2.tauri.app/).
