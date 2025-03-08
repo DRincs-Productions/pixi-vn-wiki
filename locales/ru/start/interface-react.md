@@ -248,7 +248,7 @@ export default App
 
 :::
 
-## Best React UI component libraries
+## Best React component libraries
 
 To create a beautiful user interface you can use some of the best React UI component libraries:
 
