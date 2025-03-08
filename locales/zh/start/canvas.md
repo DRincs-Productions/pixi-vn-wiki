@@ -1,7 +1,5 @@
 # Game canvas
 
-<img src="https://pixijs.com/images/logo.svg" alt="drawing" width="200" style="margin-top: 10px;" />
-
 Pixi’VN uses [PixiJS](https://pixijs.com/8.x/guides/basics/what-pixijs-is) to render the visual novel. You can use the Pixi’VN API to add images, text, and animations to the canvas PixiJS.
 
 In addition to being able to interact with the canvas from JavaScript/TypeScript, you can also use other narrative languages:
@@ -10,6 +8,8 @@ In addition to being able to interact with the canvas from JavaScript/TypeScript
 - Ren'Py (Under development)
 
 ## What is PixiJS?
+
+<img src="https://pixijs.com/images/logo.svg" alt="drawing" width="200" style="margin-top: 10px;" />
 
 PixiJS is the fastest, most lightweight 2D library available for the web, working across all devices and allowing you to create rich, interactive graphics and cross-platform applications using WebGL and WebGPU. It is fast, flexible, and easy to use. It is used in games like [Good Pizza, Great Pizza](https://www.goodpizzagreatpizza.com/) and [The Enchanted Cave 2](https://store.steampowered.com/app/368610/The_Enchanted_Cave_2/).
 
