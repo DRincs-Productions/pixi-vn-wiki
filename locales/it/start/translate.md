@@ -6,9 +6,7 @@ Nel progetto Pixi'VN è necessario utilizzare librerie esterne per gestire le tr
 
 The most used library and compatible with many frameworks is i18next.
 
-## What is i18next?
-
-<img src="https://translate.i18next.com/i18next.png" alt="drawing" width="100" style="margin-top: 10px;" />
+## ![icon](/i18next.svg){style="width:30px;height:30px;margin-right:5px;float:left"} What is i18next?
 
 i18next is an internationalization-framework written in and for JavaScript. In order to use i18n you need to install and initialize it.
 
@@ -16,7 +14,7 @@ You can learn more about i18next on the [i18next website](https://www.i18next.co
 
 The translations will be inserted into multiple json files (one json file for each language) with the key value correspondence. Where the key is a unique key of the text (or the text to be translated) and the value is the text that will be displayed. It is recommended to split the translations into two parts (see `strings_es.json` file):
 
-- I testi [UI](/start/interface.md), ovvero i testi contenuti nei menu, nelle impostazioni, nei pulsanti rapidi, ecc... cioè tutto ciò che non fa parte della narrazione.
+- The [UI](/start/interface.md) texts, that is, the texts that are contained in menus, settings, quick buttons, etc... that is, everything that is not part of the narration.
 - The [narration](/start/narration.md) texts, i.e. the texts contained in the dialogues, the texts in the choice menu, etc...
 
 ::: code-group
@@ -76,16 +74,16 @@ useI18n()
 
 :::
 
-A seconda di cosa si desidera tradurre, si consiglia di utilizzare le seguenti guide:
+Depending on what you want to translate, it is recommended to use the following guides:
 
-- [Tradurre l'UI](#translate-the-ui)
-- [Traduci la narrazione (TypeScript/JavaScript)](#translate-the-narration-typescriptjavascript)
-- [Traduci la narrazione (_ink_)](/ink/ink-translate.md)
-- Traduci il dialogo (Ren'Py) (In fase di sviluppo)
+- [Translate the UI](#translate-the-ui)
+- [Translate the narration (TypeScript/JavaScript)](#translate-the-narration-typescriptjavascript)
+- [Translate the narration (_ink_)](/ink/ink-translate.md)
+- Translate the dialogue (Ren'Py) (Under development)
 
-## Tradurre l'UI
+## Translate the UI
 
-Per tradurre l'UI, è necessario utilizzare la funzione `t` fornita da i18next. The `t` function is a function that will be called with the key of the translation, so you can use it to translate the text.
+To translate the UI, you need to use the `t` function that is provided by i18next. The `t` function is a function that will be called with the key of the translation, so you can use it to translate the text.
 
 Is recommended to use as translation key the a lowercase string with underscores.
 
