@@ -167,8 +167,8 @@ The narration outside the knots (or labels) will be ignored, except for variable
 
 ```ink [ink]
 VAR my_var = false // ✅ This will be handled (because it is a variable)
-Hello // ❌ This will be ignored // [!code warning]
--> start // ❌ This will be ignored // [!code warning]
+Hello // ❌ This will be ignored [!code warning]
+-> start // ❌ This will be ignored [!code warning]
 === start === // ✅ This will be handled
 My name is John // ✅ This will be handled
 -> DONE // ✅ This will be handled
