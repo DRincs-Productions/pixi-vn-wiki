@@ -8,9 +8,7 @@ If you are creating a visual novel, it is recommended to only keep assets that a
 
 It is also very important that you read this documentation to better [organize the uploading of your assets](/start/assets-management.md).
 
-## PixiJS AssetPack
-
-![logo-main](https://github.com/user-attachments/assets/8e5a1437-e446-4b2d-9b9d-ff0898472086)
+## ![icon](/pixijs-assetpack.svg){style="width:30px;height:30px;margin-right:5px;float:left;border-radius:5px"} PixiJS AssetPack
 
 AssetPack is a tool for optimising assets for the web. It can be used to transform, combine, compress assets. Any asset that you want to transform or optimise into something else can be done with AssetPack.
 
