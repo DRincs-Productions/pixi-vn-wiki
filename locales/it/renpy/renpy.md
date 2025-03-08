@@ -10,9 +10,9 @@ Ren'Py integration is in development. You can follow the development and show yo
 
 **What is Ren'Py Language?**
 
-Ren'Py Language is a scripting language for writing interactive narrative. It is used in games like Doki Doki Literature Club, Katawa Shoujo, and Long Live the Queen to create branching stories.
+Ren'Py Language is a scripting language for writing interactive narrative. It is used in games like Doki Doki Literature Club, Katawa Shoujo, and Long Live the Queen to create branching stories. Ren'Py Language is used in Ren'Py, a visual novel engine that helps you to create visual novels and story-based games.
 
-Ren'Py Language is used in Ren'Py, a visual novel engine that helps you to create visual novels and story-based games. You can learn more about it on the [Ren'Py website](https://www.renpy.org/).
+You can learn more about Ren'Py on the [Ren'Py website](https://www.renpy.org/).
 
 ## Why use Ren'Py integration?
 
