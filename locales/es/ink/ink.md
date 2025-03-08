@@ -8,9 +8,9 @@ The **_ink_ + Pixi’VN integration**, exploits the [inkjs](https://github.com/i
 
 **What is _ink_?**
 
-_**ink**_ is a scripting language for writing interactive narrative. It is used in games like 80 Days, Heaven's Vault, and Sorcery! to create branching stories.
+_**ink**_ is a scripting language for writing interactive narrative. It is used in games like 80 Days, Heaven's Vault, and Sorcery! to create branching stories. This language is very simple to learn.
 
-This language is very simple to learn. Go on [_ink_ website](https://www.inklestudios.com/ink/) to learn more about it.
+You can learn more about _ink_ on the [_ink_ website](https://www.inklestudios.com/ink/).
 
 ```ink [ink/start.ink]
 === start ===
