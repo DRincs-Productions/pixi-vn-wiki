@@ -75,9 +75,7 @@ You can get all the system variables keys with the `SYSTEM_RESERVED_STORAGE_KEYS
 
 <!-- TODO Temp storage -->
 
-## Keyv
-
-<img src="https://keyv.org/logo.svg" alt="drawing" width="100" style="margin-top: 10px;" />
+## ![icon](/keyv.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Keyv
 
 The entire storage system was developed using Map, a native JavaScript object, so you can use Keyv interact with game storage.
 
