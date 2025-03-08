@@ -4,9 +4,13 @@ Nelle visual novel o in altri tipi di giochi è comune avere la possibilità di 
 
 Nel progetto Pixi'VN è necessario utilizzare librerie esterne per gestire le traduzioni. Quindi sei libero di scegliere l'implementazione che più ti si addice.
 
-La libreria più utilizzata e compatibile con molti framework è [i18next](https://www.i18next.com/). **Cos'è i18next?** i18next è un framework di internazionalizzazione scritto in e per JavaScript.
+The most used library and compatible with many frameworks is [i18next](https://www.i18next.com/).
 
-In order to use i18n you need to install and initialize it.
+## What is i18next?
+
+<img src="https://translate.i18next.com/i18next.png" alt="drawing" width="100" style="margin-top: 10px;" />
+
+i18next is an internationalization-framework written in and for JavaScript. In order to use i18n you need to install and initialize it.
 
 The translations will be inserted into multiple json files (one json file for each language) with the key value correspondence. Where the key is a unique key of the text (or the text to be translated) and the value is the text that will be displayed. It is recommended to split the translations into two parts (see `strings_es.json` file):
 
