@@ -9,7 +9,7 @@ Pixi’VN can be integrated with JSON files to create a visual novel. This metho
 
 ```mermaid
 flowchart LR;
-    K@{ img: "/renpy.svg", label: "Ren'py", pos: "b", w: 90, h: 90, constraint: "on" }---->Json;
+    K@{ img: "/renpy.svg", label: "Ren'Py", pos: "b", w: 90, h: 90, constraint: "on" }---->Json;
     H@{ img: "/ink.svg", label: "ink", pos: "b", w: 90, h: 90, constraint: "on" }---->Json;
     I@{ img: "/twine.svg", label: "Twine", pos: "b", w: 90, h: 90, constraint: "on" }---->Json;
     J@{ img: "/yarn-spinner.svg", label: "Yarn Spinner", pos: "b", w: 90, h: 90, constraint: "on" }---->Json;
