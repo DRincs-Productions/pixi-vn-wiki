@@ -103,7 +103,7 @@ jobs:
 
 :::
 
-To activate this procedure you need to have your own project on GitHub and create a tag on git that starts with the letter "v". For example:
+To activate this procedure you need to have your own project on GitHub and create a tag on git that starts with the letter "v". Ad esempio:
 
 ```bash
 git tag v1.0.0
