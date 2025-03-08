@@ -1,5 +1,7 @@
 # Markdown
 
+<img src="https://upload.wikimedia.org/wikipedia/commons/4/48/Markdown-mark.svg" alt="drawing" width="100" style="margin-top: 10px; background-color: white; border-radius: 10px;" />
+
 **Markdown** is a lightweight markup language for creating formatted text using a plain-text editor. John Gruber created Markdown in 2004, in collaboration with Aaron Swartz, as a markup language that is intended to be easy to read in its source code form. Markdown is widely used for blogging and instant messaging, and also used elsewhere in online forums, collaborative software, documentation pages, and readme files.
 
 Pixi’VN is not tied to any Markup, and gives the developer the ability to choose the Markup he prefers. However, it is recommended to use Markdown.
