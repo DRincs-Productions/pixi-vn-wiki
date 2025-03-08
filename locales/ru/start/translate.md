@@ -14,8 +14,8 @@ You can learn more about i18next on the [i18next website](https://www.i18next.co
 
 The translations will be inserted into multiple json files (one json file for each language) with the key value correspondence. Where the key is a unique key of the text (or the text to be translated) and the value is the text that will be displayed. It is recommended to split the translations into two parts (see `strings_es.json` file):
 
-- The [UI](/start/interface.md) texts, that is, the texts that are contained in menus, settings, quick buttons, etc... that is, everything that is not part of the narration.
-- The [narration](/start/narration.md) texts, i.e. the texts contained in the dialogues, the texts in the choice menu, etc...
+- The [UI](/start/interface.md) texts, that is, the texts that are contained in screens, settings, quick buttons, etc... that is, everything that is not part of the narration.
+- The [narration](/start/narration.md) texts, i.e. the texts contained in the dialogues, in the choice menu, etc...
 
 ::: code-group
 
@@ -79,13 +79,11 @@ Depending on what you want to translate, it is recommended to use the following 
 - [Translate the UI](#translate-the-ui)
 - [Translate the narration (TypeScript/JavaScript)](#translate-the-narration-typescriptjavascript)
 - [Translate the narration (_ink_)](/ink/ink-translate.md)
-- Translate the dialogue (Ren'Py) (Under development)
+- Translate the narration (Ren'Py) (Under development)
 
 ## Translate the UI
 
-To translate the UI, you need to use the `t` function that is provided by i18next. The `t` function is a function that will be called with the key of the translation, so you can use it to translate the text.
-
-Is recommended to use as translation key the a lowercase string with underscores.
+To translate the UI, you need to use the `t` function that is provided by i18next. The `t` function is a function that will be called by passing the key as input to get the corresponding text in the player's language.
 
 For example:
 
