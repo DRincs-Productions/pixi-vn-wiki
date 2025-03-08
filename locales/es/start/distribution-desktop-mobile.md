@@ -6,6 +6,8 @@ However, if you do not want to create a project with large customizations, I rec
 
 **What is Tauri?** Tauri is a framework that allows you to create desktop applications with web technologies. Tauri uses **Rust** to create a secure and fast application, and it uses a WebView to render the HTML, CSS, and JavaScript of your application.
 
+You can learn more about Tauri on the [Tauri website](https://v2.tauri.app/).
+
 ## How to distribute your game with Tauri
 
 Generating releases manually for all devices is not an easy process, because it requires installing many programs and for iOS applications you need a mac. Precisely for this reason it is not recommended. (You can get more information on how to manually generate releases [here](https://v2.tauri.app/distribute/))
