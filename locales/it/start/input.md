@@ -79,7 +79,7 @@ narration.removeInputRequest()
 
 ## How to create the input prompt dialog UI
 
-For example:
+Ad esempio:
 
 ( **It's in basic html**, you will need to replace the basic html elements with UI components from your favorite library to improve the graphics. )
 
