@@ -12,10 +12,10 @@ i18next è un framework di internazionalizzazione scritto in e per JavaScript. P
 
 Puoi saperne di più su i18next sul [sito web di i18next](https://www.i18next.com/).
 
-The translations will be inserted into multiple json files (one json file for each language) with the key value correspondence. Where the key is a unique key of the text (or the text to be translated) and the value is the text that will be displayed. It is recommended to split the translations into two parts (see `strings_es.json` file):
+Le traduzioni verranno inserite in più file json (un file json per ogni lingua) con la corrispondenza chiave-valore. Where the key is a unique key of the text (or the text to be translated) and the value is the text that will be displayed. Si consiglia di dividere le traduzioni in due parti (guarda il file `strings_es.json`):
 
-- The [UI](/start/interface.md) texts, that is, the texts that are contained in menus, settings, quick buttons, etc... that is, everything that is not part of the narration.
-- The [narration](/start/narration.md) texts, i.e. the texts contained in the dialogues, the texts in the choice menu, etc...
+- The [UI](/start/interface.md) texts, that is, the texts that are contained in screens, settings, quick buttons, etc... cioè tutto ciò che non fa parte della narrazione.
+- The [narration](/start/narration.md) texts, i.e. the texts contained in the dialogues, in the choice menu, etc...
 
 ::: code-group
 
@@ -74,20 +74,18 @@ useI18n()
 
 :::
 
-Depending on what you want to translate, it is recommended to use the following guides:
+A seconda di cosa si desidera tradurre, si consiglia di utilizzare le seguenti guide:
 
-- [Translate the UI](#translate-the-ui)
-- [Translate the narration (TypeScript/JavaScript)](#translate-the-narration-typescriptjavascript)
-- [Translate the narration (_ink_)](/ink/ink-translate.md)
-- Translate the dialogue (Ren'Py) (Under development)
+- [Tradurre l'interfaccia utente](#translate-the-ui)
+- [Traduci la narrazione (TypeScript/JavaScript)](#translate-the-narration-typescriptjavascript)
+- [Traduci la narrazione (_ink_)](/ink/ink-translate.md)
+- Translate the narration (Ren'Py) (Under development)
 
-## Translate the UI
+## Tradurre l'UI
 
-To translate the UI, you need to use the `t` function that is provided by i18next. The `t` function is a function that will be called with the key of the translation, so you can use it to translate the text.
+Per tradurre l'UI, è necessario utilizzare la funzione `t` fornita da i18next. The `t` function is a function that will be called by passing the key as input to get the corresponding text in the player's language.
 
-Is recommended to use as translation key the a lowercase string with underscores.
-
-For example:
+Ad esempio:
 
 ::: code-group
 
@@ -131,9 +129,9 @@ export default function MyComponent() {
 
 :::
 
-## Translate the narration (TypeScript/JavaScript)
+## Tradurre la narrazione (TypeScript/JavaScript)
 
-To translate the UI, you need overwrite the `StepLabelProps` interface to add the `t` function. The `t` function is a function that will be called with the key of the translation, so you can use it to translate the text.
+Per tradurre l'interfaccia utente, è necessario sovrascrivere l'interfaccia `StepLabelProps` per aggiungere la funzione `t`. The `t` function is a function that will be called with the key of the translation, so you can use it to translate the text.
 
 This way you can use the `t` function in [labels](/start/labels.md) to translate the text. It is recommended to use `t` inside the [label](/start/labels.md) and not when the UI is displayed, because this way you can use the [i18n Interpolation](https://i18next.com/translation-function/interpolation).
 
