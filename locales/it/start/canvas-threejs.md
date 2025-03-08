@@ -4,7 +4,9 @@
 Currently, this functionality is not available in Pixi'VN, but we plan to implement it. You can follow the development and show your interest in the following thread <https://github.com/DRincs-Productions/pixi-vn/discussions/347>.
 :::
 
-**What is [Three.js](https://threejs.org/)?** Three.js is a JavaScript library that makes it easy to render 3D graphics in a web browser. It uses WebGL to render 3D graphics in the browser. Three.js is a popular choice for creating 3D graphics on the web.
+**What is Three.js?** Three.js is a JavaScript library that makes it easy to render 3D graphics in a web browser. It uses WebGL to render 3D graphics in the browser. Three.js is a popular choice for creating 3D graphics on the web.
+
+You can learn more about Three.js on the [Three.js website](https://threejs.org/).
 
 Having the ability interact with 3D elements can be very useful in many cases.
 
