@@ -20,7 +20,7 @@ You are completely free to store images however you want.
 
 The main possibilities are the following:
 
-### Github
+### ![icon](/github.svg){style="width:30px;height:30px;margin-right:5px;float:left;border-radius:50%;background-color:white"} Github
 
 You can use Github to host your assets. You can use the raw link of the file to use it in your project. The link will be in the following format: `https://github.com/[repository]/raw/refs/heads/main/[file path]`
 
@@ -40,7 +40,7 @@ Image hosting is a service that allows you to upload images for free. There are 
 - **Traffic**: Speed is good.
 - **Edit assets**: You can't edit the file keeping the same url.
 
-### Firebase Storage
+### ![icon](/firebase.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Firebase Storage
 
 Firebase Storage is a cloud service that allows you to store and serve user-generated content, such as photos or videos or other files. You can use the public URL of the file to use it in your project.
 
@@ -55,7 +55,7 @@ Firebase Storage is a cloud service that allows you to store and serve user-gene
 - Install [gcloud CLI](https://cloud.google.com/sdk/docs/install)
 - Read this [documentation](https://medium.com/@we.viavek/setting-cors-in-firebase-19a2cce2fe28) to solve the CORS issue.
 
-### Amazon S3
+### ![icon](/aws.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Amazon S3
 
 Amazon S3 is a cloud service that allows you to store and serve user-generated content, such as photos or videos or other files. You can use the public URL of the file to use it in your project.
 
@@ -65,7 +65,7 @@ Amazon S3 is a cloud service that allows you to store and serve user-generated c
 - **Traffic**: Speed is good.
 - **Edit assets**: You can edit the file keeping the same url.
 
-### Supabase
+### ![icon](/supabase.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Supabase
 
 Supabase is an open-source Firebase alternative. You can use the public URL of the file to use it in your project.
 
