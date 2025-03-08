@@ -1,6 +1,4 @@
-# Vue UI
-
-<img src="https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fvue-logo.png?alt=media" alt="drawing" width="200" style="margin-top: 10px;" />
+# ![icon](/vue.svg){style="width:40px;height:40px;margin-right:10px;float:left"} Vue UI
 
 [Vue](https://vuejs.org/) is a progressive framework for building user interfaces. It is designed from the ground up to be incrementally adoptable, and can easily scale between a library and a framework.
 
