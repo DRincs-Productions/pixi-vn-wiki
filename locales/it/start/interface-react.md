@@ -1,20 +1,20 @@
-# ![icon](/react.svg){style="width:40px;height:40px;margin-right:10px;float:left"} React UI
+# ![icon](/react.svg){style="width:40px;height:40px;margin-right:10px;float:left"} Interfaccia utente React
 
 **What is React?** React is the library for web and native user interfaces. Build user interfaces out of individual pieces called components written in JavaScript.
 
 You can learn more about React on the [React website](https://react.dev/).
 
-## How add Pixi’VN to a React application
+## Come aggiungere Pixi’VN a un’applicazione React
 
-:::info React template
-There are some Pixi’VN templates available that use React. You can read more about them in the [templates](/start/getting-started.md#project-initialization) section.
+:::info Template React
+Sono disponibili alcuni modelli Pixi'VN che utilizzano React. Per ulteriori informazioni, consulta la sezione [templates](/start/getting-started.md#project-initialization).
 
-Instead if you want to add Pixi’VN to an existing React application, you can follow the steps below.
+Se invece vuoi aggiungere Pixi'VN a un'applicazione React esistente, puoi seguire i passaggi seguenti.
 :::
 
-First of all you need to have a React application and [install pixi-vn](/start/getting-started.md#installation). Is recommended to use [Vite](https://vite.dev/guide/#scaffolding-your-first-vite-project) to create a new React application.
+Prima di tutto devi avere un'applicazione React e [installare pixi-vn](/start/getting-started.md#installation). Si consiglia di utilizzare [Vite](https://vite.dev/guide/#scaffolding-your-first-vite-project) per creare una nuova applicazione React.
 
-Now you can replace the content of following files with the code below:
+Ora puoi sostituire il contenuto dei seguenti file con il codice seguente:
 
 ::: code-group
 
@@ -248,9 +248,9 @@ export default App
 
 :::
 
-## Best React UI component libraries
+## Best React component libraries
 
-To create a beautiful user interface you can use some of the best React UI component libraries:
+Per creare una bella interfaccia utente puoi utilizzare alcune delle migliori librerie di componenti React UI:
 
 - [MUI](https://mui.com/)
 - [React Bootstrap](https://react-bootstrap.github.io/)
