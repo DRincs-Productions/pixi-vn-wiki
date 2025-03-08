@@ -116,7 +116,7 @@ export default class CharacterBaseModel extends StoredClassModel implements Char
 
 ## Use characters in the game
 
-You can use game characters for example to [link it to the current dialogue](/start/dialogue#set-the-current-dialogue). You can use the character's `id` or the character's instance, but it is recommended to use the instance.
+You can use game character for example to [link it to the current dialogue](/start/dialogue#set-the-current-dialogue). You can use the character's `id` or the character's instance, but it is recommended to use the instance.
 
 ```typescript [characters.ts]
 export const liam = new CharacterBaseModel('liam_id', {
