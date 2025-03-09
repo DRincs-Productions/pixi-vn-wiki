@@ -1,16 +1,16 @@
 # Assets
 
-**What are assets?** The assets are all the files that are not code, such as images, sounds, and videos.
+**Cosa sono gli assets?** Gli assets sono tutti i file che non sono codice, come immagini, suoni e video.
 
-È possibile utilizzare risorse salvate localmente nel progetto oppure online (per la seconda opzione, è necessario assicurarsi che il servizio cloud utilizzato consenta le _richieste CORS_). Of course, if your assets are online, a requirement of the game will be to be connected online. Then you will have to notify the user and block the game where there is no connection.
+È possibile utilizzare risorse salvate localmente nel progetto oppure online (per la seconda opzione, è necessario assicurarsi che il servizio cloud utilizzato consenta le _richieste CORS_). Naturalmente, se i tuoi assets sono online, uno dei requisiti del gioco sarà la connessione online. Successivamente dovrai avvisare l'utente e bloccare il gioco in assenza di connessione.
 
-If you are creating a visual novel, it is recommended to only keep assets that are used frequently locally. On the contrary, it is recommended to publish resources that are used only once in the online game.
+Se stai creando una visual novel, è consigliabile conservare localmente solo gli assets che utilizzi frequentemente. On the contrary, it is recommended to publish resources that are used only once in the online game.
 
-It is also very important that you read this documentation to better [organize the uploading of your assets](/start/assets-management.md).
+È inoltre molto importante leggere questa documentazione per [organizzare al meglio il caricamento delle risorse](/start/assets-management.md).
 
 ## ![icon](/pixijs-assetpack.svg){style="width:30px;height:30px;margin-right:5px;float:left;border-radius:5px"} PixiJS AssetPack
 
-AssetPack is a tool for optimising assets for the web. It can be used to transform, combine, compress assets. Any asset that you want to transform or optimise into something else can be done with AssetPack.
+AssetPack è uno strumento per ottimizzare gli assets per il web. It can be used to transform, combine, compress assets. Any asset that you want to transform or optimise into something else can be done with AssetPack.
 
 If you want to use AssetPack, you can find the documentation [here](https://pixijs.io/assetpack)
 
