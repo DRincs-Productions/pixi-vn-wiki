@@ -1,6 +1,6 @@
 # ![icon](/react.svg){style="width:40px;height:40px;margin-right:10px;float:left"} React UI
 
-**What is React?** React is the library for web and native user interfaces. Build user interfaces out of individual pieces called components written in JavaScript.
+**What is React?** React is a JavaScript library that helps developers create user interfaces (UIs) for websites, apps, and more. It's free and open-source, and is maintained by Meta (formerly Facebook) and a community of developers.
 
 You can learn more about React on the [React website](https://react.dev/).
 
