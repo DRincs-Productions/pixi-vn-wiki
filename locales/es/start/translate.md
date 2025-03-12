@@ -106,7 +106,7 @@ export default function MyComponent() {
 ```vue [Vue]
 <script setup>
     import { useTranslation } from "i18next-vue";
-    const { t } = useTranslation();
+    const { t } = useTranslation("ui");
 </script>
 
 <template>
@@ -119,7 +119,7 @@ export default function MyComponent() {
 ```svelte [Svelte]
 <script>
     import { useTranslation } from 'svelte-i18n';
-    const { t } = useTranslation();
+    const { t } = useTranslation("ui");
 </script>
 
 <div>
