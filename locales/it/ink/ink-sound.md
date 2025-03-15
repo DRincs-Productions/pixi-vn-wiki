@@ -2,7 +2,7 @@
 
 The **_ink_ + Pixi’VN integration** introduces the a # script that allows you to use the [sounds and music](/start/sound.md).
 
-The syntax is as follows:
+La sintassi è la seguente:
 
 `#` + `[operation]` + `sound` + `[alias]` + `[parameters]`
 
@@ -30,7 +30,7 @@ entry="/src/ink/start.ink,/src/utils/assets-utility.ts"
 
 You can use the `play` to play a sound in _**ink**_.
 
-The syntax is as follows:
+La sintassi è la seguente:
 
 `#` + `play` + `sound` + `[alias]` + `[parameters]`
 
@@ -62,7 +62,7 @@ export async function defineAssets() {
 
 To pause a sound in _**ink**_, you can use the `pause` operation.
 
-The syntax is as follows:
+La sintassi è la seguente:
 
 `#` + `pause` + `sound` + `[alias]`
 
@@ -74,7 +74,7 @@ The syntax is as follows:
 
 To resume a sound in _**ink**_, you can use the `resume` operation.
 
-The syntax is as follows:
+La sintassi è la seguente:
 
 `#` + `resume` + `sound` + `[alias]`
 
@@ -86,7 +86,7 @@ The syntax is as follows:
 
 To remove a sound in _**ink**_, you can use the `stop` operation.
 
-The syntax is as follows:
+La sintassi è la seguente:
 
 `#` + `stop` + `sound` + `[alias]`
 
@@ -98,7 +98,7 @@ The syntax is as follows:
 
 To change the volume of a sound in _**ink**_, you can use the `volume` operation.
 
-The syntax is as follows:
+La sintassi è la seguente:
 
 `#` + `volume` + `sound` + `[alias]` + `[number]`
 
