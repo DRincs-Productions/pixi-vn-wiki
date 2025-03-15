@@ -11,7 +11,7 @@ Hello, world!
 
 You can use the `pause` to stop the execution of the steps and set the dialogue text to empty.
 
-The syntax is as follows:
+La sintassi è la seguente:
 
 `#` + `pause`
 
