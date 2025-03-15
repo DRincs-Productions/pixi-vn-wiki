@@ -28,7 +28,7 @@ hero:
     <span>Come vuoi!!!</span>
   </h2>
 
-Scrivete la vostra storia nel linguaggio narrativo che preferite. Such as _ink_ or Ren'Py or TS/JS. <br />
+Scrivete la vostra storia nel linguaggio narrativo che preferite. Ad esempio _ink_ o Ren'Py o TS/JS. <br />
 In tutti i casi è possibile interagire con il canvas e i suoni o creare script narrativi personalizzati. <br />
 Per saperne di più, clicca [qui](/start/narration.md).
 
