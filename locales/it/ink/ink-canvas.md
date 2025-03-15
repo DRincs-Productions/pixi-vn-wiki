@@ -2,7 +2,7 @@
 
 The **_ink_ + Pixi’VN integration** introduces the a # script that allows you to show, edit, remove and etc. a [canvas component](/start/canvas-components.md).
 
-The syntax is as follows:
+La sintassi è la seguente:
 
 `#` + `[operation]` + `[type of the canvas component]` + `[alias]` + `[parameters]`
 
@@ -36,7 +36,7 @@ You can use the `show` to show a [canvas component](/start/canvas-components.md)
 
 Is raccomended to [initialize the asset matrix at project start](/start/assets-management.md#initialize-the-asset-matrix-at-project-start) to use the alias of texture in `[URL/path of the image]`.
 
-The syntax is as follows:
+La sintassi è la seguente:
 
 `#` + `show` + `[type of the canvas component]` + `[alias]` + `[URL/path of the image]` + `[parameters]`
 
@@ -121,7 +121,7 @@ If you want to show the canvas component with a [transition](/start/canvas-trans
 
 After the `transitionType`, you can add the `transition parameters`. the `transition parameters` must be set as follows: `parameterName` + `SPACE` + `value`. If the `value` is a string and includes spaces, you must use double quotes.
 
-The syntax is as follows:
+La sintassi è la seguente:
 
 `#` + `show` + `[type of the canvas component]` + `[alias]` + `[URL/path of the image]` + `[parameters]` + `with` + `[transitionType]` + `[transition parameters]`
 
@@ -164,7 +164,7 @@ export async function defineAssets() {
 
 You can use the `edit` to edit a [canvas component](/start/canvas-components.md) in _**ink**_.
 
-The syntax is as follows:
+La sintassi è la seguente:
 
 `#` + `edit` + `[type of the canvas component]` + `[alias]` + `[parameters]`
 
@@ -178,7 +178,7 @@ The syntax is as follows:
 
 You can use the `remove` to remove a [canvas component](/start/canvas-components.md) in _**ink**_.
 
-The syntax is as follows:
+La sintassi è la seguente:
 
 `#` + `remove` + `[type of the canvas component]` + `[alias]`
 
@@ -195,7 +195,7 @@ If you want to remove the canvas component with a [transition](/start/canvas-tra
 
 After the `transitionType`, you can add the `transition parameters`. the `transition parameters` must be set as follows: `parameterName` + `SPACE` + `value`. If the `value` is a string and includes spaces, you must use double quotes.
 
-The syntax is as follows:
+La sintassi è la seguente:
 
 `#` + `remove` + `[type of the canvas component]` + `[alias]` + `with` + `[transitionType]` + `[transition parameters]`
 
@@ -220,7 +220,7 @@ temp durationVar = 3
 
 You can use the `[effectType]` to use the [effects](/start/canvas-animations-effects.md) in _**ink**_.
 
-The syntax is as follows:
+La sintassi è la seguente:
 
 `#` + `[effectType]` + `[alias]` + `[parameters]`
 
@@ -282,7 +282,7 @@ entry="/src/ink/start.ink,/src/utils/assets-utility.ts"
 
 To pause a video in _**ink**_, you can use `pause`.
 
-The syntax is as follows:
+La sintassi è la seguente:
 
 `#` + `pause` + `video` + `[alias]`
 
@@ -295,7 +295,7 @@ The syntax is as follows:
 
 To resume a video in _**ink**_, you can use `resume`.
 
-The syntax is as follows:
+La sintassi è la seguente:
 
 `#` + `resume` + `video` + `[alias]`
 
