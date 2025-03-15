@@ -2,7 +2,7 @@
 
 The **_ink_ + Pixi’VN integration** introduces the a # script that allows you to request an [input prompt](/start/input.md) from the user.
 
-The syntax is as follows:
+La sintassi è la seguente:
 
 `#` + `[operation]` + `input` + `[parameters]`
 
