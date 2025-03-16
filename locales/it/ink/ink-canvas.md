@@ -40,7 +40,7 @@ La sintassi è la seguente:
 
 `#` + `show` + `[type of the canvas component]` + `[alias]` + `[URL/path of the image]` + `[parameters]`
 
-- `[URL/path of the image]` (Optional): It is the URL/path of the image that you want to show. If you have initialized the asset matrix at project start, you can use the alias of the texture. If you don't provide the URL/path of the image, this parameter is equal to `[alias]`. Keep in mind that to write `https://` in _**ink**_ you must use `https:\/\/` because the `//` is considered a comment in _**ink**_.
+- `[URL/path of the image]` (Optional): It is the URL/path of the image that you want to show. If you have initialized the asset matrix at project start, you can use the alias of the texture. If you don't provide the URL/path of the image, this parameter is equal to `[alias]`. Tieni presente che per scrivere `https://` in _**ink**_ devi usare `https:\/\/` perché `//` è considerato un commento in _**ink**_.
 - `[parameters]` (Optional): Afer the URL/path of the image, you can add the `parameters` of the [canvas component](/start/canvas-components.md) that you want to set. The `parameters` must be set as follows: `parameterName` + `SPACE` + `value`. If the `value` is a string and includes spaces, you must use double quotes.
 
 :::tabs
@@ -71,7 +71,7 @@ export async function defineAssets() {
 
 Since the container contains a list of images, the command to show a container accepts a list of strings instead of accepting a string:
 
-- `[list of URL/path of the image]`: It is the list of URL/path of the images that you want to show. If you have initialized the [asset matrix](/start/assets-management.md#initialize-the-asset-matrix-at-project-start), you can use the alias of the texture. Keep in mind that to write `https://` in _**ink**_ you must use `https:\/\/` because the `//` is considered a comment in _**ink**_.
+- `[list of URL/path of the image]`: It is the list of URL/path of the images that you want to show. If you have initialized the [asset matrix](/start/assets-management.md#initialize-the-asset-matrix-at-project-start), you can use the alias of the texture. Tieni presente che per scrivere `https://` in _**ink**_ devi usare `https:\/\/` perché `//` è considerato un commento in _**ink**_.
 
 :::tabs
 \== start.ink
