@@ -9,7 +9,7 @@ La sintassi è la seguente:
 `#` + `load` + `assets` + `[list of URL/path of the image]`
 
 - `#`: It is a special character used by **_ink_ syntax** for use a special script.
-- `[list of URL/path of the image]`: It is the list of URL/path of the images that you want to show. If you have initialized the [asset matrix](/start/assets-management.md#initialize-the-asset-matrix-at-project-start), you can use the alias of the texture. Keep in mind that to write `https://` in _**ink**_ you must use `https:\/\/` because the `//` is considered a comment in _**ink**_.
+- `[list of URL/path of the image]`: It is the list of URL/path of the images that you want to show. If you have initialized the [asset matrix](/start/assets-management.md#initialize-the-asset-matrix-at-project-start), you can use the alias of the texture. Tieni presente che per scrivere `https://` in _**ink**_ devi usare `https:\/\/` perché `//` è considerato un commento in _**ink**_.
 
 :::tabs
 \== start.ink
