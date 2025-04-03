@@ -72,7 +72,7 @@ narration.goBack({})
         queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] })
     });
 
-loadSaveJson(jsonString, navigate)
+Game.restoreGameState(jsonString, navigate)
     .then(() => {
         queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] })
     })
