@@ -4,15 +4,15 @@ The save and load system is a feature that allows the player to save the game pr
 
 ## Save
 
-Pixi’VN provides a function to save the game progress. The `getSaveData` function saves the current game state, including the current step, variables, and other game data in a object.
+Pixi’VN provides a function to save the game progress. The `Game.exportGameState` function saves the current game state, including the current step, variables, and other game data in a object.
 
-If you want to save the game progress into a json string, you can use the `getSaveJson` function. This function returns a json string. The decision to **encrypt and/or compress** the save is a developer's decision.
+The decision to **encrypt and/or compress** the save is a developer's decision.
 
 A exemple of how to save the game progress:
 
 ```typescript
 export function saveGame() {
-    const jsonString = getSaveJson()
+    const jsonString = JSON.stringify(Game.exportGameState())
     // download the save data as a JSON file
     const blob = new Blob([jsonString], { type: "application/json" });
     // download the file
@@ -26,9 +26,9 @@ export function saveGame() {
 
 ## Load
 
-To load the game progress, you can use the `loadSaveData` function. This function receives a object with the game data and a function `navigate: (path: string) => void` that will be called with the [URL Path or Route](/start/interface.md#what-is-the-url-path-and-routes) of the saved step, so you can use it to navigate to the saved [UI screen](/start/interface-navigate.md).
+To load the game progress, you can use the `Game.restoreGameState` function. This function receives a object with the game data and a function `navigate: (path: string) => void` that will be called with the [URL Path or Route](/start/interface.md#what-is-the-url-path-and-routes) of the saved step, so you can use it to navigate to the saved [UI screen](/start/interface-navigate.md).
 
-If you want to load the game progress from a json string, you can use the `loadSaveJson` function.
+If you want to load the game progress from a json string, you can use the `Game.restoreGameState` function.
 
 A exemple of how to load the game progress:
 
@@ -45,7 +45,7 @@ export function loadGameSave(navigate: (path: string) => void, afterLoad?: () =>
             reader.onload = (e) => {
                 const jsonString = e.target?.result as string;
                 // load the save data from the JSON string
-                loadSaveJson(jsonString, navigate).then(() => {
+                Game.restoreGameState(jsonString, navigate).then(() => {
                     afterLoad && afterLoad();
                 });
             };
@@ -58,12 +58,12 @@ export function loadGameSave(navigate: (path: string) => void, afterLoad?: () =>
 
 ## Convert JSON to Save Data
 
-If you want to convert a JSON string to a save data object, you can use the `jsonToSaveData` function.
+If you want to convert a JSON string to a save data object, you can use the `Game.jsonToGameState` function.
 
 A exemple of how to convert a JSON string to a save data object:
 
 ```typescript
-const saveData = jsonToSaveData(jsonString);
+const saveData = Game.jsonToGameState(jsonString);
 ```
 
 ## Get Pixi’VN version of the save data
@@ -71,7 +71,7 @@ const saveData = jsonToSaveData(jsonString);
 Pixi’VN add your own version in the save data object. You can access it by the `version` property.
 
 ```typescript
-const saveData = jsonToSaveData(jsonString);
+const saveData = Game.jsonToGameState(jsonString);
 console.log(saveData.version);
 ```
 
