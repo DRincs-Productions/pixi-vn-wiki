@@ -12,10 +12,10 @@ Example ( This solution also prevents the loss of data when the page is closed )
 
 ```ts
 // ActionsUtility.ts
-import { narration, getSaveJson, loadSaveJson } from "@drincs/pixi-vn";
+import { narration, Game } from "@drincs/pixi-vn";
 
 export function addRefreshSave() {
-    const jsonString = getSaveJson()
+    const jsonString = JSON.stringify(Game.exportGameState())
     if (jsonString) {
         localStorage.setItem("refreshSave", jsonString)
     }
@@ -24,7 +24,7 @@ export function addRefreshSave() {
 export async function loadRefreshSave(navigate: (path: string) => void) {
     const jsonString = localStorage.getItem("refreshSave")
     if (jsonString) {
-        await loadSaveJson(jsonString, navigate);
+        await Game.restoreGameState(jsonString, navigate);
         localStorage.removeItem("refreshSave")
     }
 }
