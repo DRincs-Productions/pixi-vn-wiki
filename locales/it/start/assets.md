@@ -22,7 +22,7 @@ The main possibilities are the following:
 
 ### ![icon](/github.svg){style="width:30px;height:30px;margin-right:5px;float:left;border-radius:50%;background-color:white"} Github
 
-You can use Github to host your assets. You can use the raw link of the file to use it in your project. The link will be in the following format: `https://github.com/[repository]/raw/refs/heads/main/[file path]`
+Puoi utilizzare Github per ospitare i tuoi assets. Puoi usare il raw link del file per utilizzarlo nel tuo progetto. Il collegamento avrà il seguente formato: `https://github.com/[repository]/raw/refs/heads/main/[percorso file]`
 
 - **Price**: Completely free.
 - **Space limits**: You have no space limits. But each single file must not exceed 100 MiB.
@@ -53,7 +53,7 @@ Firebase Storage è un servizio cloud che consente di archiviare e fornire conte
 **Risoluzione del problema CORS di Firebase Storage**:
 
 - Installa [gcloud CLI](https://cloud.google.com/sdk/docs/install)
-- Read this [documentation](https://medium.com/@we.viavek/setting-cors-in-firebase-19a2cce2fe28) to solve the CORS issue.
+- Leggi questa [documentazione](https://medium.com/@we.viavek/setting-cors-in-firebase-19a2cce2fe28) per risolvere il problema CORS.
 
 ### ![icon](/aws.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Amazon S3
 
