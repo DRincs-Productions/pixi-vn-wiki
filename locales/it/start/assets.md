@@ -30,9 +30,9 @@ Puoi utilizzare Github per ospitare i tuoi assets. Puoi usare il raw link del fi
 - **Traffico**: La velocità non è delle migliori.
 - **Modifica risorse**: Puoi modificare il file mantenendo lo stesso URL.
 
-### Image hosting
+### Hosting di immagini
 
-Image hosting is a service that allows you to upload images for free. There are more sites to upload images for free, for example [imgbb](https://imgbb.com/), [imgix](https://www.imgix.com/), [imgur](https://imgur.com/). You can use the public URL of the image.
+L'hosting di immagini è un servizio che consente di caricare immagini gratuitamente. Ci sono molti siti per caricare immagini gratuitamente, ad esempio [imgbb](https://imgbb.com/), [imgix](https://www.imgix.com/), [imgur](https://imgur.com/). You can use the public URL of the image.
 
 - **Prezzo**: Completamente gratuito. But you can pay for more features.
 - **Limiti di spazio**: Non ci sono limiti di spazio. But each single file can have a maximum size.
