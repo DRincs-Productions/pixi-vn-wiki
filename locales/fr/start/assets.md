@@ -25,7 +25,7 @@ The main possibilities are the following:
 You can use Github to host your assets. You can use the raw link of the file to use it in your project. The link will be in the following format: `https://github.com/[repository]/raw/refs/heads/main/[file path]`
 
 - **Price**: Completely free.
-- **Space limits**: You have no space limits. But each single file must not exceed 100 MiB.
+- **Space limits**: You have no space limits. But each single file must not exceed 100 MB.
 - **Type of files**: You can upload any type of file.
 - **Traffic**: Speed is not the best.
 - **Edit assets**: You can edit the file keeping the same url.
@@ -45,7 +45,7 @@ Image hosting is a service that allows you to upload images for free. There are 
 Firebase Storage is a cloud service that allows you to store and serve user-generated content, such as photos or videos or other files. You can use the public URL of the file to use it in your project.
 
 - **Price**: Firebase have two plans: Spark (free) and Blaze (pay as you go). You can find more information [here](https://firebase.google.com/pricing).
-- **Space limits**: You have, free, 5GB of free storage and 1GB/day of download. You can increase the storage by upgrading to Blaze plan. For 50GB you will pay around $1.17.
+- **Space limits**: You have, free, 5GB of free storage and 1GB/day of download. You can increase the storage by upgrading to Blaze plan. For 50GB you will pay around $1,17.
 - **Type of files**: You can upload any type of file.
 - **Traffic**: Speed is good.
 - **Edit assets**: You can edit the file keeping the same url.
@@ -61,7 +61,7 @@ Amazon S3 is a cloud service that allows you to store and serve user-generated c
 
 - **Price**: Amazon S3 have a pay as you go plan. You can find more information [here](https://aws.amazon.com/s3/pricing/).
 - **Space limits**: You pay for the storage you use. You can increase the storage by upgrading the plan.
-- **Type of files**: You can upload any type of file. The price is around $0.023 per GB, so for 50GB you will pay around $1.15.
+- **Type of files**: You can upload any type of file. The price is around $0,023 per GB, so for 50GB you will pay around $1,15.
 - **Traffic**: Speed is good.
 - **Edit assets**: You can edit the file keeping the same url.
 
