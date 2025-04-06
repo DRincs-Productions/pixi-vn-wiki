@@ -4,21 +4,19 @@
 
 You can use assets saved locally in the project or online (For the second option you will need to make sure that the cloud service you are using allows _CORS requests_). Of course, if your assets are online, a requirement of the game will be to be connected online. Then you will have to notify the user and block the game where there is no connection.
 
-If you are creating a visual novel, it is recommended to only keep assets that are used frequently locally. On the contrary, it is recommended to publish resources that are used only once in the online game.
+If you are creating a visual novel, it is recommended to only keep assets that are used frequently locally. While, for assets used only once in the game, it is recommended to publish them online.
 
 It is also very important that you read this documentation to better [organize the uploading of your assets](/start/assets-management.md).
 
 ## ![icon](/pixijs-assetpack.svg){style="width:30px;height:30px;margin-right:5px;float:left;border-radius:5px"} PixiJS AssetPack
 
-AssetPack is a tool for optimising assets for the web. It can be used to transform, combine, compress assets. Any asset that you want to transform or optimise into something else can be done with AssetPack.
+AssetPack is a tool for optimising assets for the web. It can be used to transform, combine, compress assets.
 
 If you want to use AssetPack, you can find the documentation [here](https://pixijs.io/assetpack)
 
 ## Assets hosting
 
-You are completely free to store images however you want.
-
-The main possibilities are the following:
+You can save your assets as you like, with complete freedom. If you plan to save your assets online, here are some of the options:
 
 ### ![icon](/github.svg){style="width:30px;height:30px;margin-right:5px;float:left;border-radius:50%;background-color:white"} Github
 
@@ -32,7 +30,7 @@ You can use Github to host your assets. You can use the raw link of the file to 
 
 ### Image hosting
 
-Image hosting is a service that allows you to upload images for free. There are more sites to upload images for free, for example [imgbb](https://imgbb.com/), [imgix](https://www.imgix.com/), [imgur](https://imgur.com/). You can use the public URL of the image.
+Image hosting is a service that allows you to upload images. There are more sites to upload images for free, for example [imgbb](https://imgbb.com/), [imgix](https://www.imgix.com/), [imgur](https://imgur.com/). You can use the link of the image to use it in your project.
 
 - **Price**: Completely free. But you can pay for more features.
 - **Space limits**: You have no space limits. But each single file can have a maximum size.
@@ -59,7 +57,7 @@ Firebase Storage is a cloud service that allows you to store and serve user-gene
 
 Amazon S3 is a cloud service that allows you to store and serve user-generated content, such as photos or videos or other files. You can use the public URL of the file to use it in your project.
 
-- **Price**: Amazon S3 have a pay as you go plan. You can find more information [here](https://aws.amazon.com/s3/pricing/).
+- **Price**: There is a payment plan to use Amazon S3. You can find more information [here](https://aws.amazon.com/s3/pricing/).
 - **Space limits**: You pay for the storage you use. You can increase the storage by upgrading the plan.
 - **Type of files**: You can upload any type of file. The price is around $0,023 per GB, so for 50GB you will pay around $1,15.
 - **Traffic**: Speed is good.
