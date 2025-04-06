@@ -26,7 +26,7 @@ You can use Github to host your assets. You can use the raw link of the file to 
 
 - **Price**: Completely free.
 - **Space limits**: You have no space limits. But each single file must not exceed 100 MiB.
-- **Type of files**: You can upload any type of file.
+- **Tipo di file**: puoi caricare qualsiasi tipo di file.
 - **Traffic**: Speed is not the best.
 - **Edit assets**: You can edit the file keeping the same url.
 
@@ -37,7 +37,7 @@ Image hosting is a service that allows you to upload images for free. There are 
 - **Price**: Completely free. But you can pay for more features.
 - **Space limits**: You have no space limits. But each single file can have a maximum size.
 - **Type of files**: You can upload only images.
-- **Traffic**: Speed is good.
+- **Traffico**: La velocità è buona.
 - **Edit assets**: You can't edit the file keeping the same url.
 
 ### ![icon](/firebase.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Firebase Storage
@@ -45,14 +45,14 @@ Image hosting is a service that allows you to upload images for free. There are 
 Firebase Storage è un servizio cloud che consente di archiviare e fornire contenuti generati dagli utenti, come foto, video o altri file. Puoi usare l'URL pubblico del file per utilizzarlo nel tuo progetto.
 
 - **Prezzo**: Firebase offre due piani: Spark (gratuito) e Blaze (a pagamento). Puoi trovare maggiori informazioni [qui](https://firebase.google.com/pricing).
-- **Limiti di spazio**: hai a disposizione 5 GB di storage di archiviazione gratuito e 1 GB al giorno di download. You can increase the storage by upgrading to Blaze plan. For 50GB you will pay around $1.17.
-- **Type of files**: You can upload any type of file.
-- **Traffic**: Speed is good.
+- **Limiti di spazio**: hai a disposizione 5 GB di storage di archiviazione gratuito e 1 GB al giorno di download. È possibile aumentare lo spazio di archiviazione passando al piano Blaze. Per 50 GB pagherai circa $ 1.17.
+- **Tipo di file**: puoi caricare qualsiasi tipo di file.
+- **Traffico**: La velocità è buona.
 - **Edit assets**: You can edit the file keeping the same url.
 
-**Solving Firebase Storage CORS Issue**:
+**Risoluzione del problema CORS di Firebase Storage**:
 
-- Install [gcloud CLI](https://cloud.google.com/sdk/docs/install)
+- Installa [gcloud CLI](https://cloud.google.com/sdk/docs/install)
 - Read this [documentation](https://medium.com/@we.viavek/setting-cors-in-firebase-19a2cce2fe28) to solve the CORS issue.
 
 ### ![icon](/aws.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Amazon S3
@@ -61,8 +61,8 @@ Amazon S3 is a cloud service that allows you to store and serve user-generated c
 
 - **Price**: Amazon S3 have a pay as you go plan. You can find more information [here](https://aws.amazon.com/s3/pricing/).
 - **Space limits**: You pay for the storage you use. You can increase the storage by upgrading the plan.
-- **Type of files**: You can upload any type of file. The price is around $0.023 per GB, so for 50GB you will pay around $1.15.
-- **Traffic**: Speed is good.
+- **Tipo di file**: puoi caricare qualsiasi tipo di file. The price is around $0.023 per GB, so for 50GB you will pay around $1.15.
+- **Traffico**: La velocità è buona.
 - **Edit assets**: You can edit the file keeping the same url.
 
 ### ![icon](/supabase.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Supabase
@@ -71,8 +71,8 @@ Supabase is an open-source Firebase alternative. Puoi usare l'URL pubblico del f
 
 - **Price**: Supabase have two plans: Free and Pay as you go. You can find more information [here](https://supabase.io/pricing).
 - **Limiti di spazio**: hai a disposizione 5 GB di storage di archiviazione gratuito e 1 GB al giorno di download. You can increase the storage by upgrading the plan.
-- **Type of files**: You can upload any type of file.
-- **Traffic**: Speed is good.
+- **Tipo di file**: puoi caricare qualsiasi tipo di file.
+- **Traffico**: La velocità è buona.
 - **Edit assets**: You can edit the file keeping the same url.
 
 ### Convex
@@ -81,6 +81,6 @@ Convex is a cloud service that allows you to store and serve user-generated cont
 
 - **Price**: Convex have two plans: Free and Pay as you go. You can find more information [here](https://www.convex.dev/pricing).
 - **Space limits**: You have, free, 10GB of free storage and 1GB/month of download. You can increase the storage by upgrading the plan.
-- **Type of files**: You can upload any type of file.
-- **Traffic**: Speed is good.
+- **Tipo di file**: puoi caricare qualsiasi tipo di file.
+- **Traffico**: La velocità è buona.
 - **Edit assets**: You can edit the file keeping the same url.
