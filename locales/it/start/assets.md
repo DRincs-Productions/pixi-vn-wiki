@@ -42,10 +42,10 @@ Image hosting is a service that allows you to upload images for free. There are 
 
 ### ![icon](/firebase.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Firebase Storage
 
-Firebase Storage is a cloud service that allows you to store and serve user-generated content, such as photos or videos or other files. You can use the public URL of the file to use it in your project.
+Firebase Storage è un servizio cloud che consente di archiviare e fornire contenuti generati dagli utenti, come foto, video o altri file. Puoi usare l'URL pubblico del file per utilizzarlo nel tuo progetto.
 
-- **Price**: Firebase have two plans: Spark (free) and Blaze (pay as you go). You can find more information [here](https://firebase.google.com/pricing).
-- **Space limits**: You have, free, 5GB of free storage and 1GB/day of download. You can increase the storage by upgrading to Blaze plan. For 50GB you will pay around $1.17.
+- **Prezzo**: Firebase offre due piani: Spark (gratuito) e Blaze (a pagamento). Puoi trovare maggiori informazioni [qui](https://firebase.google.com/pricing).
+- **Limiti di spazio**: hai a disposizione 5 GB di storage di archiviazione gratuito e 1 GB al giorno di download. You can increase the storage by upgrading to Blaze plan. For 50GB you will pay around $1.17.
 - **Type of files**: You can upload any type of file.
 - **Traffic**: Speed is good.
 - **Edit assets**: You can edit the file keeping the same url.
@@ -57,7 +57,7 @@ Firebase Storage is a cloud service that allows you to store and serve user-gene
 
 ### ![icon](/aws.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Amazon S3
 
-Amazon S3 is a cloud service that allows you to store and serve user-generated content, such as photos or videos or other files. You can use the public URL of the file to use it in your project.
+Amazon S3 is a cloud service that allows you to store and serve user-generated content, such as photos or videos or other files. Puoi usare l'URL pubblico del file per utilizzarlo nel tuo progetto.
 
 - **Price**: Amazon S3 have a pay as you go plan. You can find more information [here](https://aws.amazon.com/s3/pricing/).
 - **Space limits**: You pay for the storage you use. You can increase the storage by upgrading the plan.
@@ -67,17 +67,17 @@ Amazon S3 is a cloud service that allows you to store and serve user-generated c
 
 ### ![icon](/supabase.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Supabase
 
-Supabase is an open-source Firebase alternative. You can use the public URL of the file to use it in your project.
+Supabase is an open-source Firebase alternative. Puoi usare l'URL pubblico del file per utilizzarlo nel tuo progetto.
 
 - **Price**: Supabase have two plans: Free and Pay as you go. You can find more information [here](https://supabase.io/pricing).
-- **Space limits**: You have, free, 5GB of free storage and 1GB/day of download. You can increase the storage by upgrading the plan.
+- **Limiti di spazio**: hai a disposizione 5 GB di storage di archiviazione gratuito e 1 GB al giorno di download. You can increase the storage by upgrading the plan.
 - **Type of files**: You can upload any type of file.
 - **Traffic**: Speed is good.
 - **Edit assets**: You can edit the file keeping the same url.
 
 ### Convex
 
-Convex is a cloud service that allows you to store and serve user-generated content, such as photos or videos or other files. You can use the public URL of the file to use it in your project.
+Convex is a cloud service that allows you to store and serve user-generated content, such as photos or videos or other files. Puoi usare l'URL pubblico del file per utilizzarlo nel tuo progetto.
 
 - **Price**: Convex have two plans: Free and Pay as you go. You can find more information [here](https://www.convex.dev/pricing).
 - **Space limits**: You have, free, 10GB of free storage and 1GB/month of download. You can increase the storage by upgrading the plan.
