@@ -48,37 +48,37 @@ Firebase Storage è un servizio cloud che consente di archiviare e fornire conte
 - **Traffico**: La velocità è buona.
 - **Modifica gli assets**: Puoi modificare il file mantenendo lo stesso URL.
 
-**Solving Firebase Storage CORS Issue**:
+**Risoluzione del problema CORS di Firebase Storage**:
 
-- Install [gcloud CLI](https://cloud.google.com/sdk/docs/install)
-- Read this [documentation](https://medium.com/@we.viavek/setting-cors-in-firebase-19a2cce2fe28) to solve the CORS issue.
+- Installa [gcloud CLI](https://cloud.google.com/sdk/docs/install)
+- Leggi questa [documentazione](https://medium.com/@we.viavek/setting-cors-in-firebase-19a2cce2fe28) per risolvere il problema CORS.
 
 ### ![icon](/aws.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Amazon S3
 
-Amazon S3 is a cloud service that allows you to store and serve user-generated content, such as photos or videos or other files. Puoi usare l'URL pubblico del file per utilizzarlo nel tuo progetto.
+Amazon S3 è un servizio cloud che consente di archiviare e distribuire contenuti generati dagli utenti, come foto, video o altri file. Puoi usare l'URL pubblico del file per utilizzarlo nel tuo progetto.
 
-- **Price**: There is a payment plan to use Amazon S3. You can find more information [here](https://aws.amazon.com/s3/pricing/).
-- **Space limits**: You pay for the storage you use. You can increase the storage by upgrading the plan.
-- **Tipo di file**: puoi caricare qualsiasi tipo di file. The price is around $0,023 per GB, so for 50GB you will pay around $1,15.
+- **Prezzo**: Per utilizzare Amazon S3 è previsto un piano di pagamento. Puoi trovare maggiori informazioni [qui](https://aws.amazon.com/s3/pricing/).
+- **Limiti di spazio**: paghi in base allo spazio di archiviazione che utilizzi. È possibile aumentare lo spazio di archiviazione aggiornando il piano.
+- **Tipo di file**: puoi caricare qualsiasi tipo di file. Il prezzo è di circa $0,023 per GB, quindi per 50GB pagherai circa $1,15.
 - **Traffico**: La velocità è buona.
 - **Modifica gli assets**: Puoi modificare il file mantenendo lo stesso URL.
 
 ### ![icon](/supabase.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Supabase
 
-Supabase is an open-source Firebase alternative. Puoi usare l'URL pubblico del file per utilizzarlo nel tuo progetto.
+Supabase è un'alternativa open source di Firebase. Puoi usare l'URL pubblico del file per utilizzarlo nel tuo progetto.
 
-- **Price**: Supabase have two plans: Free and Pay as you go. You can find more information [here](https://supabase.io/pricing).
-- **Limiti di spazio**: hai a disposizione 5 GB di storage di archiviazione gratuito e 1 GB al giorno di download. You can increase the storage by upgrading the plan.
+- **Prezzo**: Supabase offre due piani: gratuito e a pagamento. Puoi trovare maggiori informazioni [qui](https://supabase.io/pricing).
+- **Limiti di spazio**: hai a disposizione 5 GB di storage di archiviazione gratuito e 1 GB al giorno di download. È possibile aumentare lo spazio di archiviazione aggiornando il piano.
 - **Tipo di file**: puoi caricare qualsiasi tipo di file.
 - **Traffico**: La velocità è buona.
 - **Modifica gli assets**: Puoi modificare il file mantenendo lo stesso URL.
 
 ### Convex
 
-Convex is a cloud service that allows you to store and serve user-generated content, such as photos or videos or other files. Puoi usare l'URL pubblico del file per utilizzarlo nel tuo progetto.
+Convex è un servizio cloud che consente di archiviare e fornire contenuti generati dagli utenti, come foto, video o altri file. Puoi usare l'URL pubblico del file per utilizzarlo nel tuo progetto.
 
-- **Price**: Convex have two plans: Free and Pay as you go. You can find more information [here](https://www.convex.dev/pricing).
-- **Space limits**: You have, free, 10GB of free storage and 1GB/month of download. You can increase the storage by upgrading the plan.
+- **Prezzo**: Convex offre due piani: gratuito e a consumo. Puoi trovare maggiori informazioni [qui](https://www.convex.dev/pricing).
+- **Limiti di spazio**: Hai a disposizione 10GB di spazio di archiviazione gratuito e 1GB/mese di download. È possibile aumentare lo spazio di archiviazione aggiornando il piano.
 - **Tipo di file**: puoi caricare qualsiasi tipo di file.
 - **Traffico**: La velocità è buona.
 - **Modifica gli assets**: Puoi modificare il file mantenendo lo stesso URL.
