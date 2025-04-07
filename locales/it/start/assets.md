@@ -4,7 +4,7 @@
 
 È possibile utilizzare risorse salvate localmente nel progetto oppure online (per la seconda opzione, è necessario assicurarsi che il servizio cloud utilizzato consenta le _richieste CORS_). Naturalmente, se i tuoi assets sono online, uno dei requisiti del gioco sarà la connessione online. Successivamente dovrai avvisare l'utente e bloccare il gioco in assenza di connessione.
 
-Se stai creando una visual novel, è consigliabile conservare localmente solo gli assets che utilizzi frequentemente. While, for assets used only once in the game, it is recommended to publish them online.
+Se stai creando una visual novel, è consigliabile conservare localmente solo gli assets che utilizzi frequentemente. Per gli assets utilizzati una sola volta nel gioco, invece, è consigliabile pubblicarle online.
 
 È inoltre molto importante leggere questa documentazione per [organizzare al meglio il caricamento delle risorse](/start/assets-management.md).
 
@@ -12,41 +12,41 @@ Se stai creando una visual novel, è consigliabile conservare localmente solo gl
 
 AssetPack è uno strumento per ottimizzare gli assets per il web. Può essere utilizzato per trasformare, combinare e comprimere gli assets.
 
-If you want to use AssetPack, you can find the documentation [here](https://pixijs.io/assetpack)
+Se vuoi utilizzare AssetPack, puoi trovare la documentazione [qui](https://pixijs.io/assetpack)
 
 ## Hosting degli assets
 
-You can save your assets as you like, with complete freedom. If you plan to save your assets online, here are some of the options:
+Puoi salvare i tuoi assets come preferisci, in totale libertà. Se intendi salvare i tuoi assets online, ecco alcune opzioni:
 
 ### ![icon](/github.svg){style="width:30px;height:30px;margin-right:5px;float:left;border-radius:50%;background-color:white"} Github
 
-You can use Github to host your assets. You can use the raw link of the file to use it in your project. The link will be in the following format: `https://github.com/[repository]/raw/refs/heads/main/[file path]`
+Puoi utilizzare Github per ospitare i tuoi assets. Puoi usare il raw link del file per utilizzarlo nel tuo progetto. Il collegamento avrà il seguente formato: `https://github.com/[repository]/raw/refs/heads/main/[percorso file]`
 
-- **Price**: Completely free.
-- **Space limits**: You have no space limits. But each single file must not exceed 100 MB.
-- **Type of files**: You can upload any type of file.
-- **Traffic**: Speed is not the best.
-- **Edit assets**: You can edit the file keeping the same url.
+- **Prezzo**: Completamente gratuito.
+- **Limiti di spazio**: Non ci sono limiti di spazio. Ma ogni singolo file non deve superare i 100 MB.
+- **Tipo di file**: puoi caricare qualsiasi tipo di file.
+- **Traffico**: La velocità non è delle migliori.
+- **Modifica gli assets**: Puoi modificare il file mantenendo lo stesso URL.
 
-### Image hosting
+### Hosting di immagini
 
-Image hosting is a service that allows you to upload images. There are more sites to upload images for free, for example [imgbb](https://imgbb.com/), [imgix](https://www.imgix.com/), [imgur](https://imgur.com/). You can use the link of the image to use it in your project.
+L'hosting di immagini è un servizio che consente di caricare immagini. Ci sono molti siti per caricare immagini gratuitamente, ad esempio [imgbb](https://imgbb.com/), [imgix](https://www.imgix.com/), [imgur](https://imgur.com/). Puoi usare il link dell'immagine per utilizzarla nel tuo progetto.
 
-- **Price**: Completely free. But you can pay for more features.
-- **Space limits**: You have no space limits. But each single file can have a maximum size.
-- **Type of files**: You can upload only images.
-- **Traffic**: Speed is good.
-- **Edit assets**: You can't edit the file keeping the same url.
+- **Prezzo**: Completamente gratuito. Ma è possibile pagare per avere più funzionalità.
+- **Limiti di spazio**: Non ci sono limiti di spazio. Ma ogni singolo file può avere una dimensione massima.
+- **Tipo di file**: puoi caricare solo immagini.
+- **Traffico**: La velocità è buona.
+- **Modifica gli assets**: non puoi modificare il file mantenendo lo stesso URL.
 
 ### ![icon](/firebase.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Firebase Storage
 
-Firebase Storage is a cloud service that allows you to store and serve user-generated content, such as photos or videos or other files. You can use the public URL of the file to use it in your project.
+Firebase Storage è un servizio cloud che consente di archiviare e fornire contenuti generati dagli utenti, come foto, video o altri file. Puoi usare l'URL pubblico del file per utilizzarlo nel tuo progetto.
 
-- **Price**: Firebase have two plans: Spark (free) and Blaze (pay as you go). You can find more information [here](https://firebase.google.com/pricing).
-- **Space limits**: You have, free, 5GB of free storage and 1GB/day of download. You can increase the storage by upgrading to Blaze plan. For 50GB you will pay around $1,17.
-- **Type of files**: You can upload any type of file.
-- **Traffic**: Speed is good.
-- **Edit assets**: You can edit the file keeping the same url.
+- **Prezzo**: Firebase offre due piani: Spark (gratuito) e Blaze (a pagamento). Puoi trovare maggiori informazioni [qui](https://firebase.google.com/pricing).
+- **Limiti di spazio**: hai a disposizione 5 GB di storage di archiviazione gratuito e 1 GB al giorno di download. È possibile aumentare lo spazio di archiviazione passando al piano Blaze. Per 50GB pagherai circa $1,17.
+- **Tipo di file**: puoi caricare qualsiasi tipo di file.
+- **Traffico**: La velocità è buona.
+- **Modifica gli assets**: Puoi modificare il file mantenendo lo stesso URL.
 
 **Solving Firebase Storage CORS Issue**:
 
@@ -55,30 +55,30 @@ Firebase Storage is a cloud service that allows you to store and serve user-gene
 
 ### ![icon](/aws.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Amazon S3
 
-Amazon S3 is a cloud service that allows you to store and serve user-generated content, such as photos or videos or other files. You can use the public URL of the file to use it in your project.
+Amazon S3 is a cloud service that allows you to store and serve user-generated content, such as photos or videos or other files. Puoi usare l'URL pubblico del file per utilizzarlo nel tuo progetto.
 
 - **Price**: There is a payment plan to use Amazon S3. You can find more information [here](https://aws.amazon.com/s3/pricing/).
 - **Space limits**: You pay for the storage you use. You can increase the storage by upgrading the plan.
-- **Type of files**: You can upload any type of file. The price is around $0,023 per GB, so for 50GB you will pay around $1,15.
-- **Traffic**: Speed is good.
-- **Edit assets**: You can edit the file keeping the same url.
+- **Tipo di file**: puoi caricare qualsiasi tipo di file. The price is around $0,023 per GB, so for 50GB you will pay around $1,15.
+- **Traffico**: La velocità è buona.
+- **Modifica gli assets**: Puoi modificare il file mantenendo lo stesso URL.
 
 ### ![icon](/supabase.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Supabase
 
-Supabase is an open-source Firebase alternative. You can use the public URL of the file to use it in your project.
+Supabase is an open-source Firebase alternative. Puoi usare l'URL pubblico del file per utilizzarlo nel tuo progetto.
 
 - **Price**: Supabase have two plans: Free and Pay as you go. You can find more information [here](https://supabase.io/pricing).
-- **Space limits**: You have, free, 5GB of free storage and 1GB/day of download. You can increase the storage by upgrading the plan.
-- **Type of files**: You can upload any type of file.
-- **Traffic**: Speed is good.
-- **Edit assets**: You can edit the file keeping the same url.
+- **Limiti di spazio**: hai a disposizione 5 GB di storage di archiviazione gratuito e 1 GB al giorno di download. You can increase the storage by upgrading the plan.
+- **Tipo di file**: puoi caricare qualsiasi tipo di file.
+- **Traffico**: La velocità è buona.
+- **Modifica gli assets**: Puoi modificare il file mantenendo lo stesso URL.
 
 ### Convex
 
-Convex is a cloud service that allows you to store and serve user-generated content, such as photos or videos or other files. You can use the public URL of the file to use it in your project.
+Convex is a cloud service that allows you to store and serve user-generated content, such as photos or videos or other files. Puoi usare l'URL pubblico del file per utilizzarlo nel tuo progetto.
 
 - **Price**: Convex have two plans: Free and Pay as you go. You can find more information [here](https://www.convex.dev/pricing).
 - **Space limits**: You have, free, 10GB of free storage and 1GB/month of download. You can increase the storage by upgrading the plan.
-- **Type of files**: You can upload any type of file.
-- **Traffic**: Speed is good.
-- **Edit assets**: You can edit the file keeping the same url.
+- **Tipo di file**: puoi caricare qualsiasi tipo di file.
+- **Traffico**: La velocità è buona.
+- **Modifica gli assets**: Puoi modificare il file mantenendo lo stesso URL.
