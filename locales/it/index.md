@@ -17,6 +17,9 @@ hero:
     - theme: alt
       text: Crea la tua prima Visual Novel
       link: /start/make-visual-novel
+    - theme: alt
+      text: Make your first Game Engine
+      link: /start/make-game-engine
 ---
 
 <div style="height: 5rem;"></div>
