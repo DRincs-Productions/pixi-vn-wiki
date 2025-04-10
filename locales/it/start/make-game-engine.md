@@ -60,6 +60,7 @@ export namespace Game {
             removeVariable: (key) => storage.removeVariable(key), // [!code --]
             getFlag: (key) => storage.getFlag(key), // [!code --]
             setFlag: (name, value) => storage.setFlag(name, value), // [!code --]
+            // onLabelClosing is called when the label is closed, it can use for example to clear the temporary variables in the storage // [!code --]
             onLabelClosing: (openedLabelsNumber) => StorageManagerStatic.clearOldTempVariables(openedLabelsNumber),  // [!code --]
             getVariable: (key) => storage.get(key), // [!code ++]
             setVariable: (key, value) => storage.set(key, value), // [!code ++]
@@ -74,6 +75,7 @@ export namespace Game {
         // ...
         storage.clear(); // [!code --]
         storage.clear(); // new class // [!code ++]
+        flagStorage.clear(); // [!code ++]
     }
 
     export function exportGameState(): GameState {
@@ -115,6 +117,77 @@ export default interface GameState {
         flags: CacheableItem[]; // [!code ++]
     }; // [!code ++]
     canvasData: CanvasGameState;
+    soundData: SoundGameState;
+    historyData: HistoryGameState;
+    path: string;
+}
+```
+
+:::
+
+## Renderer
+
+Even the canvas is a module that can be replaced. The default canvas is a simple canvas that uses the `pixi.js` library. You can replace it with any other canvas library you want.
+
+You are not forced to use a WebGL-based 2D renderer. You can use any other renderer you want. For example, you can use a 3D renderer or a React-based renderer. You can also use a combination of different renderers. The only requirement is that the renderer state must be saved and restored at each step.
+
+Since I have no experience on rendering libraries other than `pixi.js`, my example will be based on a semi-realistic class.
+
+::: code-group
+
+```ts [index.ts]
+const canvas = new Canvas(); // [!code ++]
+
+export namespace Game {
+    export async function initialize(
+        options: CanvasOptions, // [!code ++]
+    ) {
+        GameUnifier.init({
+            getCurrentGameStepState: () => {
+                return {
+                    // ...
+                    canvas: canvas.export(), // [!code ++]
+                };
+            },
+            restoreGameStepState: async (state, navigate) => {
+                // ...
+                await canvas.restore(state.canvas); // [!code ++]
+            },
+            // This function is called when the step is completed, it can be used to force the completion of the animations // [!code ++]
+            onGoNextEnd: async () => { // [!code ++]
+                canvas.forceCompletionOfAnimations(); // [!code ++]
+            }, // [!code ++]
+        });
+        return await canvas.init(options); // [!code ++]
+    }
+
+    export function clear() {
+        // ...
+        canvas.clear(); // [!code ++]
+    }
+
+    export function exportGameState(): GameState {
+        return {
+            // ...
+            canvasData: canvas.export(), // [!code ++]
+        };
+    }
+
+    export async function restoreGameState(data: GameState, navigate: (path: string) => void) {
+        // ...
+        await canvas.restore(data.canvasData); // [!code ++]
+    }
+}
+```
+
+```ts [interfaces/GameState.ts]
+import { CanvasGameState } from "./canvas"; // [!code ++]
+
+export default interface GameState {
+    engine_version: string;
+    stepData: NarrationGameState;
+    storageData: StorageGameState;
+    canvasData: CanvasState; // [!code ++]
     soundData: SoundGameState;
     historyData: HistoryGameState;
     path: string;
