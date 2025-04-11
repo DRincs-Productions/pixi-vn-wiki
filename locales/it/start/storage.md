@@ -8,7 +8,7 @@ Inoltre, nell'archivio del gioco è possibile salvare qualsiasi tipo di variabil
 
 ## Imposta una variabile nello storage di gioco
 
-To set a variable in the game storage, you can use the `storage.setVariable`, which takes two parameters: the variable name and the value.
+Per impostare una variabile nell'archivio di gioco, puoi usare `storage.setVariable`, che accetta due parametri: il nome della variabile e il valore.
 
 ```typescript
 import { storage } from '@drincs/pixi-vn'
@@ -16,7 +16,7 @@ import { storage } from '@drincs/pixi-vn'
 storage.setVariable("myVariable", 42);
 ```
 
-## Get a variable from the game storage
+## Ottieni una variabile dallo storage di gioco
 
 To get a variable from the game storage, you can use the `storage.getVariable`, which takes one parameter: the variable name.
 
