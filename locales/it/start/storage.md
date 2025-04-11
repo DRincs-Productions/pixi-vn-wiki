@@ -2,11 +2,11 @@
 
 \*\*Che cos'è lo storage di gioco? \*\* Lo storage di gioco è un luogo in cui è possibile salvare le variabili che si desidera conservare tra le sessioni di gioco.
 
-It is essential to understand that if variables are not saved in the game memory, the engine will not be able to handle them, when you [load a save](/start/save#load) or when you [go back](/start/labels-flow.md#go-back).
+È fondamentale capire che se le variabili non vengono salvate nella memoria del gioco, il motore non sarà in grado di gestirle quando si [carica un salvataggio](/start/save#load) o quando si [torna indietro](/start/labels-flow.md#go-back).
 
-Additionally, in the game archive you can save any type of variable, except `class` and `function` (because they cannot be converted to JSON), such as: `string`, `number`, `boolean`, `object`, `array`... If you want to save "flags" (boolean) it is recommended to use the [flags functionality](/start/flags), a very high-performance flag management system.
+Inoltre, nell'archivio del gioco è possibile salvare qualsiasi tipo di variabile, eccetto `class` e `function` (perché non possono essere convertite in JSON), come: `string`, `number`, `boolean`, `object`, `array`... If you want to save "flags" (boolean) it is recommended to use the [flags functionality](/start/flags), a very high-performance flag management system.
 
-## Set a variable in the game storage
+## Imposta una variabile nello storage di gioco
 
 To set a variable in the game storage, you can use the `storage.setVariable`, which takes two parameters: the variable name and the value.
 
