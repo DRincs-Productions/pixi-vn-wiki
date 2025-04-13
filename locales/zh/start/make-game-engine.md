@@ -195,3 +195,9 @@ export default interface GameState {
 ```
 
 :::
+
+## Sound
+
+The sound module is a module that can be replaced. The default sound module is a simple sound module that uses the [`PixiJS Sound`](https://pixijs.io/sound/examples/index.html) library. You can replace it with any other sound library you want.
+
+For example in our case we will replace it with [`howler.js`](https://howlerjs.com/), here is what we should change:
