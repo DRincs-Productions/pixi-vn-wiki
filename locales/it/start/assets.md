@@ -6,15 +6,60 @@
 
 Se stai creando una visual novel, è consigliabile conservare localmente solo gli assets che utilizzi frequentemente. Per gli assets utilizzati una sola volta nel gioco, invece, è consigliabile pubblicarle online.
 
-È inoltre molto importante leggere questa documentazione per [organizzare al meglio il caricamento delle risorse](/start/assets-management.md).
+To load and manipulate assets (images, gifs, videos...) you will need to use `Assets`. `Assets` is a class with many features and comes from the PixiJS library, if you want more information read [here](https://pixijs.com/8.x/guides/components/assets). È inoltre molto importante leggere questa documentazione per [organizzare al meglio il caricamento delle risorse](/start/assets-management.md).
 
-## ![icon](/pixijs-assetpack.svg){style="width:30px;height:30px;margin-right:5px;float:left;border-radius:5px"} PixiJS AssetPack
+You mainly have two choices for where to save your assets, local or online.
 
-AssetPack è uno strumento per ottimizzare gli assets per il web. Può essere utilizzato per trasformare, combinare e comprimere gli assets.
+## Local assets
+
+To save and use assets locally, you can use any folder, there are no restrictions. But it is recommended to use the `assets` folder. Inside this folder you can create subfolders to better organize your assets.
+
+Here is an example of how to import and load an asset into your project:
+
+```ts [/utils/assets.ts]
+import { Assets } from "@drincs/pixi-vn";
+import bg01hallway from "../assets/images/bg01-hallway.webp";
+
+/**
+ * Define all the assets that will be used in the game.
+ * This function will be called before the game starts.
+ * You can read more about assets management in the documentation: https://pixi-vn.web.app/start/assets-management.html
+ */
+export async function defineAssets() {
+    Assets.add({
+        alias: "bg01-hallway",
+        src: bg01hallway,
+    });
+}
+```
+
+### ![icon](/pixijs-assetpack.svg){style="width:30px;height:30px;margin-right:5px;float:left;border-radius:5px"} PixiJS AssetPack
+
+AssetPack is a tool for optimising local assets for the web. Può essere utilizzato per trasformare, combinare e comprimere gli assets.
 
 Se vuoi utilizzare AssetPack, puoi trovare la documentazione [qui](https://pixijs.io/assetpack)
 
 ## Hosting degli assets
+
+You can save your assets online. This is a good option if you want to save space on your computer. You can use any cloud service that allows you to upload files and generate a public URL (CORS enabled).
+
+Here is an example of how to import and load an asset into your project:
+
+```ts [/utils/assets.ts]
+import { Assets } from "@drincs/pixi-vn";
+
+/**
+ * Define all the assets that will be used in the game.
+ * This function will be called before the game starts.
+ * You can read more about assets management in the documentation: https://pixi-vn.web.app/start/assets-management.html
+ */
+export async function defineAssets() {
+    Assets.add({
+        alias: "bg01-hallway",
+        src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fbg01-hallway.webp?alt=media",
+    });
+}
+```
 
 Puoi salvare i tuoi assets come preferisci, in totale libertà. Se intendi salvare i tuoi assets online, ecco alcune opzioni:
 
