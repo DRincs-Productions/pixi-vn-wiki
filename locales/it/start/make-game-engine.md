@@ -1,14 +1,18 @@
 # Make your game engine
 
-:::warning This page is under construction
-The documentation is in development. You can ask for help in the this [thread](https://github.com/DRincs-Productions/pixi-vn/discussions/389)
+:::info
+This guide is designed only for developers with a good experience with JavaScript. If you are not a developer, you can skip this page and use the default engine.
 :::
 
-One of the main goals of Pixi’VN is to provide basic utilities for developing video games. The engine is designed to be modular and flexible, allowing developers to use only the parts they need for their specific projects. This modularity also makes it easier to maintain and update the engine over time. Additionally, a developer may want to add or change the handling of a new feature, making sure that all the features of the game engine fit together perfectly.
+One of the main goals of Pixi’VN is to provide basic utilities for developing video games. The engine is designed to be modular and flexible, allowing developers to use only the parts they need for their specific projects. This modularity also makes it easier to maintain and update the engine over time.
 
-It is for this very reason that we wanted to make it possible to create your own game engine using the pixi-vn package. This is a very simple process.
+This is exactly what makes the possibility of creating your own game engine using the `pixi-vn` package.
 
-Il primo passo è creare un nuovo progetto. Puoi trovare maggiori informazioni su come creare un nuovo progetto partendo da un template [qui](/start/getting-started.md#project-initialization). We will use the template "Game Engine". The template is a simple project that contains the basic structure of a game engine. By default, it exports the basic functionality of pixi-vn while removing anything unused from the package.
+Il primo passo è creare un nuovo progetto. Puoi trovare maggiori informazioni su come creare un nuovo progetto partendo da un template [qui](/start/getting-started.md#project-initialization). The "Game Engine" template is a simple project that contains the basic structure of a game engine. By default, it exports the basic functionality of pixi-vn while removing anything unused from the package.
+
+:::info
+A special thread was created to share your idea or ask for help during the development of your Game Engine: [Creating a game engine from pixi-vn](https://github.com/DRincs-Productions/pixi-vn/discussions/389)
+:::
 
 The second step is to understand that Pixi’VN is divided into the following independent "modules". This means that you can replace one "module" without having to worry about modifying the others. To do this, you just need to modify `GameUnifier` which has the function of connecting the modile headlights to each other, as explained below.
 
