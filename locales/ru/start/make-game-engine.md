@@ -201,3 +201,100 @@ export default interface GameState {
 The sound module is a module that can be replaced. The default sound module is a simple sound module that uses the [`PixiJS Sound`](https://pixijs.io/sound/examples/index.html) library. You can replace it with any other sound library you want.
 
 For example in our case we will replace it with [`howler.js`](https://howlerjs.com/), here is what we should change:
+
+( The implementation of howler was done by AI, so it may not be perfect. )
+
+::: code-group
+
+```ts [index.ts]
+import { Howl, Howler } from "howler"; // [!code ++]
+
+export function exportHowlerState() { // [!code ++]
+    const state = Howler._howls.map((howl) => ({ // [!code ++]
+        src: howl._src, // [!code ++]
+        volume: howl.volume(), // [!code ++]
+        rate: howl.rate(), // [!code ++]
+        loop: howl.loop(), // [!code ++]
+        playing: howl.playing(), // [!code ++]
+        seek: howl.seek(), // [!code ++]
+    })); // [!code ++]
+    return state; // [!code ++]
+} // [!code ++]
+
+export async function restoreHowlerState(state: Array<any>) { // [!code ++]
+    state.forEach((soundData) => { // [!code ++]
+        const sound = new Howl({ // [!code ++]
+            src: soundData.src, // [!code ++]
+            volume: soundData.volume, // [!code ++]
+            rate: soundData.rate, // [!code ++]
+            loop: soundData.loop, // [!code ++]
+        }); // [!code ++]
+
+        if (soundData.playing) { // [!code ++]
+            sound.seek(soundData.seek); // [!code ++]
+            sound.play(); // [!code ++]
+        } // [!code ++]
+    }); // [!code ++]
+} // [!code ++]
+
+export namespace Game {
+    export async function initialize(
+        element: HTMLElement,
+        options: Partial<ApplicationOptions> & { width: number; height: number },
+        devtoolsOptions?: Devtools
+    ) {
+        GameUnifier.init({
+            getCurrentGameStepState: () => {
+                return {
+                    // ...
+                    sound: sound.export(), // [!code --]
+                    sound: exportHowlerState(), // [!code ++]
+                };
+            },
+            restoreGameStepState: async (state, navigate) => {
+                // ...
+                sound.restore(state.sound); // [!code --]
+                await restoreHowlerState(state.soundData); // [!code ++]
+            },
+        });
+        // ...
+    }
+
+    export function clear() {
+        sound.clear(); // [!code --]
+        Howler._howls.forEach((howl) => howl.unload()); // [!code ++]
+        // ...
+    }
+
+    export function exportGameState(): GameState {
+        return {
+            // ...
+            soundData: sound.export(), // [!code --]
+            soundData: exportHowlerState(), // [!code ++]
+        };
+    }
+
+    export async function restoreGameState(data: GameState, navigate: (path: string) => void) {
+        // ...
+        sound.restore(data.soundData); // [!code --]
+        await restoreHowlerState(data.soundData); // [!code ++]
+    }
+}
+```
+
+```ts [interfaces/GameState.ts]
+import { CacheableItem } from "cacheable";
+
+export default interface GameState {
+    engine_version: string;
+    stepData: NarrationGameState;
+    storageData: StorageGameState;
+    canvasData: CanvasGameState;
+    soundData: SoundGameState; // [!code --]
+    soundData: Array<any>; // [!code ++]
+    historyData: HistoryGameState;
+    path: string;
+}
+```
+
+:::
