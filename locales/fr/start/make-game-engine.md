@@ -91,11 +91,6 @@ export namespace Game {
         };
     }
 
-    /**
-     * Load the save data
-     * @param data The save data
-     * @param navigate The function to navigate to a path
-     */
     export async function restoreGameState(data: GameState, navigate: (path: string) => void) {
         // ...
         storage.restore(data.storageData); // [!code --]
@@ -391,3 +386,147 @@ export function newLabel<T extends {} = {}>(
 :::
 
 ## History
+
+The history module is a module that can be replaced. The default history module is a simple history module that uses the [`deep-diff`](https://www.npmjs.com/package/deep-diff) library. You can replace it with any other history library you want.
+
+Here's an example:
+
+::: code-group
+
+```ts [index.ts]
+import HistoryManager, { HistoryManagerStatic } from "./classes/HistoryManager"; // [!code ++]
+
+const stepHistory = new HistoryManager(); // [!code ++]
+
+export namespace Game {
+    export async function initialize(
+        element: HTMLElement,
+        options: Partial<ApplicationOptions> & { width: number; height: number },
+        devtoolsOptions?: Devtools
+    ) {
+        GameUnifier.init({
+            restoreGameStepState: async (state, navigate) => {
+                HistoryManagerStatic.originalStepData = state; // [!code ++]
+                // ...
+            },
+            addHistoryItem: (historyInfo, opstions) => {
+                return stepHistory.add(historyInfo, opstions); // [!code ++]
+            },
+            // ...
+        });
+        // ...
+    }
+
+    export function clear() {
+        // ...
+        stepHistory.clear(); // [!code ++]
+    }
+
+    export function exportGameState(): GameState {
+        return {
+            // ...
+            historyData: stepHistory.export(), // [!code ++]
+        };
+    }
+
+    export async function restoreGameState(data: GameState, navigate: (path: string) => void) {
+        stepHistory.restore(data.historyData); // [!code ++]
+        // ...
+    }
+}
+```
+
+```ts [classes/HistoryManager.ts]
+import { GameStepStateData, GameUnifier, HistoryGameState, HistoryStep } from "@drincs/pixi-vn";
+import { diff } from "deep-diff";
+
+export class HistoryManagerStatic {
+    static _stepsHistory: HistoryStep[] = [];
+    static stepLimitSaved: number = 20;
+    static get lastHistoryStep(): HistoryStep | null {
+        if (HistoryManagerStatic._stepsHistory.length > 0) {
+            return HistoryManagerStatic._stepsHistory[HistoryManagerStatic._stepsHistory.length - 1];
+        }
+        return null;
+    }
+    static originalStepData: GameStepStateData | undefined = undefined;
+}
+
+/**
+ * This class is a class that manages the steps and labels of the game.
+ */
+export default class HistoryManager {
+    get stepsHistory() {
+        return HistoryManagerStatic._stepsHistory;
+    }
+    add(
+        historyInfo: HistoryInfo = {},
+        opstions: {
+            ignoreSameStep?: boolean;
+        } = {}
+    ) {
+        const originalStepData = HistoryManagerStatic.originalStepData;
+        const { ignoreSameStep } = opstions;
+        const currentStepData: GameStepStateData = GameUnifier.currentGameStepState;
+        if (!ignoreSameStep && this.isSameStep(originalStepData, currentStepData)) {
+            return;
+        }
+        let data = diff(originalStepData, currentStepData);
+        this.stepsHistory.push({
+            ...(historyInfo as Omit<HistoryStep, "diff">),
+            diff: data,
+        });
+        HistoryManagerStatic.originalStepData = currentStepData;
+    }
+
+    private isSameStep(originalState: GameStepStateData, newState: GameStepStateData) {
+        if (originalState.openedLabels.length === newState.openedLabels.length) {
+            try {
+                let lastStepDataOpenedLabelsString = JSON.stringify(originalState.openedLabels);
+                let historyStepOpenedLabelsString = JSON.stringify(newState.openedLabels);
+                if (
+                    lastStepDataOpenedLabelsString === historyStepOpenedLabelsString &&
+                    originalState.path === newState.path &&
+                    originalState.labelIndex === newState.labelIndex
+                ) {
+                    return true;
+                }
+            } catch (e) {
+                console.error("Error comparing opened labels", e);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public clear() {
+        HistoryManagerStatic._stepsHistory = [];
+        HistoryManagerStatic.originalStepData = undefined;
+    }
+
+    /* Export and Import Methods */
+
+    public export(): HistoryGameState {
+        return {
+            stepsHistory: this.stepsHistory,
+            originalStepData: HistoryManagerStatic.originalStepData,
+        };
+    }
+    public async restore(data: object) {
+        this.clear();
+        HistoryManagerStatic._stepsHistory = (data as HistoryGameState)["stepsHistory"];
+        HistoryManagerStatic.originalStepData = (data as HistoryGameState)["originalStepData"];
+    }
+
+    /* Options Methods */
+
+    async goBack() {
+        // TODO To be implemented
+    }
+    get narrativeHistory() {
+        // TODO To be implemented
+    }
+}
+```
+
+:::
