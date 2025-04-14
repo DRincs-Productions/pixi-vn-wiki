@@ -16,6 +16,8 @@ It is also important to understand that by default the engine saves the current 
 
 - `GameUnifier.getCurrentGameStepState`: This function returns the current state of the game step.
 - `GameUnifier.restoreGameStepState`: This function restores the state of the game step.
+- `Game.exportGameState`: This function returns the current state of the game. (Optional)
+- `Game.restoreGameState`: This function restores the state of the game. (Optional)
 
 ## Storage
 
@@ -294,6 +296,96 @@ export default interface GameState {
     soundData: Array<any>; // [!code ++]
     historyData: HistoryGameState;
     path: string;
+}
+```
+
+:::
+
+## Narrazione
+
+Replacing the entire narration module is possible but not recommended as it is the strong point of Pixi’VN.
+
+Since it has been handled in a generic way, you can implement your own [`Label`](/start/labels.md#label) (the key element of narration) by extending `LabelAbstract`.
+
+The `LabelAbstract` class is a generic class that can be used to create your own labels. It is a simple class that contains the basic functionality of a label. You can extend this class and add your own functionality to it.
+
+Here's an example:
+
+::: code-group
+
+```ts [classes/Label.ts]
+import { LabelAbstract, LabelProps, StepLabelType } from "@drincs/pixi-vn";
+import { AdditionalShaSpetsEnum } from "@drincs/pixi-vn/dist/narration/interfaces/HistoryStep";
+import sha1 from "crypto-js/sha1";
+
+export default class Label<T extends {} = {}> extends LabelAbstract<Label<T>, T> {
+    public get stepCount(): number {
+        return this.steps.length;
+    }
+    public getStepById(stepId: number): StepLabelType<T> | undefined {
+        return this.steps[stepId];
+    }
+    /**
+     * @param id is the id of the label
+     * @param steps is the list of steps that the label will perform
+     * @param props is the properties of the label
+     */
+    constructor(id: string, steps: StepLabelType<T>[] | (() => StepLabelType<T>[]), props?: LabelProps<Label<T>>) {
+        super(id, props);
+        this._steps = steps;
+    }
+
+    private _steps: StepLabelType<T>[] | (() => StepLabelType<T>[]);
+    /**
+     * Get the steps of the label.
+     */
+    public get steps(): StepLabelType<T>[] {
+        if (typeof this._steps === "function") {
+            return this._steps();
+        }
+        return this._steps;
+    }
+
+    public getStepSha(index: number): string {
+        if (index < 0 || index >= this.steps.length) {
+            console.warn("stepSha not found, setting to ERROR");
+            return AdditionalShaSpetsEnum.ERROR;
+        }
+        try {
+            let step = this.steps[index];
+            let sha1String = sha1(step.toString().toLocaleLowerCase());
+            return sha1String.toString();
+        } catch (e) {
+            console.warn("stepSha not found, setting to ERROR", e);
+            return AdditionalShaSpetsEnum.ERROR;
+        }
+    }
+}
+```
+
+```ts [utils/label.ts]
+import { LabelProps, RegisteredLabels, StepLabelType } from "@drincs/pixi-vn";
+import Label from "../classes/Label";
+
+/**
+ * Creates a new label and registers it in the system.
+ * **This function must be called at least once at system startup to register the label, otherwise the system cannot be used.**
+ * @param id The id of the label, it must be unique
+ * @param steps The steps of the label
+ * @param props The properties of the label
+ * @returns The created label
+ */
+export function newLabel<T extends {} = {}>(
+    id: string,
+    steps: StepLabelType<T>[] | (() => StepLabelType<T>[]),
+    props?: Omit<LabelProps<Label<T>>, "choiseIndex">
+): Label<T> {
+    if (RegisteredLabels.get(id)) {
+        console.info(`Label ${id} already exists, it will be overwritten`);
+    }
+    let label = new Label<T>(id, steps, props);
+    RegisteredLabels.add(label);
+    return label;
 }
 ```
 
