@@ -8,13 +8,13 @@ Se stai creando una visual novel, è consigliabile conservare localmente solo gl
 
 To load and manipulate assets (images, gifs, videos...) you will need to use `Assets`. `Assets` is a class with many features and comes from the PixiJS library, if you want more information read [here](https://pixijs.com/8.x/guides/components/assets). È inoltre molto importante leggere questa documentazione per [organizzare al meglio il caricamento delle risorse](/start/assets-management.md).
 
-You mainly have two choices for where to save your assets, local or online.
+Principalmente hai due possibilità per decidere dove salvare i tuoi assets: in locale o online.
 
-## Local assets
+## Assets del progetto
 
-To save and use assets locally, you can use any folder, there are no restrictions. But it is recommended to use the `assets` folder. Inside this folder you can create subfolders to better organize your assets.
+Per salvare e utilizzare le risorse in locale, puoi usare qualsiasi cartella, non ci sono restrizioni. Ma è consigliabile utilizzare la cartella `assets`. All'interno di questa cartella puoi creare delle sottocartelle per organizzare meglio le tue risorse.
 
-Here is an example of how to import and load an asset into your project:
+Ecco un esempio di come importare e caricare una risorsa nel tuo progetto:
 
 ```ts [/utils/assets.ts]
 import { Assets } from "@drincs/pixi-vn";
@@ -35,15 +35,15 @@ export async function defineAssets() {
 
 ### ![icon](/pixijs-assetpack.svg){style="width:30px;height:30px;margin-right:5px;float:left;border-radius:5px"} PixiJS AssetPack
 
-AssetPack is a tool for optimising local assets for the web. Può essere utilizzato per trasformare, combinare e comprimere gli assets.
+AssetPack è uno strumento per ottimizzare le risorse locali per il web. Può essere utilizzato per trasformare, combinare e comprimere gli assets.
 
 Se vuoi utilizzare AssetPack, puoi trovare la documentazione [qui](https://pixijs.io/assetpack)
 
 ## Hosting degli assets
 
-You can save your assets online. This is a good option if you want to save space on your computer. You can use any cloud service that allows you to upload files and generate a public URL (CORS enabled).
+Puoi salvare i tuoi assets online. This is a good option if you want to save space on your computer. You can use any cloud service that allows you to upload files and generate a public URL (CORS enabled).
 
-Here is an example of how to import and load an asset into your project:
+Ecco un esempio di come importare e caricare una risorsa nel tuo progetto:
 
 ```ts [/utils/assets.ts]
 import { Assets } from "@drincs/pixi-vn";
