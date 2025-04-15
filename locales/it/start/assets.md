@@ -6,7 +6,7 @@
 
 Se stai creando una visual novel, è consigliabile conservare localmente solo gli assets che utilizzi frequentemente. Per gli assets utilizzati una sola volta nel gioco, invece, è consigliabile pubblicarle online.
 
-To load and manipulate assets (images, gifs, videos...) you will need to use `Assets`. `Assets` is a class with many features and comes from the PixiJS library, if you want more information read [here](https://pixijs.com/8.x/guides/components/assets). È inoltre molto importante leggere questa documentazione per [organizzare al meglio il caricamento delle risorse](/start/assets-management.md).
+Per caricare e manipolare risorse (immagini, gif, video...) sarà necessario utilizzare `Assets`. `Assets` è una classe con molte funzionalità e proviene dalla libreria PixiJS, se vuoi maggiori informazioni leggi [qui](https://pixijs.com/8.x/guides/components/assets). È inoltre molto importante leggere questa documentazione per [organizzare al meglio il caricamento delle risorse](/start/assets-management.md).
 
 Principalmente hai due possibilità per decidere dove salvare i tuoi assets: in locale o online.
 
@@ -41,7 +41,7 @@ Se vuoi utilizzare AssetPack, puoi trovare la documentazione [qui](https://pixij
 
 ## Hosting degli assets
 
-Puoi salvare i tuoi assets online. This is a good option if you want to save space on your computer. You can use any cloud service that allows you to upload files and generate a public URL (CORS enabled).
+Puoi salvare i tuoi assets online. Questa è una buona opzione se vuoi risparmiare spazio sul tuo computer. Puoi utilizzare qualsiasi servizio cloud che ti consenta di caricare file e generare un URL pubblico (CORS abilitato).
 
 Ecco un esempio di come importare e caricare una risorsa nel tuo progetto:
 
