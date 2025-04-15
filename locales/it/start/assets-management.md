@@ -8,7 +8,7 @@ In tutte le funzioni di Pixi’VN puoi utilizzare direttamente l'URL dell'immagi
 let alien1 = await showImage("alien", "https://pixijs.com/assets/eggHead.png");
 ```
 
-This method works and keeps only the strictly necessary assets in memory, but it has some disadvantages:
+Questo metodo funziona e mantiene in memoria solo le risorse strettamente necessarie, ma presenta alcuni svantaggi:
 
 - refer to an asset directly with a url, where that asset must be renamed/moved to another folder or replaced with another asset (which has another url), the old saves will not work anymore and in several places in the code you will have to write a url which is usually very long.
 - Each [step](/start/labels.md) where one or more assets are loaded will require some time (even if small) to execute.
