@@ -13,9 +13,9 @@ Questo metodo funziona e mantiene in memoria solo le risorse strettamente necess
 - refer to an asset directly with a url, where that asset must be renamed/moved to another folder or replaced with another asset (which has another url), the old saves will not work anymore and in several places in the code you will have to write a url which is usually very long.
 - Each [step](/start/labels.md) where one or more assets are loaded will require some time (even if small) to execute.
 
-For these reasons it is recommended to handle assets in the following ways.
+Per questi motivi si consiglia di gestire le risorse nei seguenti modi.
 
-## Initialize the asset matrix at project start
+## Inizializza la matrice degli assets all'avvio del progetto
 
 Initialize the asset matrix at the start of the project, this will allow you to refer to the assets by a unique alias and not by a url. This will save you code and you will be able to change the url of an asset without having to worry about saving the old saves.
 
