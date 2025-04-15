@@ -1,8 +1,8 @@
-# Assets management
+# Gestione assets
 
-To load and manipulate assets (images, gifs, videos...) you will need to use `Assets`. `Assets` is a class with many features and comes from the PixiJS library, if you want more information read [here](https://pixijs.com/8.x/guides/components/assets).
+Per caricare e manipolare risorse (immagini, gif, video...) sarà necessario utilizzare `Assets`. `Assets` è una classe con molte funzionalità e proviene dalla libreria PixiJS, se vuoi maggiori informazioni leggi [qui](https://pixijs.com/8.x/guides/components/assets).
 
-In all Pixi’VN functions you can directly use the image URL without having to worry about uploading and manipulating the image with `Assets`.
+In tutte le funzioni di Pixi’VN puoi utilizzare direttamente l'URL dell'immagine senza doverti preoccupare di caricare e manipolare l'immagine con `Assets`.
 
 ```ts
 let alien1 = await showImage("alien", "https://pixijs.com/assets/eggHead.png");
