@@ -15,7 +15,7 @@ You can learn more about PixiJS on the [PixiJS website](https://www.pixijs.com/)
 
 ## Differences between Pixi’VN and PixiJS
 
-Pixi’VN provides a API object called `canvas` used to interface with Pixi’VN's PixiJS application. So you don't need to install pixi.js and the features of Pixi'VN is not equivalent to that of PixiJS. Although not recommended, you can still install pixi.js and use canvas.app to access the PixiJS application.
+Pixi’VN provides a API object called `canvas` used to interface with Pixi’VN's PixiJS application. So you don't need to install pixi.js and the features of Pixi'VN is not equivalent to that of PixiJS. Although not recommended, you can still install pixi.js and use `canvas.app` to access the PixiJS application.
 
 The use of Pixi’VN, in rendering, is very similar to that of PixiJS. The only differences are as follows:
 
