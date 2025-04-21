@@ -17,7 +17,7 @@ For these reasons it is recommended to handle assets in the following ways.
 
 ## Initialize the asset matrix at project start
 
-Initialize the asset matrix at the start of the project, this will allow you to refer to the assets by a unique alias and not by a url. This will save you code and you will be able to change the url of an asset without having to worry about saving the old saves.
+Initializing the asset array at the beginning of the project allows you to reference assets by a unique alias without having to use url/path. This way you can use its alias (instead of url/path) and you can change the URL of a resource without having to worry about the compatibility of old saves.
 
 To do this, it is recommended to create an asynchronous function `defineAssets` that will be called at the start of the project.
 In this function you will use the function `Assets.add` which will allow you to add an asset to the matrix. The function `Assets.add` requires an object with the following properties:
