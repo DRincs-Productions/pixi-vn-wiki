@@ -44,6 +44,10 @@ deno init --npm pixi-vn
 
 The supported template presets are:
 
+:::info More templates will be added in the future
+Pixi’VN knows the possibility of proposing templates and helps you in its development. You can follow the development of templates and show your interest from the following thread <https://github.com/DRincs-Productions/pixi-vn/discussions/361>.
+:::
+
 **Visual Novel - React**:
 
 <iframe src="https://pixi-vn-react-template.web.app/"
@@ -55,11 +59,10 @@ The supported template presets are:
 - **[Visual Novel - React - Typescript - Web page + Desktop + Mobile](https://github.com/DRincs-Productions/pixi-vn-react-template/tree/tauri)**
 - **[Visual Novel - React - Ink + Typescript - Web page](https://github.com/DRincs-Productions/pixi-vn-react-template/tree/ink)**
 - **[Visual Novel - React - Ink + Typescript - Web page + Desktop + Mobile](https://github.com/DRincs-Productions/pixi-vn-react-template/tree/ink-tauri)**
-- **[Game engine](https://github.com/DRincs-Productions/pixi-vn-game-engine-template)**
 
-:::info More templates will be added in the future
-Pixi’VN knows the possibility of proposing templates and helps you in its development. You can follow the development of templates and show your interest from the following thread <https://github.com/DRincs-Productions/pixi-vn/discussions/361>.
-:::
+**Other templates**:
+
+- **[Game engine](https://github.com/DRincs-Productions/pixi-vn-game-engine-template)**
 
 After the project is initialized, you can open the project directory with your text editor (VSCode is recommended) and start developing your visual novel.
 
