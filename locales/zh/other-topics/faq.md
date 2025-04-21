@@ -6,8 +6,9 @@ It is recommended to overwrite the `StepLabelProps` interface to add the `naviga
 
 For example:
 
-```typescript
-// pixi-vn.d.ts
+::: code-group
+
+```typescript [pixi-vn.d.ts]
 declare module '@drincs/pixi-vn' {
     interface StepLabelProps {
         /**
@@ -15,19 +16,23 @@ declare module '@drincs/pixi-vn' {
          * @param route The route to navigate to.
          * @returns 
          */
-        navigate: (route: string) => void
+        navigate: (route: string) => Promise<void>
         // ...
     }
 }
 ```
 
-```typescript
+```typescript [labels/startLabel.ts]
 export const startLabel = newLabel("start_label",
     [
-        ({ navigate }) => navigate('/new-route'),
+        async ({ navigate }) => { // [!code focus]
+            await navigate('/new-route') // [!code focus]
+        }, // [!code focus]
     ]
 )
 ```
+
+:::
 
 ## Skip step and Auto Forward
 
