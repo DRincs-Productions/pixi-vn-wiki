@@ -71,7 +71,7 @@ Puoi utilizzare Github per ospitare i tuoi assets. Puoi usare il raw link del fi
 - **Limiti di spazio**: Non ci sono limiti di spazio. Ma ogni singolo file non deve superare i 100 MB.
 - **Tipo di file**: puoi caricare qualsiasi tipo di file.
 - **Traffico**: La velocità non è delle migliori.
-- **Modifica gli assets**: Puoi modificare il file mantenendo lo stesso URL.
+- **Edit assets**: You can edit the file keeping the same URL.
 
 ### Hosting di immagini
 
@@ -81,7 +81,7 @@ L'hosting di immagini è un servizio che consente di caricare immagini. Ci sono 
 - **Limiti di spazio**: Non ci sono limiti di spazio. Ma ogni singolo file può avere una dimensione massima.
 - **Tipo di file**: puoi caricare solo immagini.
 - **Traffico**: La velocità è buona.
-- **Modifica gli assets**: non puoi modificare il file mantenendo lo stesso URL.
+- **Edit assets**: You can't edit the file keeping the same URL.
 
 ### ![icon](/firebase.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Firebase Storage
 
@@ -91,7 +91,7 @@ Firebase Storage è un servizio cloud che consente di archiviare e fornire conte
 - **Limiti di spazio**: hai a disposizione 5 GB di storage di archiviazione gratuito e 1 GB al giorno di download. È possibile aumentare lo spazio di archiviazione passando al piano Blaze. Per 50GB pagherai circa $1,17.
 - **Tipo di file**: puoi caricare qualsiasi tipo di file.
 - **Traffico**: La velocità è buona.
-- **Modifica gli assets**: Puoi modificare il file mantenendo lo stesso URL.
+- **Edit assets**: You can edit the file keeping the same URL.
 
 **Risoluzione del problema CORS di Firebase Storage**:
 
@@ -106,7 +106,7 @@ Amazon S3 è un servizio cloud che consente di archiviare e distribuire contenut
 - **Limiti di spazio**: paghi in base allo spazio di archiviazione che utilizzi. È possibile aumentare lo spazio di archiviazione aggiornando il piano.
 - **Tipo di file**: puoi caricare qualsiasi tipo di file. Il prezzo è di circa $0,023 per GB, quindi per 50GB pagherai circa $1,15.
 - **Traffico**: La velocità è buona.
-- **Modifica gli assets**: Puoi modificare il file mantenendo lo stesso URL.
+- **Edit assets**: You can edit the file keeping the same URL.
 
 ### ![icon](/supabase.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Supabase
 
@@ -116,7 +116,7 @@ Supabase è un'alternativa open source di Firebase. Puoi usare l'URL pubblico de
 - **Limiti di spazio**: hai a disposizione 5 GB di storage di archiviazione gratuito e 1 GB al giorno di download. È possibile aumentare lo spazio di archiviazione aggiornando il piano.
 - **Tipo di file**: puoi caricare qualsiasi tipo di file.
 - **Traffico**: La velocità è buona.
-- **Modifica gli assets**: Puoi modificare il file mantenendo lo stesso URL.
+- **Edit assets**: You can edit the file keeping the same URL.
 
 ### Convex
 
@@ -126,4 +126,4 @@ Convex è un servizio cloud che consente di archiviare e fornire contenuti gener
 - **Limiti di spazio**: Hai a disposizione 10GB di spazio di archiviazione gratuito e 1GB/mese di download. È possibile aumentare lo spazio di archiviazione aggiornando il piano.
 - **Tipo di file**: puoi caricare qualsiasi tipo di file.
 - **Traffico**: La velocità è buona.
-- **Modifica gli assets**: Puoi modificare il file mantenendo lo stesso URL.
+- **Edit assets**: You can edit the file keeping the same URL.
