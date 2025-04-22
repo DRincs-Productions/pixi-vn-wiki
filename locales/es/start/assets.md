@@ -20,17 +20,10 @@ Here is an example of how to import and load an asset into your project:
 import { Assets } from "@drincs/pixi-vn";
 import bg01hallway from "../assets/images/bg01-hallway.webp";
 
-/**
- * Define all the assets that will be used in the game.
- * This function will be called before the game starts.
- * You can read more about assets management in the documentation: https://pixi-vn.web.app/start/assets-management.html
- */
-export async function defineAssets() {
-    Assets.add({
-        alias: "bg01-hallway",
-        src: bg01hallway,
-    });
-}
+Assets.add({
+    alias: "bg01-hallway",
+    src: bg01hallway,
+});
 ```
 
 ### ![icon](/pixijs-assetpack.svg){style="width:30px;height:30px;margin-right:5px;float:left;border-radius:5px"} PixiJS AssetPack
@@ -48,17 +41,10 @@ Here is an example of how to import and load an asset into your project:
 ```ts [/utils/assets.ts]
 import { Assets } from "@drincs/pixi-vn";
 
-/**
- * Define all the assets that will be used in the game.
- * This function will be called before the game starts.
- * You can read more about assets management in the documentation: https://pixi-vn.web.app/start/assets-management.html
- */
-export async function defineAssets() {
-    Assets.add({
-        alias: "bg01-hallway",
-        src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fbg01-hallway.webp?alt=media",
-    });
-}
+Assets.add({
+    alias: "bg01-hallway",
+    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fbg01-hallway.webp?alt=media",
+});
 ```
 
 You can save your assets as you like, with complete freedom. If you plan to save your assets online, here are some of the options:
@@ -83,47 +69,22 @@ Image hosting is a service that allows you to upload images. There are more site
 - **Traffic**: Speed is good.
 - **Edit assets**: You can't edit the file keeping the same URL.
 
-### ![icon](/firebase.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Firebase Storage
+### Cloud storage
 
-Firebase Storage is a cloud service that allows you to store and serve user-generated content, such as photos or videos or other files. You can use the public URL of the file to use it in your project.
+Cloud storage is a service that allows you to upload files. There are more sites to upload files for free, but with some limits.
 
-- **Price**: Firebase have two plans: Spark (free) and Blaze (pay as you go). You can find more information [here](https://firebase.google.com/pricing).
-- **Space limits**: You have, free, 5GB of free storage and 1GB/day of download. You can increase the storage by upgrading to Blaze plan. For 50GB you will pay around $1,17.
+- **Price**: Usually paid or with free version with limits.
+- **Space limits**: Monthly cost based on space occupied by use. (Usually if you do not exceed a certain threshold it is free)
 - **Type of files**: You can upload any type of file.
 - **Traffic**: Speed is good.
 - **Edit assets**: You can edit the file keeping the same URL.
 
-**Solving Firebase Storage CORS Issue**:
+Here is a list of some of the most popular cloud storage services:
 
-- Install [gcloud CLI](https://cloud.google.com/sdk/docs/install)
-- Read this [documentation](https://medium.com/@we.viavek/setting-cors-in-firebase-19a2cce2fe28) to solve the CORS issue.
-
-### ![icon](/aws.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Amazon S3
-
-Amazon S3 is a cloud service that allows you to store and serve user-generated content, such as photos or videos or other files. You can use the public URL of the file to use it in your project.
-
-- **Price**: There is a payment plan to use Amazon S3. You can find more information [here](https://aws.amazon.com/s3/pricing/).
-- **Space limits**: You pay for the storage you use. You can increase the storage by upgrading the plan.
-- **Type of files**: You can upload any type of file. The price is around $0,023 per GB, so for 50GB you will pay around $1,15.
-- **Traffic**: Speed is good.
-- **Edit assets**: You can edit the file keeping the same URL.
-
-### ![icon](/supabase.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Supabase
-
-Supabase is an open-source Firebase alternative. You can use the public URL of the file to use it in your project.
-
-- **Price**: Supabase have two plans: Free and Pay as you go. You can find more information [here](https://supabase.io/pricing).
-- **Space limits**: You have, free, 5GB of free storage and 1GB/day of download. You can increase the storage by upgrading the plan.
-- **Type of files**: You can upload any type of file.
-- **Traffic**: Speed is good.
-- **Edit assets**: You can edit the file keeping the same URL.
-
-### Convex
-
-Convex is a cloud service that allows you to store and serve user-generated content, such as photos or videos or other files. You can use the public URL of the file to use it in your project.
-
-- **Price**: Convex have two plans: Free and Pay as you go. You can find more information [here](https://www.convex.dev/pricing).
-- **Space limits**: You have, free, 10GB of free storage and 1GB/month of download. You can increase the storage by upgrading the plan.
-- **Type of files**: You can upload any type of file.
-- **Traffic**: Speed is good.
-- **Edit assets**: You can edit the file keeping the same URL.
+- ![icon](/firebase.svg){style="width:20px;height:20px;margin-right:5px;float:left"} **Firebase Storage** is a cloud service very easy to use. Firebase have two plans: Spark (free) and Blaze (pay as you go). You can find more information [here](https://firebase.google.com/pricing).\
+  **Solving Firebase Storage CORS Issue**:
+  - Install [gcloud CLI](https://cloud.google.com/sdk/docs/install)
+  - Read this [documentation](https://medium.com/@we.viavek/setting-cors-in-firebase-19a2cce2fe28) to solve the CORS issue.
+- ![icon](/aws.svg){style="width:20px;height:20px;margin-right:5px;float:left"} **Amazon S3** is a cloud service. Compared to its competitors, it has many settings, but it may be more difficult to use. There is a payment plan to use Amazon S3. You can find more information [here](https://aws.amazon.com/s3/pricing/).
+- ![icon](/supabase.svg){style="width:20px;height:20px;margin-right:5px;float:left"} **Supabase** is an open-source Firebase alternative. Supabase have two plans: Free and Pay as you go. You can find more information [here](https://supabase.io/pricing).
+- **Convex** is a cloud service that allows you to store and serve user-generated content, such as photos or videos or other files. Convex have two plans: Free and Pay as you go. You can find more information [here](https://www.convex.dev/pricing).
