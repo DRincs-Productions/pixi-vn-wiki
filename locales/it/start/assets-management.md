@@ -10,20 +10,20 @@ let alien1 = await showImage("alien", "https://pixijs.com/assets/eggHead.png");
 
 Questo metodo funziona e mantiene in memoria solo le risorse strettamente necessarie, ma presenta alcuni svantaggi:
 
-- refer to an asset directly with a url, where that asset must be renamed/moved to another folder or replaced with another asset (which has another url), the old saves will not work anymore and in several places in the code you will have to write a url which is usually very long.
+- refer to an asset directly with a URL, where that asset must be renamed/moved to another folder or replaced with another asset (which has another URL), the old saves will not work anymore and in several places in the code you will have to write a URL which is usually very long.
 - Each [step](/start/labels.md) where one or more assets are loaded will require some time (even if small) to execute.
 
 Per questi motivi si consiglia di gestire le risorse nei seguenti modi.
 
 ## Inizializza la matrice degli assets all'avvio del progetto
 
-Initializing the asset matrix at the beginning of the project allows you to reference assets by a unique alias without having to use url/path. This way you can change the URL of a resource (while keeping the old alias) so you don't have to worry about version compatibility.
+Initializing the asset matrix at the beginning of the project allows you to reference assets by a unique alias without having to use the URL/path. This way you can change the URL of a resource (while keeping the old alias) so you don't have to worry about version compatibility.
 
-To do this, it is recommended to create an asynchronous function `defineAssets` that will be called at the start of the project.
-In this function you will use the function `Assets.add` which will allow you to add an asset to the matrix. The function `Assets.add` requires an object with the following properties:
+Per fare ciò, si consiglia di creare una funzione asincrona `defineAssets` che verrà chiamata all'aavvio del progetto.
+In this function you will use the function `Assets.add` which will allow you to add assets to the matrix. La funzione `Assets.add` richiede un oggetto con le seguenti proprietà:
 
-- `alias`: a unique string that will be used to refer to the asset.
-- `src`: the url of the asset.
+- `alias`: una stringa univoca che verrà utilizzata per fare riferimento alla risorsa.
+- `src`: the URL of the asset.
 
 ```ts
 import { Assets, sound } from "@drincs/pixi-vn";
@@ -41,17 +41,15 @@ export async function defineAssets() {
 
 ## Load assets
 
-By default, assets are loaded only when needed. This means when starting a new step.
+By default, assets are loaded only when needed.
 
-But **in case the assets are not saved locally**, but in an ["assets hosting"](/start/assets.md#assets-hosting) their loading may take some time.
+Tuttavia **nel caso in cui le risorse non siano salvate localmente**, ma in un ["assets hosting"](/start/assets.md#assets-hosting) il loro caricamento potrebbe richiedere del tempo. Ciò significa che l'avvio di uno step potrebbe non essere tempestivo. Pertanto, dopo aver avviato l'esecuzione del [passaggio successivo](/start/labels-flow.md#next-step) (ad esempio con il pulsante "Avanti"), il giocatore potrebbe dover attendere un po' di tempo per poter "visualizzare" le modifiche ed eseguire un altro passaggio.
 
-This means that starting a step may not be timely. So the player after starting the execution of the [next step](/start/labels-flow.md#next-step) (for example with the "next" button) may have to wait some time to be able to "view" the changes and be able to run another step.
+Eseguire questi caricamenti a ogni passaggio può risultare fastidioso per il giocatore, anche se sono molto brevi.
 
-Performing these loadings at each step may be annoying to the player, even if they are very short.
+Per risolvere questo problema, lo sviluppatore può avviare un "gruppo di caricamento" in una determinata fase del gioco. Ciò significa che il lettore avrà meno caricamenti, ma più lunghi.
 
-The developer to deal with this problem can start a "loading group" at a certain step of the game. This means that the player will have fewer loadings, but longer ones.
-
-Here are various ways to load assets:
+Ecco vari modi per caricare risorse:
 
 ### Load assets before the project starts
 
