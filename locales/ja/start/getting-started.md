@@ -126,6 +126,65 @@ Now you must initialize the Pixi’VN window before using the engine. For exampl
   on <a href="https://codepen.io">CodePen</a>.
 </iframe>
 
+### Initialize the Game
+
+Before using the Pixi’VN engine, you must initialize the game. You can do this by calling the `Game.init` method.
+
+The `Game.init` method takes the following arguments:
+
+- `element`: The HTML element to append the canvas to.
+- `options`: This is equivalent to the options you can use when initializing a [PixiJS Application](https://pixijs.com/8.x/guides/basics/getting-started#creating-an-application). The following options are mandatory:
+  - `width`: The width of the canvas.
+  - `height`: The height of the canvas.
+- `devtoolsOptions`: This is equivalent to the options you can use when initializing the [PixiJS Devtools](/start/canvas.md#use-pixijs-devtools-with-pixivn).
+
+::: code-group
+
+```ts [src/main.tsx]
+import { Game, narration } from "@drincs/pixi-vn";
+
+// Canvas setup with PIXI
+const body = document.body
+if (!body) {
+    throw new Error('body element not found')
+}
+
+Game.init(body, {
+    height: 1080,
+    width: 1920,
+    backgroundColor: "#303030",
+}).then(() => {
+    // ...
+});
+
+// read more here: https://pixi-vn.web.app/start/other-narrative-features.html#how-manage-the-end-of-the-game
+narration.onGameEnd = async (props) => {
+    Game.clear();
+    props.navigate("/");
+};
+
+narration.onStepError = async (_error, { notify, t }) => {
+    notify("allert_error_occurred");
+};
+```
+
+```html [index.html]
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
+```
+
+:::
+
 ### How enable the decorators in TypeScript?
 
 In Pixi’VN, in some advanced features, it is necessary to use decorators.
