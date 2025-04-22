@@ -10,20 +10,20 @@ let alien1 = await showImage("alien", "https://pixijs.com/assets/eggHead.png");
 
 This method works and keeps only the strictly necessary assets in memory, but it has some disadvantages:
 
-- refer to an asset directly with a url, where that asset must be renamed/moved to another folder or replaced with another asset (which has another url), the old saves will not work anymore and in several places in the code you will have to write a url which is usually very long.
+- refer to an asset directly with a URL, where that asset must be renamed/moved to another folder or replaced with another asset (which has another URL), the old saves will not work anymore and in several places in the code you will have to write a URL which is usually very long.
 - Each [step](/start/labels.md) where one or more assets are loaded will require some time (even if small) to execute.
 
 For these reasons it is recommended to handle assets in the following ways.
 
 ## Initialize the asset matrix at project start
 
-Initializing the asset matrix at the beginning of the project allows you to reference assets by a unique alias without having to use url/path. This way you can change the URL of a resource (while keeping the old alias) so you don't have to worry about version compatibility.
+Initializing the asset matrix at the beginning of the project allows you to reference assets by a unique alias without having to use the URL/path. This way you can change the URL of a resource (while keeping the old alias) so you don't have to worry about version compatibility.
 
 To do this, it is recommended to create an asynchronous function `defineAssets` that will be called at the start of the project.
-In this function you will use the function `Assets.add` which will allow you to add an asset to the matrix. The function `Assets.add` requires an object with the following properties:
+In this function you will use the function `Assets.add` which will allow you to add assets to the matrix. The function `Assets.add` requires an object with the following properties:
 
 - `alias`: a unique string that will be used to refer to the asset.
-- `src`: the url of the asset.
+- `src`: the URL of the asset.
 
 ```ts
 import { Assets, sound } from "@drincs/pixi-vn";
@@ -41,11 +41,9 @@ export async function defineAssets() {
 
 ## Load assets
 
-By default, assets are loaded only when needed. This means when starting a new step.
+By default, assets are loaded only when needed.
 
-But **in case the assets are not saved locally**, but in an ["assets hosting"](/start/assets.md#assets-hosting) their loading may take some time.
-
-This means that starting a step may not be timely. So the player after starting the execution of the [next step](/start/labels-flow.md#next-step) (for example with the "next" button) may have to wait some time to be able to "view" the changes and be able to run another step.
+But **in case the assets are not saved locally**, but in an ["assets hosting"](/start/assets.md#assets-hosting) their loading may take some time. This means that starting a step may not be timely. So the player after starting the execution of the [next step](/start/labels-flow.md#next-step) (for example with the "next" button) may have to wait some time to be able to "view" the changes and be able to run another step.
 
 Performing these loadings at each step may be annoying to the player, even if they are very short.
 
