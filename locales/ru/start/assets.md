@@ -71,7 +71,7 @@ You can use Github to host your assets. You can use the raw link of the file to 
 - **Space limits**: You have no space limits. But each single file must not exceed 100 MB.
 - **Type of files**: You can upload any type of file.
 - **Traffic**: Speed is not the best.
-- **Edit assets**: You can edit the file keeping the same url.
+- **Edit assets**: You can edit the file keeping the same URL.
 
 ### Image hosting
 
@@ -81,7 +81,7 @@ Image hosting is a service that allows you to upload images. There are more site
 - **Space limits**: You have no space limits. But each single file can have a maximum size.
 - **Type of files**: You can upload only images.
 - **Traffic**: Speed is good.
-- **Edit assets**: You can't edit the file keeping the same url.
+- **Edit assets**: You can't edit the file keeping the same URL.
 
 ### ![icon](/firebase.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Firebase Storage
 
@@ -91,7 +91,7 @@ Firebase Storage is a cloud service that allows you to store and serve user-gene
 - **Space limits**: You have, free, 5GB of free storage and 1GB/day of download. You can increase the storage by upgrading to Blaze plan. For 50GB you will pay around $1,17.
 - **Type of files**: You can upload any type of file.
 - **Traffic**: Speed is good.
-- **Edit assets**: You can edit the file keeping the same url.
+- **Edit assets**: You can edit the file keeping the same URL.
 
 **Solving Firebase Storage CORS Issue**:
 
@@ -106,7 +106,7 @@ Amazon S3 is a cloud service that allows you to store and serve user-generated c
 - **Space limits**: You pay for the storage you use. You can increase the storage by upgrading the plan.
 - **Type of files**: You can upload any type of file. The price is around $0,023 per GB, so for 50GB you will pay around $1,15.
 - **Traffic**: Speed is good.
-- **Edit assets**: You can edit the file keeping the same url.
+- **Edit assets**: You can edit the file keeping the same URL.
 
 ### ![icon](/supabase.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Supabase
 
@@ -116,7 +116,7 @@ Supabase is an open-source Firebase alternative. You can use the public URL of t
 - **Space limits**: You have, free, 5GB of free storage and 1GB/day of download. You can increase the storage by upgrading the plan.
 - **Type of files**: You can upload any type of file.
 - **Traffic**: Speed is good.
-- **Edit assets**: You can edit the file keeping the same url.
+- **Edit assets**: You can edit the file keeping the same URL.
 
 ### Convex
 
@@ -126,4 +126,4 @@ Convex is a cloud service that allows you to store and serve user-generated cont
 - **Space limits**: You have, free, 10GB of free storage and 1GB/month of download. You can increase the storage by upgrading the plan.
 - **Type of files**: You can upload any type of file.
 - **Traffic**: Speed is good.
-- **Edit assets**: You can edit the file keeping the same url.
+- **Edit assets**: You can edit the file keeping the same URL.
