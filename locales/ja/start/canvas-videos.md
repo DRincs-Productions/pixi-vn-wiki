@@ -36,7 +36,7 @@ The simplest and fastest method to show an video on the canvas is to use the `sh
 This function will return a `VideoSprite`, that you can use to manipulate the video, and it has the following parameters:
 
 - `alias`: Is a [alias](/start/canvas-alias.md) for the video.
-- `videoUrl` (Optional): The URL or path of the video. If you have initialized the [asset matrix](/start/assets-management.md#initialize-the-asset-matrix-at-project-start), you can use the alias of the texture. If you don't provide the url, then the alias is used as the url.
+- `videoUrl` (Optional): The URL or path of the video. If you have initialized the [asset matrix](/start/assets-management.md#initialize-the-asset-matrix-at-project-start), you can use the alias of the texture. If you don't provide the URL, then the alias is used as the URL.
 - `options` (Optional): It corresponds to the `VideoSpriteOptions` interface.
 
 :::tabs
@@ -82,7 +82,7 @@ To add an video to the canvas, you can use the `addVideo` function. It is import
 This function will return a `VideoSprite`, that you can use to manipulate the video, and it has the following parameters:
 
 - `alias`: Is a [alias](/start/canvas-alias.md) for the video.
-- `videoUrl` (Optional): The URL or path of the video. If you have initialized the [asset matrix](/start/assets-management.md#initialize-the-asset-matrix-at-project-start), you can use the alias of the texture. If you don't provide the url, then the alias is used as the url.
+- `videoUrl` (Optional): The URL or path of the video. If you have initialized the [asset matrix](/start/assets-management.md#initialize-the-asset-matrix-at-project-start), you can use the alias of the texture. If you don't provide the URL, then the alias is used as the URL.
 - `options` (Optional): It corresponds to the `VideoSpriteOptions` interface.
 
 :::tabs
