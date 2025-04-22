@@ -2,13 +2,13 @@
 
 To load and manipulate assets (images, gifs, videos...) you will need to use `Assets`. `Assets` is a class with many features and comes from the PixiJS library, if you want more information read [here](https://pixijs.com/8.x/guides/components/assets).
 
-In all Pixi’VN functions you can directly use the image URL without having to worry about uploading and manipulating the image with `Assets`.
+In all Pixi’VN functions you can directly use the image URL, even if not yet defined in `Assets`.
 
 ```ts
 let alien1 = await showImage("alien", "https://pixijs.com/assets/eggHead.png");
 ```
 
-This method works and keeps only the strictly necessary assets in memory, but it has some disadvantages:
+This method has some cons:
 
 - refer to an asset directly with a URL, where that asset must be renamed/moved to another folder or replaced with another asset (which has another URL), the old saves will not work anymore and in several places in the code you will have to write a URL which is usually very long.
 - Each [step](/start/labels.md) where one or more assets are loaded will require some time (even if small) to execute.
@@ -20,24 +20,67 @@ For these reasons it is recommended to handle assets in the following ways.
 Initializing the asset matrix at the beginning of the project allows you to reference assets by a unique alias without having to use the URL/path. This way you can change the URL of a resource (while keeping the old alias) so you don't have to worry about version compatibility.
 
 To do this, it is recommended to create an asynchronous function `defineAssets` that will be called at the start of the project.
-In this function you will use the function `Assets.add` which will allow you to add assets to the matrix. The function `Assets.add` requires an object with the following properties:
+In this feature we will use the `Assets` functions (For example `Assets.add`, `Assets.addBundle` and `Assets.init`. You can find more information about them [here](https://pixijs.com/8.x/guides/components/assets)) to assign an alias to each asset.
 
-- `alias`: a unique string that will be used to refer to the asset.
-- `src`: the URL of the asset.
+::: code-group
 
-```ts
+```ts [utils/defineAssets.ts]
 import { Assets, sound } from "@drincs/pixi-vn";
+import manifest from "../assets/manifest";
 
 export async function defineAssets() {
+    // manifest
+    Assets.init({ manifest });
+    // single asset
     Assets.add({ alias: 'eggHead', src: "https://pixijs.com/assets/eggHead.png" })
     Assets.add({ alias: 'flowerTop', src: "https://pixijs.com/assets/flowerTop.png" })
-    Assets.add({ alias: 'helmlok', src: "https://pixijs.com/assets/helmlok.png" })
-    Assets.add({ alias: 'skully', src: "https://pixijs.com/assets/skully.png" })
     Assets.add({ alias: 'video', src: "https://pixijs.com/assets/video.mp4" })
     sound.add('bird', 'https://pixijs.io/sound/examples/resources/bird.mp3');
     sound.add('musical', 'https://pixijs.io/sound/examples/resources/musical.mp3');
+    // bundle
+    Assets.addBundle('liam', {
+        "liam-head": 'liam_head.png',
+        "liam-body": 'liam_body.png',
+        "liam-arms": 'liam_arms.png',
+    });
 }
 ```
+
+```ts [assets/manifest.ts]
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        // screens
+        {
+            name: "main_menu",
+            assets: [
+                {
+                    alias: "background_main_menu",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fmain-menu.webp?alt=media",
+                },
+            ],
+        },
+        // labels
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "bg01-hallway",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fbg01-hallway.webp?alt=media",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+:::
 
 ## Load assets
 
@@ -49,7 +92,7 @@ Performing these loadings at each step may be annoying to the player, even if th
 
 The developer to deal with this problem can start a "loading group" at a certain step of the game. This means that the player will have fewer loadings, but longer ones.
 
-Here are various ways to load assets:
+Here are various ways to load the assets:
 
 ### Load assets before the project starts
 
