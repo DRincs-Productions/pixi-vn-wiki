@@ -2,13 +2,13 @@
 
 Per caricare e manipolare risorse (immagini, gif, video...) sarà necessario utilizzare `Assets`. `Assets` è una classe con molte funzionalità e proviene dalla libreria PixiJS, se vuoi maggiori informazioni leggi [qui](https://pixijs.com/8.x/guides/components/assets).
 
-In tutte le funzioni di Pixi’VN puoi utilizzare direttamente l'URL dell'immagine senza doverti preoccupare di caricare e manipolare l'immagine con `Assets`.
+In all Pixi’VN functions you can directly use the image URL, even if not yet defined in `Assets`.
 
 ```ts
 let alien1 = await showImage("alien", "https://pixijs.com/assets/eggHead.png");
 ```
 
-Questo metodo funziona e mantiene in memoria solo le risorse strettamente necessarie, ma presenta alcuni svantaggi:
+This method has some cons:
 
 - refer to an asset directly with a URL, where that asset must be renamed/moved to another folder or replaced with another asset (which has another URL), the old saves will not work anymore and in several places in the code you will have to write a URL which is usually very long.
 - Each [step](/start/labels.md) where one or more assets are loaded will require some time (even if small) to execute.
@@ -20,24 +20,67 @@ Per questi motivi si consiglia di gestire le risorse nei seguenti modi.
 Initializing the asset matrix at the beginning of the project allows you to reference assets by a unique alias without having to use the URL/path. This way you can change the URL of a resource (while keeping the old alias) so you don't have to worry about version compatibility.
 
 Per fare ciò, si consiglia di creare una funzione asincrona `defineAssets` che verrà chiamata all'aavvio del progetto.
-In this function you will use the function `Assets.add` which will allow you to add assets to the matrix. La funzione `Assets.add` richiede un oggetto con le seguenti proprietà:
+In this feature we will use the `Assets` functions (For example `Assets.add`, `Assets.addBundle` and `Assets.init`. You can find more information about them [here](https://pixijs.com/8.x/guides/components/assets)) to assign an alias to each asset.
 
-- `alias`: una stringa univoca che verrà utilizzata per fare riferimento alla risorsa.
-- `src`: the URL of the asset.
+::: code-group
 
-```ts
+```ts [utils/defineAssets.ts]
 import { Assets, sound } from "@drincs/pixi-vn";
+import manifest from "../assets/manifest";
 
 export async function defineAssets() {
+    // manifest
+    Assets.init({ manifest });
+    // single asset
     Assets.add({ alias: 'eggHead', src: "https://pixijs.com/assets/eggHead.png" })
     Assets.add({ alias: 'flowerTop', src: "https://pixijs.com/assets/flowerTop.png" })
-    Assets.add({ alias: 'helmlok', src: "https://pixijs.com/assets/helmlok.png" })
-    Assets.add({ alias: 'skully', src: "https://pixijs.com/assets/skully.png" })
     Assets.add({ alias: 'video', src: "https://pixijs.com/assets/video.mp4" })
     sound.add('bird', 'https://pixijs.io/sound/examples/resources/bird.mp3');
     sound.add('musical', 'https://pixijs.io/sound/examples/resources/musical.mp3');
+    // bundle
+    Assets.addBundle('liam', {
+        "liam-head": 'liam_head.png',
+        "liam-body": 'liam_body.png',
+        "liam-arms": 'liam_arms.png',
+    });
 }
 ```
+
+```ts [assets/manifest.ts]
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        // screens
+        {
+            name: "main_menu",
+            assets: [
+                {
+                    alias: "background_main_menu",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fmain-menu.webp?alt=media",
+                },
+            ],
+        },
+        // labels
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "bg01-hallway",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fbg01-hallway.webp?alt=media",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+:::
 
 ## Load assets
 
@@ -49,7 +92,7 @@ Eseguire questi caricamenti a ogni passaggio può risultare fastidioso per il gi
 
 Per risolvere questo problema, lo sviluppatore può avviare un "gruppo di caricamento" in una determinata fase del gioco. Ciò significa che il lettore avrà meno caricamenti, ma più lunghi.
 
-Ecco vari modi per caricare risorse:
+Here are various ways to load the assets:
 
 ### Load assets before the project starts
 
