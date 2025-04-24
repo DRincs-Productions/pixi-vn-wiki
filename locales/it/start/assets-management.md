@@ -2,7 +2,7 @@
 
 Per caricare e manipolare risorse (immagini, gif, video...) sarà necessario utilizzare `Assets`. `Assets` è una classe con molte funzionalità e proviene dalla libreria PixiJS, se vuoi maggiori informazioni leggi [qui](https://pixijs.com/8.x/guides/components/assets).
 
-In all Pixi’VN functions you can directly use the image URL, even if not yet defined in `Assets`.
+In all Pixi’VN functions you can directly use the image URL, even if not defined in `Assets`.
 
 ```ts
 let alien1 = await showImage("alien", "https://pixijs.com/assets/eggHead.png");
@@ -17,10 +17,10 @@ Per questi motivi si consiglia di gestire le risorse nei seguenti modi.
 
 ## Inizializza la matrice degli assets all'avvio del progetto
 
-Initializing the asset matrix at the beginning of the project allows you to reference assets by a unique alias without having to use the URL/path. This way you can change the URL of a resource (while keeping the old alias) so you don't have to worry about version compatibility.
+L'inizializzazione degli assets delle risorse all'inizio del progetto consente di fare riferimento agli assets tramite un alias univoco senza dover utilizzare l'URL/percorso. This way you can change the URL of a asset (while keeping the old alias) so you don't have to worry about version compatibility.
 
 Per fare ciò, si consiglia di creare una funzione asincrona `defineAssets` che verrà chiamata all'aavvio del progetto.
-In this feature we will use the `Assets` functions (For example `Assets.add`, `Assets.addBundle` and `Assets.init`. You can find more information about them [here](https://pixijs.com/8.x/guides/components/assets)) to assign an alias to each asset.
+In this feature we will use the `Assets` functions (for example `Assets.add`, `Assets.addBundle` and `Assets.init`. Puoi trovare maggiori informazioni su di essi [qui](https://pixijs.com/8.x/guides/components/assets)) per assegnare un alias a ciascun asses.
 
 ::: code-group
 
