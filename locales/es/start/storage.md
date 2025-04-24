@@ -38,9 +38,9 @@ storage.removeVariable("myVariable");
 
 ## Temporary storage
 
-In many occasions it is useful to use variables only for a certain time. Using normal storage we should worry about eliminating these variables once they are no longer needed, to ensure that we take up less space and have lighter saves.
+In many occasions it is useful to use variables only during a certain period of the narrative. Using normal storage we should worry about eliminating these variables once they are no longer needed, to ensure that we take up less space and have lighter saves.
 
-To solve this problem, Pixi’VN has a temporary storage system. Temporary variables initialized in a label will be deleted when it is closed. So if a label is called from it, the temporary variable will still be accessible from the child label. Obviously, if a label is called from it with the jump (so the current label will be closed and the new one started) the temporary variable will no longer be accessible.
+To solve this problem, Pixi’VN has a temporary storage system. Temporary variables initialized in a label will be deleted when the label is closed. So if a another label is called from it, the temporary variable will still be accessible from the child label. Obviously, if a another label is called from it with the "jump" (so the current label will be closed and the new one started) the temporary variable will no longer be accessible.
 
 **Set a temporary variable**:
 
