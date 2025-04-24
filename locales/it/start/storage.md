@@ -18,7 +18,7 @@ storage.setVariable("myVariable", 42);
 
 ## Ottieni una variabile dallo storage di gioco
 
-To get a variable from the game storage, you can use the `storage.getVariable`, which takes one parameter: the variable name.
+Per ottenere una variabile dall'archivio del gioco, puoi utilizzare `storage.getVariable`, che accetta un parametro: il nome della variabile.
 
 ```typescript
 import { storage } from '@drincs/pixi-vn'
@@ -26,9 +26,9 @@ import { storage } from '@drincs/pixi-vn'
 const myVariable = storage.getVariable<number>("myVariable");
 ```
 
-## Remove a variable from the game storage
+## Rimuovi una variabile dall'archivio del gioco
 
-To remove a variable from the game storage, you can use the `storage.removeVariable`, which takes one parameter: the variable name.
+Per rimuovere una variabile dall'archivio del gioco, puoi utilizzare `storage.removeVariable`, che accetta un parametro: il nome della variabile.
 
 ```typescript
 import { storage } from '@drincs/pixi-vn'
@@ -36,15 +36,15 @@ import { storage } from '@drincs/pixi-vn'
 storage.removeVariable("myVariable");
 ```
 
-## Temporary storage
+## Storage temporaneo
 
-In many occasions it is useful to use variables only for a certain time. Using normal storage we should worry about eliminating these variables once they are no longer needed, to ensure that we take up less space and have lighter saves.
+In many occasions it is useful to use variables only during a certain period of the narrative. Utilizzando un archivio normale dovremmo preoccuparci di eliminare queste variabili quando non sono più necessarie, per assicurarci di occupare meno spazio e avere salvataggi più leggeri.
 
-To solve this problem, Pixi’VN has a temporary storage system. Temporary variables initialized in a label will be deleted when it is closed. So if a label is called from it, the temporary variable will still be accessible from the child label. Obviously, if a label is called from it with the jump (so the current label will be closed and the new one started) the temporary variable will no longer be accessible.
+Per risolvere questo problema, Pixi’VN dispone di un sistema di archiviazione temporanea. Temporary variables initialized in a label will be deleted when the label is closed. So if a another label is called from it, the temporary variable will still be accessible from the child label. Obviously, if a another label is called from it with the "jump" (so the current label will be closed and the new one started) the temporary variable will no longer be accessible.
 
-**Set a temporary variable**:
+**Imposta una variabile temporanea**:
 
-To set a temporary variable, you can use the `storage.setTempVariable`, which takes two parameters: the variable name and the value.
+Per impostare una variabile temporanea, è possibile utilizzare `storage.setTempVariable`, che accetta due parametri: il nome della variabile e il valore.
 
 ```typescript
 import { storage } from '@drincs/pixi-vn'
@@ -52,11 +52,11 @@ import { storage } from '@drincs/pixi-vn'
 storage.setTempVariable("myTempVariable", 42);
 ```
 
-**Get a temporary variable**:
+**Ottieni una variabile temporanea**:
 
-To get a temporary variable, you can use the normal [`storage.getVariable` function](#get-a-variable-from-the-game-storage).
+Per ottenere una variabile temporanea, puoi usare la normale funzione [`storage.getVariable`](#get-a-variable-from-the-game-storage).
 
-**Remove a temporary variable**:
+**Rimuovi una variabile temporanea**:
 
 To remove a temporary variable, you can use the `storage.removeTempVariable`, which takes one parameter: the variable name.
 
