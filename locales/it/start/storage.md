@@ -4,7 +4,7 @@
 
 È fondamentale capire che se le variabili non vengono salvate nella memoria del gioco, il motore non sarà in grado di gestirle quando si [carica un salvataggio](/start/save#load) o quando si [torna indietro](/start/labels-flow.md#go-back).
 
-Inoltre, nell'archivio del gioco è possibile salvare qualsiasi tipo di variabile, eccetto `class` e `function` (perché non possono essere convertite in JSON), come: `string`, `number`, `boolean`, `object`, `array`... If you want to save "flags" (boolean) it is recommended to use the [flags functionality](/start/flags), a very high-performance flag management system.
+Inoltre, nell'archivio del gioco è possibile salvare qualsiasi tipo di variabile, eccetto `class` e `function` (perché non possono essere convertite in JSON), come: `string`, `number`, `boolean`, `object`, `array`... Se si desidera salvare i "flag" (booleani) si consiglia di utilizzare la [funzionalità flag](/start/flags), un sistema di gestione dei flag ad altissime prestazioni.
 
 ## Imposta una variabile nello storage di gioco
 
