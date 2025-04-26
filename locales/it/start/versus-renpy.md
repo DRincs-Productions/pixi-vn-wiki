@@ -76,7 +76,7 @@ Il CDD non è molto intuitivo e complicato da usare. Gli esempi e gli sviluppato
 
 Con Pixi’VN puoi usare PixiJS per creare minigiochi. PixiJS è una libreria molto potente che consente di creare animazioni e meccaniche complesse. La documentazione e gli esempi sono molto dettagliati e sono molti gli sviluppatori che utilizzano PixiJS.
 
-You can try some Ren'Py and PIxiJS minigames to understand the difference:
+Puoi provare alcuni minigiochi Ren'Py e PIxiJS per capire la differenza:
 
 - Minigiochi di Ren'Py: <https://itch.io/game-assets/free/tag-minigames/tag-renpy>
 - Minigiochi PixiJS: <https://github.com/pixijs/open-games>
@@ -94,7 +94,7 @@ Le prestazioni e le dimensioni del progetto sono fattori molto importanti da con
 
 **Librerie canvas utilizzate:**
 
-- [`Pygame_sdl2`](https://github.com/renpy/pygame_sdl2): Questo canvas è assolutamente poco performante. You can test this by inserting lots of moving graphics into Ren'Py.
+- [`Pygame_sdl2`](https://github.com/renpy/pygame_sdl2): Questo canvas è assolutamente poco performante. Puoi testarlo inserendo un sacco di elementi grafici in movimento in Ren'Py.
 - PixiJS: si basa su sistemi più moderni e offre ottime prestazioni. È possibile verificarlo direttamente tramite questo esempio:
 
 <sandbox
@@ -109,7 +109,7 @@ entry="/src/labels/startLabel.ts"
 
 **Dimensioni del progetto:**
 
-- The entire UI of Ren'Py is based on "physical images" and this makes the size of the project very large.
+- L'intera interfaccia utente di Ren'Py è basata su "immagini fisiche" e questo rende le dimensioni del progetto molto grandi.
 - Poiché Pixi'VN è una libreria, non determina la dimensione del progetto, ma se si utilizza [vite](https://vitejs.dev/) o altri strumenti, la dimensione del progetto sarà molto ridotta.
 
 ## Distribuzione su più dispositivi
@@ -140,7 +140,7 @@ Pixi’VN è una libreria [npm](https://www.npmjs.com/) che consente di creare r
 
 ## Longevità e facilità di sviluppo interno
 
-Ren'Py born in 2004 and is still used today. È un progetto molto stabile e maturo.
+Ren'Py è nato nel 2004 ed è ancora utilizzato oggi. È un progetto molto stabile e maturo.
 Ren'Py, oltre allo sviluppo della propria libreria per le visual novels, include anche lo sviluppo del `linguaggio Ren'Py` e di `Pygame_sdl2`. Poiché Ren'Py gestisce anche la distribuzione del progetto su vari dispositivi, è necessario mantenere il sistema aggiornato con gli aggiornamenti per i sistemi operativi supportati.
 
 Ciò significa che mantenere aggiornato Ren'Py è un processo costante e molto complesso che "tocca" molti tipi di programmazione (Parsing, Grafica, ecc...).
