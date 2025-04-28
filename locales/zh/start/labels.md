@@ -11,7 +11,7 @@ Basically the idea of the life cycle of the game is:
 - The game starts by [calling a label](/start/labels.md#call-a-label). The first step of the label will be executed automatically.
 - After that, connecting the function [Next Step](/start/labels.md#next-step) to a event (like a button click), every time the function is called, the next step of the label is executed.
   Some steps could start other labels.
-- The game will end only when all the steps are completed. The [onGameEnd](/start/other-narrative-features.md#how-manage-the-end-of-the-game) function will be started.
+- The game will end only when all the steps are completed. The [Game.onEnd](/start/other-narrative-features.md#how-manage-the-end-of-the-game) function will be started.
 
 ## Label
 
