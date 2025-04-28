@@ -143,7 +143,7 @@ const alice = new Character('alice_id', {
     // other properties...
     images: ['alice-body', 'alice-head', 'alice-eyes']
 })
-saveCharacter(alice)
+RegisteredCharacters.add(alice)
 ```
 
 :::
