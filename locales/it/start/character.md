@@ -20,7 +20,7 @@ Per creare una nuova istanza di `CharacterBaseModel` sono necessari i seguenti p
   - `color`: Il colore del personaggio. ( Opzionale )
 
 ```typescript [characters.ts]
-import { CharacterBaseModel, saveCharacter } from "@drincs/pixi-vn";
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
 
 export const liam = new CharacterBaseModel('liam', {
     name: 'Liam',
@@ -38,10 +38,10 @@ export const emma = new CharacterBaseModel('emma', {
     color: "#9e2e12"
 });
 
-saveCharacter([liam, emma]);
+RegisteredCharacters.add([liam, emma]);
 ```
 
-`saveCharacter` è **necessario** per salvare i personaggi nel gioco.
+`RegisteredCharacters.add` is **required** to save the characters in the game.
 
 È anche possibile creare una funzione per il caricamento dei personaggi. L'importante è che venga avviato almeno una volta prima di utilizzare i personaggi nel gioco, altrimenti non saranno disponibili.
 
@@ -126,7 +126,7 @@ export const liam = new CharacterBaseModel('liam_id', {
     icon: "https://example.com/liam.png",
     color: "#9e2e12"
 });
-saveCharacter([liam]);
+RegisteredCharacters.add([liam]);
 ```
 
 ```typescript
@@ -147,7 +147,7 @@ Per questo motivo con Pixi’VN è possibile creare un “personaggio con un’e
 - `emotion`, che corrisponde alla sottocategoria del personaggio (ad esempio l'emozione del personaggio).
 
 ```typescript [characters.ts]
-import { CharacterBaseModel, saveCharacter } from "@drincs/pixi-vn";
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
 
 export const alice = new CharacterBaseModel('alice', {
     name: 'Alice',
@@ -159,7 +159,7 @@ export const angryAlice = new CharacterBaseModel({ id: 'alice', emotion: 'angry'
     icon: "https://example.com/angryAlice.png",
 });
 
-saveCharacter([alice, angryAlice]);
+RegisteredCharacters.add([alice, angryAlice]);
 ```
 
 ```typescript
