@@ -141,7 +141,7 @@ The `Game.init` method takes the following arguments:
 ::: code-group
 
 ```ts [src/main.tsx]
-import { Game, narration } from "@drincs/pixi-vn";
+import { Game } from "@drincs/pixi-vn";
 
 // Canvas setup with PIXI
 const body = document.body
@@ -158,12 +158,12 @@ Game.init(body, {
 });
 
 // read more here: https://pixi-vn.web.app/start/other-narrative-features.html#how-manage-the-end-of-the-game
-narration.onGameEnd = async (props) => {
+Game.onEnd = async (props) => {
     Game.clear();
     props.navigate("/");
 };
 
-narration.onStepError = async (_error, { notify, t }) => {
+Game.onError = (type, error, { notify }) => {
     notify("allert_error_occurred");
 };
 ```
