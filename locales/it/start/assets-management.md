@@ -2,25 +2,25 @@
 
 Per caricare e manipolare risorse (immagini, gif, video...) sarà necessario utilizzare `Assets`. `Assets` è una classe con molte funzionalità e proviene dalla libreria PixiJS, se vuoi maggiori informazioni leggi [qui](https://pixijs.com/8.x/guides/components/assets).
 
-In all Pixi’VN functions you can directly use the image URL, even if not defined in `Assets`.
+In tutte le funzioni di Pixi'VN è possibile utilizzare direttamente l'URL dell'immagine, anche se non è definito in `Assets`.
 
 ```ts
 let alien1 = await showImage("alien", "https://pixijs.com/assets/eggHead.png");
 ```
 
-This method has some cons:
+Questo metodo presenta alcuni svantaggi:
 
 - refer to an asset directly with a URL, where that asset must be renamed/moved to another folder or replaced with another asset (which has another URL), the old saves will not work anymore and in several places in the code you will have to write a URL which is usually very long.
-- Each [step](/start/labels.md) where one or more assets are loaded will require some time (even if small) to execute.
+- The player will have to wait for a short loading time, every time pressing "go next" a [step](/start/labels.md) will be started which uses assets.
 
 Per questi motivi si consiglia di gestire le risorse nei seguenti modi.
 
 ## Inizializza la matrice degli assets all'avvio del progetto
 
-L'inizializzazione degli assets delle risorse all'inizio del progetto consente di fare riferimento agli assets tramite un alias univoco senza dover utilizzare l'URL/percorso. This way you can change the URL of a asset (while keeping the old alias) so you don't have to worry about version compatibility.
+L'inizializzazione degli assets delle risorse all'inizio del progetto consente di fare riferimento agli assets tramite un alias univoco senza dover utilizzare l'URL/percorso. In questo modo puoi modificare l'URL di una risorsa (mantenendo il vecchio alias) senza doverti preoccupare della compatibilità tra versioni.
 
 Per fare ciò, si consiglia di creare una funzione asincrona `defineAssets` che verrà chiamata all'aavvio del progetto.
-In this feature we will use the `Assets` functions (for example `Assets.add`, `Assets.addBundle` and `Assets.init`. Puoi trovare maggiori informazioni su di essi [qui](https://pixijs.com/8.x/guides/components/assets)) per assegnare un alias a ciascun asses.
+In this feature we will use the `Assets` functions (e.g. `Assets.add`, `Assets.addBundle` and `Assets.init`. Puoi trovare maggiori informazioni su di essi [qui](https://pixijs.com/8.x/guides/components/assets)) per assegnare un alias a ciascun asses.
 
 ::: code-group
 
@@ -82,9 +82,9 @@ export default manifest;
 
 :::
 
-## Load assets
+## Caricare gli assets
 
-By default, assets are loaded only when needed.
+Per impostazione predefinita, gli assets vengono caricate solo quando necessario.
 
 Tuttavia **nel caso in cui le risorse non siano salvate localmente**, ma in un ["assets hosting"](/start/assets.md#assets-hosting) il loro caricamento potrebbe richiedere del tempo. Ciò significa che l'avvio di uno step potrebbe non essere tempestivo. Pertanto, dopo aver avviato l'esecuzione del [passaggio successivo](/start/labels-flow.md#next-step) (ad esempio con il pulsante "Avanti"), il giocatore potrebbe dover attendere un po' di tempo per poter "visualizzare" le modifiche ed eseguire un altro passaggio.
 
@@ -92,7 +92,7 @@ Eseguire questi caricamenti a ogni passaggio può risultare fastidioso per il gi
 
 Per risolvere questo problema, lo sviluppatore può avviare un "gruppo di caricamento" in una determinata fase del gioco. Ciò significa che il lettore avrà meno caricamenti, ma più lunghi.
 
-Here are various ways to load the assets:
+Ecco vari modi per caricare gli assets:
 
 ### Load assets before the project starts
 
