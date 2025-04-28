@@ -8,15 +8,15 @@ When all the steps of all labels are executed, the game will block. The develope
 - The game has no end, so if the steps are finished, there has been an error, and it needs to be handled
 - The game ends when the player reaches a certain point. For example, when the player reaches a certain point in the story you can navigate to a game over screen
 
-The method for managing the end of the game is to set `narration.onGameEnd`. This function is executed when the game ends and have same characteristics of a `step`.
+The method for managing the end of the game is to set `Game.onEnd`. This function is executed when the game ends and have same characteristics of a `step`.
 
 For example, if you want to end the game when the steps are finished:
 
 ```typescript
 // main.ts
-import { narration } from '@drincs/pixi-vn'
+import { Game } from '@drincs/pixi-vn'
 
-narration.onGameEnd = async (props) => {
+Game.onEnd = async (props) => {
     props.navigate("/end")
 }
 ```
@@ -36,25 +36,25 @@ export const startLabel = newLabel("start_label_id",
 
 ```typescript
 // main.ts
-import { narration } from '@drincs/pixi-vn'
+import { Game } from '@drincs/pixi-vn'
 
-narration.onGameEnd = async (props) => {
+Game.onEnd = async (props) => {
     narration.callLabel(startLabel, props)
 }
 ```
 
 ## How manage the step errors
 
-When an error occurs in a step, the game gives a console error and stops the execution of the steps. The developer must manage the error. The method for managing the error is to set `narration.onStepError`.
+When an error occurs in a step, the game gives a console error and stops the execution of the steps. The developer must manage the error. The method for managing the error is to set `Game.onError`.
 
 For example, if you want to send a notification when an error occurs:
 
 ```typescript
 // main.ts
-import { narration } from '@drincs/pixi-vn'
+import { Game } from '@drincs/pixi-vn'
 
-narration.onStepError = async (error, props) => {
-    props.notify("An error occurred")
+Game.onError = (type, error, { notify }) => {
+    notify("An error occurred")
     // send a notification to GlitchTip, Sentry, etc...
 }
 ```
