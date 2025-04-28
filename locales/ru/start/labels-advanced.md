@@ -34,9 +34,9 @@ Similarly you can use `Game.onLoadingLabel` to intercept the loading of all labe
 ```ts
 import { Game } from "@drincs/pixi-vn"
 
-Game.onLoadingLabel(async (stepIndex, label) => { // [!code focus]
-    console.log(`Loading label ${label.id} step ${stepIndex}`) // [!code focus]
-}) // [!code focus]
+Game.onLoadingLabel((_stepId, label) => { // [!code focus]
+    Assets.backgroundLoadBundle(label.id); // [!code focus]
+}); // [!code focus]
 ```
 
 ## onStepStart
