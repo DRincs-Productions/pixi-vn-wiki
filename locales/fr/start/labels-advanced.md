@@ -29,6 +29,16 @@ newLabel("start", [
 })
 ```
 
+Similarly you can use `Game.onLoadingLabel` to intercept the loading of all labels.
+
+```ts
+import { Game } from "@drincs/pixi-vn"
+
+Game.onLoadingLabel(async (stepIndex, label) => { // [!code focus]
+    console.log(`Loading label ${label.id} step ${stepIndex}`) // [!code focus]
+}) // [!code focus]
+```
+
 ## onStepStart
 
 `onStepStart` is a function that will be executed before each step of the label. You can intercept this function by passing a function to the `onStepStart` property of the label options. This function will receive 2 parameters:
@@ -51,6 +61,16 @@ newLabel("start", [
 })
 ```
 
+Similarly you can use `Game.onStepStart` to intercept the starting of all labels.
+
+```ts
+import { Game } from "@drincs/pixi-vn"
+
+Game.onStepStart((stepIndex, label) => { // [!code focus]
+    console.log(`Step ${stepIndex} started`) // [!code focus]
+}) // [!code focus]
+```
+
 ## onStepEnd
 
 `onStepEnd` is a function that will be executed after each step of the label. You can intercept this function by passing a function to the `onStepEnd` property of the label options. This function will receive 2 parameters:
@@ -71,6 +91,16 @@ newLabel("start", [
         console.log(`Step ${stepIndex} ended`) // [!code focus]
     } // [!code focus]
 })
+```
+
+Similarly you can use `Game.onStepEnd` to intercept the ending of all labels.
+
+```ts
+import { Game } from "@drincs/pixi-vn"
+
+Game.onStepEnd((stepIndex, label) => { // [!code focus]
+    console.log(`Step ${stepIndex} ended`) // [!code focus]
+}) // [!code focus]
 ```
 
 ## How to return different step lists based on a condition
