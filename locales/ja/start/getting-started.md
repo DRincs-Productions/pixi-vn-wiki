@@ -158,14 +158,14 @@ Game.init(body, {
 });
 
 // read more here: https://pixi-vn.web.app/start/other-narrative-features.html#how-manage-the-end-of-the-game
-Game.onEnd = async (props) => {
+Game.onEnd(async (props) => {
     Game.clear();
     props.navigate("/");
-};
+});
 
-Game.onError = (type, error, { notify }) => {
+Game.onError((type, error, { notify }) => {
     notify("allert_error_occurred");
-};
+});
 ```
 
 ```html [index.html]
