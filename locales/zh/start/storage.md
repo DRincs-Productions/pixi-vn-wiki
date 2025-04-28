@@ -68,20 +68,16 @@ storage.removeTempVariable("myTempVariable");
 
 ## System variables
 
-In storage game, there are some system variables that are used by the game engine. All system variables start with the prefix `___`.
+In game storage, there are some system variables that are used by the game engine. All system variables start with the prefix `___`.
 So please avoid using this prefix in your variables.
 
-You can get all the system variables keys with the `SYSTEM_RESERVED_STORAGE_KEYS` function.
-
-<!-- TODO Temp storage -->
+You can get all system variable keys from the `SYSTEM_RESERVED_STORAGE_KEYS` constant.
 
 ## ![icon](/keyv.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Keyv
 
 The entire storage system was developed using Map, a native JavaScript object, so you can use Keyv interact with game storage.
 
-**What is Keyv?** Keyv is a simple key-value storage. It is a very easy-to-use system and very popular in the Node.js community. Keyv can be combined with other libraries, such as [Cacheable](https://cacheable.org/) (Caching for Nodejs based on Keyv).
-
-You can learn more about Keyv on the [Keyv website](https://keyv.org/).
+**What is Keyv?** Keyv is a simple key-value storage. It is a very easy-to-use system and very popular in the Node.js community. Keyv can be combined with other libraries, such as [Cacheable](https://cacheable.org/) (Caching for Nodejs based on Keyv). You can learn more on the [Keyv website](https://keyv.org/).
 
 **How to use Keyv with Pixi’VN?** You can use Keyv with Pixi’VN by creating a new instance of Keyv and passing the storage object as a parameter.
 
