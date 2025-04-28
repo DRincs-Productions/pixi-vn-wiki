@@ -16,7 +16,7 @@ egg-head: Hello, I'm Egg.
 \== characters.ts
 
 ```ts
-import { CharacterBaseModel, saveCharacter } from "@drincs/pixi-vn";
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
 
 export const eggHead = new CharacterBaseModel("egg-head", {
   name: "Egg",
@@ -26,7 +26,7 @@ export const eggHead = new CharacterBaseModel("egg-head", {
   color: "#9e2e12",
 });
 
-saveCharacter(eggHead);
+RegisteredCharacters.add(eggHead);
 ```
 
 \== App.tsx
@@ -81,7 +81,7 @@ liam@happy: Hi, I'm Liam. I'm very happy today.
 \== characters.ts
 
 ```ts
-import { CharacterBaseModel, saveCharacter } from "@drincs/pixi-vn";
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
 
 export const liam = new CharacterBaseModel("liam", {
   name: "Liam",
@@ -94,7 +94,7 @@ export const liamHappy = new CharacterBaseModel(
   }
 );
 
-saveCharacter([liam, liamHappy]);
+RegisteredCharacters.add([liam, liamHappy]);
 ```
 
 \== App.tsx
@@ -171,7 +171,7 @@ Hello, [liam_id].
 \== characters.ts
 
 ```ts
-import { CharacterBaseModel, saveCharacter } from "@drincs/pixi-vn";
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
 
 export const liam = new CharacterBaseModel('liam_id', {
     name: 'Liam',
@@ -181,7 +181,7 @@ export const liam = new CharacterBaseModel('liam_id', {
     color: "#9e2e12"
 });
 
-saveCharacter([liam]);
+RegisteredCharacters.add([liam]);
 ```
 
 :::
@@ -242,7 +242,7 @@ Hello, [liam_id].
 \== characters.ts
 
 ```ts
-import { CharacterBaseModel, saveCharacter } from "@drincs/pixi-vn";
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
 
 export const liam = new CharacterBaseModel('liam_id', {
     name: 'Liam',
@@ -252,7 +252,7 @@ export const liam = new CharacterBaseModel('liam_id', {
     color: "#9e2e12"
 });
 
-saveCharacter([liam]);
+RegisteredCharacters.add([liam]);
 ```
 
 :::
@@ -290,7 +290,7 @@ onInkHashtagScript((script, convertListStringToObj) => {
 \== characters.ts
 
 ```ts
-import { CharacterBaseModel, saveCharacter } from "@drincs/pixi-vn";
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
 
 export const liam = new CharacterBaseModel('liam_id', {
     name: 'Liam',
@@ -300,7 +300,7 @@ export const liam = new CharacterBaseModel('liam_id', {
     color: "#9e2e12"
 });
 
-saveCharacter([liam]);
+RegisteredCharacters.add([liam]);
 ```
 
 :::
