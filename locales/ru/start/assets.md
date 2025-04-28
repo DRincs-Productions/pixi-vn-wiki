@@ -71,7 +71,7 @@ Image hosting is a service that allows you to upload images. There are more site
 
 ### Cloud storage
 
-Cloud storage is a service that allows you to upload files. There are more sites to upload files for free, but with some limits.
+Cloud storage is a service that allows you to upload files.
 
 - **Price**: Usually paid or with free version with limits.
 - **Space limits**: Monthly cost based on space occupied by use. (Usually if you do not exceed a certain threshold it is free)
