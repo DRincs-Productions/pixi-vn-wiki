@@ -20,7 +20,7 @@ For create a new instance of `CharacterBaseModel` you need the following paramet
   - `color`: The character's color. ( Optional )
 
 ```typescript [characters.ts]
-import { CharacterBaseModel, saveCharacter } from "@drincs/pixi-vn";
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
 
 export const liam = new CharacterBaseModel('liam', {
     name: 'Liam',
@@ -38,10 +38,10 @@ export const emma = new CharacterBaseModel('emma', {
     color: "#9e2e12"
 });
 
-saveCharacter([liam, emma]);
+RegisteredCharacters.add([liam, emma]);
 ```
 
-`saveCharacter` is **required** to save the characters in the game.
+`RegisteredCharacters.add` is **required** to save the characters in the game.
 
 It is also possible to create a function for loading characters. The important thing is that it is started at least once before the characters are used in the game, otherwise they will not be available.
 
@@ -126,7 +126,7 @@ export const liam = new CharacterBaseModel('liam_id', {
     icon: "https://example.com/liam.png",
     color: "#9e2e12"
 });
-saveCharacter([liam]);
+RegisteredCharacters.add([liam]);
 ```
 
 ```typescript
@@ -147,7 +147,7 @@ For this reason, with Pixi’VN it is possible to create a "character with an em
 - `emotion`, which corresponds to the character's subcategory (e.g. the character's emotion).
 
 ```typescript [characters.ts]
-import { CharacterBaseModel, saveCharacter } from "@drincs/pixi-vn";
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
 
 export const alice = new CharacterBaseModel('alice', {
     name: 'Alice',
@@ -159,7 +159,7 @@ export const angryAlice = new CharacterBaseModel({ id: 'alice', emotion: 'angry'
     icon: "https://example.com/angryAlice.png",
 });
 
-saveCharacter([alice, angryAlice]);
+RegisteredCharacters.add([alice, angryAlice]);
 ```
 
 ```typescript
