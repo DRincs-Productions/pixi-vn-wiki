@@ -57,7 +57,7 @@ Puoi utilizzare Github per ospitare i tuoi assets. Puoi usare il raw link del fi
 - **Limiti di spazio**: Non ci sono limiti di spazio. Ma ogni singolo file non deve superare i 100 MB.
 - **Tipo di file**: puoi caricare qualsiasi tipo di file.
 - **Traffico**: La velocità non è delle migliori.
-- **Edit assets**: You can edit the file keeping the same URL.
+- **Modificare gli assets**: puoi modificare il file mantenendo lo stesso URL.
 
 ### Hosting di immagini
 
@@ -65,24 +65,24 @@ L'hosting di immagini è un servizio che consente di caricare immagini. Ci sono 
 
 - **Prezzo**: Completamente gratuito. Ma è possibile pagare per avere più funzionalità.
 - **Limiti di spazio**: Non ci sono limiti di spazio. Ma ogni singolo file può avere una dimensione massima.
-- **Tipo di file**: puoi caricare solo immagini.
+- **Tipo di file**: Puoi caricare solo immagini.
 - **Traffico**: La velocità è buona.
-- **Edit assets**: You can't edit the file keeping the same URL.
+- **Modificare gli assets**: Non puoi modificare il file mantenendo lo stesso URL.
 
 ### Cloud storage
 
-Cloud storage is a service that allows you to upload files. There are more sites to upload files for free, but with some limits.
+Cloud storage is a service that allows you to upload files.
 
-- **Price**: Usually paid or with free version with limits.
+- **Prezzo**: Solitamente a pagamento o con versione gratuita con limiti.
 - **Space limits**: Monthly cost based on space occupied by use. (Usually if you do not exceed a certain threshold it is free)
 - **Tipo di file**: puoi caricare qualsiasi tipo di file.
 - **Traffico**: La velocità è buona.
-- **Edit assets**: You can edit the file keeping the same URL.
+- **Modificare gli assets**: puoi modificare il file mantenendo lo stesso URL.
 
-Here is a list of some of the most popular cloud storage services:
+Ecco un elenco di alcuni dei servizi di cloud storage più popolari:
 
-- ![icon](/firebase.svg){style="width:20px;height:20px;margin-right:5px;float:left"} **Firebase Storage** is a cloud service very easy to use. Firebase have two plans: Spark (free) and Blaze (pay as you go). You can find more information [here](https://firebase.google.com/pricing).\
-  **Solving Firebase Storage CORS Issue**:
+- ![icon](/firebase.svg){style="width:20px;height:20px;margin-right:5px;float:left"} **Firebase Storage** è un servizio cloud molto facile da usare. Firebase offre due piani: Spark (gratuito) e Blaze (a pagamento). Puoi trovare maggiori informazioni [qui](https://firebase.google.com/pricing).
+  **Risoluzione del problema CORS di Firebase Storage**:
   - Installa [gcloud CLI](https://cloud.google.com/sdk/docs/install)
   - Leggi questa [documentazione](https://medium.com/@we.viavek/setting-cors-in-firebase-19a2cce2fe28) per risolvere il problema CORS.
 - ![icon](/aws.svg){style="width:20px;height:20px;margin-right:5px;float:left"} **Amazon S3** is a cloud service. Compared to its competitors, it has many settings, but it may be more difficult to use. There is a payment plan to use Amazon S3. You can find more information [here](https://aws.amazon.com/s3/pricing/).
