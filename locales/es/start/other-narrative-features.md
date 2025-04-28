@@ -16,9 +16,9 @@ For example, if you want to end the game when the steps are finished:
 // main.ts
 import { Game } from '@drincs/pixi-vn'
 
-Game.onEnd = async (props) => {
+Game.onEnd(async (props) => {
     props.navigate("/end")
-}
+})
 ```
 
 For example, if the game has no end:
@@ -38,9 +38,9 @@ export const startLabel = newLabel("start_label_id",
 // main.ts
 import { Game } from '@drincs/pixi-vn'
 
-Game.onEnd = async (props) => {
+Game.onEnd(async (props) => {
     narration.callLabel(startLabel, props)
-}
+})
 ```
 
 ## How manage the step errors
@@ -53,10 +53,10 @@ For example, if you want to send a notification when an error occurs:
 // main.ts
 import { Game } from '@drincs/pixi-vn'
 
-Game.onError = (type, error, { notify }) => {
+Game.onError((type, error, { notify }) => {
     notify("An error occurred")
     // send a notification to GlitchTip, Sentry, etc...
-}
+})
 ```
 
 ## Randomize number
