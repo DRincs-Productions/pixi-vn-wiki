@@ -398,12 +398,19 @@ export default startLabel;
 
 One of the first steps is choosing where to save your visual novel assets. In this case, we will save the assets in the Firebase storage (a hosting service).
 
+To load and manipulate assets (images, gifs, videos...) you will need to use `Assets`. `Assets` is a class with many features and comes from the PixiJS library, if you want more information read [here](https://pixijs.com/8.x/guides/components/assets).
+
 Before using an asset it is highly recommended to [initialize the asset matrix](/start/assets-management.md#initialize-the-asset-matrix-at-project-start).
+
+By default, as you can see in the `assets/manifest.ts` file, all templates in the `onLoadingLabel` try to load in the background the "bundle assets" with the alias equal to the label id. So it is recommended to add, in the manifest, "bundle assets" for each label with the alias equal to the label id and containing the images used in that label.
 
 This is the example:
 
+::: code-group
+
 ```ts [utils/defineAssets.ts]
-import { Assets } from "@drincs/pixi-vn"
+import { Assets } from "@drincs/pixi-vn";
+import manifest from "../assets/manifest";
 
 /**
  * Define all the assets that will be used in the game.
@@ -411,33 +418,132 @@ import { Assets } from "@drincs/pixi-vn"
  * You can read more about assets management in the documentation: https://pixi-vn.web.app/start/assets-management.html
  */
 export async function defineAssets() {
-    // backgrounds
-    Assets.add({ alias: 'background_main_menu', src: "https://andreannaking.com/wp-content/uploads/2021/12/Download-Beautiful-Nature-Landscape-Hd-Wallpaper-Full-HD-Wallpapers.jpg" })
-    Assets.add({ alias: 'bg01-hallway', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fbg01-hallway.webp?alt=media" })
-    Assets.add({ alias: 'bg02-dorm', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fbg02-dorm.webp?alt=media" })
-    // female character 01
-    Assets.add({ alias: 'fm01-body', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-body.webp?alt=media" })
-    Assets.add({ alias: 'fm01-eyes-grin', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-eyes-grin.webp?alt=media" })
-    Assets.add({ alias: 'fm01-eyes-smile', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-eyes-smile.webp?alt=media" })
-    // ...
-    // female character 02
-    Assets.add({ alias: 'fm02-body', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-body.webp?alt=media" })
-    Assets.add({ alias: 'fm02-eyes-bawl', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-eyes-bawl.webp?alt=media" })
-    Assets.add({ alias: 'fm02-eyes-joy', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-eyes-joy.webp?alt=media" })
-    // ...
-    // male character 01
-    Assets.add({ alias: 'm01-body', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media" })
-    Assets.add({ alias: 'm01-eyes-annoy', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-annoy.webp?alt=media" })
-    Assets.add({ alias: 'm01-eyes-concern', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-concern.webp?alt=media" })
-    // ...
+    Assets.init({ manifest });
 
-    // The game will not start until these assets are loaded.
-    await Assets.load('background_main_menu')
+    // The game will not start until these asserts are loaded.
+    await Assets.loadBundle("main_menu");
 
-    // The game will start immediately, but these assets will be loaded in the background.
-    // Assets.load('flowerTop')
+    // The game will start immediately, but these asserts will be loaded in the background.
+    // Assets.backgroundLoadBundle("main_menu");
+    // Assets.backgroundLoad("background_main_menu");
 }
 ```
+
+```ts [assets/manifest.ts]
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        // screens
+        {
+            name: "main_menu",
+            assets: [
+                {
+                    alias: "background_main_menu",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fmain-menu.webp?alt=media",
+                },
+            ],
+        },
+        // labels
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "bg01-hallway",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fbg01-hallway.webp?alt=media",
+                },
+            ],
+        },
+        {
+            name: "second_part",
+            assets: [
+                {
+                    alias: "bg02-dorm",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fbg02-dorm.webp?alt=media",
+                },
+            ],
+        },
+        // characters
+        {
+            name: "fm01",
+            assets: [
+                // ...
+            ],
+        },
+        {
+            name: "fm02",
+            assets: [
+                // ...
+            ],
+        },
+        {
+            name: "m01",
+            assets: [
+                // ...
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+```ts [src/main.ts]
+import { Assets, canvas, Container, Game } from "@drincs/pixi-vn";
+import { createRoot } from "react-dom/client";
+import App from "./App";
+import { CANVAS_UI_LAYER_NAME } from "./constans";
+import "./index.css";
+import "./values/characters";
+
+// Canvas setup with PIXI
+const body = document.body;
+if (!body) {
+    throw new Error("body element not found");
+}
+
+Game.init(body, {
+    height: 1080,
+    width: 1920,
+    backgroundColor: "#303030",
+}).then(() => {
+    // Pixi.JS UI Layer
+    canvas.addLayer(CANVAS_UI_LAYER_NAME, new Container());
+
+    // React setup with ReactDOM
+    const root = document.getElementById("root");
+    if (!root) {
+        throw new Error("root element not found");
+    }
+
+    canvas.initializeHTMLLayout(root);
+    if (!canvas.htmlLayout) {
+        throw new Error("htmlLayout not found");
+    }
+    const reactRoot = createRoot(canvas.htmlLayout);
+
+    reactRoot.render(<App />);
+});
+
+Game.onEnd(async ({ navigate }) => {
+    Game.clear();
+    navigate("/");
+});
+
+Game.onError((type, error, { notify, t }) => {
+    notify(t("allert_error_occurred"), { variant: "error" });
+    console.error(`Error occurred: ${type}`, error);
+});
+
+Game.onLoadingLabel((_stepId, { id }) => { // [!code focus]
+    Assets.backgroundLoadBundle(id); // [!code focus]
+}); // [!code focus]
+```
+
+:::
 
 ## Add background and character images
 
@@ -525,12 +631,7 @@ const startLabel = newLabel("start", [
     // ...
 ], {
     onLoadingLabel: () => {
-        Assets.load([
-            "bg01-hallway",
-            "m01-body", "m01-eyes-grin", "m01-eyes-smile", "m01-eyes-wow", "m01-mouth-grin00", "m01-mouth-smile00", "m01-mouth-smile01",
-            "fm01-body", "fm01-eyes-smile", "fm01-eyes-upset", "fm01-mouth-serious00", "fm01-mouth-serious01", "fm01-mouth-smile00",
-            "fm02-body", "fm02-eyes-joy", "fm02-eyes-nervous", "fm02-eyes-wow", "fm02-mouth-nervous00", "fm02-mouth-smile00",
-        ])
+        Assets.backgroundLoadBundle(["fm01", "fm02", "m01"]);
     }
 });
 export default startLabel;
