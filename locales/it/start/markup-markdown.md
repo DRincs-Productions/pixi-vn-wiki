@@ -1,10 +1,10 @@
 # ![icon](/markdown.svg){style="width:40px;height:25px;margin-right:10px;float:left;background-color:white;border-radius:10px"} Markdown
 
-**Markdown** is a lightweight markup language for creating formatted text using a plain-text editor. John Gruber created Markdown in 2004, in collaboration with Aaron Swartz, as a markup language that is intended to be easy to read in its source code form. Markdown is widely used for blogging and instant messaging, and also used elsewhere in online forums, collaborative software, documentation pages, and readme files.
+**Markdown** is a lightweight markup language for creating formatted text using a plain-text editor. John Gruber ha creato Markdown nel 2004, in collaborazione con Aaron Swartz, come linguaggio di markup concepito per essere facile da leggere nella sua forma di codice sorgente. Markdown è ampiamente utilizzato per i blog e la messaggistica istantanea, ma anche in forum online, software collaborativi, pagine di documentazione e file readme.
 
-Pixi’VN is not tied to any Markup, and gives the developer the ability to choose the Markup he prefers. However, it is recommended to use Markdown.
+Pixi'VN non è vincolato ad alcun Markup e dà allo sviluppatore la possibilità di scegliere il Markup che preferisce. Tuttavia, si consiglia di utilizzare Markdown.
 
-Here are some examples of implementations of Markdown in the JavaScript ecosystem:
+Ecco alcuni esempi di implementazioni di Markdown nell'ecosistema JavaScript:
 
 ::: code-group
 
@@ -110,9 +110,9 @@ previewHeight=300
 
 ## React Markdown Typewriter
 
-[React Markdown Typewriter](https://www.npmjs.com/package/react-markdown-typewriter) is a library that combines Markdown and Typewriter. This library was created by me for my need to add a Typewriter effect to the Markdown component for my React templates.
+[React Markdown Typewriter](https://www.npmjs.com/package/react-markdown-typewriter) è una libreria che combina Markdown e Typewriter. This library was created by me for my need to add a Typewriter effect to the Markdown component in my React templates.
 
-If you are using react I recommend you to use it:
+Se stai usando React ti consiglio di usarlo:
 
 ```tsx [React]
 import { MarkdownTypewriter } from "react-markdown-typewriter";
