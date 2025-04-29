@@ -15,6 +15,9 @@ hero:
       text: Perché Pixi’VN?
       link: /start/why
     - theme: alt
+      text: Discord
+      link: https://discord.gg/E95FZWakzp
+    - theme: alt
       text: Crea la tua prima Visual Novel
       link: /start/make-visual-novel
     - theme: alt
