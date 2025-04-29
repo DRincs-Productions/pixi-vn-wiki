@@ -1,5 +1,5 @@
-# Markup language
+# Linguaggio di Markup
 
-The markup language is a text-encoding system which specifies the structure and formatting of a document and potentially the relationships among its parts. Markup can control the display of a document or enrich its content to facilitate automated processing. There are various types of markup languages, such as HTML, KML/KMZ, XML, Markdown, and others.
+Il linguaggio di markup è un sistema di codifica del testo che specifica la struttura e la formattazione di un documento e potenzialmente le relazioni tra le sue parti. Markup può controllare la visualizzazione di un documento o arricchirne il contenuto per facilitarne l'elaborazione automatizzata. Esistono vari tipi di linguaggi di markup, come HTML, KML/KMZ, XML, Markdown e altri.
 
-Due to its simplicity and popularity it is recommended to use [**Markdown**](/start/markup-markdown.md). Furthermore, since it is often possible to combine Markdown with HTML, it is possible to use the CSS to style the text. It is recommended to use a CSS framework like [**Tailwind CSS**](/start/markup-tailwindcss.md).
+Data la sua semplicità e popolarità si consiglia di utilizzare [**Markdown**](/start/markup-markdown.md). Inoltre, poiché spesso è possibile combinare Markdown con HTML, è possibile utilizzare il CSS per lo stile del testo. Si consiglia di utilizzare un framework CSS come [**Tailwind CSS**](/start/markup-tailwindcss.md).
