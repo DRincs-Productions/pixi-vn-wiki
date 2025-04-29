@@ -110,7 +110,7 @@ previewHeight=300
 
 ## React Markdown Typewriter
 
-[React Markdown Typewriter](https://www.npmjs.com/package/react-markdown-typewriter) is a library that combines Markdown and Typewriter. This library was created by me for my need to add a Typewriter effect to the Markdown component for my React templates.
+[React Markdown Typewriter](https://www.npmjs.com/package/react-markdown-typewriter) is a library that combines Markdown and Typewriter. This library was created by me for my need to add a Typewriter effect to the Markdown component in my React templates.
 
 If you are using react I recommend you to use it:
 
