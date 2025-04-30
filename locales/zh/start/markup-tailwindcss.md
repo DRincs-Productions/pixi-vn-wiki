@@ -2,9 +2,9 @@
 
 **What is Tailwind CSS?** Tailwind CSS is a utility-first CSS framework for rapidly building custom designs. It is a low-level framework that provides a set of utility classes that can be used to build custom designs without having to leave the HTML. You can get more information on how install it [here](https://tailwindcss.com/docs/installation).
 
-You can learn more about Tailwind CSS on the [Tailwind CSS website](https://tailwindcss.com/).
+You can learn more on the [Tailwind CSS website](https://tailwindcss.com/).
 
-It is also possible to install Tailwind CSS Plugins. Here is a list of some of them:
+There are various Tailwind CSS plugins available. Here is a list of some of them:
 
 - [Tailwind CSS Motion](https://docs.rombo.co/tailwind): Add animations to your Tailwind CSS project.
 
