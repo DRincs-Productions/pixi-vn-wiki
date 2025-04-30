@@ -68,18 +68,18 @@ storage.removeTempVariable("myTempVariable");
 
 ## Variabili di sistema
 
-In game storage, there are some system variables that are used by the game engine. Tutte le variabili di sistema iniziano con il prefisso `___`.
+Nello storage di gioco sono presenti alcune variabili di sistema utilizzate dal motore di gioco. Tutte le variabili di sistema iniziano con il prefisso `___`.
 Si prega quindi di evitare di utilizzare questo prefisso nelle tue variabili.
 
-You can get all system variable keys from the `SYSTEM_RESERVED_STORAGE_KEYS` constant.
+È possibile ottenere tutte le chiavi delle variabili di sistema dalla costante `SYSTEM_RESERVED_STORAGE_KEYS`.
 
 ## ![icon](/keyv.svg){style="width:30px;height:30px;margin-right:5px;float:left"} Keyv
 
-The entire storage system was developed using Map, a native JavaScript object, so you can use Keyv interact with game storage.
+L'intero sistema di storage è stato sviluppato utilizzando Map, un oggetto JavaScript nativo, in modo da poter utilizzare Keyv per interagire con lo storage di gioco.
 
-**What is Keyv?** Keyv is a simple key-value storage. It is a very easy-to-use system and very popular in the Node.js community. Keyv can be combined with other libraries, such as [Cacheable](https://cacheable.org/) (Caching for Nodejs based on Keyv). You can learn more on the [Keyv website](https://keyv.org/).
+**Cos'è Keyv?** Keyv è un semplice sistema di archiviazione chiave-valore. È un sistema molto semplice da usare e molto popolare nella comunità Node.js. Keyv può essere combinato con altre librerie, come [Cacheable](https://cacheable.org/) (Caching per Nodejs basata su Keyv). Per saperne di più, visita il [sito web Keyv](https://keyv.org/).
 
-**How to use Keyv with Pixi’VN?** You can use Keyv with Pixi’VN by creating a new instance of Keyv and passing the storage object as a parameter.
+**Come utilizzare Keyv con Pixi'VN?** È possibile utilizzare Keyv con Pixi'VN creando una nuova istanza di Keyv e passando lo storage come parametro.
 
 ```typescript
 import { storage } from '@drincs/pixi-vn'
