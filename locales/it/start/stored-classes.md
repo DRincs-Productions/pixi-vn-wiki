@@ -1,10 +1,10 @@
 # Storage Classes
 
-Pixi'VN provides an abstract class `StoredClassModel` that you can use to create classes with properties saved in the game storage.
+Pixi'VN fornisce una classe astratta `StoredClassModel` che puoi utilizzare per creare classi con proprietà salvate nello storage del gioco.
 
 ## Storage key
 
-The custructor of the `StoredClassModel` class have 2 parameters `categoryId` and `id` (must be unique).
+The custructor of the `StoredClassModel` class have 2 parameters:
 
 - `categoryId`: L'id della categoria. For example if you are storing a character class, you can use "characters" as `categoryId`. So all instances of the character class will be stored in the "characters" category.
 - `id`: L'id dell'istanza della classe. This id must be unique for its category.
