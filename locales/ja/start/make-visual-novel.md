@@ -822,4 +822,5 @@ Here is an interactive example with a minimal UI (HTML). Scrolling down you can 
 <iframe src="https://pixi-vn-react-template.web.app/"
     title="Visual Novel - React"
     style="width:100%; height:400px; border:0; border-radius:4px; overflow:hidden;"
+    allowfullscreen
 ></iframe>
