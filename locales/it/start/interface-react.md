@@ -1,8 +1,8 @@
 # ![icon](/react.svg){style="width:40px;height:40px;margin-right:10px;float:left"} Interfaccia utente React
 
-**What is React?** React is a JavaScript library that helps developers create user interfaces (UIs) for websites, apps, and more. It's free and open-source, and is maintained by Meta (formerly Facebook) and a community of developers.
+**Cos'è React?** React è una libreria JavaScript che aiuta gli sviluppatori a creare interfacce utente (UI) per siti web, app e altro ancora. È gratuito e open source ed è gestito da Meta (ex Facebook) e da una comunità di sviluppatori.
 
-You can learn more about React on the [React website](https://react.dev/).
+Puoi scoprire di più su React sul [sito web di React](https://react.dev/).
 
 ## Come aggiungere Pixi’VN a un’applicazione React
 
@@ -248,7 +248,7 @@ export default App
 
 :::
 
-## Best React component libraries
+## Le migliori librerie di componenti React
 
 Per creare una bella interfaccia utente puoi utilizzare alcune delle migliori librerie di componenti React UI:
 
