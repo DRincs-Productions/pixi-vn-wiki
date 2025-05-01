@@ -1,6 +1,6 @@
 # ![icon](/markdown.svg){style="width:40px;height:25px;margin-right:10px;float:left;background-color:white;border-radius:10px"} Markdown
 
-**Markdown** is a lightweight markup language for creating formatted text using a plain-text editor. John Gruber ha creato Markdown nel 2004, in collaborazione con Aaron Swartz, come linguaggio di markup concepito per essere facile da leggere nella sua forma di codice sorgente. Markdown è ampiamente utilizzato per i blog e la messaggistica istantanea, ma anche in forum online, software collaborativi, pagine di documentazione e file readme.
+**Markdown** è un linguaggio di markup leggero per creare testo formattato utilizzando un editor di testo normale. John Gruber ha creato Markdown nel 2004, in collaborazione con Aaron Swartz, come linguaggio di markup concepito per essere facile da leggere nella sua forma di codice sorgente. Markdown è ampiamente utilizzato per i blog e la messaggistica istantanea, ma anche in forum online, software collaborativi, pagine di documentazione e file readme.
 
 Pixi'VN non è vincolato ad alcun Markup e dà allo sviluppatore la possibilità di scegliere il Markup che preferisce. Tuttavia, si consiglia di utilizzare Markdown.
 
@@ -110,7 +110,7 @@ previewHeight=300
 
 ## React Markdown Typewriter
 
-[React Markdown Typewriter](https://www.npmjs.com/package/react-markdown-typewriter) è una libreria che combina Markdown e Typewriter. This library was created by me for my need to add a Typewriter effect to the Markdown component in my React templates.
+[React Markdown Typewriter](https://www.npmjs.com/package/react-markdown-typewriter) è una libreria che combina Markdown e Typewriter. Questa libreria è stata creata da me per la mia necessità di aggiungere un effetto Typewriter al componente Markdown per i miei template React.
 
 Se stai usando React ti consiglio di usarlo:
 
