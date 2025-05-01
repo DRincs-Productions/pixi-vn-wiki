@@ -4,7 +4,7 @@ Pixi'VN provides an abstract class `StoredClassModel` that you can use to create
 
 ## Storage key
 
-The custructor of the `StoredClassModel` class have 2 parameters `categoryId` and `id` (must be unique).
+The custructor of the `StoredClassModel` class have 2 parameters:
 
 - `categoryId`: The id of the category. For example if you are storing a character class, you can use "characters" as `categoryId`. So all instances of the character class will be stored in the "characters" category.
 - `id`: The id of instance of the class. This id must be unique for its category.
