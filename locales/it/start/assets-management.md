@@ -10,9 +10,9 @@ let alien1 = await showImage("alien", "https://pixijs.com/assets/eggHead.png");
 
 Questo metodo presenta alcuni svantaggi:
 
-- changing the URL of a asset from one version to another may cause incompatibilities
-- the player will have to wait for a short loading time, every time pressing "go next" a [step](/start/labels.md) will be started which uses assets
-- writing the entire URL in code will increase its length and make it less understandable
+- la modifica dell'URL di una risorsa da una versione all'altra potrebbe causare incompatibilità
+- il giocatore dovrà attendere un breve tempo di caricamento, ogni volta che si preme "vai avanti" verrà avviato un [step](/start/labels.md) che utilizza degli assets
+- scrivere l'intero URL nel codice ne aumenterà la lunghezza e lo renderà meno comprensibile
 
 Per questi motivi si consiglia di gestire le risorse nei seguenti modi.
 
