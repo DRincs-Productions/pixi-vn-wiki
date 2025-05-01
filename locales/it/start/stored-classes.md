@@ -6,8 +6,8 @@ Pixi'VN fornisce una classe astratta `StoredClassModel` che puoi utilizzare per 
 
 The custructor of the `StoredClassModel` class have 2 parameters:
 
-- `categoryId`: L'id della categoria. For example if you are storing a character class, you can use "characters" as `categoryId`. So all instances of the character class will be stored in the "characters" category.
-- `id`: L'id dell'istanza della classe. This id must be unique for its category.
+- `categoryId`: L'id della categoria. Ad esempio, se si memorizza una classe di personaggi, è possibile utilizzare "characters" come `categoryId`. Quindi tutte le istanze della classe di personaggi verranno memorizzate nella categoria "characters".
+- `id`: L'id dell'istanza della classe. Questo id deve essere univoco per la categoria di appartenenza.
 
 ```typescript
 const MY_CLASS_CATEGORY = "__MyClass__"
