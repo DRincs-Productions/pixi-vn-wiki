@@ -402,7 +402,7 @@ Per caricare e manipolare risorse (immagini, gif, video...) sarà necessario uti
 
 Prima di utilizzare una assets, si consiglia vivamente di [inizializzare la matrice delle risorse](/start/assets-management.md#initialize-the-asset-matrix-at-project-start).
 
-By default, as you can see in the `assets/manifest.ts` file, all templates in the `onLoadingLabel` try to load in the background the "bundle assets" with the alias equal to the label id. So it is recommended to add, in the manifest, "bundle assets" for each label with the alias equal to the label id and containing the images used in that label.
+Per impostazione predefinita, come puoi vedere nel file `assets/manifest.ts`, tutti i template in `onLoadingLabel` tentano di caricare in background il "bundle asset" con l'alias uguale all'id della label. So it is recommended to add, in the manifest, "bundle assets" for each label with the alias equal to the label id and containing the images used in that label.
 
 Questo è l'esempio:
 
@@ -822,4 +822,5 @@ Ecco un esempio interattivo con un'interfaccia utente minimale (HTML). Scorrendo
 <iframe src="https://pixi-vn-react-template.web.app/"
     title="Visual Novel - React"
     style="width:100%; height:400px; border:0; border-radius:4px; overflow:hidden;"
+    allowfullscreen
 ></iframe>
