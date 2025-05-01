@@ -402,7 +402,7 @@ To load and manipulate assets (images, gifs, videos...) you will need to use `As
 
 Before using an asset it is highly recommended to [initialize the asset matrix](/start/assets-management.md#initialize-the-asset-matrix-at-project-start).
 
-By default, as you can see in the `assets/manifest.ts` file, all templates in the `onLoadingLabel` try to load in the background the "bundle assets" with the alias equal to the label id. So it is recommended to add, in the manifest, "bundle assets" for each label with the alias equal to the label id and containing the images used in that label.
+By default, as you can see in the `assets/manifest.ts` file, all templates in the `onLoadingLabel` try to load in the background the "bundle assets" with the alias equal to the label id. So it is recommended to add, in the `manifest`, a "bundle assets" for each label with the alias equal to the label id and containing the images used in that label.
 
 This is the example:
 
