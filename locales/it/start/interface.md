@@ -1,4 +1,4 @@
-# User Interface (UI) with JavaScript Framework
+# Interfaccia utente (UI) con JavaScript Framework
 
 Pixi’VN offers the possibility of adding an HTML Element with the same dimensions as the [PixiJS Canvas](/start/canvas-components.md) to add an **UI** with JavaScript frameworks.
 
