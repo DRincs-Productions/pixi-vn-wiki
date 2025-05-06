@@ -12,7 +12,9 @@ Ciò consente l'utilizzo di sistemi come React, Vue, Angular, ecc. per creare **
 - [React Interface](/start/interface-react.md)
 - [Vue](/start/interface-vue.md)
 
-Pixi’VN offers the possibility of adding an HTML Element with the same dimensions as the [PixiJS Canvas](/start/canvas-components.md) to add an **UI** with a JavaScript frameworks.
+Pixi’VN offers some features to improve its compatibility with other JavaScript Frameworks:
+
+- possibility of adding an HTML Element with the same dimensions as the [PixiJS Canvas](/start/canvas-components.md) to add an **UI** with a JavaScript frameworks.
 
 ## Differenze tra l'interfaccia utente e il canvas
 
