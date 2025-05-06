@@ -14,7 +14,7 @@ This allows the use of systems such as React, Vue, Angular, etc. to create much 
 
 ## Differences between the UI and the canvas
 
-UI and canvas are two different things. The UI is above the canvas and is used to create buttons, forms, etc. The canvas is used to display images, videos, etc.
+As Pixi’VN was designed and conceived, the UI and the canvas are two distinct and independent elements. The UI is above the canvas and is used to create buttons, forms, etc. The canvas is used to display images, videos, etc.
 
 All canvas information is included in saves and Pixi’VN manages going back and forth between the different steps. The UI is not included in the saves and is not managed by Pixi’VN, so you have to [manage it yourself saving information](/start/interface-connect-storage.md) you care about in [game storage](/start/storage.md) or browser storage.
 
