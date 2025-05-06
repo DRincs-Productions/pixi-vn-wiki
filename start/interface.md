@@ -14,7 +14,7 @@ This allows the use of systems such as React, Vue, Angular, etc. to create much 
 
 Pixi’VN offers some features to improve its compatibility with other JavaScript Frameworks:
 
-- possibility of adding an HTML Element with the same dimensions as the [PixiJS Canvas](/start/canvas-components.md) to add an **UI** with a JavaScript frameworks.
+* possibility of adding an HTML Element with the same dimensions as the [PixiJS Canvas](/start/canvas-components.md) to add an **UI** with a JavaScript frameworks.
 
 ## Differences between the UI and the canvas
 
