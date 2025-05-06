@@ -2,8 +2,6 @@
 
 Pixi’VN does not offer, intentionally, any components to create a game UI. As conceived, the UI must be created using external JavaScript Frameworks.
 
-Pixi’VN offers the possibility of adding an HTML Element with the same dimensions as the [PixiJS Canvas](/start/canvas-components.md) to add an **UI** with a JavaScript frameworks.
-
 By "UI" is meant the elements that are above the canvas, such as buttons, forms, etc.
 
 ![Frame_Aufbau](https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2FPixiVN_interface.png?alt=media)
@@ -13,6 +11,8 @@ This allows the use of systems such as React, Vue, Angular, etc. to create much 
 * [Angular](/start/interface-angular.md)
 * [React Interface](/start/interface-react.md)
 * [Vue](/start/interface-vue.md)
+
+Pixi’VN offers the possibility of adding an HTML Element with the same dimensions as the [PixiJS Canvas](/start/canvas-components.md) to add an **UI** with a JavaScript frameworks.
 
 ## Differences between the UI and the canvas
 
