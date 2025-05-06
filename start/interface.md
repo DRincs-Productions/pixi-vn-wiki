@@ -1,6 +1,6 @@
 # User Interface (UI) with JavaScript Framework
 
-Pixi’VN does not offer any components to create a game UI. As it is designed, the UI must be created using external JavaScript Frameworks.
+Pixi’VN does not offer any components to create the game UI. As it is designed, the UI must be created using external JavaScript Frameworks.
 
 By "UI" is meant the elements that are above the canvas, such as buttons, forms, etc.
 
