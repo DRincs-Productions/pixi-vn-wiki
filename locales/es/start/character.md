@@ -179,7 +179,7 @@ console.log(angryAlice.name); // Angry Eleonora
 It recommend creating your own class `Character` that extends `CharacterStoredClass` and "override" the interface `CharacterInterface`
 to add/edit/remove properties or methods.
 
-For example, you want to create a class `Character`, you must "override" the interface `CharacterInterface` to use your properties or methods. ( See the file `pixi-vn.d.ts` )
+For example, you want to create a class `Character`, you must "override" the `CharacterInterface` interface in the `.d.ts` file to use your properties or methods. ( See the file `pixi-vn.d.ts` )
 
 Now you can create a class `Character` that extends `CharacterStoredClass` and implements the `CharacterInterface`. (For more information on how to create a class in Typescript read [here](https://www.typescriptlang.org/docs/handbook/2/classes.html))
 
