@@ -103,6 +103,47 @@ To clear the choice menu, you can use `narration.choiceMenuOptions = undefined`.
 narration.choiceMenuOptions = undefined;
 ```
 
+## Custom the choice menu option
+
+You can customize the choice menu option by adding additional properties to the `ChoiceInterface` interface. For example, you can add a `icon` property to add an icon to the choice menu option.
+
+To do this, you need "override" the `ChoiceInterface` interface in the `.d.ts` file.
+
+::: code-group
+
+```typescript [pixi-vn.d.ts]
+declare module '@drincs/pixi-vn' {
+    interface ChoiceInterface {
+        icon?: string
+    }
+}
+```
+
+```typescript
+narration.choiceMenuOptions = [
+    newChoiceOption("Orange", orangeLabel, {}, { icon: "orange.png" }),
+    newChoiceOption("Banana", bananaLabel, {}, { icon: "banana.png" }),
+    newChoiceOption("Apple", appleLabel, {}, { icon: "apple.png" }),
+]
+```
+
+```tsx [screens/ChoiceMenu.tsx]
+function ChoiceMenu({ choices }: { choices: StoredIndexedChoiceInterface[] }) {
+    return (
+        <div>
+            {choices.map((choice, index) => (
+                <div key={index}>
+                    {choice.icon && <img src={choice.icon} alt={choice.text} />}
+                    <button onClick={() => narration.selectChoice(choice)}>{choice.text}</button>
+                </div>
+            ))}
+        </div>
+    )
+}
+```
+
+:::
+
 ## How to create the choice menu UI screen
 
 For example:

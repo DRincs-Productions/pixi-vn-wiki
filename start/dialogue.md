@@ -63,7 +63,7 @@ To clear the current dialogue, you can use `narration.dialogue = undefined`.
 narration.dialogue = undefined;
 ```
 
-## Custom dialogue
+## Custom the dialogue
 
 You can customize the dialog interface by adding additional properties to the `DialogueInterface` interface. For example, you can add a `color` property to change the color of the text.
 
