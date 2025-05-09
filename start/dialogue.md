@@ -8,8 +8,7 @@ In Pixi’VN, dialogue is an object that contains information about *who* and *w
 
 To set the current dialogue, you can use the `narration.dialogue`.
 
-```ts
-// /labels/startLabel.ts
+```ts [labels/startLabel.ts]
 import { narration, newLabel } from "@drincs/pixi-vn"
 import { eggHead } from "../values/characters"
 
