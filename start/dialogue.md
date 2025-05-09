@@ -4,13 +4,13 @@
 
 In Pixi’VN, dialogue is an object that contains information about *who* and *what* is currently being said. Its functionality can be broader as it can also be used for other purposes, such as monologues, soliloquies or to display a message to the player. For this reason, it is more appropriate to consider it as a text that can be linked to a [character](/start/character#use-characters-in-the-game).
 
-## Set the current Dialogue
+## Set the current dialogue
 
 To set the current dialogue, you can use the `narration.dialogue`.
 
 ```ts
 // /labels/startLabel.ts
-import { Dialogue, narration, newLabel } from "@drincs/pixi-vn"
+import { narration, newLabel } from "@drincs/pixi-vn"
 import { eggHead } from "../values/characters"
 
 // What is a Label? https://pixi-vn.web.app/start/labels.html
@@ -36,8 +36,6 @@ export const startLabel = newLabel("start_label",
                 character: eggHead, // [!code focus]
                 text: "Hello, world!" // [!code focus]
             } // [!code focus]
-            // or // [!code focus]
-            narration.dialogue = new Dialogue("Hello, world!", eggHead) // [!code focus]
         },
         // if don't want to set a character, you can set a string // [!code focus]
         () => narration.dialogue = "Hello, world!", // [!code focus]
@@ -50,15 +48,15 @@ export const startLabel = newLabel("start_label",
   entry="/src/labels/startLabel.ts"
 />
 
-## Get the current Dialogue
+## Get the current dialogue
 
-To get the current dialogue, you can use `narration.dialogue`. The return is a `Dialogue`.
+To get the current dialogue, you can use `narration.dialogue`. The return is a `DialogueInterface`.
 
 ```typescript
-const currentDialogue: Dialogue = narration.dialogue;
+const currentDialogue: DialogueInterface = narration.dialogue;
 ```
 
-## Clear the current Dialogue
+## Clear the current dialogue
 
 To clear the current dialogue, you can use `narration.dialogue = undefined`.
 
