@@ -84,7 +84,7 @@ The Narration timeline of the game is a list of all dialogues that have been dis
 To get the narrative history of the game, you can use the `narration.narrativeHistory`. It returns a list of `NarrativeHistory<T>[]`.
 
 ```typescript
-const dialogues: NarrativeHistory<Dialogue>[] = narration.narrativeHistory;
+const dialogues: NarrativeHistory[] = narration.narrativeHistory;
 ```
 
 ## Delete Narrative History
