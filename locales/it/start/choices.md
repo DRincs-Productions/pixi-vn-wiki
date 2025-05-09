@@ -4,21 +4,23 @@ In the visual novel, usually, there are choice menus that allow the player to ma
 
 ## Set a choice menu
 
-To set a choice menu, you can use `narration.choiceMenuOptions` and pass an array of [`ChoiceMenuOption`](#choice-menu-option) or/and [`ChoiceMenuOptionClose`](#choice-for-closing-the-menu).
+To set a choice menu, you can use `narration.choiceMenuOptions` and pass an array of `StoredChoiceInterface`. For create a `StoredChoiceInterface` object, you can use:
 
-```ts
-// /labels/startLabel.ts
-import { ChoiceMenuOption, ChoiceMenuOptionClose, narration, newLabel } from "@drincs/pixi-vn"
+- [`newChoiceOption`](#choice-menu-option)
+- [`newCloseChoiceOption`](#choice-for-closing-the-menu)
+
+```ts [labels/startLabel.ts]
+import { newChoiceOption, newCloseChoiceOption, narration, newLabel } from "@drincs/pixi-vn"
 
 export const startLabel = newLabel("start_label",
     [
         async () => {
             narration.dialogue = "Choose a fruit:"
             narration.choiceMenuOptions = [ // [!code focus]
-                new ChoiceMenuOption("Orange", orangeLabel, {}), // by default, the label will be called by call // [!code focus]
-                new ChoiceMenuOption("Banana", bananaLabel, {}, { type: "jump" }), // [!code focus]
-                new ChoiceMenuOption("Apple", appleLabel, { quantity: 5 }, { type: "call" }), // [!code focus]
-                new ChoiceMenuOptionClose("Cancel"), // [!code focus]
+                newChoiceOption("Orange", orangeLabel, {}), // by default, the label will be called by call // [!code focus]
+                newChoiceOption("Banana", bananaLabel, {}, { type: "jump" }), // [!code focus]
+                newChoiceOption("Apple", appleLabel, { quantity: 5 }, { type: "call" }), // [!code focus]
+                newCloseChoiceOption("Cancel"), // [!code focus]
             ] // [!code focus]
         },
         () => { narration.dialogue = "Restart" },
@@ -32,11 +34,11 @@ template="wv63yr"
 entry="/src/labels/startLabel.ts"
 />
 
-## Choice menu option
+### Choice menu option
 
-In Pixi’VN, it is possible to create choice menus using the `ChoiceMenuOption` class and a function to handle the choice.
+In Pixi’VN, it is possible to create choice menus using the `newChoiceOption` function.
 
-`ChoiceMenuOption` is a class which has as parameters:
+`newChoiceOption` is a function which has as parameters:
 
 - `text`: The text that will be displayed in the choice menus.
 - `label`: The [label](/start/labels#label) which will be called when the player chooses the option.
@@ -51,9 +53,9 @@ You can use this class to create a item of the `narration.choiceMenuOptions` lis
 
 ### Choice for closing the menu
 
-In addition to `ChoiceMenuOption` there is also another class `ChoiceMenuOptionClose` that allows you to create a closing option. Its operation consists in closing the menu of choices and continuing with the [steps](/start/labels.md), without having to call any [label](/start/labels.md#label).
+In addition to `newChoiceOption` there is also another function `newCloseChoiceOption` that allows you to create a closing option. Its operation consists in closing the menu of choices and continuing with the [steps](/start/labels.md), without having to call any [label](/start/labels.md#label).
 
-`ChoiceMenuOptionClose` is a class which has as parameters:
+`newCloseChoiceOption` is a function which has as parameters:
 
 - `text`: The text that will be displayed in the choice menus.
 - `options`:
@@ -66,10 +68,10 @@ You can use this class to create a item of the `narration.choiceMenuOptions` lis
 
 ## Get the choice menu
 
-To get the choice menu, you can use `narration.choiceMenuOptions`. The return is an array of `ChoiceMenuOption` and/or `ChoiceMenuOptionClose`.
+To get the choice menu, you can use `narration.choiceMenuOptions`. The return is an array of `newChoiceOption` and/or `newCloseChoiceOption`.
 
 ```typescript
-const menuOptions: ChoiceMenuOption[] = narration.choiceMenuOptions;
+const menuOptions: StoredChoiceInterface[] = narration.choiceMenuOptions;
 ```
 
 ## Select a choice
@@ -77,6 +79,8 @@ const menuOptions: ChoiceMenuOption[] = narration.choiceMenuOptions;
 To select a choice, you can use `narration.selectChoice`.
 
 ```typescript
+const item = narration.choiceMenuOptions![0]; // get the first item of the menu
+
 narration.selectChoice(item, {
     // add StepLabelProps here
     navigate: navigate, // example
@@ -98,6 +102,47 @@ To clear the choice menu, you can use `narration.choiceMenuOptions = undefined`.
 ```typescript
 narration.choiceMenuOptions = undefined;
 ```
+
+## Custom the choice menu option
+
+You can customize the choice menu option by adding additional properties to the `ChoiceInterface` interface. For example, you can add a `icon` property to add an icon to the choice menu option.
+
+To do this, you need "override" the `ChoiceInterface` interface in the `.d.ts` file.
+
+::: code-group
+
+```typescript [pixi-vn.d.ts]
+declare module '@drincs/pixi-vn' {
+    interface ChoiceInterface {
+        icon?: string
+    }
+}
+```
+
+```typescript
+narration.choiceMenuOptions = [
+    newChoiceOption("Orange", orangeLabel, {}, { icon: "orange.png" }),
+    newChoiceOption("Banana", bananaLabel, {}, { icon: "banana.png" }),
+    newChoiceOption("Apple", appleLabel, {}, { icon: "apple.png" }),
+]
+```
+
+```tsx [screens/ChoiceMenu.tsx]
+function ChoiceMenu({ choices }: { choices: StoredIndexedChoiceInterface[] }) {
+    return (
+        <div>
+            {choices.map((choice, index) => (
+                <div key={index}>
+                    {choice.icon && <img src={choice.icon} alt={choice.text} />}
+                    <button onClick={() => narration.selectChoice(choice)}>{choice.text}</button>
+                </div>
+            ))}
+        </div>
+    )
+}
+```
+
+:::
 
 ## How to create the choice menu UI screen
 
