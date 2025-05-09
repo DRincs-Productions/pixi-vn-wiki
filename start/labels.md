@@ -43,7 +43,7 @@ export const startLabel = newLabel("start_label",
 
 All the [functionality to control the flow of labels](/start/labels-flow.md) requires an object that corresponds to the `StepLabelProps` interface. The object will be passed as a parameter to the step that will be executed.
 
-By default `StepLabelProps` corresponds to `{ [key: string]: any }`. You can "override" the interface `StepLabelProps` to set required parameters.
+By default `StepLabelProps` corresponds to `{ [key: string]: any }`. You can "override" the `StepLabelProps` interface in the `.d.ts` file to set required parameters.
 
 :::tabs
 == pixi-vn.d.ts
@@ -103,7 +103,7 @@ narration.callLabel(startLabel, {
 
 The steps can return a `StepLabelResult` object, by default the `StepLabelResult` object is a `{ [key: string]: any }`.
 
-You can "override" the interface `StepLabelResult` to set your custom properties in the result of the steps.
+You can "override" the `StepLabelResult` interface in the `.d.ts` file to set your custom properties in the result of the steps.
 
 :::tabs
 == pixi-vn.d.ts

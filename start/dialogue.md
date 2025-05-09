@@ -64,6 +64,32 @@ To clear the current dialogue, you can use `narration.dialogue = undefined`.
 narration.dialogue = undefined;
 ```
 
+## Custom dialogue
+
+You can customize the dialog interface by adding additional properties to the `DialogueInterface` interface. For example, you can add a `color` property to change the color of the text.
+
+To do this, you need "override" the `DialogueInterface` interface in the `.d.ts` file.
+
+::: code-group
+
+```typescript [pixi-vn.d.ts]
+declare module '@drincs/pixi-vn' {
+    interface DialogueInterface {
+        color?: string
+    }
+}
+```
+
+```typescript
+narration.dialogue = {
+    character: "Alice",
+    text: "Hello, world!",
+    color: "#ff0000"
+}
+```
+
+:::
+
 ## Dialogue glue
 
 Dialogue glue is a feature originally created for ***ink***, which was also introduced in Pixi’VN.
