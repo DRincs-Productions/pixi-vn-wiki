@@ -8,8 +8,7 @@ In Pixi’VN, dialogue is an object that contains information about _who_ and _w
 
 To set the current dialogue, you can use the `narration.dialogue`.
 
-```ts
-// /labels/startLabel.ts
+```ts [labels/startLabel.ts]
 import { narration, newLabel } from "@drincs/pixi-vn"
 import { eggHead } from "../values/characters"
 
@@ -64,7 +63,7 @@ To clear the current dialogue, you can use `narration.dialogue = undefined`.
 narration.dialogue = undefined;
 ```
 
-## Custom dialogue
+## Custom the dialogue
 
 You can customize the dialog interface by adding additional properties to the `DialogueInterface` interface. For example, you can add a `color` property to change the color of the text.
 
