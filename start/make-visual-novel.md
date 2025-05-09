@@ -519,11 +519,14 @@ Game.init(body, {
         throw new Error("root element not found");
     }
 
-    canvas.initializeHTMLLayout(root);
-    if (!canvas.htmlLayout) {
-        throw new Error("htmlLayout not found");
+    const htmlLayer = canvas.addHtmlLayer("ui", root, {
+        position: "absolute",
+        pointerEvents: "none"
+    });
+    if (!htmlLayer) {
+        throw new Error("htmlLayer not found");
     }
-    const reactRoot = createRoot(canvas.htmlLayout);
+    const reactRoot = createRoot(htmlLayer);
 
     reactRoot.render(<App />);
 });
