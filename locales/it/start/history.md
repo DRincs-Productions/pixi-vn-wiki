@@ -81,25 +81,25 @@ narration.currentStepTimesCounter = 0;
 
 The Narration timeline of the game is a list of all dialogues that have been displayed. It is useful to show the history of dialogues and choices to the player.
 
-To get the narrative history of the game, you can use the `narration.narrativeHistory`. It returns a list of `NarrativeHistory<T>[]`.
+To get the narrative history of the game, you can use the `stepHistory.narrativeHistory`. It returns a list of `NarrativeHistory<T>[]`.
 
 ```typescript
-const dialogues: NarrativeHistory[] = narration.narrativeHistory;
+const dialogues: NarrativeHistory[] = stepHistory.narrativeHistory;
 ```
 
 ## Delete Narrative History
 
-To delete all the narrative history, use the `narration.removeNarrativeHistory`.
+To delete all the narrative history, use the `stepHistory.removeNarrativeHistory`.
 
 ```typescript
-narration.removeNarrativeHistory();
+stepHistory.removeNarrativeHistory();
 ```
 
-To delete a part of the narrative history, use the `narration.removeNarrativeHistory`.
+To delete a part of the narrative history, use the `stepHistory.removeNarrativeHistory`.
 
 ```typescript
 // delete the first 2 elements
-narration.removeNarrativeHistory(2);
+stepHistory.removeNarrativeHistory(2);
 ```
 
 ## How to create the history UI screen
