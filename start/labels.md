@@ -144,15 +144,15 @@ This basic information allows you to show the entire [history of the narrative](
 You can edit the limit of steps saved by changing the `stepLimitSaved` property in the `narration` object.
 
 ```typescript
-import { narration } from '@drincs/pixi-vn'
+import { stepHistory } from '@drincs/pixi-vn'
 
-narration.stepLimitSaved = 100
+stepHistory.stepLimitSaved = 100
 ```
 
 If you want to disable the limit of steps saved, you can set the `stepLimitSaved` property to `Infinity`.
 
 ```typescript
-import { narration } from '@drincs/pixi-vn'
+import { stepHistory } from '@drincs/pixi-vn'
 
-narration.stepLimitSaved = Infinity
+stepHistory.stepLimitSaved = Infinity
 ```
