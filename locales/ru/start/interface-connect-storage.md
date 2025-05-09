@@ -67,7 +67,7 @@ narration.goNext({})
         queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] })
     });
 
-narration.goBack({})
+stepHistory.goBack({})
     .then((result) => {
         queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] })
     });
