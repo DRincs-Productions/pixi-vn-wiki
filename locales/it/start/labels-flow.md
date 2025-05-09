@@ -177,20 +177,20 @@ function NextButton() {
 
 ### Go back
 
-Every step the system saves the current state of the game. To go back to the previous step you must execute the `narration.goBack()` function.
+Every step the system saves the current state of the game. To go back to the previous step you must execute the `stepHistory.goBack()` function.
 
 In parameters you must pass a function `navigate: (path: string) => void` that will be called with the [URL Path or Route](/start/interface.md#what-is-the-url-path-and-routes) of the previous step, so you can to [navigate to the previous UI screen](/start/interface-navigate.md).
 
 For exemple if you use a [React Router Dom](https://reactrouter.com):
 
 ```typescript
-import { narration } from '@drincs/pixi-vn'
+import { stepHistory } from '@drincs/pixi-vn'
 import { useNavigate } from 'react-router-dom';
 
 const navigate = useNavigate();
 
-if (narration.canGoBack) {
-    narration.goBack(navigate).then(() => {
+if (stepHistory.canGoBack) {
+    stepHistory.goBack(navigate).then(() => {
         // ...
     })
 }
@@ -198,17 +198,17 @@ if (narration.canGoBack) {
 
 #### Check if the player can go back
 
-You can use the `narration.canGoBack` property to check if you can go back.
+You can use the `stepHistory.canGoBack` property to check if you can go back.
 
-The `narration.canGoBack` is false when there are no steps in the history to restore.
+The `stepHistory.canGoBack` is false when there are no steps in the history to restore.
 
 ```tsx
-import { narration } from '@drincs/pixi-vn'
+import { stepHistory } from '@drincs/pixi-vn'
 
 function BackButton() {
     return (
-        <button disabled={!narration.canGoBack} onClick={() => {
-            narration.goBack({})
+        <button disabled={!stepHistory.canGoBack} onClick={() => {
+            stepHistory.goBack({})
         }}>
             Back
         </button>
@@ -218,12 +218,12 @@ function BackButton() {
 
 #### Block the possibility of going back
 
-You can block the possibility of going back by setting the `narration.canGoBack` property to `false`.
+You can block the possibility of going back by setting the `stepHistory.canGoBack` property to `false`.
 
 ```typescript
-import { narration } from '@drincs/pixi-vn'
+import { stepHistory } from '@drincs/pixi-vn'
 
-narration.blockGoBack()
+stepHistory.blockGoBack()
 ```
 
 ## Close labels
