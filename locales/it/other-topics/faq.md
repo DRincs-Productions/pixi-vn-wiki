@@ -2,7 +2,7 @@
 
 ## How use navigation function in step/label?
 
-It is recommended to overwrite the `StepLabelProps` interface to add the `navigate` function. `navigate` function is a function that will be called with the URL Path or Route of the next step, so you can use it to navigate to the next UI screen.
+It is recommended to "override" the `StepLabelProps` interface in the `.d.ts` file to add the `navigate` function. `navigate` function is a function that will be called with the URL Path or Route of the next step, so you can use it to navigate to the next UI screen.
 
 Ad esempio:
 
