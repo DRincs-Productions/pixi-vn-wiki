@@ -66,7 +66,7 @@ In addition to `newChoiceOption` there is also another function `newCloseChoiceO
 
 ## Get the user requested choice options
 
-To get the choice menu, you can use `narration.choiceMenuOptions`. The return is an array of `newChoiceOption` and/or `newCloseChoiceOption`.
+To get the choice menu, you can use `narration.choiceMenuOptions`. The result is an array of `newChoiceOption` and/or `newCloseChoiceOption`.
 
 ```typescript
 const menuOptions: StoredChoiceInterface[] = narration.choiceMenuOptions;
