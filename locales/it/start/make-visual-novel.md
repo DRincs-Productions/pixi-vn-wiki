@@ -402,7 +402,7 @@ Per caricare e manipolare risorse (immagini, gif, video...) sarà necessario uti
 
 Prima di utilizzare una assets, si consiglia vivamente di [inizializzare la matrice delle risorse](/start/assets-management.md#initialize-the-asset-matrix-at-project-start).
 
-Per impostazione predefinita, come puoi vedere nel file `assets/manifest.ts`, tutti i template in `onLoadingLabel` tentano di caricare in background il "bundle asset" con l'alias uguale all'id della label. So it is recommended to add, in the `manifest`, a "bundle assets" for each label with the alias equal to the label id and containing the images used in that label.
+Per impostazione predefinita, come puoi vedere nel file `assets/manifest.ts`, tutti i template in `onLoadingLabel` tentano di caricare in background il "bundle asset" con l'alias uguale all'id della label. Si consiglia quindi di aggiungere nel `manifest` un `bundle assets` per ogni label con alias uguale all'id della label e contenente le immagini utilizzate in quella label.
 
 Questo è l'esempio:
 
