@@ -95,7 +95,7 @@ narration.selectChoice(item, {
 
 ## Clear the choice menu
 
-To clear the choice menu, you can use `narration.choiceMenuOptions = undefined`.
+To clear the choice options, you can use `narration.choiceMenuOptions = undefined`.
 
 ```typescript
 narration.choiceMenuOptions = undefined;
