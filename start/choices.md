@@ -64,7 +64,7 @@ In addition to `newChoiceOption` there is also another function `newCloseChoiceO
   * `onlyHaveNoChoice`: If `true`, the choice can see only if there are no other choices.
   * `autoSelect`: If `true` and if is the only choice, it will be selected automatically.
 
-## Get the choice menu
+## Get the user requested choice options
 
 To get the choice menu, you can use `narration.choiceMenuOptions`. The return is an array of `newChoiceOption` and/or `newCloseChoiceOption`.
 
