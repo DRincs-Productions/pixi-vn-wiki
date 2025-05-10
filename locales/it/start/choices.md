@@ -59,22 +59,22 @@ Oltre a `newChoiceOption` esiste anche un'altra funzione `newCloseChoiceOption` 
 
 - `text`: The text that will be displayed in the choice menus.
 - `options`:
-  - `closeCurrentLabel`: If `true`, the current label will be closed. Default is `false`.
+  - `closeCurrentLabel`: Se `true`, la label corrente verrà chiusa. Il valore predefinito è `false`.
   - `oneTime`: If `true`, the choice can only be made once.
   - `onlyHaveNoChoice`: Se `true`, la scelta è visibile solo se non ci sono altre scelte.
   - `autoSelect`: Se `true` e se è l'unica scelta, verrà selezionato automaticamente.
 
-## Get the choice menu
+## Get the user requested choice options
 
-To get the choice menu, you can use `narration.choiceMenuOptions`. The return is an array of `newChoiceOption` and/or `newCloseChoiceOption`.
+To get the choice menu, you can use `narration.choiceMenuOptions`. The result is an array of `newChoiceOption` and/or `newCloseChoiceOption`.
 
 ```typescript
 const menuOptions: StoredChoiceInterface[] = narration.choiceMenuOptions;
 ```
 
-## Select a choice
+## Seleziona una scelta
 
-To select a choice, you can use `narration.selectChoice`.
+Per selezionare un'opzione, puoi usare `narration.selectChoice`.
 
 ```typescript
 const item = narration.choiceMenuOptions![0]; // get the first item of the menu
@@ -93,9 +93,9 @@ narration.selectChoice(item, {
     })
 ```
 
-## Clear the choice menu
+## Cancella il menu di scelta
 
-To clear the choice menu, you can use `narration.choiceMenuOptions = undefined`.
+To clear the choice options, you can use `narration.choiceMenuOptions = undefined`.
 
 ```typescript
 narration.choiceMenuOptions = undefined;
