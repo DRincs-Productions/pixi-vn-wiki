@@ -6,7 +6,7 @@ Per saperne di più, visita il [sito web Tailwind CSS](https://tailwindcss.com/)
 
 Sono disponibili vari plugin Tailwind CSS. Ecco un elenco di alcuni di essi:
 
-- [Tailwind CSS Motion](https://docs.rombo.co/tailwind): Adds animations to your Tailwind CSS project.
+- [Tailwind CSS Motion](https://docs.rombo.co/tailwind): Aggiunge animazioni al tuo progetto Tailwind CSS.
 
 Si consiglia di utilizzare Tailwind CSS nel progetto Pixi'VN per aggiungere stili o animazioni al testo del dialogo. Ecco un esempio che utilizza il plugin `tailwindcss-motion`:
 
