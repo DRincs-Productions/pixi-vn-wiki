@@ -2,6 +2,8 @@
 
 In the visual novel, usually, there are choice menus that allow the player to make decisions that will affect the story.
 
+In Pixi'VN, there is the option to prompt the player to make a choice. This will either start a label or close the choice menu.
+
 ## Require the player to make a choice
 
 To require the player to make a choice, you can set `narration.choiceMenuOptions` with an array of `StoredChoiceInterface`. For create a `StoredChoiceInterface` object, you can use:
@@ -34,24 +36,22 @@ template="wv63yr"
 entry="/src/labels/startLabel.ts"
 />
 
-### Choice menu option
+### Create a choice menu option
 
-In Pixi’VN, it is possible to create choice menus using the `newChoiceOption` function.
+In Pixi'VN you can create choice menu option using `newChoiceOption` function.
 
 `newChoiceOption` is a function which has as parameters:
 
-- `text`: The text that will be displayed in the choice menus.
+- `text`: The text that will be displayed in the choice menu.
 - `label`: The [label](/start/labels#label) which will be called when the player chooses the option.
 - `props`: The properties that will be passed to the label, if the label not need any parameter you can pass an empty object `{}`.
 - `options`:
   - `type`: The way the [label will be called](/start/labels-flow.md#run-a-label). It can be `call` or `jump`. Default is `call`.
-  - `oneTime`: If this is `true`, the choice can only be made once.
+  - `oneTime`: If `true`, the choice can only be made once.
   - `onlyHaveNoChoice`: If `true`, the choice can see only if there are no other choices.
   - `autoSelect`: If `true` and if is the only choice, it will be selected automatically.
 
-You can use this class to create a item of the `narration.choiceMenuOptions` list. To select a choice, you must use the [`narration.selectChoice` function](#select-a-choice).
-
-### Choice for closing the menu
+### Create a close choice menu option
 
 In addition to `newChoiceOption` there is also another function `newCloseChoiceOption` that allows you to create a closing option. Its operation consists in closing the menu of choices and continuing with the [steps](/start/labels.md), without having to call any [label](/start/labels.md#label).
 
@@ -60,11 +60,9 @@ In addition to `newChoiceOption` there is also another function `newCloseChoiceO
 - `text`: The text that will be displayed in the choice menus.
 - `options`:
   - `closeCurrentLabel`: If `true`, the current label will be closed. Default is `false`.
-  - `oneTime`: If this is `true`, the choice can only be made once.
+  - `oneTime`: If `true`, the choice can only be made once.
   - `onlyHaveNoChoice`: If `true`, the choice can see only if there are no other choices.
   - `autoSelect`: If `true` and if is the only choice, it will be selected automatically.
-
-You can use this class to create a item of the `narration.choiceMenuOptions` list. To select a choice, you must use the [`narration.selectChoice` function](#select-a-choice).
 
 ## Get the choice menu
 
