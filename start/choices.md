@@ -34,7 +34,7 @@ export const startLabel = newLabel("start_label",
   entry="/src/labels/startLabel.ts"
 />
 
-### Choice menu option
+### Create a choice menu option
 
 In Pixi’VN, it is possible to create choice menus using the `newChoiceOption` function.
 
@@ -51,7 +51,7 @@ In Pixi’VN, it is possible to create choice menus using the `newChoiceOption` 
 
 You can use this class to create a item of the `narration.choiceMenuOptions` list. To select a choice, you must use the [`narration.selectChoice` function](#select-a-choice).
 
-### Choice for closing the menu
+### Create close choice menu option
 
 In addition to `newChoiceOption` there is also another function `newCloseChoiceOption` that allows you to create a closing option. Its operation consists in closing the menu of choices and continuing with the [steps](/start/labels.md), without having to call any [label](/start/labels.md#label).
 
