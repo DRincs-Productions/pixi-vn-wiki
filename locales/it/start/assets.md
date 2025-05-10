@@ -71,10 +71,10 @@ L'hosting di immagini è un servizio che consente di caricare immagini. Ci sono 
 
 ### Cloud storage
 
-Cloud storage is a service that allows you to upload files.
+Cloud storage is a service that allows you to upload files online.
 
 - **Prezzo**: Solitamente a pagamento o con versione gratuita con limiti.
-- **Space limits**: Monthly cost based on space occupied by use. (Usually if you do not exceed a certain threshold it is free)
+- **Space limits**: Monthly cost based on space occupied by use. (Di solito se non si supera una certa soglia è gratuito)
 - **Tipo di file**: puoi caricare qualsiasi tipo di file.
 - **Traffico**: La velocità è buona.
 - **Modificare gli assets**: puoi modificare il file mantenendo lo stesso URL.
@@ -85,6 +85,6 @@ Ecco un elenco di alcuni dei servizi di cloud storage più popolari:
   **Risoluzione del problema CORS di Firebase Storage**:
   - Installa [gcloud CLI](https://cloud.google.com/sdk/docs/install)
   - Leggi questa [documentazione](https://medium.com/@we.viavek/setting-cors-in-firebase-19a2cce2fe28) per risolvere il problema CORS.
-- ![icon](/aws.svg){style="width:20px;height:20px;margin-right:5px;float:left"} **Amazon S3** is a cloud service. Compared to its competitors, it has many settings, but it may be more difficult to use. There is a payment plan to use Amazon S3. You can find more information [here](https://aws.amazon.com/s3/pricing/).
-- ![icon](/supabase.svg){style="width:20px;height:20px;margin-right:5px;float:left"} **Supabase** is an open-source Firebase alternative. Supabase have two plans: Free and Pay as you go. Puoi trovare maggiori informazioni [qui](https://supabase.io/pricing).
+- ![icon](/aws.svg){style="width:20px;height:20px;margin-right:5px;float:left"} **Amazon S3** è un servizio cloud. Compared to its competitors, it has many settings, but it may be more difficult to use. Per utilizzare Amazon S3 è previsto un piano di pagamento. Puoi trovare maggiori informazioni [qui](https://aws.amazon.com/s3/pricing/).
+- ![icon](/supabase.svg){style="width:20px;height:20px;margin-right:5px;float:left"} **Supabase** è un'alternativa open source a Firebase. Supabase offre due piani: gratuito e a pagamento. Puoi trovare maggiori informazioni [qui](https://supabase.io/pricing).
 - **Convex** is a cloud service that allows you to store and serve user-generated content, such as photos or videos or other files. Convex have two plans: Free and Pay as you go. Puoi trovare maggiori informazioni [qui](https://www.convex.dev/pricing).
