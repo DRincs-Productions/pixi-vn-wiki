@@ -4,7 +4,7 @@ Pixi'VN fornisce una classe astratta `StoredClassModel` che puoi utilizzare per 
 
 ## Storage key
 
-The custructor of the `StoredClassModel` class have 2 parameters:
+Il costruttore della classe `StoredClassModel` ha 2 parametri:
 
 - `categoryId`: L'id della categoria. Ad esempio, se si memorizza una classe di personaggi, è possibile utilizzare "characters" come `categoryId`. Quindi tutte le istanze della classe di personaggi verranno memorizzate nella categoria "characters".
 - `id`: L'id dell'istanza della classe. Questo id deve essere univoco per la categoria di appartenenza.
