@@ -2,6 +2,8 @@
 
 In the visual novel, usually, there are choice menus that allow the player to make decisions that will affect the story.
 
+In Pixi'VN, there is the option to prompt the player to make a choice. This will either start a label or close the choice menu.
+
 ## Require the player to make a choice
 
 To require the player to make a choice, you can set `narration.choiceMenuOptions` with an array of `StoredChoiceInterface`. For create a `StoredChoiceInterface` object, you can use:
