@@ -1,4 +1,4 @@
-# Choice Menus
+# Choice menus
 
 In the visual novel, usually, there are choice menus that allow the player to make decisions that will affect the story.
 
