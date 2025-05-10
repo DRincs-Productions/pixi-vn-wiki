@@ -131,7 +131,7 @@ export default function MyComponent() {
 
 ## Tradurre la narrazione (TypeScript/JavaScript)
 
-To translate the UI, you need "override" the `StepLabelProps` interface in the `.d.ts` file to add the `t` function. La funzione `t` è una funzione che verrà chiamata passando la chiave come input per ottenere il testo corrispondente nella lingua del giocatore.
+Per tradurre l'interfaccia utente, è necessario "sovrascrivere" l'interfaccia `StepLabelProps` nel file `.d.ts` per aggiungere la funzione `t`. La funzione `t` è una funzione che verrà chiamata passando la chiave come input per ottenere il testo corrispondente nella lingua del giocatore.
 
 In questo modo puoi usare la funzione `t` nelle [labels](/start/labels.md) per tradurre il testo. Si consiglia di utilizzare `t` all'interno della [label](/start/labels.md) e non quando viene visualizzata l'interfaccia utente, perché in questo modo è possibile utilizzare la [i18n Interpolation](https://i18next.com/translation-function/interpolation).
 
