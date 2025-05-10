@@ -1,10 +1,10 @@
-# Choice Menus
+# Menù a scelta
 
-In the visual novel, usually, there are choice menus that allow the player to make decisions that will affect the story.
+Nelle visual novel, solitamente, sono presenti dei menu di scelta che consentono al giocatore di prendere decisioni che influenzeranno la storia.
 
-## Set a choice menu
+## Require the player to make a choice
 
-To set a choice menu, you can use `narration.choiceMenuOptions` and pass an array of `StoredChoiceInterface`. For create a `StoredChoiceInterface` object, you can use:
+To require the player to make a choice, you can set `narration.choiceMenuOptions` with an array of `StoredChoiceInterface`. Per creare un oggetto `StoredChoiceInterface`, puoi usare:
 
 - [`newChoiceOption`](#choice-menu-option)
 - [`newCloseChoiceOption`](#choice-for-closing-the-menu)
