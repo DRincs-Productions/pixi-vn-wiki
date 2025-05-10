@@ -51,8 +51,6 @@ In Pixi'VN you can create choice menu option using `newChoiceOption` function.
   * `onlyHaveNoChoice`: If `true`, the choice can see only if there are no other choices.
   * `autoSelect`: If `true` and if is the only choice, it will be selected automatically.
 
-You can use this class to create a item of the `narration.choiceMenuOptions` list. To select a choice, you must use the [`narration.selectChoice` function](#select-a-choice).
-
 ### Create a close choice menu option
 
 In addition to `newChoiceOption` there is also another function `newCloseChoiceOption` that allows you to create a closing option. Its operation consists in closing the menu of choices and continuing with the [steps](/start/labels.md), without having to call any [label](/start/labels.md#label).
@@ -65,8 +63,6 @@ In addition to `newChoiceOption` there is also another function `newCloseChoiceO
   * `oneTime`: If `true`, the choice can only be made once.
   * `onlyHaveNoChoice`: If `true`, the choice can see only if there are no other choices.
   * `autoSelect`: If `true` and if is the only choice, it will be selected automatically.
-
-You can use this class to create a item of the `narration.choiceMenuOptions` list. To select a choice, you must use the [`narration.selectChoice` function](#select-a-choice).
 
 ## Get the choice menu
 
