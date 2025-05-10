@@ -41,7 +41,7 @@ export const emma = new CharacterBaseModel('emma', {
 RegisteredCharacters.add([liam, emma]);
 ```
 
-`RegisteredCharacters.add` is **required** to save the characters in the game.
+`RegisteredCharacters.add` è **necessario** per salvare i personaggi nel gioco.
 
 È anche possibile creare una funzione per il caricamento dei personaggi. L'importante è che venga avviato almeno una volta prima di utilizzare i personaggi nel gioco, altrimenti non saranno disponibili.
 
@@ -116,7 +116,7 @@ export default class CharacterBaseModel extends StoredClassModel implements Char
 
 ## Usa i personaggi nel gioco
 
-You can use game character for example to [link it to the current dialogue](/start/dialogue#set-the-current-dialogue). Puoi usare l'`id` del personaggio o l'istanza del personaggio, ma è consigliabile usare l'istanza.
+You can use a game character for example to [link it to the current dialogue](/start/dialogue#set-the-current-dialogue). Puoi usare l'`id` del personaggio o l'istanza del personaggio, ma è consigliabile usare l'istanza.
 
 ```typescript [characters.ts]
 export const liam = new CharacterBaseModel('liam_id', {
@@ -178,7 +178,7 @@ console.log(angryAlice.name); // Angry Eleonora
 
 Si consiglia di creare la propria classe `Character` che estende `CharacterStoredClass` e di "sovrascrivere" l'interfaccia `CharacterInterface` per aggiungere/modificare/rimuovere proprietà o metodi.
 
-For example, you want to create a class `Character`, you must "override" the `CharacterInterface` interface in the `.d.ts` file to use your properties or methods. ( Guarda il file `pixi-vn.d.ts` )
+Ad esempio, se si desidera creare una classe `Character`, è necessario `sovrascrivere` l'interfaccia `CharacterInterface` nel file `.d.ts` per utilizzare le tue proprietà o i metodi. ( Guarda il file `pixi-vn.d.ts` )
 
 Ora puoi creare una classe `Character` che estende `CharacterStoredClass` e implementa `CharacterInterface`. (Per maggiori informazioni su come creare una classe in Typescript leggi [qui](https://www.typescriptlang.org/docs/handbook/2/classes.html))
 
