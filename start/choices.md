@@ -40,7 +40,7 @@ In Pixi'VN you can create choice menu option using `newChoiceOption` function.
 
 `newChoiceOption` is a function which has as parameters:
 
-* `text`: The text that will be displayed in the choice menus.
+* `text`: The text that will be displayed in the choice menu.
 * `label`: The [label](/start/labels#label) which will be called when the player chooses the option.
 * `props`: The properties that will be passed to the label, if the label not need any parameter you can pass an empty object `{}`.
 * `options`:
