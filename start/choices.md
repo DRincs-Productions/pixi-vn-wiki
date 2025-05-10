@@ -2,7 +2,7 @@
 
 In the visual novel, usually, there are choice menus that allow the player to make decisions that will affect the story.
 
-## Set a choice menu
+## Require the player to make a choice
 
 To set a choice menu, you can use `narration.choiceMenuOptions` and pass an array of `StoredChoiceInterface`. For create a `StoredChoiceInterface` object, you can use:
 
