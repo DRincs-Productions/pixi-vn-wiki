@@ -36,7 +36,7 @@ export const startLabel = newLabel("start_label",
 
 ### Create a choice menu option
 
-In Pixi’VN, it is possible to create choice menus using the `newChoiceOption` function.
+In Pixi'VN you can create choice menu option using `newChoiceOption` function.
 
 `newChoiceOption` is a function which has as parameters:
 
