@@ -47,7 +47,7 @@ In Pixi'VN you can create choice menu option using `newChoiceOption` function.
 * `props`: The properties that will be passed to the label, if the label not need any parameter you can pass an empty object `{}`.
 * `options`:
   * `type`: The way the [label will be called](/start/labels-flow.md#run-a-label). It can be `call` or `jump`. Default is `call`.
-  * `oneTime`: If this is `true`, the choice can only be made once.
+  * `oneTime`: If `true`, the choice can only be made once.
   * `onlyHaveNoChoice`: If `true`, the choice can see only if there are no other choices.
   * `autoSelect`: If `true` and if is the only choice, it will be selected automatically.
 
@@ -62,7 +62,7 @@ In addition to `newChoiceOption` there is also another function `newCloseChoiceO
 * `text`: The text that will be displayed in the choice menus.
 * `options`:
   * `closeCurrentLabel`: If `true`, the current label will be closed. Default is `false`.
-  * `oneTime`: If this is `true`, the choice can only be made once.
+  * `oneTime`: If `true`, the choice can only be made once.
   * `onlyHaveNoChoice`: If `true`, the choice can see only if there are no other choices.
   * `autoSelect`: If `true` and if is the only choice, it will be selected automatically.
 
