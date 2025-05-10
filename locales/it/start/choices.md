@@ -2,6 +2,8 @@
 
 Nelle visual novel, solitamente, sono presenti dei menu di scelta che consentono al giocatore di prendere decisioni che influenzeranno la storia.
 
+In Pixi'VN, there is the option to prompt the player to make a choice. This will either start a label or close the choice menu.
+
 ## Require the player to make a choice
 
 To require the player to make a choice, you can set `narration.choiceMenuOptions` with an array of `StoredChoiceInterface`. Per creare un oggetto `StoredChoiceInterface`, puoi usare:
@@ -34,37 +36,33 @@ template="wv63yr"
 entry="/src/labels/startLabel.ts"
 />
 
-### Choice menu option
+### Create a choice menu option
 
-In Pixi’VN, it is possible to create choice menus using the `newChoiceOption` function.
+In Pixi'VN you can create choice menu option using `newChoiceOption` function.
 
-`newChoiceOption` is a function which has as parameters:
+`newChoiceOption` è una funzione che ha come parametri:
 
-- `text`: The text that will be displayed in the choice menus.
-- `label`: The [label](/start/labels#label) which will be called when the player chooses the option.
-- `props`: The properties that will be passed to the label, if the label not need any parameter you can pass an empty object `{}`.
+- `text`: The text that will be displayed in the choice menu.
+- `label`: L'[label](/start/labels#label) che verrà chiamata quando il giocatore sceglie l'opzione.
+- `props`: Le proprietà che verranno passate al label, se la label non necessita di alcun parametro, è possibile passare un oggetto vuoto `{}`.
 - `options`:
-  - `type`: The way the [label will be called](/start/labels-flow.md#run-a-label). It can be `call` or `jump`. Default is `call`.
-  - `oneTime`: If this is `true`, the choice can only be made once.
-  - `onlyHaveNoChoice`: If `true`, the choice can see only if there are no other choices.
-  - `autoSelect`: If `true` and if is the only choice, it will be selected automatically.
+  - `type`: Il modo in cui verrà [chiamata la label](/start/labels-flow.md#run-a-label). Può essere `call` o `jump`. Il valore predefinito è `call`.
+  - `oneTime`: If `true`, the choice can only be made once.
+  - `onlyHaveNoChoice`: Se `true`, la scelta è visibile solo se non ci sono altre scelte.
+  - `autoSelect`: Se `true` e se è l'unica scelta, verrà selezionato automaticamente.
 
-You can use this class to create a item of the `narration.choiceMenuOptions` list. To select a choice, you must use the [`narration.selectChoice` function](#select-a-choice).
+### Create a close choice menu option
 
-### Choice for closing the menu
+Oltre a `newChoiceOption` esiste anche un'altra funzione `newCloseChoiceOption` che consente di creare un'opzione di chiusura. Il suo funzionamento consiste nel chiudere il menu di scelta e proseguire con gli [step](/start/labels.md), senza dover chiamare alcuna [label](/start/labels.md#label).
 
-In addition to `newChoiceOption` there is also another function `newCloseChoiceOption` that allows you to create a closing option. Its operation consists in closing the menu of choices and continuing with the [steps](/start/labels.md), without having to call any [label](/start/labels.md#label).
-
-`newCloseChoiceOption` is a function which has as parameters:
+`newCloseChoiceOption` è una funzione che ha come parametri:
 
 - `text`: The text that will be displayed in the choice menus.
 - `options`:
   - `closeCurrentLabel`: If `true`, the current label will be closed. Default is `false`.
-  - `oneTime`: If this is `true`, the choice can only be made once.
-  - `onlyHaveNoChoice`: If `true`, the choice can see only if there are no other choices.
-  - `autoSelect`: If `true` and if is the only choice, it will be selected automatically.
-
-You can use this class to create a item of the `narration.choiceMenuOptions` list. To select a choice, you must use the [`narration.selectChoice` function](#select-a-choice).
+  - `oneTime`: If `true`, the choice can only be made once.
+  - `onlyHaveNoChoice`: Se `true`, la scelta è visibile solo se non ci sono altre scelte.
+  - `autoSelect`: Se `true` e se è l'unica scelta, verrà selezionato automaticamente.
 
 ## Get the choice menu
 
