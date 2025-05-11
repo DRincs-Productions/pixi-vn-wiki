@@ -57,7 +57,7 @@ In addition to `newChoiceOption` there is also another function `newCloseChoiceO
 
 `newCloseChoiceOption` is a function which has as parameters:
 
-* `text`: The text that will be displayed in the choice menus.
+* `text`: The text that will be displayed in the choice menu.
 * `options`:
   * `closeCurrentLabel`: If `true`, the current label will be closed. Default is `false`.
   * `oneTime`: If `true`, the choice can only be made once.
