@@ -2,7 +2,7 @@
 
 Nelle visual novel, solitamente, sono presenti dei menu di scelta che consentono al giocatore di prendere decisioni che influenzeranno la storia.
 
-In Pixi'VN c'è la possibilità di chiedere al giocatore di fare una scelta. This will either start a label or close the choice menu.
+In Pixi'VN c'è la possibilità di chiedere al giocatore di fare una scelta. Each choice can either start a label or close the choice menu.
 
 ## Richiedi al giocatore di fare una scelta
 
@@ -38,16 +38,16 @@ entry="/src/labels/startLabel.ts"
 
 ### Creare un'opzione di menu di scelta
 
-In Pixi'VN you can create choice menu option using `newChoiceOption` function.
+In Pixi'VN puoi creare opzioni di menu di scelta utilizzando la funzione `newChoiceOption`.
 
 `newChoiceOption` è una funzione che ha come parametri:
 
-- `text`: The text that will be displayed in the choice menu.
+- `text`: Il testo che verrà visualizzato nel menu di scelta.
 - `label`: L'[label](/start/labels#label) che verrà chiamata quando il giocatore sceglie l'opzione.
 - `props`: Le proprietà che verranno passate al label, se la label non necessita di alcun parametro, è possibile passare un oggetto vuoto `{}`.
 - `options`:
   - `type`: Il modo in cui verrà [chiamata la label](/start/labels-flow.md#run-a-label). Può essere `call` o `jump`. Il valore predefinito è `call`.
-  - `oneTime`: If `true`, the choice can only be made once.
+  - `oneTime`: Se `true`, la scelta può essere effettuata solo una volta.
   - `onlyHaveNoChoice`: Se `true`, la scelta è visibile solo se non ci sono altre scelte.
   - `autoSelect`: Se `true` e se è l'unica scelta, verrà selezionato automaticamente.
 
@@ -57,16 +57,16 @@ Oltre a `newChoiceOption` esiste anche un'altra funzione `newCloseChoiceOption` 
 
 `newCloseChoiceOption` è una funzione che ha come parametri:
 
-- `text`: The text that will be displayed in the choice menus.
+- `text`: Il testo che verrà visualizzato nel menu di scelta.
 - `options`:
   - `closeCurrentLabel`: Se `true`, la label corrente verrà chiusa. Il valore predefinito è `false`.
-  - `oneTime`: If `true`, the choice can only be made once.
+  - `oneTime`: Se `true`, la scelta può essere effettuata solo una volta.
   - `onlyHaveNoChoice`: Se `true`, la scelta è visibile solo se non ci sono altre scelte.
   - `autoSelect`: Se `true` e se è l'unica scelta, verrà selezionato automaticamente.
 
 ## Get the user requested choice options
 
-To get the choice menu, you can use `narration.choiceMenuOptions`. The result is an array of `newChoiceOption` and/or `newCloseChoiceOption`.
+To get the choice menu, you can use `narration.choiceMenuOptions`. Il risultato è un array di `newChoiceOption` e/o `newCloseChoiceOption`.
 
 ```typescript
 const menuOptions: StoredChoiceInterface[] = narration.choiceMenuOptions;
@@ -95,17 +95,17 @@ narration.selectChoice(item, {
 
 ## Cancella il menu di scelta
 
-To clear the choice options, you can use `narration.choiceMenuOptions = undefined`.
+Per cancellare le opzioni di scelta, puoi usare `narration.choiceMenuOptions = undefined`.
 
 ```typescript
 narration.choiceMenuOptions = undefined;
 ```
 
-## Custom the choice menu option
+## Personalizza l'opzione del menu di scelta
 
-You can customize the choice menu option by adding additional properties to the `ChoiceInterface` interface. For example, you can add a `icon` property to add an icon to the choice menu option.
+È possibile personalizzare l'opzione del menu di scelta aggiungendo ulteriori proprietà all'interfaccia `ChoiceInterface`. Ad esempio, è possibile aggiungere una proprietà `icon` per aggiungere un'icona all'opzione del menu di scelta.
 
-To do this, you need "override" the `ChoiceInterface` interface in the `.d.ts` file.
+Per fare ciò, è necessario "sovrascrivere" l'interfaccia `ChoiceInterface` nel file `.d.ts`.
 
 ::: code-group
 
@@ -142,11 +142,11 @@ function ChoiceMenu({ choices }: { choices: StoredIndexedChoiceInterface[] }) {
 
 :::
 
-## How to create the choice menu UI screen
+## Come creare la schermata dell'interfaccia utente del menu di scelta
 
 Ad esempio:
 
-( **It's in basic html**, you will need to replace the basic html elements with UI components from your favorite library to improve the graphics. )
+(**È in HTML di base**, dovrai sostituire gli elementi HTML di base con componenti UI dalla tua libreria preferita per migliorare la grafica. )
 
 <sandbox
 template="k8r2xf"
