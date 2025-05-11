@@ -1,0 +1,141 @@
+# ![icon](/markdown.svg){style="width:40px;height:25px;margin-right:10px;float:left;background-color:white;border-radius:10px"} Markdown
+
+**Markdown** è un linguaggio di markup leggero per creare testo formattato utilizzando un editor di testo normale. John Gruber ha creato Markdown nel 2004, in collaborazione con Aaron Swartz, come linguaggio di markup concepito per essere facile da leggere nella sua forma di codice sorgente. Markdown è ampiamente utilizzato per i blog e la messaggistica istantanea, ma anche in forum online, software collaborativi, pagine di documentazione e file readme.
+
+Pixi'VN non è vincolato ad alcun Markup e dà allo sviluppatore la possibilità di scegliere il Markup che preferisce. Tuttavia, si consiglia di utilizzare Markdown.
+
+Ecco alcuni esempi di implementazioni di Markdown nell'ecosistema JavaScript:
+
+::: code-group
+
+```tsx [React]
+// I use the react-markdown library to convert the Markdown to HTML
+// read more about it here: https://www.npmjs.com/package/react-markdown
+import Markdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
+
+export default function MarkdownComponent({ text }: {
+    text: string;
+}) {
+    return (
+        <Markdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeRaw]}
+        >
+            {text}
+        </Markdown>
+    )
+};
+
+```
+
+```vue [Vue]
+<!-- I use the vue-markdown-render library to convert the Markdown to HTML -->
+<!-- read more about it here: https://www.npmjs.com/package/vue-markdown-render -->
+<template>
+  <div>
+    <vue-markdown :source="src" />
+  </div>
+</template>
+
+<script lang="ts">
+import VueMarkdown from 'vue-markdown-render'
+
+export default defineComponent({
+  name: 'MyComponent',
+  components: {
+    VueMarkdown
+  },
+  setup(props, ctx) {
+    const src = ref('# header')
+
+    return {
+      src
+    }
+  }
+})
+</script>
+```
+
+```svelte [Svelte]
+<!-- I use the svelte-markdown library to convert the Markdown to HTML -->
+<!-- read more about it here: https://www.npmjs.com/package/svelte-markdown -->
+<script>
+  import SvelteMarkdown from 'svelte-markdown'
+  const source = `
+  # This is a header
+
+This is a paragraph.
+
+* This is a list
+* With two items
+  1. And a sublist
+  2. That is ordered
+    * With another
+    * Sublist inside
+
+| And this is | A table |
+|-------------|---------|
+| With two    | columns |`
+</script>
+
+<SvelteMarkdown {source} />
+```
+
+```tsx [Angular]
+// I use the ngx-markdown library to convert the Markdown to HTML
+// read more about it here: https://www.npmjs.com/package/ngx-markdown
+import { Component, Input } from "@angular/core";
+import { MarkdownModule } from "ngx-markdown";
+
+@Component({
+  selector: "app-markdown",
+  template: `
+    <markdown [data]="text"></markdown>
+  `,
+})
+export class MarkdownComponent {
+  @Input() text: string;
+}
+```
+
+:::
+
+<sandbox
+template="4h8wst"
+entry="/src/components/MarkdownComponent.tsx"
+previewHeight=300
+/>
+
+## React Markdown Typewriter
+
+[React Markdown Typewriter](https://www.npmjs.com/package/react-markdown-typewriter) è una libreria che combina Markdown e Typewriter. Questa libreria è stata creata da me per la mia necessità di aggiungere un effetto Typewriter al componente Markdown per i miei template React.
+
+Se stai usando React ti consiglio di usarlo:
+
+```tsx [React]
+import { MarkdownTypewriter } from "react-markdown-typewriter";
+import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
+
+export default function MarkdownComponent({ text }: {
+    text: string;
+}) {
+    return (
+        <MarkdownTypewriter
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeRaw]}
+        >
+            {text}
+        </MarkdownTypewriter>
+    )
+};
+
+```
+
+<sandbox
+template="rgjf6t"
+entry="/src/components/MarkdownComponent.tsx"
+previewHeight=320
+/>
