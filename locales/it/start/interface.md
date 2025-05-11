@@ -1,6 +1,6 @@
 # Interfaccia utente (UI) con JavaScript Framework
 
-Pixi’VN does not offer any components to create the game UI. As it is designed, the UI must be created using external JavaScript Frameworks.
+Pixi’VN non offre alcun componente per creare l’interfaccia utente del gioco. Per come è stata progettata, l'interfaccia utente deve essere creata utilizzando framework JavaScript esterni.
 
 Con "UI" si intendono gli elementi che si trovano sopra l'area di disegno, come pulsanti, moduli, ecc.
 
@@ -12,7 +12,7 @@ Ciò consente l'utilizzo di sistemi come React, Vue, Angular, ecc. per creare **
 - [React Interface](/start/interface-react.md)
 - [Vue](/start/interface-vue.md)
 
-Pixi’VN offers some features to improve its compatibility with other JavaScript Frameworks:
+Pixi’VN offre alcune funzionalità per migliorare la sua compatibilità con altri framework JavaScript:
 
 - possibility of adding an HTML Element with the same dimensions as the [PixiJS Canvas](/start/canvas-components.md) to add an **UI** with a JavaScript frameworks.
 
@@ -20,7 +20,7 @@ Pixi’VN offers some features to improve its compatibility with other JavaScrip
 
 As Pixi’VN was designed and conceived, the UI and the canvas are two distinct and independent elements. L'interfaccia utente si trova sopra la tela e viene utilizzata per creare pulsanti, moduli, ecc. La tela viene utilizzata per visualizzare immagini, video, ecc.
 
-All information about the current state of the canvas is included in the save and it is possible to restore the state of a previous step. The current state of the UI will not be included in the saves. So you have to [manage it yourself by saving the information](/start/interface-connect-storage.md) you need to [game storage](/start/storage.md) or browser storage.
+Tutte le informazioni sullo stato attuale del canvas sono incluse nel salvataggio ed è possibile ripristinare lo stato di un passaggio precedente. The current state of the UI will not be included in the saves. So you have to [manage it yourself by saving the information](/start/interface-connect-storage.md) you need to [game storage](/start/storage.md) or browser storage.
 
 In the canvas you can add components during each step. In the UI you can't do that, you can create several ["screens" and navigate between them](/start/interface-connect-storage.md).
 
