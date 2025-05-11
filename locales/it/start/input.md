@@ -81,7 +81,7 @@ narration.removeInputRequest()
 
 Ad esempio:
 
-( **It's in basic html**, you will need to replace the basic html elements with UI components from your favorite library to improve the graphics. )
+(**È in HTML di base**, dovrai sostituire gli elementi HTML di base con componenti UI dalla tua libreria preferita per migliorare la grafica. )
 
 <sandbox
 template="mjn5c8"
