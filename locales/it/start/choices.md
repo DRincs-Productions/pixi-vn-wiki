@@ -2,11 +2,11 @@
 
 Nelle visual novel, solitamente, sono presenti dei menu di scelta che consentono al giocatore di prendere decisioni che influenzeranno la storia.
 
-In Pixi'VN, there is the option to prompt the player to make a choice. This will either start a label or close the choice menu.
+In Pixi'VN c'è la possibilità di chiedere al giocatore di fare una scelta. This will either start a label or close the choice menu.
 
-## Require the player to make a choice
+## Richiedi al giocatore di fare una scelta
 
-To require the player to make a choice, you can set `narration.choiceMenuOptions` with an array of `StoredChoiceInterface`. Per creare un oggetto `StoredChoiceInterface`, puoi usare:
+Per richiedere al giocatore di effettuare una scelta, è possibile impostare `narration.choiceMenuOptions` con un array di `StoredChoiceInterface`. Per creare un oggetto `StoredChoiceInterface`, puoi usare:
 
 - [`newChoiceOption`](#choice-menu-option)
 - [`newCloseChoiceOption`](#choice-for-closing-the-menu)
@@ -36,7 +36,7 @@ template="wv63yr"
 entry="/src/labels/startLabel.ts"
 />
 
-### Create a choice menu option
+### Creare un'opzione di menu di scelta
 
 In Pixi'VN you can create choice menu option using `newChoiceOption` function.
 
