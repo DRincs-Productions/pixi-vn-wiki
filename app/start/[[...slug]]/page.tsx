@@ -1,5 +1,6 @@
 import { source } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
+import { ImageZoom } from "fumadocs-ui/components/image-zoom";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/page";
 import { notFound } from "next/navigation";
@@ -20,6 +21,27 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
                     components={getMDXComponents({
                         // this allows you to link to other pages with relative file paths
                         a: createRelativeLink(source, page),
+                        img: (props) => {
+                            console.log(props);
+                            if (props.alt.endsWith("h3")) {
+                                return (
+                                    <ImageZoom
+                                        {...props}
+                                        style={{
+                                            width: "26px",
+                                            height: "26px",
+                                            marginRight: "5px",
+                                            float: "left",
+                                            borderRadius: "5px",
+                                            marginBottom: "0px",
+                                            marginTop: "15px",
+                                            ...props.style,
+                                        }}
+                                    />
+                                );
+                            }
+                            return <ImageZoom {...props} />;
+                        },
                     })}
                 />
             </DocsBody>
