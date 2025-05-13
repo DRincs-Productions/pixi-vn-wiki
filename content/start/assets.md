@@ -28,7 +28,9 @@ Assets.add({
 });
 ```
 
-### ![icon](/pixijs-assetpack.svg){style="width:30px;height:30px;margin-right:5px;float:left;border-radius:5px"} PixiJS AssetPack
+![pixijs-assetpack-h3](/pixijs-assetpack.svg)
+
+### PixiJS AssetPack
 
 AssetPack is a tool for optimising local assets for the web. It can be used to transform, combine, compress assets.
 
@@ -51,7 +53,9 @@ Assets.add({
 
 You can save your assets as you like, with complete freedom. If you plan to save your assets online, here are some of the options:
 
-### ![icon](/github.svg){style="width:30px;height:30px;margin-right:5px;float:left;border-radius:50%;background-color:white"} Github
+![github-h3](/github.svg)
+
+### Github
 
 You can use Github to host your assets. You can use the raw link of the file to use it in your project. The link will be in the following format: `https://github.com/[repository]/raw/refs/heads/main/[file path]`
 
