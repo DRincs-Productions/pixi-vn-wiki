@@ -1,6 +1,6 @@
 # Assets management in *ink*
 
-As explained in more detail [here](/start/assets-management.md), it is recommended to initialize the asset matrix at project start and load the assets and think about when the assets should be loaded.
+As explained in more detail [here](/start/assets-management), it is recommended to initialize the asset matrix at project start and load the assets and think about when the assets should be loaded.
 
 On ink you have less control than in Javascript/Typescript over how and when to load assets. On ***ink***, pixi-vn provides a single function that [load assets before a label starts](/start/assets-management.md#load-assets-before-a-label-starts).
 

@@ -4,7 +4,7 @@ title: ImageContainer
 
 The `ImageContainer` component extends the [`Container`](/start/canvas-components#base-components) component, so you can use all the methods and properties of `Container`. It is used to display multiple images on the canvas as if it were a single element.
 
-The children of the `ImageContainer` are the [`ImageSprite`](/start/canvas-images.md) components.
+The children of the `ImageContainer` are the [`ImageSprite`](/start/canvas-images) components.
 
 To initialize the `ImageContainer` component, you must pass the following parameters:
 
@@ -30,8 +30,8 @@ canvas.add("james", james)
 
 Compared to the `Container` component, `ImageContainer` adds the following features:
 
-* `load()`: Load all the image URLs and set the resulting textures to the [`ImageSprite`](/start/canvas-images.md).
-* Additional positions: [Align](/start/canvas-position.md) and [Position with percentage](/start/canvas-position.md)
+* `load()`: Load all the image URLs and set the resulting textures to the [`ImageSprite`](/start/canvas-images).
+* Additional positions: [Align](/start/canvas-position.md) and [Position with percentage](/start/canvas-position)
 
 ## Show a images container
 
@@ -39,7 +39,7 @@ The simplest and fastest method to show a group of images on the canvas is to us
 
 This function will return a `ImageContainer`, that you can use to manipulate the container, and it has the following parameters:
 
-* `alias`: Is a [alias](/start/canvas-alias.md) for the image.
+* `alias`: Is a [alias](/start/canvas-alias) for the image.
 * `imageUrls` (Optional): The array of URLs or paths of the images. If you have initialized the [asset matrix](/start/assets-management.md#initialize-the-asset-matrix-at-project-start), you can use the alias of the texture. If you don't provide the urls, then the alias is used as the URL.
 * `options` (Optional): It corresponds to the `ImageContainerOptions<ImageSprite>` interface.
 
@@ -88,7 +88,7 @@ To add a group of images to the canvas, you can use the `addImageCointainer` fun
 
 This function will return a `ImageContainer`, that you can use to manipulate the image, and it has the following parameters:
 
-* `alias`: Is a [alias](/start/canvas-alias.md) for the image.
+* `alias`: Is a [alias](/start/canvas-alias) for the image.
 * `imageUrls` (Optional): The array of URLs or paths of the images. If you have initialized the [asset matrix](/start/assets-management.md#initialize-the-asset-matrix-at-project-start), you can use the alias of the texture. If you don't provide the urls, then the alias is used as the URL.
 * `options` (Optional): It corresponds to the `ImageContainerOptions<ImageSprite>` interface.
 

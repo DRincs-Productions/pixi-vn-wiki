@@ -2,7 +2,7 @@
 
 Pixi’VN gives you the ability to write your own narrative using ***ink***, a scripting language for writing interactive narrative.
 
-The ***ink* + Pixi’VN integration**, exploits the [inkjs](https://github.com/inkle/inkjs) and [PixiVNJson](/other-topics/pixi-vn-json.md) libraries, to parse ***ink* code** and generate a Json that can be interpreted by Pixi’VN. So Javascript/Typescript and ***ink*** share the same storage and canvas, and it is also possible to launch ***ink*** labels (or knots) from Javascript/Typescript and vice versa. This allows you to use the best of both languages. You can use ***ink*** to write the narration, while using Javascript/Typescript to create minigames or complex animations.
+The ***ink* + Pixi’VN integration**, exploits the [inkjs](https://github.com/inkle/inkjs) and [PixiVNJson](/other-topics/pixi-vn-json) libraries, to parse ***ink* code** and generate a Json that can be interpreted by Pixi’VN. So Javascript/Typescript and ***ink*** share the same storage and canvas, and it is also possible to launch ***ink*** labels (or knots) from Javascript/Typescript and vice versa. This allows you to use the best of both languages. You can use ***ink*** to write the narration, while using Javascript/Typescript to create minigames or complex animations.
 
 **What is *ink*?**
 
@@ -224,14 +224,14 @@ My name is John // ✅ This will be handled
 
 ## Using Pixi’VN Features from *ink*
 
-* [Use the characters in *ink*](/ink/ink-character.md)
-* [*ink* knot (or label)](/ink/ink-label.md)
-* [*ink* variables](/ink/ink-variables.md)
-* [Markup language in *ink* (to add text style)](/ink/ink-markup.md)
-* [Use input prompt in *ink*](/ink/ink-input.md)
-* [Use canvas in *ink*](/ink/ink-canvas.md)
-* [Using sounds and music in *ink*](/ink/ink-sound.md)
-* [Using pause in *ink*](/ink/ink-pause.md)
-* [How translate *ink* text](/ink/ink-translate.md)
-* [Replace portions of text in *ink*](/ink/ink-replacement.md)
-* [Custom Hashtag Script](/ink/ink-hashtag.md)
+* [Use the characters in *ink*](/ink/ink-character)
+* [*ink* knot (or label)](/ink/ink-label)
+* [*ink* variables](/ink/ink-variables)
+* [Markup language in *ink* (to add text style)](/ink/ink-markup)
+* [Use input prompt in *ink*](/ink/ink-input)
+* [Use canvas in *ink*](/ink/ink-canvas)
+* [Using sounds and music in *ink*](/ink/ink-sound)
+* [Using pause in *ink*](/ink/ink-pause)
+* [How translate *ink* text](/ink/ink-translate)
+* [Replace portions of text in *ink*](/ink/ink-replacement)
+* [Custom Hashtag Script](/ink/ink-hashtag)

@@ -28,7 +28,7 @@ export function saveGame() {
 
 ## Load
 
-To load the game progress, you can use the `Game.restoreGameState` function. This function receives a object with the game data and a function `navigate: (path: string) => void` that will be called with the [URL Path or Route](/start/interface.md#what-is-the-url-path-and-routes) of the saved step, so you can use it to navigate to the saved [UI screen](/start/interface-navigate.md).
+To load the game progress, you can use the `Game.restoreGameState` function. This function receives a object with the game data and a function `navigate: (path: string) => void` that will be called with the [URL Path or Route](/start/interface.md#what-is-the-url-path-and-routes) of the saved step, so you can use it to navigate to the saved [UI screen](/start/interface-navigate).
 
 If you want to load the game progress from a json string, you can use the `Game.restoreGameState` function.
 

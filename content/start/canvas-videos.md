@@ -2,7 +2,7 @@
 title: VideoSprite
 ---
 
-The `VideoSprite` component extends the [`ImageSprite`](/start/canvas-images.md) component, so you can use all the methods and properties of `ImageSprite`. It is used to display a single video on the canvas.
+The `VideoSprite` component extends the [`ImageSprite`](/start/canvas-images) component, so you can use all the methods and properties of `ImageSprite`. It is used to display a single video on the canvas.
 
 To initialize the `VideoSprite` component, you must pass the following parameters:
 
@@ -37,7 +37,7 @@ The simplest and fastest method to show an video on the canvas is to use the `sh
 
 This function will return a `VideoSprite`, that you can use to manipulate the video, and it has the following parameters:
 
-* `alias`: Is a [alias](/start/canvas-alias.md) for the video.
+* `alias`: Is a [alias](/start/canvas-alias) for the video.
 * `videoUrl` (Optional): The URL or path of the video. If you have initialized the [asset matrix](/start/assets-management.md#initialize-the-asset-matrix-at-project-start), you can use the alias of the texture. If you don't provide the URL, then the alias is used as the URL.
 * `options` (Optional): It corresponds to the `VideoSpriteOptions` interface.
 
@@ -83,7 +83,7 @@ To add an video to the canvas, you can use the `addVideo` function. It is import
 
 This function will return a `VideoSprite`, that you can use to manipulate the video, and it has the following parameters:
 
-* `alias`: Is a [alias](/start/canvas-alias.md) for the video.
+* `alias`: Is a [alias](/start/canvas-alias) for the video.
 * `videoUrl` (Optional): The URL or path of the video. If you have initialized the [asset matrix](/start/assets-management.md#initialize-the-asset-matrix-at-project-start), you can use the alias of the texture. If you don't provide the URL, then the alias is used as the URL.
 * `options` (Optional): It corresponds to the `VideoSpriteOptions` interface.
 

@@ -35,7 +35,7 @@ Pixi’VN uses JavaScript/TypeScript, which is a very powerful and popular langu
 
 With Ren'Py, to write the narrative, you need to use the `Ren'Py language`. This language is very simple and easy to learn. It is based on Python and you can use Python statements in Ren'Py language.
 
-With Pixi’VN you can use JavaScript/TypeScript to write the narration. You can also use various narrative languages ​​(potentially you can integrate any narrative language using [PixiVNJson](/other-topics/pixi-vn-json.md)).
+With Pixi’VN you can use JavaScript/TypeScript to write the narration. You can also use various narrative languages ​​(potentially you can integrate any narrative language using [PixiVNJson](/other-topics/pixi-vn-json)).
 
 Example of Ren'Py:
 

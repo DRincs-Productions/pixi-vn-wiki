@@ -1,6 +1,6 @@
 # Markup language in *ink*
 
-The ***ink* + Pixi’VN integration** provides some additional features to facilitate the use of components that introduce a [Markup](/start/markup-markdown.md) in the text.
+The ***ink* + Pixi’VN integration** provides some additional features to facilitate the use of components that introduce a [Markup](/start/markup-markdown) in the text.
 
 ## New Lines
 
@@ -19,7 +19,7 @@ This is a new line.
 
 ## Markdown syntax in *ink*
 
-On Pixi’VN it is recommended to use Markdown to add style to your text. If you have [implemented Markdown in your project](/start/markup-markdown.md) then you will be able to use Markdown syntax to style your text in ***ink***.
+On Pixi’VN it is recommended to use Markdown to add style to your text. If you have [implemented Markdown in your project](/start/markup-markdown) then you will be able to use Markdown syntax to style your text in ***ink***.
 
 To do this you need to keep in mind that many symbols of Markdown syntax are also used by ***ink* syntax**, such as: `#`, `*`, `/`, `~`, `-`, `|` etc. To avoid conflicts you can use the escape character `\` before the Markdown symbol.
 

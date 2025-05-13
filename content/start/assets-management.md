@@ -13,7 +13,7 @@ let alien1 = await showImage("alien", "https://pixijs.com/assets/eggHead.png");
 This method has some cons:
 
 - changing the URL of a asset from one version to another may cause incompatibilities
-- the player will have to wait for a short loading time, every time pressing "go next" a [step](/start/labels.md) will be started which uses assets
+- the player will have to wait for a short loading time, every time pressing "go next" a [step](/start/labels) will be started which uses assets
 - writing the entire URL in code will increase its length and make it less understandable
 
 For these reasons it is recommended to handle assets in the following ways.
@@ -152,7 +152,7 @@ To make the game smoother by trying to remove asset loading times from one step 
 
 To do this, you will use the [`onLoadingLabel`](/start/labels-advanced.md#onloadinglabel) function of the label options. This function will be executed in `onStepStart` if the index of the step is 0 and when the user loads a save file. When you load a save file, all `onLoadingLabel` functions of the `narration.openedLabels` (current label and all labels that are in the stack).
 
-If you are using ***ink*** you can read the following to get the same result in the [following way](/ink/ink-assets.md).
+If you are using ***ink*** you can read the following to get the same result in the [following way](/ink/ink-assets).
 
 ```ts
 import { newLabel, showImage, Assets } from "@drincs/pixi-vn";

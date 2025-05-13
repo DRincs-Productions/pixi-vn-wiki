@@ -81,7 +81,7 @@ function nextOnClick() {
 Linking a character to an image to add to the canvas is a common feature in visual novels. It can be useful for example for showing the character's expression.
 
 To do this, you just need to create a [custom character](/start/character.md#custom-character) or modify the existing one (it is already present in the templates).
-I recommend adding an array of strings containing the links/aliases of the images that make up the character (body, head...), and using an [ImageContainer](/start/canvas-image-container.md) when you need to display the character.
+I recommend adding an array of strings containing the links/aliases of the images that make up the character (body, head...), and using an [ImageContainer](/start/canvas-image-container) when you need to display the character.
 
 For example:
 
@@ -150,7 +150,7 @@ RegisteredCharacters.add(alice)
 
 **If you are using *ink***:
 
-You can create a [custom hashtag script](/ink/ink-hashtag.md) to use this feature.
+You can create a [custom hashtag script](/ink/ink-hashtag) to use this feature.
 For example you can add a script with the following syntax and convert it to a [show imagecontainer script](/ink/ink-canvas.md#show-a-image-container-in-ink):
 
 `#` + `show` + `character` + `[character id]` + `[parameters]`

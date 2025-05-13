@@ -1,6 +1,6 @@
 # Use canvas in *ink*
 
-The ***ink* + Pixi’VN integration** introduces the a # script that allows you to show, edit, remove and etc. a [canvas component](/start/canvas-components.md).
+The ***ink* + Pixi’VN integration** introduces the a # script that allows you to show, edit, remove and etc. a [canvas component](/start/canvas-components).
 
 The syntax is as follows:
 
@@ -16,10 +16,10 @@ Where:
   * `pause` (Only for video): Pause a video canvas component. (Read more [here](#pause-a-video-in-ink))
   * `resume` (Only for video): Resume a video canvas component. (Read more [here](#resume-a-video-in-ink))
 * `[type of the canvas component]` It is the type of the canvas component. The available types are:
-  * [`image`](/start/canvas-images.md)
-  * [`imagecontainer`](/start/canvas-image-container.md)
-  * [`video`](/start/canvas-videos.md)
-* `[alias]` It is the [alias of the canvas component](/start/canvas-alias.md). The alias is a string that identifies the canvas component.
+  * [`image`](/start/canvas-images)
+  * [`imagecontainer`](/start/canvas-image-container)
+  * [`video`](/start/canvas-videos)
+* `[alias]` It is the [alias of the canvas component](/start/canvas-alias). The alias is a string that identifies the canvas component.
   * If the alias includes spaces, you must use double quotes.
 * `[parameters]` It is the parameters of the operation. The parameters depend on the operation.
   * If the parameters include spaces, you must use double quotes.
@@ -32,7 +32,7 @@ Where:
 
 ## Show a canvas component in *ink*
 
-You can use the `show` to show a [canvas component](/start/canvas-components.md) in ***ink***.
+You can use the `show` to show a [canvas component](/start/canvas-components) in ***ink***.
 
 Is raccomended to [initialize the asset matrix at project start](/start/assets-management.md#initialize-the-asset-matrix-at-project-start) to use the alias of texture in `[URL/path of the image]`.
 
@@ -41,7 +41,7 @@ The syntax is as follows:
 `#` + `show` + `[type of the canvas component]` + `[alias]` + `[URL/path of the image]` + `[parameters]`
 
 * `[URL/path of the image]` (Optional): It is the URL/path of the image that you want to show. If you have initialized the asset matrix at project start, you can use the alias of the texture. If you don't provide the URL/path of the image, this parameter is equal to `[alias]`. Keep in mind that to write `https://` in ***ink*** you must use `https:\/\/` because the `//` is considered a comment in ***ink***.
-* `[parameters]` (Optional): Afer the URL/path of the image, you can add the `parameters` of the [canvas component](/start/canvas-components.md) that you want to set. The `parameters` must be set as follows: `parameterName` + `SPACE` + `value`. If the `value` is a string and includes spaces, you must use double quotes.
+* `[parameters]` (Optional): Afer the URL/path of the image, you can add the `parameters` of the [canvas component](/start/canvas-components) that you want to set. The `parameters` must be set as follows: `parameterName` + `SPACE` + `value`. If the `value` is a string and includes spaces, you must use double quotes.
 
 :::tabs
 == start.ink
@@ -115,7 +115,7 @@ export async function defineAssets() {
 
 ### Show a canvas component with transition in *ink*
 
-If you want to show the canvas component with a [transition](/start/canvas-transition.md), you can add into the parameters the `with [transitionType]`.
+If you want to show the canvas component with a [transition](/start/canvas-transition), you can add into the parameters the `with [transitionType]`.
 
 `#` + `show` + `[type of the canvas component]` + `[alias]` + `[URL/path of the image]` + `[parameters]` + `with` + `[transitionType]`
 
@@ -162,7 +162,7 @@ export async function defineAssets() {
 
 ## Edit a canvas component in *ink*
 
-You can use the `edit` to edit a [canvas component](/start/canvas-components.md) in ***ink***.
+You can use the `edit` to edit a [canvas component](/start/canvas-components) in ***ink***.
 
 The syntax is as follows:
 
@@ -176,7 +176,7 @@ The syntax is as follows:
 
 ## Remove a canvas component in *ink*
 
-You can use the `remove` to remove a [canvas component](/start/canvas-components.md) in ***ink***.
+You can use the `remove` to remove a [canvas component](/start/canvas-components) in ***ink***.
 
 The syntax is as follows:
 
@@ -189,7 +189,7 @@ The syntax is as follows:
 
 ### Remove a canvas component with transition in *ink*
 
-If you want to remove the canvas component with a [transition](/start/canvas-transition.md), you can add after the alias of the canvas component `with [transitionType]`.
+If you want to remove the canvas component with a [transition](/start/canvas-transition), you can add after the alias of the canvas component `with [transitionType]`.
 
 `#` + `remove` + `[type of the canvas component]` + `[alias]` + `with` + `[transitionType]`
 
@@ -218,7 +218,7 @@ temp durationVar = 3
 
 ## Use the effects in *ink*
 
-You can use the `[effectType]` to use the [effects](/start/canvas-animations-effects.md) in ***ink***.
+You can use the `[effectType]` to use the [effects](/start/canvas-animations-effects) in ***ink***.
 
 The syntax is as follows:
   

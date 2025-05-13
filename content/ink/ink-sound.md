@@ -1,6 +1,6 @@
 # Use sounds and music in *ink*
 
-The ***ink* + Pixi’VN integration** introduces the a # script that allows you to use the [sounds and music](/start/sound.md).
+The ***ink* + Pixi’VN integration** introduces the a # script that allows you to use the [sounds and music](/start/sound).
 
 The syntax is as follows:
 
