@@ -1,4 +1,7 @@
-# ![icon](/tailwindcss.svg){style="width:40px;height:25px;margin-right:10px;float:left"} Tailwind CSS
+---
+icon: /tailwindcss.svg
+title: Tailwind CSS
+---
 
 **What is Tailwind CSS?** Tailwind CSS is a utility-first CSS framework for rapidly building custom designs. It is a low-level framework that provides a set of utility classes that can be used to build custom designs without having to leave the HTML. You can get more information on how install it [here](https://tailwindcss.com/docs/installation).
 

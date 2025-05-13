@@ -1,4 +1,6 @@
-# VideoSprite
+---
+title: VideoSprite
+---
 
 The `VideoSprite` component extends the [`ImageSprite`](/start/canvas-images.md) component, so you can use all the methods and properties of `ImageSprite`. It is used to display a single video on the canvas.
 

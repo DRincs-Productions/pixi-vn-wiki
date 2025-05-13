@@ -1,4 +1,6 @@
-# Desktop & mobile devices
+---
+title: Desktop & mobile devices
+---
 
 There are many ways to distribute your game on desktop and mobile devices. You can use [Tauri](https://v2.tauri.app/), [Ionic](https://ionicframework.com/), [Electron](https://www.electronjs.org/), [NW.js](https://nwjs.io/), or [React Native for Windows + Mac](https://microsoft.github.io/react-native-windows/).
 

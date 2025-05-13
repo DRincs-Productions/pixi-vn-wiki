@@ -1,4 +1,6 @@
-# Save and Load
+---
+title: Save and Load
+---
 
 The save and load system is a feature that allows the player to save the game progress and load it later. This feature is essential for visual novels, as it allows the player to continue the story from where they left off.
 

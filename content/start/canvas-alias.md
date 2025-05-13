@@ -1,4 +1,6 @@
-# Canvas alias
+---
+title: Canvas alias
+---
 
 The canvas alias is a way to reference a component in the canvas by a name. This name is used to reference the component in the script.
 

@@ -1,4 +1,6 @@
-# Distribution
+---
+title: Distribution
+---
 
 A very important point to take into account before developing a game is the distribution of the game. It is important to know how the game will be distributed and how it will be played by the users.
 

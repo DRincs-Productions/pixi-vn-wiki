@@ -1,4 +1,6 @@
-# User Interface (UI) with JavaScript Framework
+---
+title: User Interface (UI) with JavaScript Framework
+---
 
 Pixi’VN does not offer any components to create the game UI. As it is designed, the UI must be created using external JavaScript Frameworks.
 

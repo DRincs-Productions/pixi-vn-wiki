@@ -1,4 +1,7 @@
-# ![icon](/react.svg){style="width:40px;height:40px;margin-right:10px;float:left"} React UI
+---
+icon: /react.svg
+title: React UI
+---
 
 **What is React?** React is a JavaScript library that helps developers create user interfaces (UIs) for websites, apps, and more. It's free and open-source, and is maintained by Meta (formerly Facebook) and a community of developers.
 

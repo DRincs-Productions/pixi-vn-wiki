@@ -1,4 +1,6 @@
-# Other narrative features
+---
+title: Other narrative features
+---
 
 ## How manage the end of the game
 

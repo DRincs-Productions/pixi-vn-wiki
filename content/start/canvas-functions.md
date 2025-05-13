@@ -1,4 +1,6 @@
-# Canvas components functions
+---
+title: Canvas components functions
+---
 
 ## Add a canvas component
 

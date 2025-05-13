@@ -1,4 +1,6 @@
-# How translate the visual novel?
+---
+title: How translate the visual novel?
+---
 
 In visual novels, or other types of games, it is common to have the ability to select the game language.
 

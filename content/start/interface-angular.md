@@ -1,4 +1,7 @@
-# ![icon](/angular.svg){style="width:40px;height:40px;margin-right:10px;float:left"} Angular UI
+---
+icon: /angular.svg
+title: Angular UI
+---
 
 [Angular](https://angular.dev/) is a platform and framework for building single-page client applications using HTML and TypeScript. Angular is a complete rewrite from the same team that built AngularJS.
 

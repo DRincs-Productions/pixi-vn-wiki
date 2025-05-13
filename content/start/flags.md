@@ -1,4 +1,6 @@
-# Flags Management
+---
+title: Flags Management
+---
 
 Pixi’VN provides functions to manage "game flags". By "game flags" I mean boolean values that can be used to control the flow of the game, or olther boolean values that you want to save in the game storage.
 

@@ -1,4 +1,7 @@
-# ![icon](/markdown.svg){style="width:40px;height:25px;margin-right:10px;float:left;background-color:white;border-radius:10px"} Markdown
+---
+icon: /markdown.svg
+title: Markdown
+---
 
 **Markdown** is a lightweight markup language for creating formatted text using a plain-text editor. John Gruber created Markdown in 2004, in collaboration with Aaron Swartz, as a markup language that is intended to be easy to read in its source code form. Markdown is widely used for blogging and instant messaging, and also used elsewhere in online forums, collaborative software, documentation pages, and readme files.
 
@@ -48,7 +51,9 @@ export default defineComponent({
     VueMarkdown
   },
   setup(props, ctx) {
-    const src = ref('# header')
+    const src = ref('---
+title: header')
+---
 
     return {
       src
@@ -64,7 +69,9 @@ export default defineComponent({
 <script>
   import SvelteMarkdown from 'svelte-markdown'
   const source = `
-  # This is a header
+  ---
+title: This is a header
+---
 
 This is a paragraph.
 
@@ -108,7 +115,10 @@ export class MarkdownComponent {
   previewHeight=300
 />
 
-## React Markdown Typewriter
+# ---
+
+title: React Markdown Typewriter
+---
 
 [React Markdown Typewriter](https://www.npmjs.com/package/react-markdown-typewriter) is a library that combines Markdown and Typewriter. This library was created by me for my need to add a Typewriter effect to the Markdown component in my React templates.
 

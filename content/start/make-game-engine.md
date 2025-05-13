@@ -1,4 +1,6 @@
-# Make your game engine
+---
+title: Make your game engine
+---
 
 ::: info
 This guide is designed only for developers with a good experience with JavaScript. If you are not a developer, you can skip this page and use the default engine.

@@ -1,4 +1,6 @@
-# Position properties
+---
+title: Position properties
+---
 
 ( Most of the texts and images on this page were copied from Position Properties – [Pos and Anchor](https://feniksdev.com/renpy-position-properties-pos-and-anchor/) and [align, xycenter, and offset](https://feniksdev.com/renpy-position-properties-align-xycenter-and-offset/). Feniks in these two pages explained very well the properties of Ren'Py positioning, common to many other canvases including Pixi’VN )
 

@@ -1,4 +1,6 @@
-# Game canvas
+---
+title: Game canvas
+---
 
 Pixi’VN uses [PixiJS](https://pixijs.com/8.x/guides/basics/what-pixijs-is) to render the visual novel. You can use the Pixi’VN API to add images, text, and animations to the PixiJS canvas (or, better yet, to the 2D WebGL rendering engine).
 

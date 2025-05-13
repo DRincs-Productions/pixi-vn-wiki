@@ -1,4 +1,6 @@
-# ImageSprite
+---
+title: ImageSprite
+---
 
 The `ImageSprite` component extends the [`Sprite`](/start/canvas-components#base-components) component, so you can use all the methods and properties of `Sprite`. It is used to display a single image on the canvas.
 

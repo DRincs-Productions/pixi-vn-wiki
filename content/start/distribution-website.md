@@ -1,5 +1,6 @@
-
-# Website
+---
+title: Website
+---
 
 The game can be distributed as a website. The game can be played on the browser and can be accessed by anyone with an internet connection. To do this you need to [host the game on a server](#hosting-and-deploying).
 

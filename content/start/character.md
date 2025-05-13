@@ -1,4 +1,6 @@
-# Characters
+---
+title: Characters
+---
 
 **What are characters?** The characters are the actors that appear in the visual novel.
 In Pixi’VN, characters are created using the `CharacterBaseModel` class or a [custom class](#custom-character).

@@ -1,4 +1,6 @@
-# Tickers (primitive animations and effects)
+---
+title: Tickers (primitive animations and effects)
+---
 
 Pixi’VN provides the possibility to animate the canvas components with the tickers (primitive animations and effects).
 

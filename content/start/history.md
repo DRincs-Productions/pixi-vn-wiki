@@ -1,4 +1,6 @@
-# History
+---
+title: History
+---
 
 Pixi’VN save all dialogues, choices and responses that have been displayed in the game and all label and step opened.
 

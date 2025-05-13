@@ -1,4 +1,6 @@
-# Dialogue
+---
+title: Dialogue
+---
 
 **What is dialogue and example?** A written composition in which two or more characters are represented as conversing.
 

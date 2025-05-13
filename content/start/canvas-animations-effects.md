@@ -1,4 +1,6 @@
-# Animations and effects
+---
+title: Animations and effects
+---
 
 Pixi’VN provides a set of animations and effects that can be applied to canvas components.
 

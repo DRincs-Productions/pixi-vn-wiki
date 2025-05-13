@@ -1,4 +1,6 @@
-# Input prompt
+---
+title: Input prompt
+---
 
 In Visual Novels it may be necessary to ask the user to enter text, number, date, etc.
 

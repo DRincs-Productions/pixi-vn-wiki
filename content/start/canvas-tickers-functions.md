@@ -1,4 +1,6 @@
-# Tickers methods
+---
+title: Tickers methods
+---
 
 To play, pause, or stop a ticker, you must use the functions of the `canvas`.
 

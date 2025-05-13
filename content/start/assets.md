@@ -1,4 +1,6 @@
-# Assets
+---
+title: Assets
+---
 
 **What are assets?** The assets are all the files that are not code, such as images, sounds, and videos.
 

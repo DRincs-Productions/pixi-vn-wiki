@@ -1,4 +1,6 @@
-# Connect the UI components with the game variables
+---
+title: Connect the UI components with the game variables
+---
 
 ![Frame_Aufbau](https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fpixi-vn-usequery.png?alt=media)
 

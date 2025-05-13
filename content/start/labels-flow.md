@@ -1,4 +1,6 @@
-# Manage game flow with labels
+---
+title: Manage game flow with labels
+---
 
 The game flow is managed by functions that `call labels`, `jump labels`, `go back`, `close labels`... These functions are in the `narration` object.
 

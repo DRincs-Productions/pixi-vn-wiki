@@ -1,4 +1,6 @@
-# Label and Game Step
+---
+title: Label and Game Step
+---
 
 Visual Novels are usually a succession of screenshots with images and text.
 

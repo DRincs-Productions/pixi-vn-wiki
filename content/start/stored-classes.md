@@ -1,4 +1,6 @@
-# Storage Classes
+---
+title: Storage Classes
+---
 
 Pixi'VN provides an abstract class `StoredClassModel` that you can use to create classes with properties saved in the game storage.
 

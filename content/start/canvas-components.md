@@ -1,4 +1,6 @@
-# Canvas Components
+---
+title: Canvas Components
+---
 
 Pixi’VN provides a set of canvas components. These components are based on [Pixi.js](https://pixijs.com/), a modern 2D rendering engine.
 

@@ -1,4 +1,6 @@
-# Ren'Py vs Pixi’VN
+---
+title: Ren'Py vs Pixi’VN
+---
 
 Making a comparison between Ren'Py and Pixi’VN is necessary because Ren'Py is currently the most widely used engine for creating visual novels.
 

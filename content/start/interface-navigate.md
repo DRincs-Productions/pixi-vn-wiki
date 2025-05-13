@@ -1,4 +1,6 @@
-# Navigate/switch between UI screens
+---
+title: Navigate/switch between UI screens
+---
 
 To switch between UI screens (without interrupting the canvas), you can use popups and modals, or navigate between different [paths/routes](#what-is-the-url-path-and-routes).
 

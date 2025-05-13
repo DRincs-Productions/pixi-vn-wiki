@@ -1,4 +1,6 @@
-# Advanced label features
+---
+title: Advanced label features
+---
 
 In this section, we will cover advanced [label](/start/labels.md) features. These features are not necessary to create a game, but they can help you to create a more complex and interactive game.
 

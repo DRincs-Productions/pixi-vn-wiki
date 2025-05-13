@@ -1,4 +1,6 @@
-# Game storage
+---
+title: Game storage
+---
 
 **What is the game storage?** The game storage is a place where you can save variables that you want to keep between game sessions.
 

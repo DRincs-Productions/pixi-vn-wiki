@@ -1,4 +1,6 @@
-# Filters
+---
+title: Filters
+---
 
 ::: warning This page is under construction
 Currently, this functionality is not available in Pixi’VN, but we plan to implement it. You can follow the development and show your interest in the following thread <https://github.com/DRincs-Productions/pixi-vn/discussions/286>.

@@ -1,4 +1,6 @@
-# ImageContainer
+---
+title: ImageContainer
+---
 
 The `ImageContainer` component extends the [`Container`](/start/canvas-components#base-components) component, so you can use all the methods and properties of `Container`. It is used to display multiple images on the canvas as if it were a single element.
 
