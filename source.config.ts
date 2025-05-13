@@ -15,5 +15,42 @@ export const docs = defineDocs({
 export default defineConfig({
     mdxOptions: {
         // MDX options
+        rehypePlugins: [],
+        rehypeCodeOptions: {
+            theme: "github-dark",
+            langs: [
+                {
+                    displayName: "ink",
+                    name: "ink",
+                    patterns: [
+                        {
+                            include: "#comment",
+                        },
+                    ],
+                    repository: {
+                        comment: {
+                            captures: {
+                                "0": {
+                                    name: "entity.name.label.ink",
+                                },
+                            },
+                            match: "(?<=^|\\s)(\\/\\/)(.*$)",
+                        },
+                    },
+                    scopeName: "source.ink",
+                },
+                {
+                    displayName: "Ren’Py",
+                    name: "renpy",
+                    patterns: [
+                        {
+                            include: "source.python",
+                        },
+                    ],
+                    repository: {},
+                    scopeName: "source.renpy",
+                },
+            ],
+        },
     },
 });
