@@ -1,6 +1,6 @@
 # Use input prompt in *ink*
 
-The ***ink* + Pixi’VN integration** introduces the a # script that allows you to request an [input prompt](/start/input) from the user.
+The ***ink* + Pixi’VN integration** introduces the a # script that allows you to request an [input prompt](/start/input.md) from the user.
 
 The syntax is as follows:
 

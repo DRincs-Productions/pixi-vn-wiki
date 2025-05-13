@@ -15,7 +15,7 @@ It is important to keep the following behaviors in mind:
 To add a ticker you must use the `canvas.addTicker` function. This function receives the following parameters:
 
 * `canvasElementAlias`: The alias of the canvas element that will use the ticker. You can pass a string or an array of strings. If you pass an array of strings, the ticker will be associated with all canvas components.
-* `ticker`: The [ticker](/start/canvas-tickers) instance to be run.
+* `ticker`: The [ticker](/start/canvas-tickers.md) instance to be run.
 
 The function returns the id of the ticker that was added.
 

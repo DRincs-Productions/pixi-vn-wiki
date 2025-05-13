@@ -8,7 +8,7 @@ You can use assets saved locally in the project or online (For the second option
 
 If you are creating a visual novel, it is recommended to only keep assets that are used frequently locally. While, for assets used only once in the game, it is recommended to publish them online.
 
-To load and manipulate assets (images, gifs, videos...) you will need to use `Assets`. `Assets` is a class with many features and comes from the PixiJS library, if you want more information read [here](https://pixijs.com/8.x/guides/components/assets). It is also very important that you read this documentation to better [organize the uploading of your assets](/start/assets-management).
+To load and manipulate assets (images, gifs, videos...) you will need to use `Assets`. `Assets` is a class with many features and comes from the PixiJS library, if you want more information read [here](https://pixijs.com/8.x/guides/components/assets). It is also very important that you read this documentation to better [organize the uploading of your assets](/start/assets-management.md).
 
 You mainly have two choices for where to save your assets, local or online.
 

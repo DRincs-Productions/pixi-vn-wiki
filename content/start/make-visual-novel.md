@@ -8,7 +8,7 @@ This tutorial will guide you through the process of creating your first Visual N
 
 For testing purposes, in this guide we will be recreating the visual novel [Breakdown](https://joshpowlison.itch.io/breakdown) using Pixi'VN. Breakdown is a short story that has all the features that a visual novel should have. Josh Powlison, the creator of Breakdown, has given us permission to use his narration for educational purposes❤️.
 
-Since Pixi’VN gives you the ability to write your own narration by choosing one or more [available narrative languages](/start/narration), examples will be made for each currently available language at each development step.
+Since Pixi’VN gives you the ability to write your own narration by choosing one or more [available narrative languages](/start/narration.md), examples will be made for each currently available language at each development step.
 
 ## Create a new project
 
@@ -27,7 +27,7 @@ npm start
 
 ## Character creation
 
-Now we will define the characters of this story. To do this, we will define in the `/values/characters.ts` file the characters that we will be using. For more information on how to create and use characters you can consult: [Characters](/start/character)
+Now we will define the characters of this story. To do this, we will define in the `/values/characters.ts` file the characters that we will be using. For more information on how to create and use characters you can consult: [Characters](/start/character.md)
 
 What does `mc` mean? `mc` is a common abbreviation for "Main Character". It is a common practice in visual novels to use `mc` as the main character's name.
 
@@ -72,10 +72,10 @@ return // ...
 
 ## First draft of the narrative
 
-Now we can start writing the "first draft" of the [narration](/start/narration) of the visual novel.
-We will create the first ["label"](/start/labels) called `start`, which will be the beginning of the game.
+Now we can start writing the "first draft" of the [narration](/start/narration.md) of the visual novel.
+We will create the first ["label"](/start/labels.md) called `start`, which will be the beginning of the game.
 
-After that we can write the [dialogues](/start/dialogue.md) that will follow in our visual novel. The template we have chosen supports the [markup language markdown](/start/markup-markdown.md) ([Markup language in *ink*](/ink/ink-markup)) so we will use it for our narration.
+After that we can write the [dialogues](/start/dialogue.md) that will follow in our visual novel. The template we have chosen supports the [markup language markdown](/start/markup-markdown.md) ([Markup language in *ink*](/ink/ink-markup.md)) so we will use it for our narration.
 
 <!-- TODO: use Tailwind CSS -->
 
@@ -146,7 +146,7 @@ export default startLabel;
 
 ### Split the narrative into labels
 
-It is not advisable to create very long labels (even for linear visual novels), but it is advisable to create multiple small labels and "call" them when needed with the [game flow control features](/start/labels-flow.md) ([*ink* knot (or label)](/ink/ink-label)).
+It is not advisable to create very long labels (even for linear visual novels), but it is advisable to create multiple small labels and "call" them when needed with the [game flow control features](/start/labels-flow.md) ([*ink* knot (or label)](/ink/ink-label.md)).
 
 For this reason, even if in our case our story is linear, it will be divided into two labels, the first will be the one we just created, while the second will be called `second_part`.
 
@@ -213,7 +213,7 @@ const secondPart = newLabel("second_part", [
 
 Now we will ask the player if he wants to continue with the second part of the visual novel.
 
-To do this, we will use the [choice menu](/start/choices).
+To do this, we will use the [choice menu](/start/choices.md).
 
 This is the example:
 
@@ -259,7 +259,7 @@ const secondPart = newLabel("second_part", [
 
 Now I will give the player the ability to change the name of the `mc`.
 
-To do this, I will ask the player to [complete an input box using Pixi'VN's features](/start/input.md) ([Use the input prompt in *ink*](/ink/ink-input)).
+To do this, I will ask the player to [complete an input box using Pixi'VN's features](/start/input.md) ([Use the input prompt in *ink*](/ink/ink-input.md)).
 
 After getting the input value, you can [set the character name](/start/character.md#edit-characters-in-the-game) using the obtained value ([Edit character name in *ink*](/ink/ink-character.md#edit-character-name-in-dialogues)).
 
@@ -556,9 +556,9 @@ Now it's time to think about the visual part too. We will add the background and
 
 **What is a sprite?** In computer graphics, a sprite is a two-dimensional bitmap that is integrated into a larger scene, most often in a 2D video game.
 
-In our case the character sprites are composed of 3 images: the body, the eyes and the mouth. Then we use [ImageContainer](/start/canvas-image-container) to compose the character.
+In our case the character sprites are composed of 3 images: the body, the eyes and the mouth. Then we use [ImageContainer](/start/canvas-image-container.md) to compose the character.
 
-You can find more information on how to add canvas components in [this documentation](/start/canvas-components.md) ([Use canvas components in *ink*](/ink/ink-canvas)).
+You can find more information on how to add canvas components in [this documentation](/start/canvas-components.md) ([Use canvas components in *ink*](/ink/ink-canvas.md)).
 
 This is the example:
 
@@ -606,7 +606,7 @@ In our case we saved the game images on a hosting service (Firebase). For this r
 
 In order for the player not to perceive too many loadings we should group them in certain phases of the game. In my case I will load the most used images at the start of the label.
 
-You can find more information on how to manage the loadings [here](/start/assets-management).
+You can find more information on how to manage the loadings [here](/start/assets-management.md).
 
 This is the example:
 
@@ -646,7 +646,7 @@ export default startLabel;
 
 ## Use transitions
 
-To make the visual novel more dynamic, you can use transitions to show images. You can find more information about using transitions [here](/start/canvas-transition) ([Using transitions in *ink*](/ink/ink-canvas.md#show-a-canvas-component-with-transition-in-ink)).
+To make the visual novel more dynamic, you can use transitions to show images. You can find more information about using transitions [here](/start/canvas-transition.md) ([Using transitions in *ink*](/ink/ink-canvas.md#show-a-canvas-component-with-transition-in-ink)).
 
 This is the example:
 
@@ -695,7 +695,7 @@ export default startLabel;
 
 ## Building an animation
 
-To make the visual novel more dynamic, you can use animations. You can find more information about how to use animations [here](/start/canvas-animations-effects) ([Using animations in *ink*](/ink/ink-canvas.md#use-the-effects-in-ink)).
+To make the visual novel more dynamic, you can use animations. You can find more information about how to use animations [here](/start/canvas-animations-effects.md) ([Using animations in *ink*](/ink/ink-canvas.md#use-the-effects-in-ink)).
 
 I recommend using Typescript if you need to set a lot of properties, this way you have more control over the animation, more functionality and type feedback.
 

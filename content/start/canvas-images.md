@@ -25,7 +25,7 @@ canvas.add("alien", alien)
 Compared to the `Sprite` component, `ImageSprite` adds the following features:
 
 * `load()`: Load the image URL and set the resulting texture to the sprite.
-* Additional positions: [Align](/start/canvas-position.md) and [Position with percentage](/start/canvas-position)
+* Additional positions: [Align](/start/canvas-position.md) and [Position with percentage](/start/canvas-position.md)
 
 ## Show a image
 
@@ -33,7 +33,7 @@ The simplest and fastest method to show an image on the canvas is to use the `sh
 
 This function will return a `ImageSprite`, that you can use to manipulate the image, and it has the following parameters:
 
-* `alias`: Is a [alias](/start/canvas-alias) for the image.
+* `alias`: Is a [alias](/start/canvas-alias.md) for the image.
 * `imageUrl` (Optional): The URL or path of the image. If you have initialized the [asset matrix](/start/assets-management.md#initialize-the-asset-matrix-at-project-start), you can use the alias of the texture. If you don't provide the URL, then the alias is used as the URL.
 * `options` (Optional): It corresponds to the `ImageSpriteOptions` interface.
 
@@ -79,7 +79,7 @@ To add an image to the canvas, you can use the `addImage` function. It is import
 
 This function will return a `ImageSprite`, that you can use to manipulate the image, and it has the following parameters:
 
-* `alias`: Is a [alias](/start/canvas-alias) for the image.
+* `alias`: Is a [alias](/start/canvas-alias.md) for the image.
 * `imageUrl` (Optional): The URL or path of the image. If you have initialized the [asset matrix](/start/assets-management.md#initialize-the-asset-matrix-at-project-start), you can use the alias of the texture. If you don't provide the URL, then the alias is used as the URL.
 * `options` (Optional): It corresponds to the `ImageSpriteOptions` interface.
 

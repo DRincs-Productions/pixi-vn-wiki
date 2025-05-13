@@ -55,7 +55,7 @@ In Pixi'VN you can create choice menu option using `newChoiceOption` function.
 
 ### Create a close choice menu option
 
-In addition to `newChoiceOption` there is also another function `newCloseChoiceOption` that allows you to create a closing option. Its operation consists in closing the menu of choices and continuing with the [steps](/start/labels), without having to call any [label](/start/labels.md#label).
+In addition to `newChoiceOption` there is also another function `newCloseChoiceOption` that allows you to create a closing option. Its operation consists in closing the menu of choices and continuing with the [steps](/start/labels.md), without having to call any [label](/start/labels.md#label).
 
 `newCloseChoiceOption` is a function which has as parameters:
 

@@ -160,8 +160,8 @@ You can use the `narration.canGoNext` property to check if you can go to the nex
 The `narration.canGoNext` is false when:
 
 * A step is running
-* The player must [make a choice](/start/choices)
-* The player must [enter a value](/start/input)
+* The player must [make a choice](/start/choices.md)
+* The player must [enter a value](/start/input.md)
 
 ```tsx
 import { narration } from '@drincs/pixi-vn'
@@ -181,7 +181,7 @@ function NextButton() {
 
 Every step the system saves the current state of the game. To go back to the previous step you must execute the `stepHistory.goBack()` function.
 
-In parameters you must pass a function `navigate: (path: string) => void` that will be called with the [URL Path or Route](/start/interface.md#what-is-the-url-path-and-routes) of the previous step, so you can to [navigate to the previous UI screen](/start/interface-navigate).
+In parameters you must pass a function `navigate: (path: string) => void` that will be called with the [URL Path or Route](/start/interface.md#what-is-the-url-path-and-routes) of the previous step, so you can to [navigate to the previous UI screen](/start/interface-navigate.md).
 
 For exemple if you use a [React Router Dom](https://reactrouter.com):
 

@@ -12,7 +12,7 @@ You can learn more about TanStack Query on the [TanStack website](https://tansta
 
 Here is an example:
 
-In our example we would have two variables, `text1` and `text2`, saved in the [game storage](/start/storage.md), this variables will be updated either by an input in the UI or by a [label step](/start/labels).
+In our example we would have two variables, `text1` and `text2`, saved in the [game storage](/start/storage.md), this variables will be updated either by an input in the UI or by a [label step](/start/labels.md).
 
 Taking into account that a storage variables can only be changed during a [next step, go back](/start/labels.md#next-step-and-go-back), [run label](/start/labels.md#run-a-label) or [loading a save](/start/save.md#load) (outside the interface), we will create a `useQueryText1` and `useQueryText2` that will be updated after each [next step, go back](/start/labels.md#next-step-and-go-back), [run label](/start/labels.md#run-a-label) or [loading a save](/start/save.md#load).
 

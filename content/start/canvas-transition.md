@@ -2,7 +2,7 @@
 title: Transitions
 ---
 
-In Pixi’VN provides various transition effect to show or remove an [canvas component](/start/canvas-components) and the possibility to [create your own transitions](#create-your-own-transition).
+In Pixi’VN provides various transition effect to show or remove an [canvas component](/start/canvas-components.md) and the possibility to [create your own transitions](#create-your-own-transition).
 
 [( More are on the way )](https://github.com/DRincs-Productions/pixi-vn/issues/20)
 
@@ -17,19 +17,19 @@ This transition has been created with the [`FadeAlphaTicker`](/start/canvas-anim
 
 The `showWithDissolve` function show a canvas element with dissolve transition. This function has the following parameters:
 
-* `alias`: Is the [alias](/start/canvas-alias) to identify the component.
+* `alias`: Is the [alias](/start/canvas-alias.md) to identify the component.
 * `image` (Optional): The image to show. If you don't provide the URL, then the alias is used as the URL. It can be:
-  * a URL/path. In this case, if URL/path is a video will be added a [VideoSprite](/start/canvas-videos.md), else a [ImageSprite](/start/canvas-images).
-  * a array of URL/paths. In this case, will be added a [ImageContainer](/start/canvas-images).
-  * a `{ value: string, options: ImageSpriteOptions }`, where `value` is the URL/path and `options` is the the options of the [ImageSprite](/start/canvas-images.md). In this case, if URL/path is a video will be added a [VideoSprite](/start/canvas-videos.md), else a [ImageSprite](/start/canvas-images).
-  * a `{ value: string[], options: ImageContainerOptions }`, where `value` is the array of URL/paths and `options` is the the options of the [ImageContainer](/start/canvas-images).
-  * a [canvas component](/start/canvas-components).
+  * a URL/path. In this case, if URL/path is a video will be added a [VideoSprite](/start/canvas-videos.md), else a [ImageSprite](/start/canvas-images.md).
+  * a array of URL/paths. In this case, will be added a [ImageContainer](/start/canvas-images.md).
+  * a `{ value: string, options: ImageSpriteOptions }`, where `value` is the URL/path and `options` is the the options of the [ImageSprite](/start/canvas-images.md). In this case, if URL/path is a video will be added a [VideoSprite](/start/canvas-videos.md), else a [ImageSprite](/start/canvas-images.md).
+  * a `{ value: string[], options: ImageContainerOptions }`, where `value` is the array of URL/paths and `options` is the the options of the [ImageContainer](/start/canvas-images.md).
+  * a [canvas component](/start/canvas-components.md).
 * `props` (Optional): The properties of the effect. It corresponds to the props of the [Fade effect](/start/canvas-animations-effects.md#fade).
 * `priority` (Optional): The priority of the effect.
 
 The `removeWithDissolve` function remove a canvas element with dissolve transition. This function has the following parameters:
 
-* `alias`: The [alias](/start/canvas-alias) of the component to remove.
+* `alias`: The [alias](/start/canvas-alias.md) of the component to remove.
 * `props` (Optional): The properties of the effect. It corresponds to the props of the [Fade effect](/start/canvas-animations-effects.md#fade).
 * `priority` (Optional): The priority of the effect.
 
@@ -90,19 +90,19 @@ This transition has been created with the [`FadeAlphaTicker`](/start/canvas-anim
 
 The `showWithFade` function show a canvas element with fade transition. This function has the following parameters:
 
-* `alias`: Is the [alias](/start/canvas-alias) to identify the component.
+* `alias`: Is the [alias](/start/canvas-alias.md) to identify the component.
 * `image` (Optional): The image to show. If you don't provide the URL, then the alias is used as the URL. It can be:
-  * a URL/path. In this case, if URL/path is a video will be added a [VideoSprite](/start/canvas-videos.md), else a [ImageSprite](/start/canvas-images).
-  * a array of URL/paths. In this case, will be added a [ImageContainer](/start/canvas-images).
-  * a `{ value: string, options: ImageSpriteOptions }`, where `value` is the URL/path and `options` is the the options of the [ImageSprite](/start/canvas-images.md). In this case, if URL/path is a video will be added a [VideoSprite](/start/canvas-videos.md), else a [ImageSprite](/start/canvas-images).
-  * a `{ value: string[], options: ImageContainerOptions }`, where `value` is the array of URL/paths and `options` is the the options of the [ImageContainer](/start/canvas-images).
-  * a [canvas component](/start/canvas-components).
+  * a URL/path. In this case, if URL/path is a video will be added a [VideoSprite](/start/canvas-videos.md), else a [ImageSprite](/start/canvas-images.md).
+  * a array of URL/paths. In this case, will be added a [ImageContainer](/start/canvas-images.md).
+  * a `{ value: string, options: ImageSpriteOptions }`, where `value` is the URL/path and `options` is the the options of the [ImageSprite](/start/canvas-images.md). In this case, if URL/path is a video will be added a [VideoSprite](/start/canvas-videos.md), else a [ImageSprite](/start/canvas-images.md).
+  * a `{ value: string[], options: ImageContainerOptions }`, where `value` is the array of URL/paths and `options` is the the options of the [ImageContainer](/start/canvas-images.md).
+  * a [canvas component](/start/canvas-components.md).
 * `props` (Optional): The properties of the effect. It corresponds to the props of the [Fade effect](/start/canvas-animations-effects.md#fade).
 * `priority` (Optional): The priority of the effect.
 
 The `removeWithFade` function remove a canvas element with fade transition. This function has the following parameters:
 
-* `alias`: The [alias](/start/canvas-alias) of the component to remove.
+* `alias`: The [alias](/start/canvas-alias.md) of the component to remove.
 * `props` (Optional): The properties of the effect. It corresponds to the props of the [Fade effect](/start/canvas-animations-effects.md#fade).
 * `priority` (Optional): The priority of the effect.
 
@@ -163,13 +163,13 @@ This transition has been created with the [`MoveTicker`](/start/canvas-animation
 
 The `moveIn` function show a canvas element with move in transition. This function has the following parameters:
 
-* `alias`: Is the [alias](/start/canvas-alias) to identify the component.
+* `alias`: Is the [alias](/start/canvas-alias.md) to identify the component.
 * `image` (Optional): The image to show. If you don't provide the URL, then the alias is used as the URL. It can be:
-  * a URL/path. In this case, if URL/path is a video will be added a [VideoSprite](/start/canvas-videos.md), else a [ImageSprite](/start/canvas-images).
-  * a array of URL/paths. In this case, will be added a [ImageContainer](/start/canvas-images).
-  * a `{ value: string, options: ImageSpriteOptions }`, where `value` is the URL/path and `options` is the the options of the [ImageSprite](/start/canvas-images.md). In this case, if URL/path is a video will be added a [VideoSprite](/start/canvas-videos.md), else a [ImageSprite](/start/canvas-images).
-  * a `{ value: string[], options: ImageContainerOptions }`, where `value` is the array of URL/paths and `options` is the the options of the [ImageContainer](/start/canvas-images).
-  * a [canvas component](/start/canvas-components).
+  * a URL/path. In this case, if URL/path is a video will be added a [VideoSprite](/start/canvas-videos.md), else a [ImageSprite](/start/canvas-images.md).
+  * a array of URL/paths. In this case, will be added a [ImageContainer](/start/canvas-images.md).
+  * a `{ value: string, options: ImageSpriteOptions }`, where `value` is the URL/path and `options` is the the options of the [ImageSprite](/start/canvas-images.md). In this case, if URL/path is a video will be added a [VideoSprite](/start/canvas-videos.md), else a [ImageSprite](/start/canvas-images.md).
+  * a `{ value: string[], options: ImageContainerOptions }`, where `value` is the array of URL/paths and `options` is the the options of the [ImageContainer](/start/canvas-images.md).
+  * a [canvas component](/start/canvas-components.md).
 * `props` (Optional): The properties of the effect. It combines the properties of the [Move effect](/start/canvas-animations-effects.md#move) with following properties:
   * `direction`: The direction of the move. It can be `right`, `left`, `top`, `bottom`. default is `right`.
   * `removeOldComponentWithMoveOut` (Optional): If a component with the same alias exists, the existing component will be removed with a `moveOut` effect when the new component transition is complete. default is `false`.
@@ -177,7 +177,7 @@ The `moveIn` function show a canvas element with move in transition. This functi
 
 The `moveOut` function remove a canvas element with move out transition. This function has the following parameters:
 
-* `alias`: The [alias](/start/canvas-alias) of the component to remove.
+* `alias`: The [alias](/start/canvas-alias.md) of the component to remove.
 * `props` (Optional): The properties of the effect. It combines the properties of the [Move effect](/start/canvas-animations-effects.md#move) with following properties:
   * `direction`: The direction of the move. It can be `right`, `left`, `top`, `bottom`. default is `right`.
 * `priority` (Optional): The priority of the effect.
@@ -239,20 +239,20 @@ This transition has been created with the [`MoveTicker`](/start/canvas-animation
 
 The `pushIn` function show a canvas element with push in transition. This function has the following parameters:
 
-* `alias`: Is the [alias](/start/canvas-alias) to identify the component.
+* `alias`: Is the [alias](/start/canvas-alias.md) to identify the component.
 * `image` (Optional): The image to show. If you don't provide the URL, then the alias is used as the URL. It can be:
-  * a URL/path. In this case, if URL/path is a video will be added a [VideoSprite](/start/canvas-videos.md), else a [ImageSprite](/start/canvas-images).
-  * a array of URL/paths. In this case, will be added a [ImageContainer](/start/canvas-images).
-  * a `{ value: string, options: ImageSpriteOptions }`, where `value` is the URL/path and `options` is the the options of the [ImageSprite](/start/canvas-images.md). In this case, if URL/path is a video will be added a [VideoSprite](/start/canvas-videos.md), else a [ImageSprite](/start/canvas-images).
-  * a `{ value: string[], options: ImageContainerOptions }`, where `value` is the array of URL/paths and `options` is the the options of the [ImageContainer](/start/canvas-images).
-  * a [canvas component](/start/canvas-components).
+  * a URL/path. In this case, if URL/path is a video will be added a [VideoSprite](/start/canvas-videos.md), else a [ImageSprite](/start/canvas-images.md).
+  * a array of URL/paths. In this case, will be added a [ImageContainer](/start/canvas-images.md).
+  * a `{ value: string, options: ImageSpriteOptions }`, where `value` is the URL/path and `options` is the the options of the [ImageSprite](/start/canvas-images.md). In this case, if URL/path is a video will be added a [VideoSprite](/start/canvas-videos.md), else a [ImageSprite](/start/canvas-images.md).
+  * a `{ value: string[], options: ImageContainerOptions }`, where `value` is the array of URL/paths and `options` is the the options of the [ImageContainer](/start/canvas-images.md).
+  * a [canvas component](/start/canvas-components.md).
 * `props` (Optional): The properties of the effect. It combines the properties of the [Move effect](/start/canvas-animations-effects.md#move) with following properties:
   * `direction`: The direction of the move. It can be `right`, `left`, `top`, `bottom`. default is `right`.
 * `priority` (Optional): The priority of the effect.
 
 The `pushOut` function remove a canvas element with push out transition. This function has the following parameters:
 
-* `alias`: The [alias](/start/canvas-alias) of the component to remove.
+* `alias`: The [alias](/start/canvas-alias.md) of the component to remove.
 * `props` (Optional): The properties of the effect. It combines the properties of the [Move effect](/start/canvas-animations-effects.md#move) with following properties:
   * `direction`: The direction of the move. It can be `right`, `left`, `top`, `bottom`. default is `right`.
 * `priority` (Optional): The priority of the effect.
@@ -314,13 +314,13 @@ This transition has been created with the [`ZoomTicker`](/start/canvas-animation
 
 The `zoomIn` function show a canvas element with zoom in transition. This function has the following parameters:
 
-* `alias`: Is the [alias](/start/canvas-alias) to identify the component.
+* `alias`: Is the [alias](/start/canvas-alias.md) to identify the component.
 * `image` (Optional): The image to show. If you don't provide the URL, then the alias is used as the URL. It can be:
-  * a URL/path. In this case, if URL/path is a video will be added a [VideoSprite](/start/canvas-videos.md), else a [ImageSprite](/start/canvas-images).
-  * a array of URL/paths. In this case, will be added a [ImageContainer](/start/canvas-images).
-  * a `{ value: string, options: ImageSpriteOptions }`, where `value` is the URL/path and `options` is the the options of the [ImageSprite](/start/canvas-images.md). In this case, if URL/path is a video will be added a [VideoSprite](/start/canvas-videos.md), else a [ImageSprite](/start/canvas-images).
-  * a `{ value: string[], options: ImageContainerOptions }`, where `value` is the array of URL/paths and `options` is the the options of the [ImageContainer](/start/canvas-images).
-  * a [canvas component](/start/canvas-components).
+  * a URL/path. In this case, if URL/path is a video will be added a [VideoSprite](/start/canvas-videos.md), else a [ImageSprite](/start/canvas-images.md).
+  * a array of URL/paths. In this case, will be added a [ImageContainer](/start/canvas-images.md).
+  * a `{ value: string, options: ImageSpriteOptions }`, where `value` is the URL/path and `options` is the the options of the [ImageSprite](/start/canvas-images.md). In this case, if URL/path is a video will be added a [VideoSprite](/start/canvas-videos.md), else a [ImageSprite](/start/canvas-images.md).
+  * a `{ value: string[], options: ImageContainerOptions }`, where `value` is the array of URL/paths and `options` is the the options of the [ImageContainer](/start/canvas-images.md).
+  * a [canvas component](/start/canvas-components.md).
 * `props` (Optional): The properties of the effect. It combines the properties of the [Zoom effect](/start/canvas-animations-effects.md#zoom) with following properties:
   * `direction`: The direction of the zoom. It can be `right`, `left`, `top`, `bottom`. default is `right`.
   * `removeOldComponentWithZoomOut` (Optional): If a component with the same alias exists, the existing component will be removed with a `zoomOut` effect when the new component transition is complete. default is `false`.
@@ -328,7 +328,7 @@ The `zoomIn` function show a canvas element with zoom in transition. This functi
 
 The `zoomOut` function remove a canvas element with zoom out transition. This function has the following parameters:
 
-* `alias`: The [alias](/start/canvas-alias) of the component to remove.
+* `alias`: The [alias](/start/canvas-alias.md) of the component to remove.
 * `props` (Optional): The properties of the effect. It combines the properties of the [Zoom effect](/start/canvas-animations-effects.md#zoom) with following properties:
   * `direction`: The direction of the zoom. It can be `right`, `left`, `top`, `bottom`. default is `right`.
 * `priority` (Optional): The priority of the effect.

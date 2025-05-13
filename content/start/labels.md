@@ -43,7 +43,7 @@ export const startLabel = newLabel("start_label",
 
 ### Override `StepLabelProps`
 
-All the [functionality to control the flow of labels](/start/labels-flow) requires an object that corresponds to the `StepLabelProps` interface. The object will be passed as a parameter to the step that will be executed.
+All the [functionality to control the flow of labels](/start/labels-flow.md) requires an object that corresponds to the `StepLabelProps` interface. The object will be passed as a parameter to the step that will be executed.
 
 By default `StepLabelProps` corresponds to `{ [key: string]: any }`. You can "override" the `StepLabelProps` interface in the `.d.ts` file to set required parameters.
 
@@ -138,10 +138,10 @@ export const startLabel = newLabel("start_label",
 
 ## Step limit saved
 
-At each step all the information of the current state of the game is [saved](/start/save).
+At each step all the information of the current state of the game is [saved](/start/save.md).
 
 To avoid the size of the save file growing too much, there is a limit of 100 steps saved, by default is 20 steps. When the limit is reached, only essential information from old steps will be kept.
-This basic information allows you to show the entire [history of the narrative](/start/history), but without the possibility of [returning](/start/labels-flow.md#go-back) to a specific step.
+This basic information allows you to show the entire [history of the narrative](/start/history.md), but without the possibility of [returning](/start/labels-flow.md#go-back) to a specific step.
 
 You can edit the limit of steps saved by changing the `stepLimitSaved` property in the `narration` object.
 

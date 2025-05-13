@@ -4,11 +4,11 @@ As explained in the [official documentation](https://github.com/inkle/ink/blob/m
 
 ***ink*** also supports variables, both temporary and global, storing numerical and content data, or even story flow commands. It is fully-featured in terms of logic, and contains a few additional structures to help keep the often complex logic of a branching story better organised.
 
-In the ***ink* + Pixi’VN integration**, the variables `VAR` and `CONST` are equivalent to [variables in storage](/start/storage). And the variables `temp` are equivalent to [temporary variables in storage](/start/storage.md#temporary-storage).
+In the ***ink* + Pixi’VN integration**, the variables `VAR` and `CONST` are equivalent to [variables in storage](/start/storage.md). And the variables `temp` are equivalent to [temporary variables in storage](/start/storage.md#temporary-storage).
 
 Just like in **native *ink*** you can use variables in dialogs or `scripts that start with #`.
 
-The name of the ***ink*** variables corresponds to the key of a variable in the [storage](/start/storage).
+The name of the ***ink*** variables corresponds to the key of a variable in the [storage](/start/storage.md).
 
 So For example, if you have the following ***ink*** code:
 
@@ -16,7 +16,7 @@ So For example, if you have the following ***ink*** code:
 VAR myVariable = 42
 ```
 
-You can access the variable `myVariable` in the [storage](/start/storage) with the following code:
+You can access the variable `myVariable` in the [storage](/start/storage.md) with the following code:
 
 ```typescript
 import { storage } from '@drincs/pixi-vn'

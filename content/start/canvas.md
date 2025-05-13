@@ -6,7 +6,7 @@ Pixi’VN uses [PixiJS](https://pixijs.com/8.x/guides/basics/what-pixijs-is) to 
 
 In addition to being able to interact with the canvas from JavaScript/TypeScript, you can also use other narrative languages:
 
-- [***ink***](/ink/ink-canvas)
+- [***ink***](/ink/ink-canvas.md)
 - Ren'Py (Under development)
 
 ## ![icon](/pixijs.svg){style="width:30px;height:30px;margin-right:5px;float:left;border-radius:5px"} What is PixiJS?
@@ -21,12 +21,12 @@ Pixi’VN provides a API object called `canvas` used to interface with Pixi’VN
 
 The use of Pixi’VN, in rendering, is very similar to that of PixiJS. The only differences are as follows:
 
-- All the components added in the canvas will be linked to an [alias](/start/canvas-alias) of your choice. This alias will be used to identify the component and to manipulate it.
-- Compared to PixiJS, Pixi’VN saves the current canvas state at each [step](/start/labels).
+- All the components added in the canvas will be linked to an [alias](/start/canvas-alias.md) of your choice. This alias will be used to identify the component and to manipulate it.
+- Compared to PixiJS, Pixi’VN saves the current canvas state at each [step](/start/labels.md).
 **Attention**: when saving the canvas state, only components linked to an alias will be saved (if you added components by directly accessing `PixiJS.Application`, they will not be considered).
-- Pixi’VN provides [various functionalities](/start/canvas-functions) to add, remove, find... components in the canvas.
-- Pixi’VN provides [their components](/start/canvas-components) of which some correspond to PixiJS while others are added to add some features.
-- Just like for the components, the [tickers](/start/canvas-tickers-functions) are managed by Pixi’VN. If you use a PixiJS ticker, the ticker state will not be saved.
+- Pixi’VN provides [various functionalities](/start/canvas-functions.md) to add, remove, find... components in the canvas.
+- Pixi’VN provides [their components](/start/canvas-components.md) of which some correspond to PixiJS while others are added to add some features.
+- Just like for the components, the [tickers](/start/canvas-tickers-functions.md) are managed by Pixi’VN. If you use a PixiJS ticker, the ticker state will not be saved.
 - You can't set a listener with the `on` method, but must use the [onEvent](/start/canvas-functions.md#add-a-listener-for-a-given-event) to add a listener.
 
 ## Use PixiJS DevTools with Pixi’VN

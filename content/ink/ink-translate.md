@@ -1,6 +1,6 @@
 # How translate *ink* text?
 
-As explained in more detail [here](/start/translate), Pixi’VN gives the possibility to translate the game text using a library, such as [i18next](https://www.i18next.com/). Also in ***ink* + Pixi’VN integration** you can use a library to translate the text of the ***ink***.
+As explained in more detail [here](/start/translate.md), Pixi’VN gives the possibility to translate the game text using a library, such as [i18next](https://www.i18next.com/). Also in ***ink* + Pixi’VN integration** you can use a library to translate the text of the ***ink***.
 
 Pixi'VN gives the developer the ability to intercept the translation event with the `onInkTranslate` function.
 

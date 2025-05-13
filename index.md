@@ -38,7 +38,7 @@ hero:
 
   Write your story in your favorite narrative language. Such as *ink* or Ren'Py or TS/JS. <br />
   In all cases you can also interact with the canvas and sounds, or create custom narrative scripts. <br />
-  You can read more about it [here](/start/narration).
+  You can read more about it [here](/start/narration.md).
 
 </div>
 <div class="left">
@@ -101,8 +101,8 @@ const startLabel = newLabel("start_label_id", [
   </h2>
 
   Create your own assets with your favorite tools. Like Daz 3D, Blender, Photoshop, Krita, GIMP, Cinema 4D, Spine 2D etc. <br />
-  Pixi’VN uses the power of [PixiJS](/start/canvas) to render your assets. <br />
-  You can also create 2D animations with [Spine 2D](/start/canvas-spine2d.md) or interact with 3D elements with [Three.js](/start/canvas-threejs).
+  Pixi’VN uses the power of [PixiJS](/start/canvas.md) to render your assets. <br />
+  You can also create 2D animations with [Spine 2D](/start/canvas-spine2d.md) or interact with 3D elements with [Three.js](/start/canvas-threejs.md).
 
 </div>
 
@@ -133,7 +133,7 @@ const startLabel = newLabel("start_label_id", [
   </h2>
 
   Build the UI with your favorite JavaScript framework. Like React, Vue, Preact, Qwik, lit, Solid, Svelte, Angular, PixiJS etc. <br />
-  You can read more about it [here](/start/interface).
+  You can read more about it [here](/start/interface.md).
 
 </div>
 

@@ -7,7 +7,7 @@ title: Canvas components functions
 To add a canvas component to the game window, you can use the `canvas.add`.
 The `add` method have the following parameters:
 
-* `alias`: Is the [alias](/start/canvas-alias) to identify the component.
+* `alias`: Is the [alias](/start/canvas-alias.md) to identify the component.
 * `component`: The canvas component to add.
 
 :::tabs
@@ -48,7 +48,7 @@ export async function defineAssets() {
 To get a canvas component from the game window, you can use the `canvas.find`, if the component does not exist, it will return `undefined`.
 The `find` method have the following parameters:
 
-* `alias`: The [alias](/start/canvas-alias) of the component to get.
+* `alias`: The [alias](/start/canvas-alias.md) of the component to get.
 
 :::tabs
 == startLabel.ts
@@ -95,7 +95,7 @@ export async function defineAssets() {
 To remove a canvas component from the game window, you can use the `canvas.remove`.
 The `remove` method have the following parameters:
 
-* `alias`: The [alias](/start/canvas-alias) of the component to remove.
+* `alias`: The [alias](/start/canvas-alias.md) of the component to remove.
 
 :::tabs
 == startLabel.ts
@@ -178,7 +178,7 @@ export async function defineAssets() {
 
 ## Add a listener for a given event
 
-It is recommended to add event-based components, such as buttons, to the [UI](/start/interface). But sometimes, such as when creating minigames, you need to add event-based components to the canvas and be able to save the current state of the canvas.
+It is recommended to add event-based components, such as buttons, to the [UI](/start/interface.md). But sometimes, such as when creating minigames, you need to add event-based components to the canvas and be able to save the current state of the canvas.
 
 In Pixi’VN, compared to PixiJS, doesn't give the possibility to use a [listener with the `on` method](https://pixijs.com/8.x/examples/events/click), because `on` will associate an event with a lambda and lambdas cannot be saved in the current state of the canvas.
 

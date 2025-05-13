@@ -23,8 +23,8 @@ For a quick start, various [project templates](/start/getting-started.md#pivivn-
 
 You have the option to use various types of narrative languages ​​(in addition to JavaScript/TypeScript). Currently you can use the following:
 
-* [*ink*](/ink/ink)
-* [Ren'Py](/renpy/renpy)
+* [*ink*](/ink/ink.md)
+* [Ren'Py](/renpy/renpy.md)
 
 ## Features of Pixi’VN
 

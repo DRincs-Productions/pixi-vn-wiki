@@ -1,6 +1,6 @@
 # Use the characters in *ink*
 
-You can associate a [Pixi’VN character](/start/character) with a dialogue in ***ink***. To do this, you need to create a or more characters in **Typescript** and, after that, in the ***ink* script**, you can use following syntax:
+You can associate a [Pixi’VN character](/start/character.md) with a dialogue in ***ink***. To do this, you need to create a or more characters in **Typescript** and, after that, in the ***ink* script**, you can use following syntax:
 
 `[character_id]` + `:` + `SPACE` + `[text]`
 
@@ -129,9 +129,9 @@ return (
 
 ## Use Character how variable in *ink*
 
-Having the ability to rename a character and use their name in dialogues greatly simplifies the development of a Visual Novel. Since the [character](/start/character.md) is an object based on a [customizable model](/start/character.md#custom-character), it is not possible to use the character as a [variable](/ink/ink-variables) simply with the `{}` syntax.
+Having the ability to rename a character and use their name in dialogues greatly simplifies the development of a Visual Novel. Since the [character](/start/character.md) is an object based on a [customizable model](/start/character.md#custom-character), it is not possible to use the character as a [variable](/ink/ink-variables.md) simply with the `{}` syntax.
 
-But you can take advantage of the [possibility of replacing portions of text](/ink/ink-replacement.md) and [customizing hashtag scripts](/ink/ink-hashtag) to implement this feature.
+But you can take advantage of the [possibility of replacing portions of text](/ink/ink-replacement.md) and [customizing hashtag scripts](/ink/ink-hashtag.md) to implement this feature.
 
 <sandbox
   template="s57g59"
@@ -140,7 +140,7 @@ But you can take advantage of the [possibility of replacing portions of text](/i
 
 ### Use character name in dialogues
 
-To use the character name in dialogues, you can take advantage of the [possibility of replacing portions of text](/ink/ink-replacement). For example, you can use the following method:
+To use the character name in dialogues, you can take advantage of the [possibility of replacing portions of text](/ink/ink-replacement.md). For example, you can use the following method:
 
 :::tabs
 == main.ts
@@ -259,7 +259,7 @@ RegisteredCharacters.add([liam]);
 
 ### Edit character name in dialogues
 
-To edit the character name in dialogues, you can take advantage of the possibility of [customizing hashtag scripts](/ink/ink-hashtag). For example, you can use the following method:
+To edit the character name in dialogues, you can take advantage of the possibility of [customizing hashtag scripts](/ink/ink-hashtag.md). For example, you can use the following method:
 
 :::tabs
 == main.ts
