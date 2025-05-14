@@ -7,7 +7,6 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     return {
         ...defaultMdxComponents,
         img: (props) => {
-            console.log(props);
             if (props.alt.endsWith("-h3")) {
                 return (
                     <ImageZoom
