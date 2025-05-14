@@ -54,7 +54,7 @@ return (
 
 :::
 
-<sandbox
+<Sandbox
   template="gxxp47"
   entry="/src/ink/start.ink,/src/values/characters.ts"
 />
@@ -122,7 +122,7 @@ return (
 
 :::
 
-<sandbox
+<Sandbox
   template="fdj2lt"
   entry="/src/ink/start.ink,/src/values/characters.ts"
 />
@@ -133,7 +133,7 @@ Having the ability to rename a character and use their name in dialogues greatly
 
 But you can take advantage of the [possibility of replacing portions of text](/ink/ink-replacement.md) and [customizing hashtag scripts](/ink/ink-hashtag.md) to implement this feature.
 
-<sandbox
+<Sandbox
   template="s57g59"
   entry="/src/ink/start.ink,/src/values/characters.ts,/src/utils/characters-utility.ts"
 />

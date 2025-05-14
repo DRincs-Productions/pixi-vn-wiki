@@ -54,7 +54,7 @@ export default function App() {
 
 :::
 
-<sandbox
+<Sandbox
   template="7pg6dy"
   entry="/src/ink/start.ink"
 />

@@ -35,7 +35,7 @@ He insisted that we hurried home to Savile Row
 -> start
 ```
 
-<sandbox
+<Sandbox
   template="v4rkdl"
   entry="/src/ink/start.ink"
 />

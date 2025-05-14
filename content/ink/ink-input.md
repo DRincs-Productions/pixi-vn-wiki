@@ -40,7 +40,7 @@ Restart
 -> DONE
 ```
 
-<sandbox
+<Sandbox
   template="fvg9l6"
   entry="/src/ink/start.ink"
 />

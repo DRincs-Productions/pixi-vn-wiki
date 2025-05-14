@@ -25,7 +25,7 @@ Where:
   * If the parameters include spaces, you must use double quotes.
   * If the parameters is a object, you must use the JSON format and the first character must be `\{` and the last character must be `\}`. Example: `\{ "color": "red", isVisble: true, position: { x: 100, y: 100 } \}`
 
-<sandbox
+<Sandbox
   template="rxzx5z"
   entry="/src/ink/start.ink,/src/utils/assets-utility.ts"
 />
@@ -108,7 +108,7 @@ export async function defineAssets() {
 
 :::
 
-<sandbox
+<Sandbox
   template="sndrvv"
   entry="/src/ink/start.ink,/src/utils/assets-utility.ts"
 />
@@ -273,7 +273,7 @@ export async function defineAssets() {
 
 :::
 
-<sandbox
+<Sandbox
   template="p3qgjq"
   entry="/src/ink/start.ink,/src/utils/assets-utility.ts"
 />

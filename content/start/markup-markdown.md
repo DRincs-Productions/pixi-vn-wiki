@@ -109,7 +109,7 @@ export class MarkdownComponent {
 
 :::
 
-<sandbox
+<Sandbox
   template="4h8wst"
   entry="/src/components/MarkdownComponent.tsx"
   previewHeight=300
@@ -144,7 +144,7 @@ export default function MarkdownComponent({ text }: {
 
 ```
 
-<sandbox
+<Sandbox
   template="rgjf6t"
   entry="/src/components/MarkdownComponent.tsx"
   previewHeight=320

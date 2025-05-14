@@ -257,7 +257,7 @@ For example:
 
 ( **It's in basic html**, you will need to replace the basic html elements with UI components from your favorite library to improve the graphics. )
 
-<sandbox
+<Sandbox
   template="5r7m9z"
   entry="/src/components/NextButton.tsx,/src/components/BackButton.tsx"
 />

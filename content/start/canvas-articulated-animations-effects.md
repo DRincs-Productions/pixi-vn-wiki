@@ -51,7 +51,7 @@ export async function defineAssets() {
 
 :::
 
-<sandbox
+<Sandbox
   template="q2nhhq"
   entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
 />

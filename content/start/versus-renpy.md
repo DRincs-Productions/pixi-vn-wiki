@@ -99,7 +99,7 @@ The performance and size of the project are very important factors to consider w
 * [`Pygame_sdl2`](https://github.com/renpy/pygame_sdl2): This canvas is absolutely underperforming. You can test this by inserting lots of moving graphics into Ren'Py.
 * PixiJS: It is based on more modern systems and has great performance. This can be tested directly from this example:
 
-<sandbox
+<Sandbox
   template="jrlkrt"
   entry="/src/labels/startLabel.ts"
 />

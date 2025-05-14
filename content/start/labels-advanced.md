@@ -139,7 +139,7 @@ export const startLabel = newLabel("start_label",
 )
 ```
 
-<sandbox
+<Sandbox
   template="mzw5n2"
   entry="/src/labels/startLabel.ts"
 />

@@ -21,7 +21,7 @@ Where:
   * If the parameters include spaces, you must use double quotes.
   * If the parameters is a object, you must use the JSON format and the first character must be `\{` and the last character must be `\}`. Example: `\{ "volume": 100, name: "Music" \}`
 
-<sandbox
+<Sandbox
   template="nqflhd"
   entry="/src/ink/start.ink,/src/utils/assets-utility.ts"
 />

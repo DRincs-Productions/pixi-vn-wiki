@@ -23,7 +23,7 @@ End
 -> DONE
 ```
 
-<sandbox
+<Sandbox
   template="ykykkg"
   entry="/src/ink/start.ink"
 />
@@ -92,7 +92,7 @@ export default function App() {
 
 :::
 
-<sandbox
+<Sandbox
   template="wxt2j9"
   entry="/src/ink/start.ink,/src/labels/javascriptLabel.ts,/src/app.ts"
 />
@@ -159,7 +159,7 @@ export default function App() {
 
 :::
 
-<sandbox
+<Sandbox
   template="cdln8v"
   entry="/src/ink/start.ink,/src/labels/javascriptLabel.ts,/src/app.ts"
 />

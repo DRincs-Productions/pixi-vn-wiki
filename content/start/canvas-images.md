@@ -68,7 +68,7 @@ export async function defineAssets() {
 
 :::
 
-<sandbox
+<Sandbox
   template="m9q8zk"
   entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
 />
@@ -123,7 +123,7 @@ export async function defineAssets() {
 
 :::
 
-<sandbox
+<Sandbox
   template="5f3jcr"
   entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
 />

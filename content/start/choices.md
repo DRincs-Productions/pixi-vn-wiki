@@ -33,7 +33,7 @@ export const startLabel = newLabel("start_label",
 )
 ```
 
-<sandbox
+<Sandbox
   template="wv63yr"
   entry="/src/labels/startLabel.ts"
 />
@@ -150,7 +150,7 @@ For example:
 
 ( **It's in basic html**, you will need to replace the basic html elements with UI components from your favorite library to improve the graphics. )
 
-<sandbox
+<Sandbox
   template="k8r2xf"
   entry="/src/screens/ChoiceMenu.tsx"
 />

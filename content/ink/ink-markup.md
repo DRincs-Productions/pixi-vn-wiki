@@ -12,7 +12,7 @@ Hello, this is a test. \\n\\n<>
 This is a new line.
 ```
 
-<sandbox
+<Sandbox
   template="tqr6v5"
   entry="/src/ink/start.ink,/src/components/MarkdownComponent.tsx"
 />
@@ -25,7 +25,7 @@ To do this you need to keep in mind that many symbols of Markdown syntax are als
 
 Here's an example:
 
-<sandbox
+<Sandbox
   template="nprnlk"
   entry="/src/ink/start.ink,/src/components/MarkdownComponent.tsx"
 />
