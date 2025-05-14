@@ -96,7 +96,15 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
             }
             return <ImageZoom {...props} />;
         },
-        Sandbox: ({ entry, template, previewHeight }: { entry: string; template: string; previewHeight: number }) => {
+        Sandbox: ({
+            entry,
+            template,
+            previewHeight = 400,
+        }: {
+            entry: string;
+            template: string;
+            previewHeight?: number;
+        }) => {
             return (
                 <iframe
                     src={`https://codesandbox.io/embed/${template}?${entry}fontsize=12&hidenavigation=1&theme=dark&view=preview&hidedevtools=1`}
