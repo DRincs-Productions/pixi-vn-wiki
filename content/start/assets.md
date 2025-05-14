@@ -57,7 +57,11 @@ You can save your assets as you like, with complete freedom. If you plan to save
 
 ### Github
 
-You can use Github to host your assets. You can use the raw link of the file to use it in your project. The link will be in the following format: `https://github.com/[repository]/raw/refs/heads/main/[file path]`
+You can use Github to host your assets. You can use the raw link of the file to use it in your project. The link will be in the following format:
+
+```text
+https://github.com/[repository]/raw/refs/heads/main/[file path]
+```
 
 * **Price**: Completely free.
 * **Space limits**: You have no space limits. But each single file must not exceed 100 MB.
