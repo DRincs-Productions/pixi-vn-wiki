@@ -27,7 +27,7 @@ In this feature we will use the `Assets` functions (e.g. `Assets.add`, `Assets.a
 
 ::: code-group
 
-```ts [utils/defineAssets.ts]
+```ts title="utils/defineAssets.ts"
 import { Assets, sound } from "@drincs/pixi-vn";
 import manifest from "../assets/manifest";
 
@@ -49,7 +49,7 @@ export async function defineAssets() {
 }
 ```
 
-```ts [assets/manifest.ts]
+```ts title="assets/manifest.ts"
 import { AssetsManifest } from "@drincs/pixi-vn";
 
 /**

@@ -39,7 +39,7 @@ With Pixi’VN you can use JavaScript/TypeScript to write the narration. You can
 
 Example of Ren'Py:
 
-```renpy [start.rpy]
+```renpy title="start.rpy"
 label start:
     "Hello, world!"
     "This is a Pixi’VN tutorial."
@@ -48,7 +48,7 @@ label start:
 
 Example of Pixi’VN:
 
-```typescript [startLabel.ts]
+```typescript title="startLabel.ts"
 const startLabel = newLabel("start_label_id", [
     (props) => narration.dialogue = "Hello, world!",
     (props) => narration.dialogue = "This is a Pixi’VN tutorial.",
@@ -56,7 +56,7 @@ const startLabel = newLabel("start_label_id", [
 ])
 ```
 
-```ink [start.ink]
+```ink title="start.ink"
 === start
 Hello, world!
 This is a Pixi’VN tutorial.
@@ -64,7 +64,7 @@ I hope you enjoy it!
 ->DONE
 ```
 
-```renpy [start.rpy]
+```renpy title="start.rpy"
 label start:
     "Hello, world!"
     "This is a Pixi’VN tutorial."

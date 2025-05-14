@@ -8,7 +8,7 @@ For example:
 
 ::: code-group
 
-```typescript [pixi-vn.d.ts]
+```typescript title="pixi-vn.d.ts"
 declare module '@drincs/pixi-vn' {
     interface StepLabelProps {
         /**
@@ -22,7 +22,7 @@ declare module '@drincs/pixi-vn' {
 }
 ```
 
-```typescript [labels/startLabel.ts]
+```typescript title="labels/startLabel.ts"
 export const startLabel = newLabel("start_label",
     [
         async ({ navigate }) => { // [!code focus]
@@ -87,7 +87,7 @@ For example:
 
 ::: code-group
 
-```ts [models/Character.ts]
+```ts title="models/Character.ts"
 import { CharacterInterface, CharacterStoredClass } from "@drincs/pixi-vn";
 
 export class Character extends CharacterStoredClass implements CharacterInterface {
@@ -107,7 +107,7 @@ interface CharacterProps {
 }
 ```
 
-```ts [pixi-vn.d.ts]
+```ts title="pixi-vn.d.ts"
 declare module '@drincs/pixi-vn' {
     interface CharacterInterface {
         // other properties...
@@ -122,7 +122,7 @@ Now you can use the `images` property to show the character on the canvas.
 
 ::: code-group
 
-```ts [labels/startLabel.ts]
+```ts title="labels/startLabel.ts"
 import { newLabel, showImageContainer } from "@drincs/pixi-vn";
 import { alice } from "../values/characters";
 
@@ -136,7 +136,7 @@ export const startLabel = newLabel("start_label", [
 ]);
 ```
 
-```ts [values/characters.ts]
+```ts title="values/characters.ts"
 import { Character } from "../models/Character";
 
 const alice = new Character('alice_id', {
@@ -157,7 +157,7 @@ For example you can add a script with the following syntax and convert it to a [
 
 ::: code-group
 
-```ts [utils/ink-utility.ts]
+```ts title="utils/ink-utility.ts"
 import { onInkHashtagScript } from '@drincs/pixi-vn-ink'
 import { getCharacterById } from '@drincs/pixi-vn'
 
@@ -179,7 +179,7 @@ onInkHashtagScript((script, convertListStringToObj) => {
 })
 ```
 
-```ink [start.ink]
+```ink title="start.ink"
 === start ===
 # show character alice xAlign 0.8 yAlign 1 with dissolve
 -> DONE

@@ -19,7 +19,7 @@ The syntax is as follows:
 
 ::: code-group
 
-```ink [ink/start.ink]
+```ink title="ink/start.ink"
 === start ===
 # lazyload bundle main_menu start
 # load assets eggHead flowerTop my_video
@@ -30,7 +30,7 @@ The syntax is as follows:
 -> start
 ```
 
-```ts [utils/defineAssets.ts]
+```ts title="utils/defineAssets.ts"
 import { Assets } from "@drincs/pixi-vn"
 
 export async function defineAssets() {
@@ -43,7 +43,7 @@ export async function defineAssets() {
 }
 ```
 
-```ts [assets/manifest.ts]
+```ts title="assets/manifest.ts"
 import { AssetsManifest } from "@drincs/pixi-vn";
 
 /**

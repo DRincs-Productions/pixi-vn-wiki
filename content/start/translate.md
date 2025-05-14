@@ -21,7 +21,7 @@ The translations will be inserted into multiple json files (one json file for ea
 
 ::: code-group
 
-```typescript [i18n.ts]
+```typescript title="i18n.ts"
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
@@ -55,13 +55,13 @@ export const useI18n = () => {
 }
 ```
 
-```ts [main.ts]
+```ts title="main.ts"
 import { useI18n } from './i18n';
 
 useI18n()
 ```
 
-```json [locales/strings_es.json]
+```json title="locales/strings_es.json"
 {
     "ui": {
         "text_speed": "Velocidad del texto",
@@ -91,7 +91,7 @@ For example:
 
 ::: code-group
 
-```tsx [React]
+```tsx title="React"
 import { useTranslation } from 'react-i18next';
 
 export default function MyComponent() {
@@ -105,7 +105,7 @@ export default function MyComponent() {
 }
 ```
 
-```vue [Vue]
+```vue title="Vue"
 <script setup>
     import { useTranslation } from "i18next-vue";
     const { t } = useTranslation("ui");
@@ -118,7 +118,7 @@ export default function MyComponent() {
 </template>
 ```
 
-```svelte [Svelte]
+```svelte title="Svelte"
 <script>
     import { useTranslation } from 'svelte-i18n';
     const { t } = useTranslation("ui");
@@ -141,7 +141,7 @@ Is recommended to use as translation key the native string from which the transl
 
 ::: code-group
 
-```typescript [pixi-vn.d.ts]
+```typescript title="pixi-vn.d.ts"
 declare module '@drincs/pixi-vn' {
     interface StepLabelProps {
         /**
@@ -155,7 +155,7 @@ declare module '@drincs/pixi-vn' {
 }
 ```
 
-```typescript [labels/startLabel.ts]
+```typescript title="labels/startLabel.ts"
 export const startLabel = newLabel("start_label",
     [
         ({ t }) => { // [!code focus]

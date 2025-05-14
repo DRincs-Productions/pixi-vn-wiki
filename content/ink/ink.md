@@ -10,7 +10,7 @@ The ***ink* + Pixi’VN integration**, exploits the [inkjs](https://github.com/i
 
 You can learn more about *ink* on the [*ink* website](https://www.inklestudios.com/ink/).
 
-```ink [ink/start.ink]
+```ink title="ink/start.ink"
 === start ===
 We arrived into London at 9.45pm exactly.
 
@@ -54,23 +54,23 @@ Otherwise to add ***ink*** to your Pixi’VN project you need to install the `@d
 
 ::: code-group
 
-```sh [npm]
+```sh title="npm"
 npm install @drincs/pixi-vn-ink
 ```
 
-```sh [yarn]
+```sh title="yarn"
 yarn add @drincs/pixi-vn-ink
 ```
 
-```sh [pnpm]
+```sh title="pnpm"
 pnpm add @drincs/pixi-vn-ink
 ```
 
-```sh [bun]
+```sh title="bun"
 bun add @drincs/pixi-vn-ink
 ```
 
-```sh [deno]
+```sh title="deno"
 deno install npm:@drincs/pixi-vn-ink
 ```
 
@@ -78,7 +78,7 @@ deno install npm:@drincs/pixi-vn-ink
 
 After installing the package you need to use the `importInkText()` function to import the ***ink* script** into your project.
 
-```typescript [main.ts]
+```typescript title="main.ts"
 import { importInkText } from '@drincs/pixi-vn-ink'
 
 const inkText = `
@@ -92,7 +92,7 @@ importInkText([inkText, ...])
 
 Now you can run the ***ink* knot** (or label) with [Pixi’VN functions](/start/labels.md#run-a-label).
 
-```typescript [main.ts]
+```typescript title="main.ts"
 import { narration } from '@drincs/pixi-vn'
 
 narration.callLabel(`start`, {})
@@ -110,21 +110,21 @@ After that you can import the *ink* file and add `?raw` at the end of the import
 
 ::: code-group
 
-```typescript [main.ts]
+```typescript title="main.ts"
 import { importInkText } from '@drincs/pixi-vn-ink'
 import startLabel from './ink/start.ink?raw'
 
 importInkText([startLabel, ...])
 ```
 
-```typescript [vite.config.ts]
+```typescript title="vite.config.ts"
 export default defineConfig({
   // ...
   assetsInclude: ['**/*.ink'],
 })
 ```
 
-```typescript [ink.d.ts]
+```typescript title="ink.d.ts"
 declare module '*.ink' {
     const value: string
     export default value
@@ -163,7 +163,7 @@ In Pixi’VN you can use the `importInkText()` function to import the ***ink* fi
 
 The narration outside the knots (or labels) will be ignored, except for variables. So for example:
 
-```ink [ink]
+```ink title="ink"
 VAR my_var = false // ✅ This will be handled (because it is a variable)
 Hello // ❌ This will be ignored [!code warning]
 -> start // ❌ This will be ignored [!code warning]
@@ -176,7 +176,7 @@ My name is John // ✅ This will be handled
 
 * in this case:
 
-    ```ink [ink]
+    ```ink title="ink"
     { shuffle:
       -  2 of Diamonds.
         'You lose this time!' crowed the croupier.
@@ -196,7 +196,7 @@ My name is John // ✅ This will be handled
 
     Here is an example:
 
-    ```ink [ink]
+    ```ink title="ink"
     -> start
     === start ===
     * [1] -> shove
@@ -212,7 +212,7 @@ My name is John // ✅ This will be handled
 
   To get the same logic as `start` both in **native *ink*** and **Pixi’VN *ink*** you will have to write the following code:
 
-  ```ink [ink]
+  ```ink title="ink"
   -> start
   === start ===
   * [1] -> shove

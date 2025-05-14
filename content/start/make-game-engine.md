@@ -33,7 +33,7 @@ For example in our case we will replace it with [`cacheable`](https://www.npmjs.
 
 ::: code-group
 
-```ts [index.ts]
+```ts title="index.ts"
 import { CacheableMemory } from "cacheable"; // [!code ++]
 
 const storage = new CacheableMemory(); // [!code ++]
@@ -108,7 +108,7 @@ export namespace Game {
 }
 ```
 
-```ts [interfaces/GameState.ts]
+```ts title="interfaces/GameState.ts"
 import { CacheableItem } from "cacheable";
 
 export default interface GameState {
@@ -138,7 +138,7 @@ Since I have no experience on rendering libraries other than `pixi.js`, my examp
 
 ::: code-group
 
-```ts [index.ts]
+```ts title="index.ts"
 const canvas = new Canvas(); // [!code ++]
 
 export namespace Game {
@@ -183,7 +183,7 @@ export namespace Game {
 }
 ```
 
-```ts [interfaces/GameState.ts]
+```ts title="interfaces/GameState.ts"
 import { CanvasGameState } from "./canvas"; // [!code ++]
 
 export default interface GameState {
@@ -209,7 +209,7 @@ For example in our case we will replace it with [`howler.js`](https://howlerjs.c
 
 ::: code-group
 
-```ts [index.ts]
+```ts title="index.ts"
 import { Howl, Howler } from "howler"; // [!code ++]
 
 export function exportHowlerState() { // [!code ++]
@@ -285,7 +285,7 @@ export namespace Game {
 }
 ```
 
-```ts [interfaces/GameState.ts]
+```ts title="interfaces/GameState.ts"
 import { CacheableItem } from "cacheable";
 
 export default interface GameState {
@@ -314,7 +314,7 @@ Here's an example:
 
 ::: code-group
 
-```ts [classes/Label.ts]
+```ts title="classes/Label.ts"
 import { LabelAbstract, LabelProps, StepLabelType } from "@drincs/pixi-vn";
 import sha1 from "crypto-js/sha1";
 
@@ -363,7 +363,7 @@ export default class Label<T extends {} = {}> extends LabelAbstract<Label<T>, T>
 }
 ```
 
-```ts [utils/label.ts]
+```ts title="utils/label.ts"
 import { LabelProps, RegisteredLabels, StepLabelType } from "@drincs/pixi-vn";
 import Label from "../classes/Label";
 
@@ -399,7 +399,7 @@ Here's an example:
 
 ::: code-group
 
-```ts [index.ts]
+```ts title="index.ts"
 import HistoryManager, { HistoryManagerStatic } from "./classes/HistoryManager"; // [!code ++]
 
 const stepHistory = new HistoryManager(); // [!code ++]
@@ -442,7 +442,7 @@ export namespace Game {
 }
 ```
 
-```ts [classes/HistoryManager.ts]
+```ts title="classes/HistoryManager.ts"
 import { GameStepStateData, GameUnifier, HistoryGameState, HistoryStep } from "@drincs/pixi-vn";
 import { diff } from "deep-diff";
 

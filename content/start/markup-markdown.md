@@ -11,7 +11,7 @@ Here are some examples of implementations of Markdown in the JavaScript ecosyste
 
 ::: code-group
 
-```tsx [React]
+```tsx title="React"
 // I use the react-markdown library to convert the Markdown to HTML
 // read more about it here: https://www.npmjs.com/package/react-markdown
 import Markdown from "react-markdown";
@@ -33,7 +33,7 @@ export default function MarkdownComponent({ text }: {
 
 ```
 
-```vue [Vue]
+```vue title="Vue"
 <!-- I use the vue-markdown-render library to convert the Markdown to HTML -->
 <!-- read more about it here: https://www.npmjs.com/package/vue-markdown-render -->
 <template>
@@ -63,7 +63,7 @@ title: header')
 </script>
 ```
 
-```svelte [Svelte]
+```svelte title="Svelte"
 <!-- I use the svelte-markdown library to convert the Markdown to HTML -->
 <!-- read more about it here: https://www.npmjs.com/package/svelte-markdown -->
 <script>
@@ -90,7 +90,7 @@ This is a paragraph.
 <SvelteMarkdown {source} />
 ```
 
-```tsx [Angular]
+```tsx title="Angular"
 // I use the ngx-markdown library to convert the Markdown to HTML
 // read more about it here: https://www.npmjs.com/package/ngx-markdown
 import { Component, Input } from "@angular/core";
@@ -124,7 +124,7 @@ title: React Markdown Typewriter
 
 If you are using react I recommend you to use it:
 
-```tsx [React]
+```tsx title="React"
 import { MarkdownTypewriter } from "react-markdown-typewriter";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";

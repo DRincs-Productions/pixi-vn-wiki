@@ -28,19 +28,19 @@ First of all you need to install the following library:
 
 ::: code-group
 
-```sh [npm]
+```sh title="npm"
 npm install @drincs/pixi-vn-json
 ```
 
-```sh [yarn]
+```sh title="yarn"
 yarn add @drincs/pixi-vn-json
 ```
 
-```sh [pnpm]
+```sh title="pnpm"
 pnpm add @drincs/pixi-vn-json
 ```
 
-```sh [bun]
+```sh title="bun"
 bun add @drincs/pixi-vn-json
 ```
 

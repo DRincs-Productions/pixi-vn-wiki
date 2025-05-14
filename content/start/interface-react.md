@@ -21,7 +21,7 @@ Now you can replace the content of following files with the code below:
 
 ::: code-group
 
-```tsx [src/main.tsx]
+```tsx title="src/main.tsx"
 import { canvas, Container, RotateTicker, showImage } from '@drincs/pixi-vn' // [!code ++]
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -75,7 +75,7 @@ canvas // [!code ++]
 ) // [!code ++]
 ```
 
-```css [src/index.css]
+```css title="src/index.css"
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -147,7 +147,7 @@ button:focus-visible {
 }
 ```
 
-```tsx [src/App.tsx]
+```tsx title="src/App.tsx"
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
@@ -190,7 +190,7 @@ function App() {
 export default App
 ```
 
-```css [src/App.css]
+```css title="src/App.css"
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -235,7 +235,7 @@ export default App
 }
 ```
 
-```html [index.html]
+```html title="index.html"
 <!doctype html>
 <html lang="en">
   <head>

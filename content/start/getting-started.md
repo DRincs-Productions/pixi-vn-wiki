@@ -22,23 +22,23 @@ If you want to start a new project, you can use the following command to initial
 
 ::: code-group
 
-```sh [npm]
+```sh title="npm"
 npm create pixi-vn@latest
 ```
 
-```sh [yarn]
+```sh title="yarn"
 yarn create pixi-vn
 ```
 
-```sh [pnpm]
+```sh title="pnpm"
 pnpm create pixi-vn
 ```
 
-```sh [bun]
+```sh title="bun"
 bun create pixi-vn
 ```
 
-```sh [deno]
+```sh title="deno"
 deno init --npm pixi-vn
 ```
 
@@ -77,23 +77,23 @@ For installing the Pixi’VN package in an existing Javascript project, you can 
 
 ::: code-group
 
-```sh [npm]
+```sh title="npm"
 npm install @drincs/pixi-vn
 ```
 
-```sh [yarn]
+```sh title="yarn"
 yarn add @drincs/pixi-vn
 ```
 
-```sh [pnpm]
+```sh title="pnpm"
 pnpm add @drincs/pixi-vn
 ```
 
-```sh [bun]
+```sh title="bun"
 bun add @drincs/pixi-vn
 ```
 
-```sh [deno]
+```sh title="deno"
 deno install npm:@drincs/pixi-vn
 ```
 
@@ -103,11 +103,11 @@ You can use the CDN version of this plugin:
 
 ::: code-group
 
-```html [script tag]
+```html title="script tag"
 <script src="https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@<version>/+esm"></script>
 ```
 
-```html [import map]
+```html title="import map"
 <script type="importmap">
   { "imports": {
       "@drincs/pixi-vn@<version>":        "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn/+esm"
@@ -115,7 +115,7 @@ You can use the CDN version of this plugin:
 </script>
 ```
 
-```js [js import]
+```js title="js import"
 import pixivn from "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@<version>/+esm";
 ```
 
@@ -143,7 +143,7 @@ The `Game.init` method takes the following arguments:
 
 ::: code-group
 
-```ts [src/main.tsx]
+```ts title="src/main.tsx"
 import { Game } from "@drincs/pixi-vn";
 
 // Canvas setup with PIXI
@@ -171,7 +171,7 @@ Game.onError((type, error, { notify }) => {
 });
 ```
 
-```html [index.html]
+```html title="index.html"
 <!doctype html>
 <html lang="en">
   <head>
@@ -194,7 +194,7 @@ In Pixi’VN, in some advanced features, it is necessary to use decorators.
 
 By default, TypeScript does not enable the use of decorators. To enable the use of decorators in TypeScript, you must add the following configuration to the `tsconfig.json` file:
 
-```json [tsconfig.json]
+```json title="tsconfig.json"
 {
     "compilerOptions": {
         // ...

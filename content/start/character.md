@@ -21,7 +21,7 @@ The properties are:
   * `icon`: The character's icon image URL. ( Optional )
   * `color`: The character's color. ( Optional )
 
-```typescript [characters.ts]
+```typescript title="characters.ts"
 import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
 
 export const liam = new CharacterBaseModel('liam', {
@@ -120,7 +120,7 @@ export default class CharacterBaseModel extends StoredClassModel implements Char
 
 You can use a game character for example to [link it to the current dialogue](/start/dialogue#set-the-current-dialogue). You can use the character's `id` or the character's instance, but it is recommended to use the instance.
 
-```typescript [characters.ts]
+```typescript title="characters.ts"
 export const liam = new CharacterBaseModel('liam_id', {
     name: 'Liam',
     surname: 'Smith',
@@ -148,7 +148,7 @@ For this reason, with Pixi’VN it is possible to create a "character with an em
 * `id`, which corresponds to the id of an existing character.
 * `emotion`, which corresponds to the character's subcategory (e.g. the character's emotion).
 
-```typescript [characters.ts]
+```typescript title="characters.ts"
 import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
 
 export const alice = new CharacterBaseModel('alice', {
@@ -189,7 +189,7 @@ To create a "property" that stores its value in the game storage you can create 
 
 ::: code-group
 
-```ts [models/Character.ts]
+```ts title="models/Character.ts"
 import { CharacterInterface, CharacterStoredClass } from "@drincs/pixi-vn";
 
 export class Character extends CharacterStoredClass implements CharacterInterface {
@@ -256,7 +256,7 @@ interface CharacterProps {
 }
 ```
 
-```ts [pixi-vn.d.ts]
+```ts title="pixi-vn.d.ts"
 declare module '@drincs/pixi-vn' {
     interface CharacterInterface {
         /**

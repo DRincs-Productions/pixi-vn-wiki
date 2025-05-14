@@ -10,7 +10,7 @@ In Pixi’VN, dialogue is an object that contains information about *who* and *w
 
 To set the current dialogue, you can use the `narration.dialogue`.
 
-```ts [labels/startLabel.ts]
+```ts title="labels/startLabel.ts"
 import { narration, newLabel } from "@drincs/pixi-vn"
 import { eggHead } from "../values/characters"
 
@@ -73,7 +73,7 @@ To do this, you need "override" the `DialogueInterface` interface in the `.d.ts`
 
 ::: code-group
 
-```typescript [pixi-vn.d.ts]
+```typescript title="pixi-vn.d.ts"
 declare module '@drincs/pixi-vn' {
     interface DialogueInterface {
         color?: string

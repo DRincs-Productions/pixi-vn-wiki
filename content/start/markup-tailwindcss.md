@@ -13,7 +13,7 @@ There are various Tailwind CSS plugins available. Here is a list of some of them
 
 It is recommended to use Tailwind CSS in your Pixi’VN project to add styling or animations to your dialogue text. Here is an example using the `tailwindcss-motion` plugin:
 
-```ts [labels/startLabel.ts]
+```ts title="labels/startLabel.ts"
 import { narration, newLabel } from "@drincs/pixi-vn";
 
 const startLabel = newLabel("start", [

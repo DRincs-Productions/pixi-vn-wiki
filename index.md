@@ -45,7 +45,7 @@ hero:
 
 ::: code-group
 
-```ink [start.ink]
+```ink title="start.ink"
 === start
 Hello, world!
 This is a Pixi’VN tutorial.
@@ -53,14 +53,14 @@ I hope you enjoy it!
 ->DONE
 ```
 
-```renpy [start.rpy]
+```renpy title="start.rpy"
 label start:
     "Hello, world!"
     "This is a Pixi’VN tutorial."
     "I hope you enjoy it!"
 ```
 
-```typescript [startLabel.ts]
+```typescript title="startLabel.ts"
 const startLabel = newLabel("start_label_id", [
     (props) => narration.dialogue = "Hello, world!",
     (props) => narration.dialogue = "This is a Pixi’VN tutorial.",
@@ -68,7 +68,7 @@ const startLabel = newLabel("start_label_id", [
 ])
 ```
 
-```json [startLabel.json]
+```json title="startLabel.json"
 {
     "labels": {
         "start_label_id": [

@@ -109,7 +109,7 @@ Game.onStepEnd((stepIndex, label) => { // [!code focus]
 
 When you create a new label you can pass a function that returns the steps of the label.
 
-```ts [labels/startLabel.ts]
+```ts title="labels/startLabel.ts"
 import { storage, narration, newLabel } from "@drincs/pixi-vn"
 
 export const startLabel = newLabel("start_label",

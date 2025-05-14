@@ -13,7 +13,7 @@ To require the player to make a choice, you can set `narration.choiceMenuOptions
 * [`newChoiceOption`](#choice-menu-option)
 * [`newCloseChoiceOption`](#choice-for-closing-the-menu)
 
-```ts [labels/startLabel.ts]
+```ts title="labels/startLabel.ts"
 import { newChoiceOption, newCloseChoiceOption, narration, newLabel } from "@drincs/pixi-vn"
 
 export const startLabel = newLabel("start_label",
@@ -111,7 +111,7 @@ To do this, you need "override" the `ChoiceInterface` interface in the `.d.ts` f
 
 ::: code-group
 
-```typescript [pixi-vn.d.ts]
+```typescript title="pixi-vn.d.ts"
 declare module '@drincs/pixi-vn' {
     interface ChoiceInterface {
         icon?: string
@@ -127,7 +127,7 @@ narration.choiceMenuOptions = [
 ]
 ```
 
-```tsx [screens/ChoiceMenu.tsx]
+```tsx title="screens/ChoiceMenu.tsx"
 function ChoiceMenu({ choices }: { choices: StoredIndexedChoiceInterface[] }) {
     return (
         <div>
