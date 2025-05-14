@@ -53,7 +53,7 @@ Assets.add({
 
 You can save your assets as you like, with complete freedom. If you plan to save your assets online, here are some of the options:
 
-![github-h3](/github.svg)
+![github-h3-bgwt](/github.svg)
 
 ### Github
 
@@ -87,10 +87,10 @@ Cloud storage is a service that allows you to upload files online.
 
 Here is a list of some of the most popular cloud storage services:
 
-* ![icon](/firebase.svg){style="width:20px;height:20px;margin-right:5px;float:left"} **Firebase Storage** is a cloud service very easy to use. Firebase have two plans: Spark (free) and Blaze (pay as you go). You can find more information [here](https://firebase.google.com/pricing).\
+* ![firebase-text](/firebase.svg) **Firebase Storage** is a cloud service very easy to use. Firebase have two plans: Spark (free) and Blaze (pay as you go). You can find more information [here](https://firebase.google.com/pricing).\
 **Solving Firebase Storage CORS Issue**:
   * Install [gcloud CLI](https://cloud.google.com/sdk/docs/install)
   * Read this [documentation](https://medium.com/@we.viavek/setting-cors-in-firebase-19a2cce2fe28) to solve the CORS issue.
-* ![icon](/aws.svg){style="width:20px;height:20px;margin-right:5px;float:left"} **Amazon S3** is a cloud service. Compared to its competitors, it has many settings, but it may be more difficult to use. There is a payment plan to use Amazon S3. You can find more information [here](https://aws.amazon.com/s3/pricing/).
-* ![icon](/supabase.svg){style="width:20px;height:20px;margin-right:5px;float:left"} **Supabase** is an open-source Firebase alternative. Supabase have two plans: Free and Pay as you go. You can find more information [here](https://supabase.io/pricing).
+* ![aws-text](/aws.svg) **Amazon S3** is a cloud service. Compared to its competitors, it has many settings, but it may be more difficult to use. There is a payment plan to use Amazon S3. You can find more information [here](https://aws.amazon.com/s3/pricing/).
+* ![supabase-text](/supabase.svg) **Supabase** is an open-source Firebase alternative. Supabase have two plans: Free and Pay as you go. You can find more information [here](https://supabase.io/pricing).
 * **Convex** is a cloud service that allows you to store and serve user-generated content, such as photos or videos or other files. Convex have two plans: Free and Pay as you go. You can find more information [here](https://www.convex.dev/pricing).
