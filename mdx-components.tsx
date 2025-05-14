@@ -113,6 +113,7 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
                 />
             );
         },
+        Comments: () => null,
         ...components,
     };
 }
