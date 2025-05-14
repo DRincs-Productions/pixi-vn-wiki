@@ -42,6 +42,41 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
                     />
                 );
             }
+            if (props.alt.endsWith("-h2")) {
+                return (
+                    <ImageZoom
+                        {...props}
+                        style={{
+                            width: "28px",
+                            height: "28px",
+                            marginRight: "5px",
+                            float: "left",
+                            borderRadius: "5px",
+                            marginBottom: "0px",
+                            marginTop: "29px",
+                            ...props.style,
+                        }}
+                    />
+                );
+            }
+            if (props.alt.endsWith("-h2-bgwt")) {
+                return (
+                    <ImageZoom
+                        {...props}
+                        style={{
+                            width: "28px",
+                            height: "28px",
+                            marginRight: "5px",
+                            float: "left",
+                            borderRadius: "5px",
+                            marginBottom: "0px",
+                            marginTop: "29px",
+                            backgroundColor: "white",
+                            ...props.style,
+                        }}
+                    />
+                );
+            }
             if (props.alt.endsWith("-text")) {
                 return (
                     <ImageZoom

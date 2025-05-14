@@ -9,7 +9,9 @@ In addition to being able to interact with the canvas from JavaScript/TypeScript
 - [***ink***](/ink/ink-canvas.md)
 - Ren'Py (Under development)
 
-## ![icon](/pixijs.svg){style="width:30px;height:30px;margin-right:5px;float:left;border-radius:5px"} What is PixiJS?
+![pixijs-h2](/pixijs.svg)
+
+## What is PixiJS?
 
 PixiJS is the fastest, most lightweight 2D library available for the web, working across all devices and allowing you to create rich, interactive graphics and cross-platform applications using WebGL and WebGPU. It is fast, flexible, and easy to use. It is used in games like [Good Pizza, Great Pizza](https://www.goodpizzagreatpizza.com/) and [The Enchanted Cave 2](https://store.steampowered.com/app/368610/The_Enchanted_Cave_2/).
 
