@@ -6,7 +6,7 @@ export default function HomePage() {
             <h1 className='mb-4 text-2xl font-bold'>Hello World</h1>
             <p className='text-fd-muted-foreground'>
                 You can open{" "}
-                <Link href='/start' className='text-fd-foreground font-semibold underline'>
+                <Link href='/start/getting-started' className='text-fd-foreground font-semibold underline'>
                     /start
                 </Link>{" "}
                 and see the documentation.
