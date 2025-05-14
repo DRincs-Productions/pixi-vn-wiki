@@ -10,8 +10,8 @@ In Pixi'VN, there is the option to prompt the player to make a choice. Each choi
 
 To require the player to make a choice, you can set `narration.choiceMenuOptions` with an array of `StoredChoiceInterface`. For create a `StoredChoiceInterface` object, you can use:
 
-* [`newChoiceOption`](#choice-menu-option)
-* [`newCloseChoiceOption`](#choice-for-closing-the-menu)
+* [`newChoiceOption`](#create-a-choice-menu-option)
+* [`newCloseChoiceOption`](#create-a-close-choice-menu-option)
 
 ```ts title="labels/startLabel.ts"
 import { newChoiceOption, newCloseChoiceOption, narration, newLabel } from "@drincs/pixi-vn"
