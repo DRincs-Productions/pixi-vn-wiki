@@ -6,7 +6,6 @@ import type { MDXComponents } from "mdx/types";
 export function getMDXComponents(components?: MDXComponents): MDXComponents {
     return {
         ...defaultMdxComponents,
-        ...components,
         img: (props) => {
             console.log(props);
             if (props.alt.endsWith("-h3")) {
@@ -63,5 +62,6 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
             }
             return <ImageZoom {...props} />;
         },
+        ...components,
     };
 }
