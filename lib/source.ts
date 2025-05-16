@@ -17,6 +17,7 @@ export const source = loader({
                         width: "1em",
                         height: "1em",
                         verticalAlign: "middle",
+                        borderRadius: "5px",
                     },
                 });
             case "/vue.svg":
@@ -27,6 +28,75 @@ export const source = loader({
                         width: "1em",
                         height: "1em",
                         verticalAlign: "middle",
+                        borderRadius: "5px",
+                    },
+                });
+            case "/spine.svg":
+                return createElement("img", {
+                    src: icon,
+                    alt: "icon",
+                    style: {
+                        width: "1em",
+                        height: "1em",
+                        verticalAlign: "middle",
+                        borderRadius: "5px",
+                    },
+                });
+            case "/threejs.svg":
+                return createElement("img", {
+                    src: icon,
+                    alt: "icon",
+                    style: {
+                        width: "1em",
+                        height: "1em",
+                        verticalAlign: "middle",
+                        borderRadius: "5px",
+                        backgroundColor: "white",
+                    },
+                });
+            case "/angular.svg":
+                return createElement("img", {
+                    src: icon,
+                    alt: "icon",
+                    style: {
+                        width: "1em",
+                        height: "1em",
+                        verticalAlign: "middle",
+                        borderRadius: "5px",
+                    },
+                });
+            case "/react.svg":
+                return createElement("img", {
+                    src: icon,
+                    alt: "icon",
+                    style: {
+                        width: "1em",
+                        height: "1em",
+                        verticalAlign: "middle",
+                        borderRadius: "5px",
+                    },
+                });
+            case "/markdown.svg":
+                return createElement("img", {
+                    src: icon,
+                    alt: "icon",
+                    style: {
+                        width: "1em",
+                        height: "0.6em",
+                        verticalAlign: "middle",
+                        borderRadius: "5px",
+                        backgroundColor: "white",
+                    },
+                });
+            case "/tailwindcss.svg":
+                return createElement("img", {
+                    src: icon,
+                    alt: "icon",
+                    style: {
+                        width: "1em",
+                        height: "1em",
+                        verticalAlign: "middle",
+                        borderRadius: "5px",
                     },
                 });
         }

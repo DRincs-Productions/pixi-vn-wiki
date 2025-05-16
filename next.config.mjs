@@ -6,7 +6,7 @@ const withMDX = createMDX();
 const config = {
     reactStrictMode: true,
     images: {
-        domains: ["pixijs.io", "github.com", "filters.pixijs.download"],
+        domains: ["pixijs.io", "github.com", "filters.pixijs.download", "firebasestorage.googleapis.com"],
     },
 };
 
