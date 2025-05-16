@@ -15,11 +15,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                 {
                     type: "folder",
                     name: "Why Pixi’VN?",
-                    index: {
-                        type: "page",
-                        name: "Why Pixi’VN?",
-                        url: "/start/why",
-                    },
+                    url: "/start/why",
                     children: [
                         {
                             type: "page",
@@ -28,182 +24,223 @@ export default function Layout({ children }: { children: ReactNode }) {
                         },
                     ],
                 },
-                { name: "Getting Started", url: "/start/getting-started" },
                 {
+                    type: "page",
+                    name: "Getting Started",
+                    url: "/start/getting-started",
+                },
+                {
+                    type: "folder",
                     name: "Make your first",
                     children: [
-                        { name: "Visual Novel", url: "/start/make-visual-novel" },
-                        { name: "Point and Click adventure game", url: "/start/make-point-and-click" },
-                        { name: "RPG game", url: "/start/make-rpg" },
-                        { name: "Game Engine", url: "/start/make-game-engine" },
+                        {
+                            type: "page",
+                            name: "Visual Novel",
+                            url: "/start/make-visual-novel",
+                        },
+                        {
+                            type: "page",
+                            name: "Point and Click adventure game",
+                            url: "/start/make-point-and-click",
+                        },
+                        {
+                            type: "page",
+                            name: "RPG game",
+                            url: "/start/make-rpg",
+                        },
+                        {
+                            type: "page",
+                            name: "Game Engine",
+                            url: "/start/make-game-engine",
+                        },
                     ],
                 },
                 {
+                    type: "separator",
                     name: "First steps",
+                },
+                { type: "page", name: "Characters", url: "/start/character" },
+                {
+                    type: "folder",
+                    name: "Narration",
+                    url: "/start/narration",
                     children: [
-                        { name: "Characters", url: "/start/character" },
+                        { type: "page", name: "Narration with ink", url: "/ink/ink" },
+                        { type: "page", name: "Narration with Ren’Py", url: "/renpy/renpy" },
                         {
-                            name: "Narration",
-                            url: "/start/narration",
+                            type: "folder",
+                            name: "Narration with JS/TS",
                             children: [
-                                { name: "Narration with ink", url: "/ink/ink" },
-                                { name: "Narration with Ren’Py", url: "/renpy/renpy" },
+                                { type: "page", name: "Dialogue", url: "/start/dialogue" },
                                 {
-                                    name: "Narration with JS/TS",
-                                    collapsed: true,
+                                    type: "folder",
+                                    name: "Label and Game Step",
+                                    url: "/start/labels",
                                     children: [
-                                        { name: "Dialogue", url: "/start/dialogue" },
-                                        {
-                                            name: "Label and Game Step",
-                                            url: "/start/labels",
-                                            children: [
-                                                { name: "Game flow with labels", url: "/start/labels-flow" },
-                                                { name: "Label features", url: "/start/labels-advanced" },
-                                            ],
-                                        },
-                                        { name: "Choice Menus", url: "/start/choices" },
-                                        { name: "Input prompt", url: "/start/input" },
-                                        { name: "History", url: "/start/history" },
-                                        { name: "Translating", url: "/start/translate" },
-                                        {
-                                            name: "Markup language (to add text style)",
-                                            url: "/start/markup",
-                                            collapsed: true,
-                                            children: [
-                                                { name: "Markdown", url: "/start/markup-markdown" },
-                                                { name: "Tailwind CSS", url: "/start/markup-tailwindcss" },
-                                            ],
-                                        },
-                                        { name: "Other features", url: "/start/other-narrative-features" },
+                                        { type: "page", name: "Game flow with labels", url: "/start/labels-flow" },
+                                        { type: "page", name: "Label features", url: "/start/labels-advanced" },
                                     ],
                                 },
+                                { type: "page", name: "Choice Menus", url: "/start/choices" },
+                                { type: "page", name: "Input prompt", url: "/start/input" },
+                                { type: "page", name: "History", url: "/start/history" },
+                                { type: "page", name: "Translating", url: "/start/translate" },
+                                {
+                                    type: "folder",
+                                    name: "Markup language (to add text style)",
+                                    url: "/start/markup",
+                                    children: [
+                                        { type: "page", name: "Markdown", url: "/start/markup-markdown" },
+                                        { type: "page", name: "Tailwind CSS", url: "/start/markup-tailwindcss" },
+                                    ],
+                                },
+                                { type: "page", name: "Other features", url: "/start/other-narrative-features" },
                             ],
                         },
+                    ],
+                },
+                {
+                    type: "folder",
+                    name: "PixiJS Canvas",
+                    url: "/start/canvas",
+                    children: [
+                        { type: "page", name: "Initialize", url: "/start/canvas-initialize" },
+                        { type: "page", name: "Canvas alias", url: "/start/canvas-alias" },
                         {
-                            name: "PixiJS Canvas",
-                            url: "/start/canvas",
-                            collapsed: true,
+                            type: "folder",
+                            name: "Canvas Components",
+                            url: "/start/canvas-components",
                             children: [
-                                { name: "Initialize", url: "/start/canvas-initialize" },
-                                { name: "Canvas alias", url: "/start/canvas-alias" },
+                                { type: "page", name: "ImageSprite", url: "/start/canvas-images" },
+                                { type: "page", name: "ImageContainer", url: "/start/canvas-image-container" },
+                                { type: "page", name: "VideoSprite", url: "/start/canvas-videos" },
+                                { type: "page", name: "Filters", url: "/start/canvas-filters" },
+                                { type: "page", name: "Lights", url: "/start/canvas-lights" },
+                                { type: "page", name: "Spine 2D", url: "/start/canvas-spine2d" },
+                                { type: "page", name: "Three.js", url: "/start/canvas-threejs" },
+                            ],
+                        },
+                        { type: "page", name: "Components functions", url: "/start/canvas-functions" },
+                        { type: "page", name: "Position properties", url: "/start/canvas-position" },
+                        { type: "page", name: "Transitions", url: "/start/canvas-transition" },
+                        {
+                            type: "folder",
+                            name: "Animations and Effects",
+                            url: "/start/canvas-animations-effects",
+                            children: [
                                 {
-                                    name: "Canvas Components",
-                                    url: "/start/canvas-components",
-                                    collapsed: true,
-                                    children: [
-                                        { name: "ImageSprite", url: "/start/canvas-images" },
-                                        { name: "ImageContainer", url: "/start/canvas-image-container" },
-                                        { name: "VideoSprite", url: "/start/canvas-videos" },
-                                        { name: "Filters", url: "/start/canvas-filters" },
-                                        { name: "Lights", url: "/start/canvas-lights" },
-                                        { name: "Spine 2D", url: "/start/canvas-spine2d" },
-                                        { name: "Three.js", url: "/start/canvas-threejs" },
-                                    ],
-                                },
-                                { name: "Components functions", url: "/start/canvas-functions" },
-                                { name: "Position properties", url: "/start/canvas-position" },
-                                { name: "Transitions", url: "/start/canvas-transition" },
-                                {
-                                    name: "Animations and Effects",
-                                    url: "/start/canvas-animations-effects",
-                                    collapsed: true,
+                                    type: "folder",
+                                    name: "Primitives (ticker)",
+                                    url: "/start/canvas-tickers",
                                     children: [
                                         {
-                                            name: "Primitives (ticker)",
-                                            url: "/start/canvas-tickers",
-                                            children: [
-                                                {
-                                                    name: "Tickers methods",
-                                                    url: "/start/canvas-tickers-functions",
-                                                },
-                                            ],
-                                        },
-                                        {
-                                            name: "Articulated",
-                                            url: "/start/canvas-articulated-animations-effects",
+                                            type: "page",
+                                            name: "Tickers methods",
+                                            url: "/start/canvas-tickers-functions",
                                         },
                                     ],
                                 },
-                            ],
-                        },
-                        { name: "Sounds and Music", url: "/start/sound" },
-                        {
-                            name: "Assets",
-                            url: "/start/assets",
-                            collapsed: true,
-                            children: [{ name: "Assets management", url: "/start/assets-management" }],
-                        },
-                        {
-                            name: "Game storage",
-                            url: "/start/storage",
-                            collapsed: true,
-                            children: [
-                                { name: "Flags Management", url: "/start/flags" },
-                                { name: "Stored Classes", url: "/start/stored-classes" },
-                            ],
-                        },
-                        {
-                            name: "UI with JavaScript Framework",
-                            url: "/start/interface",
-                            collapsed: true,
-                            children: [
                                 {
-                                    name: "JavaScript Frameworks",
-                                    children: [
-                                        { name: "Angular UI", url: "/start/interface-angular" },
-                                        { name: "React UI", url: "/start/interface-react" },
-                                        { name: "Vue UI", url: "/start/interface-vue" },
-                                    ],
-                                },
-                                {
-                                    name: "Navigate/switch between UI screens",
-                                    url: "/start/interface-navigate",
-                                },
-                                {
-                                    name: "Connect the UI with the storage",
-                                    url: "/start/interface-connect-storage",
-                                },
-                            ],
-                        },
-                        { name: "Save and Load", url: "/start/save" },
-                        {
-                            name: "Distribution",
-                            url: "/start/distribution",
-                            collapsed: true,
-                            children: [
-                                { name: "Website distribution", url: "/start/distribution-website" },
-                                {
-                                    name: "Desktop & mobile devices",
-                                    url: "/start/distribution-desktop-mobile",
+                                    type: "page",
+                                    name: "Articulated",
+                                    url: "/start/canvas-articulated-animations-effects",
                                 },
                             ],
                         },
                     ],
                 },
-            ],
-            "/ink/": [
                 {
-                    name: "ink",
+                    type: "page",
+                    name: "Sounds and Music",
+                    url: "/start/sound",
+                },
+                {
+                    type: "folder",
+                    name: "Assets",
+                    url: "/start/assets",
                     children: [
                         {
-                            name: "Narration with ink",
-                            url: "/ink/ink",
+                            type: "page",
+                            name: "Assets management",
+                            url: "/start/assets-management",
+                        },
+                    ],
+                },
+                {
+                    type: "folder",
+                    name: "Game storage",
+                    url: "/start/storage",
+                    children: [
+                        {
+                            type: "page",
+                            name: "Flags Management",
+                            url: "/start/flags",
+                        },
+                        {
+                            type: "page",
+                            name: "Stored Classes",
+                            url: "/start/stored-classes",
+                        },
+                    ],
+                },
+                {
+                    type: "folder",
+                    name: "UI with JavaScript Framework",
+                    url: "/start/interface",
+                    children: [
+                        {
+                            type: "folder",
+                            name: "JavaScript Frameworks",
                             children: [
-                                { name: "Characters", url: "/ink/ink-character" },
-                                { name: "Open a knot", url: "/ink/ink-label" },
-                                { name: "Variables", url: "/ink/ink-variables" },
-                                { name: "Markup language (to add text style)", url: "/ink/ink-markup" },
-                                { name: "Input prompt", url: "/ink/ink-input" },
-                                { name: "Canvas", url: "/ink/ink-canvas" },
-                                { name: "Sounds and Music", url: "/ink/ink-sound" },
-                                { name: "Assets management", url: "/ink/ink-assets" },
-                                { name: "Pause", url: "/ink/ink-pause" },
-                                { name: "Text replacement", url: "/ink/ink-replacement" },
-                                { name: "Translating", url: "/ink/ink-translate" },
-                                { name: "Custom Hashtag Script", url: "/ink/ink-hashtag" },
+                                {
+                                    type: "page",
+                                    name: "Angular UI",
+                                    url: "/start/interface-angular",
+                                },
+                                {
+                                    type: "page",
+                                    name: "React UI",
+                                    url: "/start/interface-react",
+                                },
+                                {
+                                    type: "page",
+                                    name: "Vue UI",
+                                    url: "/start/interface-vue",
+                                },
                             ],
                         },
-                        { name: "Back", url: "/start/narration" },
+                        {
+                            type: "page",
+                            name: "Navigate/switch between UI screens",
+                            url: "/start/interface-navigate",
+                        },
+                        {
+                            type: "page",
+                            name: "Connect the UI with the storage",
+                            url: "/start/interface-connect-storage",
+                        },
+                    ],
+                },
+                {
+                    type: "page",
+                    name: "Save and Load",
+                    url: "/start/save",
+                },
+                {
+                    type: "folder",
+                    name: "Distribution",
+                    url: "/start/distribution",
+                    children: [
+                        {
+                            type: "page",
+                            name: "Website distribution",
+                            url: "/start/distribution-website",
+                        },
+                        {
+                            type: "page",
+                            name: "Desktop & mobile devices",
+                            url: "/start/distribution-desktop-mobile",
+                        },
                     ],
                 },
             ],
