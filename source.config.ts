@@ -3,7 +3,8 @@ import { defineConfig, defineDocs, frontmatterSchema, metaSchema } from "fumadoc
 // You can customise Zod schemas for frontmatter and `meta.json` here
 // see https://fumadocs.vercel.app/docs/mdx/collections#define-docs
 export const docs = defineDocs({
-    dir: "content/start", // Specifies the directory where your docs are located
+    // Specifies the directory where your docs are located
+    dir: ["content/start", "content/ink", "content/other-topics", "content/renpy"],
     docs: {
         schema: frontmatterSchema,
     },
