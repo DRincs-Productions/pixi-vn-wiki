@@ -126,7 +126,6 @@ export default function Layout({ children }: { children: ReactNode }) {
                         url: "/start/canvas",
                     },
                     children: [
-                        { type: "page", name: "Initialize", url: "/start/canvas-initialize" },
                         { type: "page", name: "Canvas alias", url: "/start/canvas-alias" },
                         {
                             type: "folder",
