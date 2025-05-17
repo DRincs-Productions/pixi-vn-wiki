@@ -52,5 +52,8 @@ export default defineConfig({
                 },
             ],
         },
+        remarkCodeTabOptions: {
+            parseMdx: true,
+        },
     },
 });
