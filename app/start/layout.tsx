@@ -15,7 +15,11 @@ export default function Layout({ children }: { children: ReactNode }) {
                 {
                     type: "folder",
                     name: "Why Pixi’VN?",
-                    url: "/start/why",
+                    index: {
+                        type: "page",
+                        name: "Why Pixi’VN?",
+                        url: "/start/why",
+                    },
                     children: [
                         {
                             type: "page",
@@ -32,6 +36,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                 {
                     type: "folder",
                     name: "Make your first",
+                    defaultOpen: true,
                     children: [
                         {
                             type: "page",
@@ -63,7 +68,11 @@ export default function Layout({ children }: { children: ReactNode }) {
                 {
                     type: "folder",
                     name: "Narration",
-                    url: "/start/narration",
+                    index: {
+                        type: "page",
+                        name: "Narration",
+                        url: "/start/narration",
+                    },
                     children: [
                         { type: "page", name: "Narration with ink", url: "/ink/ink" },
                         { type: "page", name: "Narration with Ren’Py", url: "/renpy/renpy" },
@@ -75,7 +84,11 @@ export default function Layout({ children }: { children: ReactNode }) {
                                 {
                                     type: "folder",
                                     name: "Label and Game Step",
-                                    url: "/start/labels",
+                                    index: {
+                                        type: "page",
+                                        name: "Label and Game Step",
+                                        url: "/start/labels",
+                                    },
                                     children: [
                                         { type: "page", name: "Game flow with labels", url: "/start/labels-flow" },
                                         { type: "page", name: "Label features", url: "/start/labels-advanced" },
@@ -88,7 +101,11 @@ export default function Layout({ children }: { children: ReactNode }) {
                                 {
                                     type: "folder",
                                     name: "Markup language (to add text style)",
-                                    url: "/start/markup",
+                                    index: {
+                                        type: "page",
+                                        name: "Markup language (to add text style)",
+                                        url: "/start/markup",
+                                    },
                                     children: [
                                         { type: "page", name: "Markdown", url: "/start/markup-markdown" },
                                         { type: "page", name: "Tailwind CSS", url: "/start/markup-tailwindcss" },
@@ -102,14 +119,22 @@ export default function Layout({ children }: { children: ReactNode }) {
                 {
                     type: "folder",
                     name: "PixiJS Canvas",
-                    url: "/start/canvas",
+                    index: {
+                        type: "page",
+                        name: "PixiJS Canvas",
+                        url: "/start/canvas",
+                    },
                     children: [
                         { type: "page", name: "Initialize", url: "/start/canvas-initialize" },
                         { type: "page", name: "Canvas alias", url: "/start/canvas-alias" },
                         {
                             type: "folder",
                             name: "Canvas Components",
-                            url: "/start/canvas-components",
+                            index: {
+                                type: "page",
+                                name: "Canvas Components",
+                                url: "/start/canvas-components",
+                            },
                             children: [
                                 { type: "page", name: "ImageSprite", url: "/start/canvas-images" },
                                 { type: "page", name: "ImageContainer", url: "/start/canvas-image-container" },
@@ -126,12 +151,20 @@ export default function Layout({ children }: { children: ReactNode }) {
                         {
                             type: "folder",
                             name: "Animations and Effects",
-                            url: "/start/canvas-animations-effects",
+                            index: {
+                                type: "page",
+                                name: "Animations and Effects",
+                                url: "/start/canvas-animations-effects",
+                            },
                             children: [
                                 {
                                     type: "folder",
                                     name: "Primitives (ticker)",
-                                    url: "/start/canvas-tickers",
+                                    index: {
+                                        type: "page",
+                                        name: "Primitives (ticker)",
+                                        url: "/start/canvas-tickers",
+                                    },
                                     children: [
                                         {
                                             type: "page",
@@ -157,7 +190,11 @@ export default function Layout({ children }: { children: ReactNode }) {
                 {
                     type: "folder",
                     name: "Assets",
-                    url: "/start/assets",
+                    index: {
+                        type: "page",
+                        name: "Assets",
+                        url: "/start/assets",
+                    },
                     children: [
                         {
                             type: "page",
@@ -169,7 +206,11 @@ export default function Layout({ children }: { children: ReactNode }) {
                 {
                     type: "folder",
                     name: "Game storage",
-                    url: "/start/storage",
+                    index: {
+                        type: "page",
+                        name: "Game storage",
+                        url: "/start/storage",
+                    },
                     children: [
                         {
                             type: "page",
@@ -186,7 +227,11 @@ export default function Layout({ children }: { children: ReactNode }) {
                 {
                     type: "folder",
                     name: "UI with JavaScript Framework",
-                    url: "/start/interface",
+                    index: {
+                        type: "page",
+                        name: "UI with JavaScript Framework",
+                        url: "/start/interface",
+                    },
                     children: [
                         {
                             type: "folder",
