@@ -236,6 +236,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                         {
                             type: "folder",
                             name: "JavaScript Frameworks",
+                            defaultOpen: true,
                             children: [
                                 {
                                     type: "page",
