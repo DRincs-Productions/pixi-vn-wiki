@@ -2,9 +2,11 @@
 title: Make your game engine
 ---
 
-::: info
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+
+<Callout type="info">
 This guide is designed only for developers with a good experience with JavaScript. If you are not a developer, you can skip this page and use the default engine.
-:::
+</Callout>
 
 One of the main goals of Pixi’VN is to provide basic utilities for developing video games. The engine is designed to be modular and flexible, allowing developers to use only the parts they need for their specific projects. This modularity also makes it easier to maintain and update the engine over time.
 
@@ -12,9 +14,9 @@ This is exactly what makes the possibility of creating your own game engine usin
 
 The first step is to create a new project. You can find more information on how to create a new project starting from a template [here](/start/getting-started.md#project-initialization). The "Game Engine" template is a simple project that contains the basic structure of a game engine. By default, it exports the basic functionality of pixi-vn while removing anything unused from the package.
 
-::: info
+<Callout type="info">
 A special thread was created to share your idea or ask for help during the development of your Game Engine: [Creating a game engine from pixi-vn](https://github.com/DRincs-Productions/pixi-vn/discussions/389)
-:::
+</Callout>
 
 The second step is to understand that Pixi’VN is divided into the following independent "modules". This means that you can replace one "module" without having to worry about modifying the others. To do this, you just need to modify `GameUnifier` which has the function of connecting the modile headlights to each other, as explained below.
 
@@ -31,9 +33,7 @@ Replacing the base storage of Pixi’VN is a really easy operation.
 
 For example in our case we will replace it with [`cacheable`](https://www.npmjs.com/package/cacheable), here is what we should change:
 
-::: code-group
-
-```ts title="index.ts"
+```ts tab="index.ts"
 import { CacheableMemory } from "cacheable"; // [!code ++]
 
 const storage = new CacheableMemory(); // [!code ++]
@@ -108,7 +108,7 @@ export namespace Game {
 }
 ```
 
-```ts title="interfaces/GameState.ts"
+```ts tab="interfaces/GameState.ts"
 import { CacheableItem } from "cacheable";
 
 export default interface GameState {
@@ -126,8 +126,6 @@ export default interface GameState {
 }
 ```
 
-:::
-
 ## Renderer
 
 Even the canvas is a module that can be replaced. The default canvas is a simple canvas that uses the `pixi.js` library. You can replace it with any other canvas library you want.
@@ -136,9 +134,7 @@ You are not forced to use a WebGL-based 2D renderer. You can use any other rende
 
 Since I have no experience on rendering libraries other than `pixi.js`, my example will be based on a semi-realistic class.
 
-::: code-group
-
-```ts title="index.ts"
+```ts tab="index.ts"
 const canvas = new Canvas(); // [!code ++]
 
 export namespace Game {
@@ -183,7 +179,7 @@ export namespace Game {
 }
 ```
 
-```ts title="interfaces/GameState.ts"
+```ts tab="interfaces/GameState.ts"
 import { CanvasGameState } from "./canvas"; // [!code ++]
 
 export default interface GameState {
@@ -197,8 +193,6 @@ export default interface GameState {
 }
 ```
 
-:::
-
 ## Sound
 
 The sound module is a module that can be replaced. The default sound module is a simple sound module that uses the [`PixiJS Sound`](https://pixijs.io/sound/examples/index.html) library. You can replace it with any other sound library you want.
@@ -207,9 +201,7 @@ For example in our case we will replace it with [`howler.js`](https://howlerjs.c
 
 ( The implementation of howler was done by AI, so it may not be perfect. )
 
-::: code-group
-
-```ts title="index.ts"
+```ts tab="index.ts"
 import { Howl, Howler } from "howler"; // [!code ++]
 
 export function exportHowlerState() { // [!code ++]
@@ -285,7 +277,7 @@ export namespace Game {
 }
 ```
 
-```ts title="interfaces/GameState.ts"
+```ts tab="interfaces/GameState.ts"
 import { CacheableItem } from "cacheable";
 
 export default interface GameState {
@@ -300,8 +292,6 @@ export default interface GameState {
 }
 ```
 
-:::
-
 ## Narration
 
 Replacing the entire narration module is possible but not recommended as it is the strong point of Pixi’VN.
@@ -312,9 +302,7 @@ The `LabelAbstract` class is a generic class that can be used to create your own
 
 Here's an example:
 
-::: code-group
-
-```ts title="classes/Label.ts"
+```ts tab="classes/Label.ts"
 import { LabelAbstract, LabelProps, StepLabelType } from "@drincs/pixi-vn";
 import sha1 from "crypto-js/sha1";
 
@@ -363,7 +351,7 @@ export default class Label<T extends {} = {}> extends LabelAbstract<Label<T>, T>
 }
 ```
 
-```ts title="utils/label.ts"
+```ts tab="utils/label.ts"
 import { LabelProps, RegisteredLabels, StepLabelType } from "@drincs/pixi-vn";
 import Label from "../classes/Label";
 
@@ -389,17 +377,13 @@ export function newLabel<T extends {} = {}>(
 }
 ```
 
-:::
-
 ## History
 
 The history module is a module that can be replaced. The default history module is a simple history module that uses the [`deep-diff`](https://www.npmjs.com/package/deep-diff) library. You can replace it with any other history library you want.
 
 Here's an example:
 
-::: code-group
-
-```ts title="index.ts"
+```ts tab="index.ts"
 import HistoryManager, { HistoryManagerStatic } from "./classes/HistoryManager"; // [!code ++]
 
 const stepHistory = new HistoryManager(); // [!code ++]
@@ -442,7 +426,7 @@ export namespace Game {
 }
 ```
 
-```ts title="classes/HistoryManager.ts"
+```ts tab="classes/HistoryManager.ts"
 import { GameStepStateData, GameUnifier, HistoryGameState, HistoryStep } from "@drincs/pixi-vn";
 import { diff } from "deep-diff";
 
@@ -534,5 +518,3 @@ export default class HistoryManager {
     }
 }
 ```
-
-:::

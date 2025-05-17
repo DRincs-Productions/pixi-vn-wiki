@@ -68,6 +68,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                 {
                     type: "folder",
                     name: "Narration",
+                    defaultOpen: true,
                     index: {
                         type: "page",
                         name: "Narration",
