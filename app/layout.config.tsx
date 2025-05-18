@@ -6,6 +6,7 @@ import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
  * you can customise layouts individually from:
  * Home Layout: app/(home)/layout.tsx
  * Docs Layout: app/start/layout.tsx
+ * Ink Layout: app/ink/layout.tsx
  */
 export const baseOptions: BaseLayoutProps = {
     nav: {
