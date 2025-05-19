@@ -7,6 +7,7 @@ import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
  * Home Layout: app/(home)/layout.tsx
  * Docs Layout: app/start/layout.tsx
  * Ink Layout: app/ink/layout.tsx
+ * Ren'Py Layout: app/renpy/layout.tsx
  */
 export const baseOptions: BaseLayoutProps = {
     nav: {
