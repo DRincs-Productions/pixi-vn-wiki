@@ -18,8 +18,19 @@ export default defineConfig({
         // MDX options
         rehypePlugins: [],
         rehypeCodeOptions: {
+            lazy: true,
+            inline: "tailing-curly-colon",
+            themes: {
+                light: "github-light",
+                dark: "github-dark",
+            },
             theme: "github-dark",
             langs: [
+                "ts",
+                "js",
+                "html",
+                "tsx",
+                "mdx",
                 {
                     displayName: "ink",
                     name: "ink",
