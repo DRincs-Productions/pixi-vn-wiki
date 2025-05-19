@@ -33,6 +33,28 @@ export default function Layout({ children }: { children: ReactNode }) {
                     text: "Guide",
                     url: "/start/getting-started",
                 },
+                {
+                    type: "menu",
+                    text: "Other topics",
+                    items: [
+                        {
+                            text: "FAQ",
+                            url: "/other-topics/faq",
+                        },
+                        {
+                            text: "Migration",
+                            url: "/other-topics/migration",
+                        },
+                        {
+                            text: "Intecept Events",
+                            url: "/other-topics/intercept-events",
+                        },
+                        {
+                            text: "Pixi’VN + Json Integration",
+                            url: "/other-topics/pixi-vn-json",
+                        },
+                    ],
+                },
             ]}
         >
             {children}

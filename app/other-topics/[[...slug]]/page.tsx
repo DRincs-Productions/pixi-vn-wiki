@@ -17,7 +17,7 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
             <DocsDescription>{page.data.description}</DocsDescription>
             <DocsBody>
                 <a
-                    href={`https://github.com/DRincs-Productions/pixi-vn-wiki/blob/main/content/ink/${page.file.path}`}
+                    href={`https://github.com/DRincs-Productions/pixi-vn-wiki/blob/main/content/other-topics/${page.file.path}`}
                     rel='noreferrer noopener'
                     target='_blank'
                     className='w-fit border rounded-xl p-2 font-medium text-sm text-fd-secondary-foreground bg-fd-secondary transition-colors hover:text-fd-accent-foreground hover:bg-fd-accent'

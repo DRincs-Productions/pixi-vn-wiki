@@ -10,7 +10,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             children: [
                 {
                     type: "separator",
-                    name: "Getting Started",
+                    name: "Introduction",
                 },
                 {
                     type: "folder",
@@ -30,7 +30,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                 },
                 {
                     type: "page",
-                    name: "Getting Started",
+                    name: "Quick Start",
                     url: "/start/getting-started",
                 },
                 {

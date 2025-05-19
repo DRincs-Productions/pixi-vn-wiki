@@ -8,9 +8,7 @@ It is recommended to "override" the `StepLabelProps` interface in the `.d.ts` fi
 
 For example:
 
-::: code-group
-
-```typescript title="pixi-vn.d.ts"
+```ts tab="pixi-vn.d.ts"
 declare module '@drincs/pixi-vn' {
     interface StepLabelProps {
         /**
@@ -24,7 +22,7 @@ declare module '@drincs/pixi-vn' {
 }
 ```
 
-```typescript title="labels/startLabel.ts"
+```ts tab="labels/startLabel.ts"
 export const startLabel = newLabel("start_label",
     [
         async ({ navigate }) => { // [!code focus]
@@ -34,8 +32,6 @@ export const startLabel = newLabel("start_label",
 )
 ```
 
-:::
-
 ## Skip step and Auto Forward
 
 In a visual novel, It's very helpful to have the option to skip a step or auto forward to the next step.
@@ -44,8 +40,7 @@ Pixi’VN does not directly implement these 2 features, in order to leave more c
 
 My advice to implement these features is to add a control where `narration.goNext()` is used:
 
-```tsx
-// React example
+```tsx title="React example"
 const [skipEnabled, setSkipEnabled] = useState<boolean>(false)
 const [autoEnabled, setAutoEnabled] = useState<boolean>(false)
 const [recheckSkipAuto, setRecheckSkipAuto] = useState<number>(0)
@@ -87,9 +82,7 @@ I recommend adding an array of strings containing the links/aliases of the image
 
 For example:
 
-::: code-group
-
-```ts title="models/Character.ts"
+```ts tab="models/Character.ts"
 import { CharacterInterface, CharacterStoredClass } from "@drincs/pixi-vn";
 
 export class Character extends CharacterStoredClass implements CharacterInterface {
@@ -109,7 +102,7 @@ interface CharacterProps {
 }
 ```
 
-```ts title="pixi-vn.d.ts"
+```ts tab="pixi-vn.d.ts"
 declare module '@drincs/pixi-vn' {
     interface CharacterInterface {
         // other properties...
@@ -118,13 +111,9 @@ declare module '@drincs/pixi-vn' {
 }
 ```
 
-:::
-
 Now you can use the `images` property to show the character on the canvas.
 
-::: code-group
-
-```ts title="labels/startLabel.ts"
+```ts tab="labels/startLabel.ts"
 import { newLabel, showImageContainer } from "@drincs/pixi-vn";
 import { alice } from "../values/characters";
 
@@ -138,7 +127,7 @@ export const startLabel = newLabel("start_label", [
 ]);
 ```
 
-```ts title="values/characters.ts"
+```ts tab="values/characters.ts"
 import { Character } from "../models/Character";
 
 const alice = new Character('alice_id', {
@@ -148,8 +137,6 @@ const alice = new Character('alice_id', {
 RegisteredCharacters.add(alice)
 ```
 
-:::
-
 **If you are using *ink***:
 
 You can create a [custom hashtag script](/ink/ink-hashtag.md) to use this feature.
@@ -157,9 +144,7 @@ For example you can add a script with the following syntax and convert it to a [
 
 `#` + `show` + `character` + `[character id]` + `[parameters]`
 
-::: code-group
-
-```ts title="utils/ink-utility.ts"
+```ts tab="utils/ink-utility.ts"
 import { onInkHashtagScript } from '@drincs/pixi-vn-ink'
 import { getCharacterById } from '@drincs/pixi-vn'
 
@@ -181,10 +166,8 @@ onInkHashtagScript((script, convertListStringToObj) => {
 })
 ```
 
-```ink title="start.ink"
+```ink tab="ink/start.ink"
 === start ===
 # show character alice xAlign 0.8 yAlign 1 with dissolve
 -> DONE
 ```
-
-:::

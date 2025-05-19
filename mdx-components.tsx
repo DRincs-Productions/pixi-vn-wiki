@@ -1,3 +1,4 @@
+import { Mermaid } from "@/components/mdx/mermaid";
 import { ImageZoom } from "fumadocs-ui/components/image-zoom";
 import * as TabsComponents from "fumadocs-ui/components/tabs";
 import defaultMdxComponents from "fumadocs-ui/mdx";
@@ -123,6 +124,7 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
                 />
             );
         },
+        Mermaid,
         Comments: () => null,
         ...components,
     };
