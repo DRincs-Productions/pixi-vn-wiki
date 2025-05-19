@@ -20,6 +20,7 @@ export const baseOptions: BaseLayoutProps = {
                 My App
             </>
         ),
+        transparentMode: "top",
     },
     githubUrl: "https://github.com/DRincs-Productions/pixi-vn",
 };
