@@ -7,7 +7,7 @@ In Pixi'VN, i personaggi vengono creati utilizzando la classe `CharacterBaseMode
 
 Per definire un personaggio, è necessario creare una nuova istanza della classe `CharacterBaseModel` e aggiungerla al dizionario dei personaggi di gioco, quando il gioco viene inizializzato.
 
-Per creare una nuova istanza di `CharacterBaseModel` sono necessari i seguenti parametri:
+To create a new instance of `CharacterBaseModel` you need the following parameters:
 
 - `id`: Un identificatore univoco per il personaggio (stringa). Viene utilizzato per fare riferimento al personaggio nel gioco (deve essere univoco).
   Se vuoi creare un [personaggio con un'"emozione", puoi passare un oggetto](#character-emotions).
@@ -43,7 +43,7 @@ RegisteredCharacters.add([liam, emma]);
 
 `RegisteredCharacters.add` è **necessario** per salvare i personaggi nel gioco.
 
-È anche possibile creare una funzione per il caricamento dei personaggi. L'importante è che venga avviato almeno una volta prima di utilizzare i personaggi nel gioco, altrimenti non saranno disponibili.
+It is also possible to create a function to load characters. L'importante è che venga avviato almeno una volta prima di utilizzare i personaggi nel gioco, altrimenti non saranno disponibili.
 
 ## Ottieni i personaggi tramite id
 
@@ -176,9 +176,10 @@ console.log(angryAlice.name); // Angry Eleonora
 
 ## Personaggio personalizzato
 
-Si consiglia di creare la propria classe `Character` che estende `CharacterStoredClass` e di "sovrascrivere" l'interfaccia `CharacterInterface` per aggiungere/modificare/rimuovere proprietà o metodi.
+It is recommend creating your own class `Character` that extends `CharacterStoredClass` and "override" the interface `CharacterInterface`
+to add/edit/remove properties or methods.
 
-Ad esempio, se si desidera creare una classe `Character`, è necessario `sovrascrivere` l'interfaccia `CharacterInterface` nel file `.d.ts` per utilizzare le tue proprietà o i metodi. ( Guarda il file `pixi-vn.d.ts` )
+For example, if you want to create a class `Character`, you must "override" the interface `CharacterInterface` to use your properties or methods. ( Guarda il file `pixi-vn.d.ts` )
 
 Ora puoi creare una classe `Character` che estende `CharacterStoredClass` e implementa `CharacterInterface`. (Per maggiori informazioni su come creare una classe in Typescript leggi [qui](https://www.typescriptlang.org/docs/handbook/2/classes.html))
 
