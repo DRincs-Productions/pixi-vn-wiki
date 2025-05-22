@@ -1,4 +1,3 @@
-import { UwuHero } from "@/app/(home)/uwu";
 import { CodeBlockPre } from "@/components/code-block";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
@@ -6,22 +5,12 @@ import LogoImg from "@/public/logo.webp";
 import { cva } from "class-variance-authority";
 import { File, Files, Folder } from "fumadocs-ui/components/files";
 import { Tab, Tabs } from "fumadocs-ui/components/tabs";
-import {
-    Heart,
-    KeyboardIcon,
-    LayoutIcon,
-    type LucideIcon,
-    MousePointer,
-    PersonStandingIcon,
-    RocketIcon,
-    SearchIcon,
-    TimerIcon,
-} from "lucide-react";
+import { Heart, LayoutIcon, type LucideIcon, MousePointer, SearchIcon, TimerIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import ArchImg from "./arch.png";
-import { NetlifyLogo, VercelLogo } from "./icons";
+import { ItchLogo } from "./icons";
 import { CreateAppAnimation } from "./page.client";
 
 const badgeVariants = cva(
@@ -48,7 +37,6 @@ export default function Page() {
                 >
                     <div className='relative'>
                         <Hero />
-                        <UwuHero />
                     </div>
                     <Introduction />
                     <Architecture />
@@ -95,13 +83,10 @@ function Highlights(): React.ReactElement {
                 <MousePointer className='-ml-1 mt-8' />
             </div>
             <Highlight icon={TimerIcon} heading='Light & Fast.'>
-                Less Javascript with React Server Component, and optimized images.
+                Deals with specific features, giving the possibility to add more with other libraries.
             </Highlight>
             <Highlight icon={LayoutIcon} heading='Accessibility & UX first.'>
                 Focus on user experience and accessibility.
-            </Highlight>
-            <Highlight icon={RocketIcon} heading='Next.js First.'>
-                Powerful documentation site with Next.js, React Router, or Tanstack Start.
             </Highlight>
             <Highlight icon={SearchIcon} heading='Syntax Highlighting.'>
                 Beautiful syntax highlighter, powered by{" "}
@@ -109,12 +94,6 @@ function Highlights(): React.ReactElement {
                     Shiki
                 </a>
                 .
-            </Highlight>
-            <Highlight icon={KeyboardIcon} heading='Automation.'>
-                Useful remark/rehype plugins. Typescript Twoslash, OpenAPI docs generation, and more.
-            </Highlight>
-            <Highlight icon={PersonStandingIcon} heading='Personalized.'>
-                Advanced options for customising your theme in a comfortable way.
             </Highlight>
         </div>
     );
@@ -252,14 +231,7 @@ function Introduction(): React.ReactElement {
 james: You're my roommate's replacement, huh?
 What is your name?
 # rename mc { _input_value_ }
-
-# show imagecontainer james [m01-body m01-eyes-grin m01-mouth-smile01]
-james: [james]!
-# show imagecontainer james [m01-body m01-eyes-grin m01-mouth-grin00]
-mc: ...[mc].
-
-# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-grin00]
-I take his hand and shake.`}
+`}
                             />
                         </Tab>
                         <Tab>
@@ -282,7 +254,7 @@ I take his hand and shake.`}
                         </Folder>
                         <Folder name='labels' defaultOpen>
                             <File name='animations-labels.ts' />
-                            <File name='startLabel.ts' />
+                            {/* <File name='startLabel.ts' /> */}
                         </Folder>
                     </Files>
                 </div>
@@ -291,16 +263,13 @@ I take his hand and shake.`}
                 <div className={cn(badgeVariants())}>3</div>
                 <h3 className='text-2xl font-semibold'>Ship.</h3>
                 <p className='text-fd-muted-foreground'>
-                    Deploy your docs easily with Next.js compatible hosting platforms.
+                    Deploy your game easily with hosting platforms and video game platforms.
                 </p>
 
                 <div className='mt-4 flex flex-row flex-wrap items-center gap-8'>
-                    <a href='https://vercel.com' rel='noreferrer noopener'>
-                        <VercelLogo className='h-auto w-32' />
-                    </a>
-                    <a href='https://netlify.com' rel='noreferrer noopener'>
-                        <NetlifyLogo className='h-auto w-32' />
-                    </a>
+                    <Link href='/start/distribution-website#itch-io' rel='noreferrer noopener'>
+                        <ItchLogo className='h-auto w-32' />
+                    </Link>
                 </div>
             </div>
         </div>
