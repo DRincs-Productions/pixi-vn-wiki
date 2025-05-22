@@ -2,13 +2,13 @@
 title: Narration
 ---
 
-The narration is the core of the visual novel. The narrative is the set of [dialogues](/start/dialogue.md), [choices](/start/choices.md) and [input prompt](/start/input.md) shown to the player as the game progresses.
+The narration is the core of the visual novel. The narrative is the set of [dialogues](/start/dialogue.md), [choices](/start/choices.md) and [input prompt](/start/input) shown to the player as the game progresses.
 
 With Pixi’VN, you have the option to use various types of narrative languages. You can also switch from one language to another to take advantage of the features of each one.
 
 * **JavaScript/TypeScript** is a programming language. You can use it to write your narrative, but it will lead you to write a lot of code. It has the advantage that it can access all functions of the project.
-* **[*ink*](/ink/ink.md)** is a narrative language that allows you to write a narrative easily, without having to write a lot of code.
-* **[Ren'Py](/renpy/renpy.md)** is a narrative language that allows you to write a narrative easily, without having to write a lot of code.
+* **[*ink*](/ink/ink)** is a narrative language that allows you to write a narrative easily, without having to write a lot of code.
+* **[Ren'Py](/renpy/renpy)** is a narrative language that allows you to write a narrative easily, without having to write a lot of code.
 
 | Narrative languages | JavaScript/TypeScript | *ink* | Ren'Py |
 |---|---|---|---|
@@ -17,5 +17,5 @@ With Pixi’VN, you have the option to use various types of narrative languages.
 | Visual Studio Code extension | ✅ | ✅ | ✅ |
 | Translatable into multiple languages | ✅ | ✅ | ✅ |
 | Auto-generation of translation files | ❌ | ✅ ([Under development](https://github.com/DRincs-Productions/pixi-vn-json/issues/3)) | ✅ (Under development) |
-| Ability to use non-Pixi’VN features | ✅ | ✅  ([custom # script](/ink/ink-hashtag.md)) | ✅ (using $ - Under development) |
+| Ability to use non-Pixi’VN features | ✅ | ✅  ([custom # script](/ink/ink-hashtag)) | ✅ (using $ - Under development) |
 | Debugging | ✅ | ❌ | ❌ |

@@ -10,21 +10,21 @@ By "UI" is meant the elements that are above the canvas, such as buttons, forms,
 
 This allows the use of systems such as React, Vue, Angular, etc. to create much more complex **UI screens** with excellent performance.
 
-* [Angular](/start/interface-angular.md)
-* [React Interface](/start/interface-react.md)
-* [Vue](/start/interface-vue.md)
+* [Angular](/start/interface-angular)
+* [React Interface](/start/interface-react)
+* [Vue](/start/interface-vue)
 
 Pixi’VN offers some features to improve its compatibility with other JavaScript Frameworks:
 
-* possibility of adding an HTML Element with the same dimensions as the [PixiJS Canvas](/start/canvas-components.md) to add an **UI** with a JavaScript frameworks.
+* possibility of adding an HTML Element with the same dimensions as the [PixiJS Canvas](/start/canvas-components) to add an **UI** with a JavaScript frameworks.
 
 ## Differences between the UI and the canvas
 
 As Pixi’VN was designed and conceived, the UI and the canvas are two distinct and independent elements. The UI is above the canvas and is used to create buttons, forms, etc. The canvas is used to display images, videos, etc.
 
-All information about the current state of the canvas is included in the save and it is possible to restore the state of a previous step. The current state of the UI will not be included in the saves. So you have to [manage it yourself by saving the information](/start/interface-connect-storage.md) you need to [game storage](/start/storage.md) or browser storage.
+All information about the current state of the canvas is included in the save and it is possible to restore the state of a previous step. The current state of the UI will not be included in the saves. So you have to [manage it yourself by saving the information](/start/interface-connect-storage.md) you need to [game storage](/start/storage) or browser storage.
 
-In the canvas you can add components during each step. In the UI you can't do that, you can create several ["screens" and navigate between them](/start/interface-connect-storage.md).
+In the canvas you can add components during each step. In the UI you can't do that, you can create several ["screens" and navigate between them](/start/interface-connect-storage).
 
 In the canvas you can only add PixiJS components, they are usually composed of images and are very simple. In the UI you can add any HTML element or use any UI component library, so you can create much more complex interfaces.
 

@@ -13,9 +13,9 @@ The available components are:
 * `Sprite` corresponds to the component [PixiJS.Sprite](https://pixijs.com/8.x/guides/components/sprites).
 * `Container` corresponds to the component [PixiJS.Container](https://pixijs.com/8.x/guides/components/containers).
 * `Text` corresponds to the component [PixiJS.Text](https://pixijs.com/8.x/guides/components/text).
-* [ImageSprite](/start/canvas-images.md) is a conponent introduced by Pixi’VN.
-* [ImageContainer](/start/canvas-image-container.md) is a conponent introduced by Pixi’VN.
-* [VideoSprite](/start/canvas-videos.md) is a conponent introduced by Pixi’VN.
+* [ImageSprite](/start/canvas-images) is a conponent introduced by Pixi’VN.
+* [ImageContainer](/start/canvas-image-container) is a conponent introduced by Pixi’VN.
+* [VideoSprite](/start/canvas-videos) is a conponent introduced by Pixi’VN.
 
 ## Custom Components
 
