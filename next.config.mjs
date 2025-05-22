@@ -8,6 +8,7 @@ const config = {
     reactStrictMode: true,
     images: {
         domains: ["pixijs.io", "github.com", "filters.pixijs.download", "firebasestorage.googleapis.com"],
+        unoptimized: true,
     },
 };
 
