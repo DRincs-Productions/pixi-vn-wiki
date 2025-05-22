@@ -267,7 +267,7 @@ What is your name?
                 </p>
 
                 <div className='mt-4 flex flex-row flex-wrap items-center gap-8'>
-                    <Link href='/start/distribution-website#itchio' rel='noreferrer noopener'>
+                    <Link href='/start/distribution-itchio' rel='noreferrer noopener'>
                         <ItchLogo className='h-auto w-32' />
                     </Link>
                 </div>

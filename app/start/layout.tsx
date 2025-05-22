@@ -287,6 +287,11 @@ export default function Layout({ children }: { children: ReactNode }) {
                             name: "Desktop & mobile devices",
                             url: "/start/distribution-desktop-mobile",
                         },
+                        {
+                            type: "page",
+                            name: "itch.io",
+                            url: "/start/distribution-itchio",
+                        },
                     ],
                 },
             ],
