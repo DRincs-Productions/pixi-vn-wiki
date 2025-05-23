@@ -238,12 +238,12 @@ What is your name?
                             <CodeBlockPre
                                 lang='ts'
                                 code={`const startLabel = newLabel("start", [
-        async () => {
-            await showImage("bg", "bg01-hallway");
-            await showImageContainer("james", ["m01-body", "m01-eyes-smile", "m01-mouth-neutral01"], { xAlign: 0.5, yAlign: 1, });
-            narration.dialogue = { character: james, text: \`You're my roommate's replacement, huh?\` };
-        },
-        () => { narration.dialogue = \`What is your name?\` },
+  async () => {
+    await showImage("bg", "bg01-hallway");
+    await showImageContainer("james", ["m01-body", "m01-eyes-smile", "m01-mouth-neutral01"], { xAlign: 0.5, yAlign: 1, });
+    narration.dialogue = { character: james, text: \`You're my roommate's replacement, huh?\` };
+  },
+  () => narration.dialogue = "What is your name?",
 `}
                             />
                         </Tab>
