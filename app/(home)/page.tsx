@@ -85,15 +85,11 @@ function Highlights(): React.ReactElement {
             <Highlight icon={TimerIcon} heading='Light & Fast.'>
                 Deals with specific features, giving the possibility to add more with other libraries.
             </Highlight>
-            <Highlight icon={LayoutIcon} heading='Accessibility & UX first.'>
-                Focus on user experience and accessibility.
+            <Highlight icon={LayoutIcon} heading='Flexible & Versatile.'>
+                Usable in any JS project for various purposes.
             </Highlight>
-            <Highlight icon={SearchIcon} heading='Syntax Highlighting.'>
-                Beautiful syntax highlighter, powered by{" "}
-                <a href='https://shiki.style' rel='noreferrer noopener'>
-                    Shiki
-                </a>
-                .
+            <Highlight icon={SearchIcon} heading='Smart.'>
+                Use the most innovative technologies without reinventing what already exists.
             </Highlight>
         </div>
     );
