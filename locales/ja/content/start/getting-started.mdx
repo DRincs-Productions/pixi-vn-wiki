@@ -1,0 +1,203 @@
+---
+title: Quick Start
+description: Getting Started with Pixi’VN
+---
+
+You can start using Pixi’VN by [initializing a new project](#project-initialization) or [installing the package](#installation) in an existing project.
+
+## Prerequisites
+
+Before starting, you must have the following tools installed:
+
+- [Node.js](https://nodejs.org/) version 18 or higher.
+- Text Editor with TypeScript support.
+  - [Visual Studio Code](https://code.visualstudio.com/)
+  - [Cursor](https://www.cursor.com/)
+  - [VSCodium](https://vscodium.com/)
+- (Recommended) [Git](https://git-scm.com/)
+  - Have a [GitHub account](https://github.com/)
+
+## Project Initialization
+
+If you want to start a new project, you can use the following command to initialize a new project with the Pixi’VN template:
+
+```sh tab="npm"
+npm create pixi-vn@latest
+```
+
+```sh tab="yarn"
+yarn create pixi-vn
+```
+
+```sh tab="pnpm"
+pnpm create pixi-vn
+```
+
+```sh tab="bun"
+bun create pixi-vn
+```
+
+```sh tab="deno"
+deno init --npm pixi-vn
+```
+
+The supported template presets are:
+
+<Callout title="More templates will be added in the future" type="info">
+Pixi’VN knows the possibility of proposing templates and helps you in its development. You can follow the development of templates and show your interest from the following thread [discussion#361](https://github.com/DRincs-Productions/pixi-vn/discussions/361).
+</Callout>
+
+**Visual Novel - React**:
+
+<iframe src="https://pixi-vn-react-template.web.app/"
+    title="Visual Novel - React"
+    style={{
+        width: "100%",
+        height: "400px",
+        border: "0",
+        borderRadius: "4px",
+        overflow: "hidden",
+    }}
+    allowFullScreen={true}
+></iframe>
+
+- **[Visual Novel - React - Typescript - Web page](https://github.com/DRincs-Productions/pixi-vn-react-template)**
+- **[Visual Novel - React - Typescript - Web page + Desktop + Mobile](https://github.com/DRincs-Productions/pixi-vn-react-template/tree/tauri)**
+- **[Visual Novel - React - Ink + Typescript - Web page](https://github.com/DRincs-Productions/pixi-vn-react-template/tree/ink)**
+- **[Visual Novel - React - Ink + Typescript - Web page + Desktop + Mobile](https://github.com/DRincs-Productions/pixi-vn-react-template/tree/ink-tauri)**
+
+**Other templates**:
+
+- **[Game engine](https://github.com/DRincs-Productions/pixi-vn-game-engine-template)**
+
+After the project is initialized, you can open the project directory with your text editor (VSCode is recommended) and start developing your visual novel.
+
+Into all templates there is a `README.md` file with more information about the project.
+
+## Installation
+
+For installing the Pixi’VN package in an existing Javascript project, you can use the following command:
+
+```sh tab="npm"
+npm install @drincs/pixi-vn
+```
+
+```sh tab="yarn"
+yarn add @drincs/pixi-vn
+```
+
+```sh tab="pnpm"
+pnpm add @drincs/pixi-vn
+```
+
+```sh tab="bun"
+bun add @drincs/pixi-vn
+```
+
+```sh tab="deno"
+deno install npm:@drincs/pixi-vn
+```
+
+You can use the CDN version of this plugin:
+
+```html tab="script tag" title="index.html"
+<script src="https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@<version>/+esm"></script>
+```
+
+```html tab="map import" title="index.html"
+<script type="importmap">
+  { "imports": {
+      "@drincs/pixi-vn@<version>":        "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn/+esm"
+  } }
+</script>
+```
+
+```js tab="js import" title="index.js"
+import pixivn from "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@<version>/+esm";
+```
+
+Now you must initialize the Pixi’VN window before using the engine. For example, you can add the following code to the `main.ts` or `index.ts` (It depends on your project configuration):
+
+<iframe src="https://codepen.io/BlackRam-oss/embed/oNrqgNd?default-tab=js%2Cresult"
+  height="300"
+  style={{
+    width: "100%",
+  }}
+  title="Pixi’VN"
+  loading="lazy"
+  allowFullScreen={true}
+>
+  See the Pen <a href="https://codepen.io/BlackRam-oss/pen/oNrqgNd">
+  Pixi’VN</a> by Black Ram (<a href="https://codepen.io/BlackRam-oss">@BlackRam-oss</a>)
+  on <a href="https://codepen.io">CodePen</a>.
+</iframe>
+
+### Initialize the Game
+
+Before using the Pixi’VN engine, you must initialize the game. You can do this by calling the `Game.init` method.
+
+The `Game.init` method takes the following arguments:
+
+- `element`: The HTML element to append the canvas to.
+- `options`: This is equivalent to the options you can use when initializing a [PixiJS Application](https://pixijs.com/8.x/guides/basics/getting-started#creating-an-application). The following options are mandatory:
+  - `width`: The width of the canvas.
+  - `height`: The height of the canvas.
+- `devtoolsOptions`: This is equivalent to the options you can use when initializing the [PixiJS Devtools](/start/canvas#use-pixijs-devtools-with-pixivn).
+
+```ts title="src/main.tsx"
+import { Game } from "@drincs/pixi-vn";
+
+// Canvas setup with PIXI
+const body = document.body
+if (!body) {
+    throw new Error('body element not found')
+}
+
+Game.init(body, {
+    height: 1080,
+    width: 1920,
+    backgroundColor: "#303030",
+}).then(() => {
+    // ...
+});
+
+// read more here: https://pixi-vn.web.app/start/other-narrative-features.html#how-manage-the-end-of-the-game
+Game.onEnd(async (props) => {
+    Game.clear();
+    props.navigate("/");
+});
+
+Game.onError((type, error, { notify }) => {
+    notify("allert_error_occurred");
+});
+```
+
+```html title="index.html"
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
+```
+
+### How enable the decorators in TypeScript?
+
+In Pixi’VN, in some advanced features, it is necessary to use decorators.
+
+By default, TypeScript does not enable the use of decorators. To enable the use of decorators in TypeScript, you must add the following configuration to the `tsconfig.json` file:
+
+```json title="tsconfig.json"
+{
+    "compilerOptions": {
+        // ...
+        "experimentalDecorators": true
+    }
+}
+```
