@@ -4,6 +4,7 @@ import { getMDXComponents } from "@/mdx-components";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle, EditOnGitHub } from "fumadocs-ui/page";
 import { notFound } from "next/navigation";
+import { Translate } from "./page.client";
 
 export default async function Page(props: { params: Promise<{ slug?: string[] }> }) {
     const params = await props.params;
@@ -20,6 +21,7 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
                 <EditOnGitHub
                     href={`https://github.com/DRincs-Productions/pixi-vn-wiki/blob/main/content/start/${page.file.path}`}
                 />
+                <Translate />
             </div>
             <DocsBody>
                 <MDXContent
