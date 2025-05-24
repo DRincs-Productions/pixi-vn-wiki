@@ -54,12 +54,12 @@ function Architecture() {
         <div className='flex flex-col gap-4 border-x border-t p-8 md:px-12 lg:flex-row'>
             <div className='text-start'>
                 <p className='px-2 py-1 text-sm font-mono bg-fd-primary text-fd-primary-foreground font-bold w-fit mb-4'>
-                    Designed with Love
+                    Many design possibilities
                 </p>
-                <h2 className='text-2xl font-semibold mb-4'>A breakable framework.</h2>
+                <h2 className='text-2xl font-semibold mb-4'>More levels.</h2>
                 <p className='text-fd-muted-foreground mb-6'>
-                    Fumadocs makes it easy to build beautiful docs, write content, and transform content into data for
-                    your React.js framework.
+                    2D rendering is completely based on PixiJS and Pixi’VN components. You can add more PixiJS or HTML
+                    (React Vue ...) layers to create an innovative UI.
                 </p>
             </div>
             <Image
@@ -217,7 +217,7 @@ function Introduction(): React.ReactElement {
                 <h3 className='text-xl font-semibold'>Write.</h3>
                 <p className='text-fd-muted-foreground'>{"Write your story in your favorite narrative language."}</p>
                 <div className='relative flex flex-col'>
-                    <Tabs items={["ink", "TypeScript"]} className='absolute inset-x-2 top-0 shadow-lg'>
+                    <Tabs items={["ink", "TypeScript", "Json"]} className='absolute inset-x-2 top-0 shadow-lg'>
                         <Tab>
                             <CodeBlockPre
                                 lang='bash'
@@ -240,6 +240,21 @@ What is your name?
     narration.dialogue = { character: james, text: \`You're my roommate's replacement, huh?\` };
   },
   () => narration.dialogue = "What is your name?",
+`}
+                            />
+                        </Tab>
+                        <Tab>
+                            <CodeBlockPre
+                                lang='json'
+                                code={`{ labels: { start: [
+    { operations: [
+        { type: "image", alias: "bg", operationType: "show", url: "bg01-hallway" },
+        { type: "imagecontainer", alias: "james", operationType: "show", urls: ["m01-body", "m01-eyes-smile", "m01-mouth-neutral01"], props: { xAlign: 0.5, yAlign: 1 }, transition: { type: "movein", props: { direction: "right", speed: 300 }}} 
+    ], goNextStep: true },
+    { dialogue: "james: You're my roommate's replacement, huh?" },
+    { dialogue: "What is your name?" },
+    { operations: [{ type: "operationtoconvert", values: ["rename mc ", { type: "value", storageOperationType: "get", storageType: "storage", key: "_input_value_" } ] }], goNextStep: true }
+]}};
 `}
                             />
                         </Tab>
@@ -278,14 +293,17 @@ function Contributing() {
             <Heart fill='currentColor' className='text-pink-500 mb-4' />
             <h2 className='mb-4 text-xl font-semibold sm:text-2xl'>Made Possible by You.</h2>
             <p className='mb-4 text-fd-muted-foreground'>
-                Fumadocs is 100% powered by passion and open source community.
+                Pixi’VN is 100% powered by passion and open source community.
             </p>
             <div className='mb-8 flex flex-row items-center gap-2'>
-                <Link href='/sponsors' className={cn(buttonVariants({ variant: "outline" }))}>
-                    Sponsors
-                </Link>
+                <a href='https://www.patreon.com/pixi_vn' className={cn(buttonVariants({ variant: "outline" }))}>
+                    Patreon
+                </a>
+                <a href='https://pixi-vn.fanbox.cc/' className={cn(buttonVariants({ variant: "outline" }))}>
+                    FANBOX
+                </a>
                 <a
-                    href='https://github.com/fuma-nama/fumadocs/graphs/contributors'
+                    href='https://github.com/DRincs-Productions/pixi-vn/graphs/contributors'
                     rel='noreferrer noopener'
                     className={cn(buttonVariants({ variant: "ghost" }))}
                 >
