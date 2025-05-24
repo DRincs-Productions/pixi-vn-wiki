@@ -1,5 +1,6 @@
 import { baseOptions } from "@/app/layout.config";
 import { source } from "@/lib/source";
+import { Image } from "fumadocs-core/framework";
 import { DocsLayout, DocsLayoutProps } from "fumadocs-ui/layouts/docs";
 import { useMemo, type ReactNode } from "react";
 
@@ -142,7 +143,12 @@ export default function Layout({ children }: { children: ReactNode }) {
                                 { type: "page", name: "Filters", url: "/start/canvas-filters" },
                                 { type: "page", name: "Lights", url: "/start/canvas-lights" },
                                 { type: "page", name: "Spine 2D", url: "/start/canvas-spine2d" },
-                                { type: "page", name: "Three.js", url: "/start/canvas-threejs" },
+                                {
+                                    type: "page",
+                                    name: "Three.js",
+                                    url: "/start/canvas-threejs",
+                                    icon: <Image src='/threejs.svg' alt='Three.js' />,
+                                },
                             ],
                         },
                         { type: "page", name: "Components functions", url: "/start/canvas-functions" },

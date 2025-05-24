@@ -117,7 +117,7 @@ const startLabel = newLabel("start_label_id", [
   <img src="/gimp.svg" alt="GIMP">
   <img src="/spine.svg" alt="Spine 2D">
   <img src="/pixijs.svg" alt="PixiJS">
-  <img src="/threejs.svg" alt="Three.js" style="background-color: white;">
+  <img src="/threejs.svg" alt="Three.js">
 </div>
 
 </div>

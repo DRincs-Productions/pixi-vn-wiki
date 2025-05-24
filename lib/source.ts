@@ -52,7 +52,6 @@ export const source = loader({
                         height: "1em",
                         verticalAlign: "middle",
                         borderRadius: "5px",
-                        backgroundColor: "white",
                     },
                 });
             case "/angular.svg":
