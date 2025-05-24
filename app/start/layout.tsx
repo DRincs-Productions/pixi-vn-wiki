@@ -30,9 +30,20 @@ export default function Layout({ children }: { children: ReactNode }) {
                     ],
                 },
                 {
-                    type: "page",
+                    type: "folder",
                     name: "Quick Start",
-                    url: "/start/getting-started",
+                    index: {
+                        type: "page",
+                        name: "Quick Start",
+                        url: "/start/getting-started",
+                    },
+                    children: [
+                        {
+                            type: "page",
+                            name: "Templates",
+                            url: "/start/templates",
+                        },
+                    ],
                 },
                 {
                     type: "folder",
