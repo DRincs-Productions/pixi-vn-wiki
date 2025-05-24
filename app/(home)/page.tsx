@@ -296,15 +296,24 @@ function Contributing() {
                 Pixi’VN is 100% powered by passion and open source community.
             </p>
             <div className='mb-8 flex flex-row items-center gap-2'>
-                <a href='https://www.patreon.com/pixi_vn' className={cn(buttonVariants({ variant: "outline" }))}>
+                <a
+                    href='https://www.patreon.com/pixi_vn'
+                    target='_blank'
+                    className={cn(buttonVariants({ variant: "outline" }))}
+                >
                     Patreon
                 </a>
-                <a href='https://pixi-vn.fanbox.cc/' className={cn(buttonVariants({ variant: "outline" }))}>
+                <a
+                    href='https://pixi-vn.fanbox.cc/'
+                    target='_blank'
+                    className={cn(buttonVariants({ variant: "outline" }))}
+                >
                     FANBOX
                 </a>
                 <a
                     href='https://github.com/DRincs-Productions/pixi-vn/graphs/contributors'
                     rel='noreferrer noopener'
+                    target='_blank'
                     className={cn(buttonVariants({ variant: "ghost" }))}
                 >
                     Contributors
