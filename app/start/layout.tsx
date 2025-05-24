@@ -147,7 +147,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                                     type: "page",
                                     name: "Three.js",
                                     url: "/start/canvas-threejs",
-                                    icon: <Image src='/threejs.svg' alt='Three.js' />,
+                                    icon: <Image width={16} height={16} src='/threejs.svg' alt='Three.js' />,
                                 },
                             ],
                         },
