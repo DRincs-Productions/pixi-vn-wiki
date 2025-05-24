@@ -38,14 +38,14 @@ hero:
 
   Write your story in your favorite narrative language. Such as *ink* or Ren'Py or TS/JS. <br />
   In all cases you can also interact with the canvas and sounds, or create custom narrative scripts. <br />
-  You can read more about it [here](/start/narration.md).
+  You can read more about it [here](/start/narration).
 
 </div>
 <div class="left">
 
 ::: code-group
 
-```ink [start.ink]
+```ink title="start.ink"
 === start
 Hello, world!
 This is a Pixi’VN tutorial.
@@ -53,14 +53,14 @@ I hope you enjoy it!
 ->DONE
 ```
 
-```renpy [start.rpy]
+```renpy title="start.rpy"
 label start:
     "Hello, world!"
     "This is a Pixi’VN tutorial."
     "I hope you enjoy it!"
 ```
 
-```typescript [startLabel.ts]
+```typescript title="startLabel.ts"
 const startLabel = newLabel("start_label_id", [
     (props) => narration.dialogue = "Hello, world!",
     (props) => narration.dialogue = "This is a Pixi’VN tutorial.",
@@ -68,7 +68,7 @@ const startLabel = newLabel("start_label_id", [
 ])
 ```
 
-```json [startLabel.json]
+```json title="startLabel.json"
 {
     "labels": {
         "start_label_id": [
@@ -101,8 +101,8 @@ const startLabel = newLabel("start_label_id", [
   </h2>
 
   Create your own assets with your favorite tools. Like Daz 3D, Blender, Photoshop, Krita, GIMP, Cinema 4D, Spine 2D etc. <br />
-  Pixi’VN uses the power of [PixiJS](/start/canvas.md) to render your assets. <br />
-  You can also create 2D animations with [Spine 2D](/start/canvas-spine2d.md) or interact with 3D elements with [Three.js](/start/canvas-threejs.md).
+  Pixi’VN uses the power of [PixiJS](/start/canvas) to render your assets. <br />
+  You can also create 2D animations with [Spine 2D](/start/canvas-spine2d.md) or interact with 3D elements with [Three.js](/start/canvas-threejs).
 
 </div>
 
@@ -117,7 +117,7 @@ const startLabel = newLabel("start_label_id", [
   <img src="/gimp.svg" alt="GIMP">
   <img src="/spine.svg" alt="Spine 2D">
   <img src="/pixijs.svg" alt="PixiJS">
-  <img src="/threejs.svg" alt="Three.js" style="background-color: white;">
+  <img src="/threejs.svg" alt="Three.js">
 </div>
 
 </div>
@@ -133,7 +133,7 @@ const startLabel = newLabel("start_label_id", [
   </h2>
 
   Build the UI with your favorite JavaScript framework. Like React, Vue, Preact, Qwik, lit, Solid, Svelte, Angular, PixiJS etc. <br />
-  You can read more about it [here](/start/interface.md).
+  You can read more about it [here](/start/interface).
 
 </div>
 
