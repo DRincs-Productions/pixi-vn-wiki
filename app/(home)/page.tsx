@@ -2,7 +2,6 @@ import { CodeBlockPre } from "@/components/code-block";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
 import { createMetadata } from "@/lib/metadata";
-import { source } from "@/lib/source";
 import LogoImg from "@/public/logo.webp";
 import { cva } from "class-variance-authority";
 import { File, Files, Folder } from "fumadocs-ui/components/files";
@@ -10,7 +9,6 @@ import { Tab, Tabs } from "fumadocs-ui/components/tabs";
 import { Heart, LayoutIcon, type LucideIcon, MousePointer, SearchIcon, TimerIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import ArchImg from "./arch.png";
 import { ItchLogo } from "./icons";
@@ -326,10 +324,6 @@ function Contributing() {
     );
 }
 
-export async function generateMetadata(props: { params: Promise<{ slug?: string[] }> }) {
-    const params = await props.params;
-    const page = source.getPage(params.slug);
-    if (!page) notFound();
-
+export async function generateMetadata() {
     return createMetadata();
 }
