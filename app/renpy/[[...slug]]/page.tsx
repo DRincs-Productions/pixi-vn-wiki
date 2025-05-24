@@ -19,7 +19,7 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
             <DocsBody>
                 <div className='flex flex-row gap-2 items-center mb-4'>
                     <EditOnGitHub
-                        href={`https://github.com/DRincs-Productions/pixi-vn-wiki/blob/main/content/start/${page.file.path}`}
+                        href={`https://github.com/DRincs-Productions/pixi-vn-wiki/blob/main/content/renpy/${page.file.path}`}
                     />
                 </div>
                 <MDXContent
