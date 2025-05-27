@@ -99,21 +99,64 @@ It is possible to load assets at project startup before the player can interact 
 
 To do this, you must use the `Assets.load` function and wait for it to finish (with `wait`) when the project starts. You can learn more about the `Assets.load` function [here](https://pixijs.com/8.x/guides/components/assets).
 
-```ts title="utils/defineAssets.ts"
+```ts tab="utils/defineAssets.ts"
 import { Assets, sound } from "@drincs/pixi-vn";
+import manifest from "../assets/manifest";
 
 export async function defineAssets() {
+    // manifest
+    Assets.init({ manifest });
+    // single asset
     Assets.add({ alias: 'eggHead', src: "https://pixijs.com/assets/eggHead.png" })
     Assets.add({ alias: 'flowerTop', src: "https://pixijs.com/assets/flowerTop.png" })
-    Assets.add({ alias: 'helmlok', src: "https://pixijs.com/assets/helmlok.png" })
-    Assets.add({ alias: 'skully', src: "https://pixijs.com/assets/skully.png" })
     Assets.add({ alias: 'video', src: "https://pixijs.com/assets/video.mp4" })
     sound.add('bird', 'https://pixijs.io/sound/examples/resources/bird.mp3');
     sound.add('musical', 'https://pixijs.io/sound/examples/resources/musical.mp3');
+    // bundle
+    Assets.addBundle('liam', {
+        "liam-head": 'liam_head.png',
+        "liam-body": 'liam_body.png',
+        "liam-arms": 'liam_arms.png',
+    });
 
     // The game will not start until these assets are loaded. // [!code focus]
     await Assets.load('eggHead') // [!code focus]
+    await Assets.loadBundle('liam') // [!code focus]
 }
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        // screens
+        {
+            name: "main_menu",
+            assets: [
+                {
+                    alias: "background_main_menu",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fmain-menu.webp?alt=media",
+                },
+            ],
+        },
+        // labels
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "bg01-hallway",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fbg01-hallway.webp?alt=media",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
 ```
 
 ### Load assets in the background at project start
