@@ -30,6 +30,7 @@ export function ReactTemplate() {
                 "assets/manifest.ts": manifest,
                 "index.tsx": index,
                 "hooks/useNarrationFunctions.ts": useNarrationFunctions,
+                "constants.ts": constants,
             }}
         >
             <SandpackLayout>
@@ -446,6 +447,7 @@ const index = `import { Container, Game, canvas, narration } from "@drincs/pixi-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
 import App from "./App";
+import { HEIGHT, WIDTH } from "./constants";
 import { INTERFACE_DATA_USE_QUEY_KEY } from "./hooks/useQueryInterface";
 import { startLabel } from "./labels/startLabel";
 import "./styles.css";
@@ -458,8 +460,8 @@ if (!body) {
 }
 
 Game.init(body, {
-  height: 480,
-  width: 720,
+  height: HEIGHT,
+  width: WIDTH,
   backgroundColor: "#303030",
 }).then(() => {
   // Pixi.JS UI Layer
@@ -572,3 +574,6 @@ export default function useNarrationFunctions() {
     selectChoice,
   };
 }`;
+
+const constants = `export const HEIGHT = 480;
+export const WIDTH = 720;`;
