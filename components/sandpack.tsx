@@ -13,7 +13,6 @@ export function ReactTemplate() {
                     "@emotion/react": "^11.13.5",
                     "@mui/system": "^6.1.10",
                     "@tanstack/react-query": "^5.62.2",
-                    "@base-ui-components/react": "^1.0.0-beta.0",
                 },
             }}
             files={{
@@ -88,43 +87,14 @@ body {
   overflow: hidden;
 }`;
 
-const NextButton = `import { narration } from "@drincs/pixi-vn";
-import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import {
-  INTERFACE_DATA_USE_QUEY_KEY,
-  useQueryCanGoNext,
-} from "../hooks/useQueryInterface";
+const NextButton = `import { useState } from "react";
+import useNarrationFunctions from "../hooks/useNarrationFunctions";
+import { useQueryCanGoNext } from "../hooks/useQueryInterface";
 
 export default function NextButton() {
-  const queryClient = useQueryClient();
   const { data: canGoNext = false } = useQueryCanGoNext();
   const [loading, setLoading] = useState(false);
-
-  async function nextOnClick(): Promise<void> {
-    try {
-      if (!narration.canGoNext) {
-        return;
-      }
-      setLoading(true);
-      narration
-        .goNext({})
-        .then(() => {
-          queryClient.invalidateQueries({
-            queryKey: [INTERFACE_DATA_USE_QUEY_KEY],
-          });
-          setLoading(false);
-        })
-        .catch((e) => {
-          console.error(e);
-          setLoading(false);
-        });
-      return;
-    } catch (e) {
-      console.error(e);
-      return;
-    }
-  }
+  const { goNext } = useNarrationFunctions();
 
   if (!canGoNext) {
     return null;
@@ -132,7 +102,12 @@ export default function NextButton() {
 
   return (
     <button
-      onClick={nextOnClick}
+      onClick={() => {
+        setLoading(true);
+        goNext()
+          .then(() => setLoading(false))
+          .catch(() => setLoading(false));
+      }}
       disabled={loading}
       style={{
         width: 40,
@@ -143,17 +118,12 @@ export default function NextButton() {
       Next
     </button>
   );
-}
-`;
+}`;
 
 const TextInput = `import { narration } from "@drincs/pixi-vn";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import {
-  INTERFACE_DATA_USE_QUEY_KEY,
-  useQueryDialogue,
-  useQueryInputValue,
-} from "../../hooks/useQueryInterface";
+import { INTERFACE_DATA_USE_QUEY_KEY, useQueryDialogue, useQueryInputValue } from "../../hooks/useQueryInterface";
 
 export default function TextInput() {
   const { data: { text } = {} } = useQueryDialogue();
@@ -180,11 +150,7 @@ export default function TextInput() {
           onChange={(e) => {
             if (e && e.target && "value" in e.target) {
               let value: any = e.target.value;
-              if (
-                "type" in e.target &&
-                e.target.type === "number" &&
-                "valueAsNumber" in e.target
-              ) {
+              if ("type" in e.target && e.target.type === "number" && "valueAsNumber" in e.target) {
                 value = e.target.valueAsNumber;
               }
               setTempValue(value);
@@ -205,15 +171,10 @@ export default function TextInput() {
       </button>
     </dialog>
   );
-}
-`;
+}`;
 
 const NarrationScreen = `import { Box, Grid, Stack } from "@mui/system";
-import {
-  useQueryCanGoBack,
-  useQueryCanGoNext,
-  useQueryDialogue,
-} from "../hooks/useQueryInterface";
+import { useQueryCanGoBack, useQueryCanGoNext, useQueryDialogue } from "../hooks/useQueryInterface";
 import ChoiceMenu from "./ChoiceMenu";
 
 export default function NarrationScreen() {
@@ -222,33 +183,31 @@ export default function NarrationScreen() {
   const { data: canGoBack = false } = useQueryCanGoBack();
 
   return (
-    <Stack
-      direction="column"
-      spacing={0}
-      sx={{
-        justifyContent: "flex-end",
-        alignItems: "center",
+    <div
+      style={{
+        position: "absolute",
+        display: "flex",
+        flexDirection: "column",
         height: "100%",
         width: "100%",
-        position: "absolute",
-        left: 0,
-        right: 0,
-        bottom: 0,
       }}
     >
-      {/* READ THIS: https://pixi-vn.web.app/start/choices.html#how-to-create-the-choice-menu-ui-screen */}
-      <ChoiceMenu />
+      <div style={{ flex: 1, minHeight: 0 }}>
+        {/* READ THIS: https://pixi-vn.web.app/start/choices.html#how-to-create-the-choice-menu-ui-screen */}
+        <ChoiceMenu />
+      </div>
       {text && (
         <Box
           sx={{
+            flex: "0 0 auto",
+            height: "30%",
+            minHeight: 0,
             pointerEvents: "auto",
             backgroundColor: "white",
-            height: "30%",
-            width: "100%",
           }}
         >
           <Stack
-            direction="column"
+            direction='column'
             spacing={0}
             sx={{
               justifyContent: "flex-end",
@@ -263,8 +222,7 @@ export default function NarrationScreen() {
                   marginLeft: "10px",
                 }}
               >
-                {character.name +
-                  (character.surname ? " " + character.surname : "")}
+                {character.name + (character.surname ? " " + character.surname : "")}
               </div>
             )}
             <Grid
@@ -280,8 +238,8 @@ export default function NarrationScreen() {
                 <Grid size={2}>
                   <img
                     src={character?.icon}
-                    loading="lazy"
-                    alt=""
+                    loading='lazy'
+                    alt=''
                     style={{
                       maxHeight: "100%",
                       maxWidth: "100%",
@@ -296,10 +254,9 @@ export default function NarrationScreen() {
           </Stack>
         </Box>
       )}
-    </Stack>
+    </div>
   );
-}
-`;
+}`;
 
 const BackButton = `import { useState } from "react";
 import useNarrationFunctions from "../hooks/useNarrationFunctions";
@@ -431,41 +388,20 @@ export function useQueryNarrativeHistory() {
   });
 }`;
 
-const ChoiceMenu = `import {
-  ChoiceMenuOption,
-  ChoiceMenuOptionClose,
-  narration,
-} from "@drincs/pixi-vn";
-import { Grid } from "@mui/system";
-import { useQueryClient } from "@tanstack/react-query";
-import {
-  INTERFACE_DATA_USE_QUEY_KEY,
-  useQueryChoiceMenuOptions,
-} from "../hooks/useQueryInterface";
+const ChoiceMenu = `import { Grid } from "@mui/system";
+import useNarrationFunctions from "../hooks/useNarrationFunctions";
+import { useQueryChoiceMenuOptions } from "../hooks/useQueryInterface";
 
 export default function ChoiceMenu() {
   const { data: menu = [] } = useQueryChoiceMenuOptions();
-  const queryClient = useQueryClient();
-
-  function afterSelectChoice(
-    item: ChoiceMenuOptionClose | ChoiceMenuOption<{}>
-  ) {
-    narration
-      .selectChoice(item, {})
-      .then(() =>
-        queryClient.invalidateQueries({
-          queryKey: [INTERFACE_DATA_USE_QUEY_KEY],
-        })
-      )
-      .catch((e) => console.error(e));
-  }
+  const { selectChoice } = useNarrationFunctions();
 
   return (
     <Grid
       container
-      direction="column"
-      justifyContent="center"
-      alignItems="center"
+      direction='column'
+      justifyContent='center'
+      alignItems='center'
       spacing={2}
       sx={{
         width: "100%",
@@ -478,19 +414,14 @@ export default function ChoiceMenu() {
     >
       {menu?.map((item, index) => {
         return (
-          <Grid
-            key={"choice-" + index}
-            justifyContent="center"
-            alignItems="center"
-          >
-            <button onClick={() => afterSelectChoice(item)}>{item.text}</button>
+          <Grid key={"choice-" + index} justifyContent='center' alignItems='center'>
+            <button onClick={() => selectChoice(item)}>{item.text}</button>
           </Grid>
         );
       })}
     </Grid>
   );
-}
-`;
+}`;
 
 const startLabel = `import { narration, newLabel } from "@drincs/pixi-vn";
 
