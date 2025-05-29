@@ -1,8 +1,8 @@
 "use client";
 
-import { SandpackLayout, SandpackPreview, SandpackProvider } from "@codesandbox/sandpack-react";
+import { SandpackFiles, SandpackLayout, SandpackPreview, SandpackProvider } from "@codesandbox/sandpack-react";
 
-export function ReactTemplate() {
+export function ReactTemplate({ files }: { files?: SandpackFiles }) {
     return (
         <SandpackProvider
             template='react-ts'
@@ -31,6 +31,7 @@ export function ReactTemplate() {
                 "index.tsx": index,
                 "hooks/useNarrationFunctions.ts": useNarrationFunctions,
                 "constants.ts": constants,
+                ...files,
             }}
         >
             <SandpackLayout>
