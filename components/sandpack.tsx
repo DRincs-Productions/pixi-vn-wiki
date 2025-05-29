@@ -13,6 +13,7 @@ export function ReactTemplate() {
                     "@emotion/react": "^11.13.5",
                     "@mui/system": "^6.1.10",
                     "@tanstack/react-query": "^5.62.2",
+                    "@base-ui-components/react": "^1.0.0-beta.0",
                 },
             }}
             files={{
@@ -29,6 +30,7 @@ export function ReactTemplate() {
                 "utils/assets-utility.ts": assetsUtility,
                 "assets/manifest.ts": manifest,
                 "index.tsx": index,
+                "hooks/useNarrationFunctions.ts": useNarrationFunctions,
             }}
         >
             <SandpackLayout>
@@ -299,46 +301,14 @@ export default function NarrationScreen() {
 }
 `;
 
-const BackButton = `import { stepHistory } from "@drincs/pixi-vn";
-import { useQueryClient } from "@tanstack/react-query";
-import {
-  INTERFACE_DATA_USE_QUEY_KEY,
-  useQueryCanGoBack,
-} from "../hooks/useQueryInterface";
-import { useState } from "react";
+const BackButton = `import { useState } from "react";
+import useNarrationFunctions from "../hooks/useNarrationFunctions";
+import { useQueryCanGoBack } from "../hooks/useQueryInterface";
 
 export default function BackButton() {
-  const queryClient = useQueryClient();
   const { data: canGoBack = false } = useQueryCanGoBack();
   const [loading, setLoading] = useState(false);
-
-  async function backOnClick(): Promise<void> {
-    try {
-      if (!stepHistory.canGoBack) {
-        return;
-      }
-      setLoading(true);
-      stepHistory
-        .goBack((_path) => {
-          // TODO: navigate in the url path
-          // READ THIS: https://pixi-vn.web.app/start/interface.html#navigate-switch-between-ui-screens
-        })
-        .then(() => {
-          queryClient.invalidateQueries({
-            queryKey: [INTERFACE_DATA_USE_QUEY_KEY],
-          });
-          setLoading(false);
-        })
-        .catch((e) => {
-          console.error(e);
-          setLoading(false);
-        });
-      return;
-    } catch (e) {
-      console.error(e);
-      return;
-    }
-  }
+  const { goBack } = useNarrationFunctions();
 
   if (!canGoBack) {
     return null;
@@ -346,7 +316,12 @@ export default function BackButton() {
 
   return (
     <button
-      onClick={backOnClick}
+      onClick={() => {
+        setLoading(true);
+        goBack()
+          .then(() => setLoading(false))
+          .catch(() => setLoading(false));
+      }}
       disabled={loading}
       style={{
         width: 40,
@@ -357,17 +332,10 @@ export default function BackButton() {
       Back
     </button>
   );
-}
-`;
+}`;
 
-const useQueryInterface = `import {
-  CharacterBaseModel,
-  getCharacterById,
-  narration,
-} from "@drincs/pixi-vn";
+const useQueryInterface = `import { CharacterBaseModel, narration, stepHistory } from "@drincs/pixi-vn";
 import { useQuery } from "@tanstack/react-query";
-
-// READ THIS: https://pixi-vn.web.app/start/interface-connect-storage.html
 
 export const INTERFACE_DATA_USE_QUEY_KEY = "interface_data_use_quey_key";
 
@@ -375,9 +343,7 @@ const CAN_GO_BACK_USE_QUEY_KEY = "can_go_back_use_quey_key";
 export function useQueryCanGoBack() {
   return useQuery({
     queryKey: [INTERFACE_DATA_USE_QUEY_KEY, CAN_GO_BACK_USE_QUEY_KEY],
-    queryFn: () => {
-      return narration.canGoBack;
-    },
+    queryFn: async () => stepHistory.canGoBack,
   });
 }
 
@@ -385,9 +351,11 @@ const CHOICE_MENU_OPTIONS_USE_QUEY_KEY = "choice_menu_options_use_quey_key";
 export function useQueryChoiceMenuOptions() {
   return useQuery({
     queryKey: [INTERFACE_DATA_USE_QUEY_KEY, CHOICE_MENU_OPTIONS_USE_QUEY_KEY],
-    queryFn: () => {
-      return narration.choiceMenuOptions || [];
-    },
+    queryFn: async () =>
+      narration.choiceMenuOptions?.map((option) => ({
+        ...option,
+        text: typeof option.text === "string" ? option.text : option.text.join(" "),
+      })) || [],
   });
 }
 
@@ -395,13 +363,11 @@ const INPUT_VALUE_USE_QUEY_KEY = "input_value_use_quey_key";
 export function useQueryInputValue<T>() {
   return useQuery({
     queryKey: [INTERFACE_DATA_USE_QUEY_KEY, INPUT_VALUE_USE_QUEY_KEY],
-    queryFn: () => {
-      return {
-        isRequired: narration.isRequiredInput,
-        type: narration.inputType,
-        currentValue: narration.inputValue as T | undefined,
-      };
-    },
+    queryFn: async () => ({
+      isRequired: narration.isRequiredInput,
+      type: narration.inputType,
+      currentValue: narration.inputValue as T | undefined,
+    }),
   });
 }
 
@@ -409,23 +375,22 @@ const DIALOGUE_USE_QUEY_KEY = "dialogue_use_quey_key";
 export function useQueryDialogue() {
   return useQuery({
     queryKey: [INTERFACE_DATA_USE_QUEY_KEY, DIALOGUE_USE_QUEY_KEY],
-    queryFn: () => {
+    queryFn: async ({ queryKey }) => {
       let dialogue = narration.dialogue;
-      let newText: string | undefined = dialogue?.text;
-      let newCharacter: CharacterBaseModel | undefined = undefined;
-      if (dialogue) {
-        newCharacter = dialogue.character
-          ? getCharacterById(dialogue.character)
-          : undefined;
-        if (!newCharacter && dialogue.character) {
-          newCharacter = new CharacterBaseModel(dialogue.character, {
-            name: dialogue.character,
-          });
-        }
+      let text = dialogue?.text;
+      if (Array.isArray(text)) {
+        text = text.join(" ");
       }
+      let character = dialogue?.character as string | CharacterBaseModel | undefined;
+      if (typeof character === "string") {
+        character = new CharacterBaseModel(character, {
+          name: character,
+        });
+      }
+
       return {
-        text: newText,
-        character: newCharacter,
+        text,
+        character,
       };
     },
   });
@@ -435,9 +400,7 @@ const CAN_GO_NEXT_USE_QUEY_KEY = "can_go_next_use_quey_key";
 export function useQueryCanGoNext() {
   return useQuery({
     queryKey: [INTERFACE_DATA_USE_QUEY_KEY, CAN_GO_NEXT_USE_QUEY_KEY],
-    queryFn: () => {
-      return narration.canGoNext && !narration.isRequiredInput;
-    },
+    queryFn: async () => narration.canGoNext && !narration.isRequiredInput,
   });
 }
 
@@ -445,29 +408,28 @@ const NARRATIVE_HISTORY_USE_QUEY_KEY = "narrative_history_use_quey_key";
 export function useQueryNarrativeHistory() {
   return useQuery({
     queryKey: [INTERFACE_DATA_USE_QUEY_KEY, NARRATIVE_HISTORY_USE_QUEY_KEY],
-    queryFn: () => {
-      return narration.narrativeHistory.map((step) => {
-        let character = step.dialoge?.character
-          ? getCharacterById(step.dialoge?.character) ??
-            new CharacterBaseModel(step.dialoge?.character, {
-              name: step.dialoge?.character,
-            })
-          : undefined;
+    queryFn: async () => {
+      const promises = stepHistory.narrativeHistory.map(async (step) => {
+        let character = step.dialogue?.character as string | CharacterBaseModel | undefined;
+        if (typeof character === "string") {
+          character = new CharacterBaseModel(character, { name: character });
+        }
+        let text = step.dialogue?.text;
+        if (Array.isArray(text)) {
+          text = text.join(" ");
+        }
         return {
-          character: character?.name
-            ? character.name +
-              (character.surname ? " " + character.surname : "")
-            : undefined,
-          text: step.dialoge?.text || "",
+          character: character?.name ? character.name + (character.surname ? " " + character.surname : "") : undefined,
+          text: text || "",
           icon: character?.icon,
           choices: step.choices,
           inputValue: step.inputValue,
         };
       });
+      return await Promise.all(promises);
     },
   });
-}
-`;
+}`;
 
 const ChoiceMenu = `import {
   ChoiceMenuOption,
@@ -535,8 +497,7 @@ const startLabel = `import { narration, newLabel } from "@drincs/pixi-vn";
 export const startLabel = newLabel("start_label", [
   () => (narration.dialogue = "Hello"),
   (props, { labelId }) => narration.jumpLabel(labelId, props),
-]);
-`;
+]);`;
 
 const assetsUtility = `import { Assets } from "@drincs/pixi-vn";
 import manifest from "../assets/manifest";
@@ -629,3 +590,54 @@ const manifest: AssetsManifest = {
   bundles: [],
 };
 export default manifest;`;
+
+const useNarrationFunctions = `import { narration, stepHistory, StoredIndexedChoiceInterface } from "@drincs/pixi-vn";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
+import { INTERFACE_DATA_USE_QUEY_KEY } from "./useQueryInterface";
+
+export default function useNarrationFunctions() {
+  const queryClient = useQueryClient();
+  const gameProps = {};
+
+  const goNext = useCallback(async () => {
+    try {
+      if (!narration.canGoNext) {
+        return;
+      }
+      return narration
+        .goNext(gameProps)
+        .then(() => queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] }))
+        .catch((e) => console.error(e));
+    } catch (e) {
+      console.error(e);
+      return;
+    }
+  }, [gameProps, queryClient]);
+
+  const goBack = useCallback(async () => {
+    return stepHistory
+      .goBack((_path) => {
+        // TODO: navigate in the url path
+        // READ THIS: https://pixi-vn.web.app/start/interface.html#navigate-switch-between-ui-screens
+      })
+      .then(() => queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] }))
+      .catch((e) => console.error(e));
+  }, [gameProps, queryClient]);
+
+  const selectChoice = useCallback(
+    async (item: StoredIndexedChoiceInterface) => {
+      return narration
+        .selectChoice(item, gameProps)
+        .then(() => queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] }))
+        .catch((e) => console.error(e));
+    },
+    [gameProps, queryClient]
+  );
+
+  return {
+    goNext,
+    goBack,
+    selectChoice,
+  };
+}`;
