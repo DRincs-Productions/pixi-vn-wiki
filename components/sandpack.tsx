@@ -27,6 +27,7 @@ export function ReactTemplate() {
                 "screens/ChoiceMenu.tsx": ChoiceMenu,
                 "labels/startLabel.ts": startLabel,
                 "utils/assets-utility.ts": assetsUtility,
+                "assets/manifest.ts": manifest,
                 "index.tsx": index,
             }}
         >
@@ -537,24 +538,26 @@ export const startLabel = newLabel("start_label", [
 ]);
 `;
 
-const assetsUtility = `/**
+const assetsUtility = `import { Assets } from "@drincs/pixi-vn";
+import manifest from "../assets/manifest";
+
+/**
  * Define all the assets that will be used in the game.
  * This function will be called before the game starts.
  * You can read more about assets management in the documentation: https://pixi-vn.web.app/start/assets-management.html
  */
-export async function defineAssets() {}
-`;
+export async function defineAssets() {
+  Assets.init({ manifest });
+}`;
 
-const index = `import React, { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import "./styles.css";
-import { Game, canvas, narration, Container } from "@drincs/pixi-vn";
+const index = `import { Container, Game, canvas, narration } from "@drincs/pixi-vn";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { defineAssets } from "./utils/assets-utility";
-import { startLabel } from "./labels/startLabel";
-import { INTERFACE_DATA_USE_QUEY_KEY } from "./hooks/useQueryInterface";
-
+import { createRoot } from "react-dom/client";
 import App from "./App";
+import { INTERFACE_DATA_USE_QUEY_KEY } from "./hooks/useQueryInterface";
+import { startLabel } from "./labels/startLabel";
+import "./styles.css";
+import { defineAssets } from "./utils/assets-utility";
 
 // Canvas setup with PIXI
 const body = document.body;
@@ -583,10 +586,10 @@ Game.init(body, {
   const reactRoot = createRoot(htmlLayout);
   const queryClient = new QueryClient();
 
-  narration.onGameEnd = async () => {
+  Game.onEnd(async () => {
     Game.clear();
     await narration.jumpLabel(startLabel, {});
-  };
+  });
 
   reactRoot.render(
     <div
@@ -598,8 +601,7 @@ Game.init(body, {
       }}
     >
       Loading...
-    </div>,
-    canvas.htmlLayout!
+    </div>
   );
 
   defineAssets().then(() => {
@@ -608,13 +610,22 @@ Game.init(body, {
       reactRoot.render(
         <QueryClientProvider client={queryClient}>
           <App />
-        </QueryClientProvider>,
-        canvas.htmlLayout!
+        </QueryClientProvider>
       );
       queryClient.invalidateQueries({
         queryKey: [INTERFACE_DATA_USE_QUEY_KEY],
       });
     });
   });
-});
-`;
+});`;
+
+const manifest = `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [],
+};
+export default manifest;`;
