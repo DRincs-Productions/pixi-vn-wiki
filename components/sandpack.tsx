@@ -16,7 +16,7 @@ export function ReactTemplate() {
                 },
             }}
             files={{
-                "public/index.html": index,
+                "public/index.html": indexhtml,
                 "App.tsx": App,
                 "styles.css": styles,
                 "components/BackButton.tsx": BackButton,
@@ -25,6 +25,9 @@ export function ReactTemplate() {
                 "screens/NarrationScreen.tsx": NarrationScreen,
                 "hooks/useQueryInterface.ts": useQueryInterface,
                 "screens/ChoiceMenu.tsx": ChoiceMenu,
+                "labels/startLabel.ts": startLabel,
+                "utils/assets-utility.ts": assetsUtility,
+                "index.tsx": index,
             }}
         >
             <SandpackLayout>
@@ -35,7 +38,7 @@ export function ReactTemplate() {
     );
 }
 
-const index = `<!DOCTYPE html>
+const indexhtml = `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -524,4 +527,94 @@ export default function ChoiceMenu() {
     </Grid>
   );
 }
+`;
+
+const startLabel = `import { narration, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  () => (narration.dialogue = "Hello"),
+  (props, { labelId }) => narration.jumpLabel(labelId, props),
+]);
+`;
+
+const assetsUtility = `/**
+ * Define all the assets that will be used in the game.
+ * This function will be called before the game starts.
+ * You can read more about assets management in the documentation: https://pixi-vn.web.app/start/assets-management.html
+ */
+export async function defineAssets() {}
+`;
+
+const index = `import React, { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./styles.css";
+import { Game, canvas, narration, Container } from "@drincs/pixi-vn";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { defineAssets } from "./utils/assets-utility";
+import { startLabel } from "./labels/startLabel";
+import { INTERFACE_DATA_USE_QUEY_KEY } from "./hooks/useQueryInterface";
+
+import App from "./App";
+
+// Canvas setup with PIXI
+const body = document.body;
+if (!body) {
+  throw new Error("body element not found");
+}
+
+Game.init(body, {
+  height: 480,
+  width: 720,
+  backgroundColor: "#303030",
+}).then(() => {
+  // Pixi.JS UI Layer
+  canvas.addLayer("ui", new Container());
+
+  // React setup with ReactDOM
+  const root = document.getElementById("root");
+  if (!root) {
+    throw new Error("root element not found");
+  }
+
+  const htmlLayout = canvas.addHtmlLayer("ui", root);
+  if (!htmlLayout) {
+    throw new Error("htmlLayout not found");
+  }
+  const reactRoot = createRoot(htmlLayout);
+  const queryClient = new QueryClient();
+
+  narration.onGameEnd = async () => {
+    Game.clear();
+    await narration.jumpLabel(startLabel, {});
+  };
+
+  reactRoot.render(
+    <div
+      style={{
+        color: "white",
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+      }}
+    >
+      Loading...
+    </div>,
+    canvas.htmlLayout!
+  );
+
+  defineAssets().then(() => {
+    Game.clear();
+    narration.callLabel(startLabel, {}).then(() => {
+      reactRoot.render(
+        <QueryClientProvider client={queryClient}>
+          <App />
+        </QueryClientProvider>,
+        canvas.htmlLayout!
+      );
+      queryClient.invalidateQueries({
+        queryKey: [INTERFACE_DATA_USE_QUEY_KEY],
+      });
+    });
+  });
+});
 `;
