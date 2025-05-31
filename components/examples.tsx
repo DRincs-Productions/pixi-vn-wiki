@@ -189,3 +189,23 @@ saveCharacter(eggHead);`,
         />
     );
 }
+
+export function DialogueGlueExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { narration, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  () => {
+    narration.dialogue = "Hello, my name is Alice and ...";
+  },
+  () => {
+    narration.dialogGlue = true;
+    narration.dialogue = "I am a character in this game.";
+  },
+]);`,
+            }}
+        />
+    );
+}
