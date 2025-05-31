@@ -160,7 +160,7 @@ export const startLabel = newLabel("start_label", [
   // if don't want to set a character, you can set a string
   () => (narration.dialogue = "Hello, world!"),
 ]);`,
-                "values/characters.ts": `import { CharacterBaseModel, saveCharacter } from "@drincs/pixi-vn";
+                "values/characters.ts": `import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
 
 export const eggHead = new CharacterBaseModel("egg-head", {
   name: "Egg",
@@ -170,7 +170,7 @@ export const eggHead = new CharacterBaseModel("egg-head", {
   color: "#9e2e12",
 });
 
-saveCharacter(eggHead);`,
+RegisteredCharacters.add([eggHead]);`,
             }}
         />
     );
