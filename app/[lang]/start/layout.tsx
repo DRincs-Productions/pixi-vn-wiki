@@ -1,4 +1,4 @@
-import { baseOptions } from "@/app/[lang]/layout.config";
+import { baseOptions } from "@/app/layout.config";
 import { source } from "@/lib/source";
 import { Image } from "fumadocs-core/framework";
 import { DocsLayout, DocsLayoutProps } from "fumadocs-ui/layouts/docs";

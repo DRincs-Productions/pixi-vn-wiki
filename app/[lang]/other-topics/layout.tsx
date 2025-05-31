@@ -1,4 +1,4 @@
-import { baseOptions } from "@/app/[lang]/layout.config";
+import { baseOptions } from "@/app/layout.config";
 import { otherTopicsSource } from "@/lib/otherTopicsSource";
 import { DocsLayout, DocsLayoutProps } from "fumadocs-ui/layouts/docs";
 import { useMemo, type ReactNode } from "react";
