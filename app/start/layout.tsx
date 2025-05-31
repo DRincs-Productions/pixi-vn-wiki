@@ -293,7 +293,11 @@ export default function Layout({ children }: { children: ReactNode }) {
                 {
                     type: "folder",
                     name: "Distribution",
-                    url: "/start/distribution",
+                    index: {
+                        type: "page",
+                        name: "Distribution",
+                        url: "/start/distribution",
+                    },
                     children: [
                         {
                             type: "page",
