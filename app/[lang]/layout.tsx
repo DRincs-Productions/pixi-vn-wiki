@@ -1,5 +1,6 @@
 import CustomSearchDialog from "@/components/search";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import type { Translations } from "fumadocs-ui/i18n";
 import { RootProvider } from "fumadocs-ui/provider";
 import { Inter } from "next/font/google";
 import type { ReactNode } from "react";
@@ -9,13 +10,48 @@ const inter = Inter({
     subsets: ["latin"],
 });
 
-export default function Layout({ children }: { children: ReactNode }) {
+// translations
+const cn: Partial<Translations> = {
+    search: "Translated Content",
+};
+
+// available languages that will be displayed on UI
+// make sure `locale` is consistent with your i18n config
+const locales = [
+    {
+        name: "English",
+        locale: "en",
+    },
+    {
+        name: "Русский (Русский)",
+        locale: "ru",
+    },
+    {
+        name: "Italiano (Incompleto)",
+        locale: "it",
+    },
+];
+
+export default async function RootLayout({
+    params,
+    children,
+}: {
+    params: Promise<{ lang: string }>;
+    children: ReactNode;
+}) {
+    const lang = (await params).lang;
+
     return (
-        <html lang='en' className={inter.className} suppressHydrationWarning>
+        <html lang={lang} className={inter.className} suppressHydrationWarning>
             <body className='flex flex-col min-h-screen'>
                 <RootProvider
                     search={{
                         SearchDialog: CustomSearchDialog,
+                    }}
+                    i18n={{
+                        locale: lang,
+                        locales,
+                        translations: { cn }[lang],
                     }}
                 >
                     {children}
