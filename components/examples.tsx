@@ -10,15 +10,7 @@ export function PerformanceExample() {
     return (
         <ReactTemplate
             files={{
-                "labels/startLabel.ts": `import {
-  newLabel,
-  tickerDecorator,
-  canvas,
-  TickerBase,
-  TickerValue,
-  Sprite,
-  ImageSprite,
-} from "@drincs/pixi-vn";
+                "labels/startLabel.ts": `import { canvas, ImageSprite, newLabel, Sprite, TickerBase, tickerDecorator, TickerValue } from "@drincs/pixi-vn";
 
 interface TintingTestTickerArgs {
   direction: number;
@@ -28,11 +20,7 @@ interface TintingTestTickerArgs {
 
 @tickerDecorator("TintingTestTicker")
 export class TintingTestTicker extends TickerBase<TintingTestTickerArgs> {
-  override fn(
-    _t: TickerValue,
-    args: TintingTestTickerArgs,
-    aliases: string[]
-  ): void {
+  override fn(_t: TickerValue, args: TintingTestTickerArgs, aliases: string[]): void {
     aliases.forEach((alias) => {
       // create a bounding box for the little dudes
       const dudeBoundsPadding = 100;
