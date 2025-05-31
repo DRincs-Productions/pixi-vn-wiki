@@ -1,3 +1,4 @@
+import { i18n } from "@/lib/i18n";
 import LogoImg from "@/public/logo.webp";
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import Image from "next/image";
@@ -23,4 +24,5 @@ export const baseOptions: BaseLayoutProps = {
         transparentMode: "top",
     },
     githubUrl: "https://github.com/DRincs-Productions/pixi-vn",
+    i18n,
 };
