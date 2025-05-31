@@ -2,10 +2,12 @@ import { baseOptions } from "@/app/layout.config";
 import { HomeLayout } from "fumadocs-ui/layouts/home";
 import type { ReactNode } from "react";
 
-export default function Layout({ children }: { children: ReactNode }) {
+export default async function Layout({ params, children }: { params: Promise<{ lang: string }>; children: ReactNode }) {
+    const { lang } = await params;
+
     return (
         <HomeLayout
-            {...baseOptions}
+            {...baseOptions(lang)}
             links={[
                 {
                     type: "menu",

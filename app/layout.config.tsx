@@ -13,16 +13,19 @@ import Image from "next/image";
  * Ren'Py Layout: app/renpy/layout.tsx
  * Other Topics Layout: app/other-topics/layout.tsx
  */
-export const baseOptions: BaseLayoutProps = {
-    nav: {
-        title: (
-            <>
-                <Image src={LogoImg} alt='Logo' width={24} height={24} className='mr-2' />
-                Pixi’VN
-            </>
-        ),
-        transparentMode: "top",
-    },
-    githubUrl: "https://github.com/DRincs-Productions/pixi-vn",
-    i18n,
-};
+export function baseOptions(locale: string): BaseLayoutProps {
+    console.log(`Using locale: ${locale}`);
+    return {
+        nav: {
+            title: (
+                <>
+                    <Image src={LogoImg} alt='Logo' width={24} height={24} className='mr-2' />
+                    Pixi’VN
+                </>
+            ),
+            transparentMode: "top",
+        },
+        githubUrl: "https://github.com/DRincs-Productions/pixi-vn",
+        i18n,
+    };
+}
