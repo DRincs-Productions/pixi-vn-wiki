@@ -138,3 +138,54 @@ export const WIDTH = 1920;`,
         />
     );
 }
+
+export function CurrentDialogueExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { Dialogue, narration, newLabel } from "@drincs/pixi-vn";
+import { eggHead } from "../values/characters";
+
+// What is a Label? https://pixi-vn.web.app/start/labels.html
+export const startLabel = newLabel("start_label", [
+  () => {
+    // in this example, not exists a character with id 'Alice'
+    // so when you get the current dialogue, the character is a fake character with the name 'Alice'
+    narration.dialogue = {
+      character: "Alice",
+      text: "Hello, world!",
+    };
+  },
+  () => {
+    // in this example, exists a character with id 'egg-head'
+    // so when you get the current dialogue, the character is the character with id 'egg-head'
+    narration.dialogue = {
+      character: "egg-head",
+      text: "Hello, world!",
+    };
+    // or better
+    narration.dialogue = {
+      character: eggHead,
+      text: "Hello, world!",
+    };
+    // or
+    narration.dialogue = new Dialogue("Hello, world!", eggHead);
+  },
+  // if don't want to set a character, you can set a string
+  () => (narration.dialogue = "Hello, world!"),
+]);`,
+                "values/characters.ts": `import { CharacterBaseModel, saveCharacter } from "@drincs/pixi-vn";
+
+export const eggHead = new CharacterBaseModel("egg-head", {
+  name: "Egg",
+  surname: "Head",
+  age: 25,
+  icon: "https://pixijs.com/assets/eggHead.png",
+  color: "#9e2e12",
+});
+
+saveCharacter(eggHead);`,
+            }}
+        />
+    );
+}

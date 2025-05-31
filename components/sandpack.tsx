@@ -31,6 +31,7 @@ export function ReactTemplate({ files }: { files?: SandpackFiles }) {
                 "index.tsx": index,
                 "hooks/useNarrationFunctions.ts": useNarrationFunctions,
                 "constants.ts": constants,
+                "values/characters.ts": "",
                 ...files,
             }}
         >
