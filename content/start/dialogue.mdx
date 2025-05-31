@@ -113,7 +113,7 @@ For example:
 
 ( **It's in basic html**, you will need to replace the basic html elements with UI components from your favorite library to improve the graphics. )
 
-```tsx title="React"
+```tsx tab="React"
 import { useQueryDialogue } from "../hooks/useQueryInterface";
 import ChoiceMenu from "./ChoiceMenu";
 
@@ -176,5 +176,37 @@ export default function NarrationScreen() {
             )}
         </div>
     );
+}
+```
+
+```tsx tab="hooks/useQueryInterface.ts"
+import { CharacterBaseModel, narration } from "@drincs/pixi-vn";
+import { useQuery } from "@tanstack/react-query";
+
+export const INTERFACE_DATA_USE_QUEY_KEY = "interface_data_use_quey_key";
+
+const DIALOGUE_USE_QUEY_KEY = "dialogue_use_quey_key";
+export function useQueryDialogue() {
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, DIALOGUE_USE_QUEY_KEY],
+        queryFn: async ({ queryKey }) => {
+            let dialogue = narration.dialogue;
+            let text = dialogue?.text;
+            if (Array.isArray(text)) {
+                text = text.join(" ");
+            }
+            let character = dialogue?.character as string | CharacterBaseModel | undefined;
+            if (typeof character === "string") {
+                character = new CharacterBaseModel(character, {
+                    name: character,
+                });
+            }
+
+            return {
+                text,
+                character,
+            };
+        },
+    });
 }
 ```
