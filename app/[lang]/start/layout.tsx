@@ -8,6 +8,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     const tree = useMemo<DocsLayoutProps["tree"]>(
         () => ({
             ...source.pageTree,
+            name: "Pixi’VN",
             children: [
                 {
                     type: "separator",
