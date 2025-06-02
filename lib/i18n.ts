@@ -5,11 +5,9 @@ export const i18n: I18nConfig = {
 };
 
 export function getBrowserLocale(): "en" | "ru" | "it" {
-    if (typeof window !== "undefined") {
-        const ln = (navigator.language || navigator.languages?.[0] || "en").split("-")[0];
-        if (ln === "ru" || ln === "it") {
-            return ln as "ru" | "it";
-        }
+    const ln = (navigator.language || navigator.languages?.[0] || "en").split("-")[0];
+    if (ln === "ru" || ln === "it") {
+        return ln as "ru" | "it";
     }
     return "en";
 }

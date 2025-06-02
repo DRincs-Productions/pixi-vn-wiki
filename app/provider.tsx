@@ -41,22 +41,19 @@ export default function Provider({ children }: { children: ReactNode }) {
 
     // On mount, check if user has a preferred locale in localStorage
     useEffect(() => {
-        if (typeof window !== "undefined") {
-            const stored = localStorage.getItem("locale");
-            if (stored === "en" || stored === "ru" || stored === "it") {
-                setLocale(stored);
-            }
+        const stored = localStorage.getItem("locale");
+        if (stored === "en" || stored === "ru" || stored === "it") {
+            setLocale(stored);
         }
     }, []);
 
     // Allow user to set any supported language
     const handleLocaleChange = (newLocale: "en" | "ru" | "it") => {
         setLocale(newLocale);
-        if (typeof window !== "undefined") {
-            localStorage.setItem("locale", newLocale);
-        }
+        localStorage.setItem("locale", newLocale);
     };
 
+    console.log(`Using locale: ${locale}`);
     return (
         <html lang={locale} className={inter.className} suppressHydrationWarning>
             <body className='flex flex-col min-h-screen'>
