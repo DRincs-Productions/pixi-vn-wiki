@@ -4,6 +4,7 @@ import { createRelativeLink } from "fumadocs-ui/mdx";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle, EditOnGitHub } from "fumadocs-ui/page";
 import { getLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { TranslateButton } from "./ui/buttons";
 
 export default async function MDXPage({ params, folther }: { params: { slug?: string[] }; folther: string }) {
     const locale = await getLocale();
@@ -21,6 +22,7 @@ export default async function MDXPage({ params, folther }: { params: { slug?: st
                     <EditOnGitHub
                         href={`https://github.com/DRincs-Productions/pixi-vn-wiki/blob/main/content/${folther}/${page.file.path}`}
                     />
+                    <TranslateButton />
                 </div>
                 <MDXContent
                     components={getMDXComponents({

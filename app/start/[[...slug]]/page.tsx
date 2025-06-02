@@ -1,40 +1,12 @@
+import MDXPage from "@/components/page";
 import { createMetadata } from "@/lib/metadata";
 import { source } from "@/lib/source";
-import { getMDXComponents } from "@/mdx-components";
-import { createRelativeLink } from "fumadocs-ui/mdx";
-import { DocsBody, DocsDescription, DocsPage, DocsTitle, EditOnGitHub } from "fumadocs-ui/page";
-import { getLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { Translate } from "./page.client";
 
 export default async function Page(props: { params: Promise<{ slug?: string[] }> }) {
-    const locale = await getLocale();
     const params = await props.params;
-    const page = source.getPage(params.slug, locale);
-    if (!page) notFound();
 
-    const MDXContent = page.data.body;
-
-    return (
-        <DocsPage toc={page.data.toc} full={page.data.full}>
-            <DocsTitle>{page.data.title}</DocsTitle>
-            <DocsDescription className='mb-0'>{page.data.description}</DocsDescription>
-            <div className='flex flex-row gap-2 items-center mb-4'>
-                <EditOnGitHub
-                    href={`https://github.com/DRincs-Productions/pixi-vn-wiki/blob/main/content/start/${page.file.path}`}
-                />
-                <Translate />
-            </div>
-            <DocsBody>
-                <MDXContent
-                    components={getMDXComponents({
-                        // this allows you to link to other pages with relative file paths
-                        a: createRelativeLink(source, page),
-                    })}
-                />
-            </DocsBody>
-        </DocsPage>
-    );
+    return <MDXPage params={params} folther='start' />;
 }
 
 export async function generateStaticParams() {
@@ -42,9 +14,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata(props: { params: Promise<{ slug?: string[] }> }) {
-    const locale = await getLocale();
     const params = await props.params;
-    const page = source.getPage(params.slug, locale);
+    const page = source.getPage(params.slug);
     if (!page) notFound();
 
     return createMetadata({
