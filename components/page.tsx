@@ -1,13 +1,13 @@
+import { getBrowserLanguage } from "@/lib/i18n";
 import { source } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle, EditOnGitHub } from "fumadocs-ui/page";
-import { getLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { TranslateButton } from "./ui/buttons";
 
 export default async function MDXPage({ params, folther }: { params: { slug?: string[] }; folther: string }) {
-    const locale = await getLocale();
+    const locale = await getBrowserLanguage();
     const page = source.getPage(params.slug, locale);
     if (!page) notFound();
 
