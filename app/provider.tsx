@@ -1,11 +1,13 @@
 "use client";
 import CustomSearchDialog from "@/components/search";
+import { getBrowserLocale } from "@/lib/i18n";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import type { Translations } from "fumadocs-ui/i18n";
 import { RootProvider } from "fumadocs-ui/provider";
 import { NextIntlClientProvider } from "next-intl";
 import { Inter } from "next/font/google";
 import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
 import "./global.css";
 
 const inter = Inter({
@@ -33,18 +35,27 @@ const locales = [
         locale: "it",
     },
 ];
-function getBrowserLocale(): "en" | "ru" | "it" {
-    if (typeof window !== "undefined") {
-        const ln = (navigator.language || navigator.languages?.[0] || "en").split("-")[0];
-        if (ln === "ru" || ln === "it") {
-            return ln as "ru" | "it";
-        }
-    }
-    return "en";
-}
 
 export default function Provider({ children }: { children: ReactNode }) {
-    const locale = getBrowserLocale();
+    const [locale, setLocale] = useState<"en" | "ru" | "it">(getBrowserLocale());
+
+    // On mount, check if user has a preferred locale in localStorage
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const stored = localStorage.getItem("locale");
+            if (stored === "en" || stored === "ru" || stored === "it") {
+                setLocale(stored);
+            }
+        }
+    }, []);
+
+    // Allow user to set any supported language
+    const handleLocaleChange = (newLocale: "en" | "ru" | "it") => {
+        setLocale(newLocale);
+        if (typeof window !== "undefined") {
+            localStorage.setItem("locale", newLocale);
+        }
+    };
 
     return (
         <html lang={locale} className={inter.className} suppressHydrationWarning>
@@ -57,9 +68,7 @@ export default function Provider({ children }: { children: ReactNode }) {
                         i18n={{
                             locale: locale,
                             locales,
-                            onLocaleChange: () => {
-                                // Handle locale change if needed
-                            },
+                            onLocaleChange: (ln) => handleLocaleChange(ln as "en" | "ru" | "it"),
                             translations: { cn }[locale as string],
                         }}
                     >
