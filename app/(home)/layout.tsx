@@ -1,13 +1,14 @@
 import { baseOptions } from "@/app/layout.config";
 import { HomeLayout } from "fumadocs-ui/layouts/home";
+import { getLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 
-export default async function Layout({ params, children }: { params: Promise<{ lang: string }>; children: ReactNode }) {
-    const { lang } = await params;
+export default async function Layout({ children }: { children: ReactNode }) {
+    const locale = await getLocale();
 
     return (
         <HomeLayout
-            {...baseOptions(lang)}
+            {...baseOptions(locale)}
             links={[
                 {
                     type: "menu",

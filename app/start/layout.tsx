@@ -2,10 +2,11 @@ import { baseOptions } from "@/app/layout.config";
 import { source } from "@/lib/source";
 import { Image } from "fumadocs-core/framework";
 import { DocsLayout, DocsLayoutProps } from "fumadocs-ui/layouts/docs";
+import { getLocale } from "next-intl/server";
 import { type ReactNode } from "react";
 
-export default async function Layout({ params, children }: { params: Promise<{ lang: string }>; children: ReactNode }) {
-    const { lang } = await params;
+export default async function Layout({ children }: { children: ReactNode }) {
+    const locale = await getLocale();
 
     const tree: DocsLayoutProps["tree"] = {
         ...source.pageTree,
@@ -320,7 +321,7 @@ export default async function Layout({ params, children }: { params: Promise<{ l
         ],
     };
     return (
-        <DocsLayout tree={tree} {...baseOptions(lang)}>
+        <DocsLayout tree={tree} {...baseOptions(locale)}>
             {children}
         </DocsLayout>
     );

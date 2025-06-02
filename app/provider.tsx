@@ -2,6 +2,7 @@
 import CustomSearchDialog from "@/components/search";
 import type { Translations } from "fumadocs-ui/i18n";
 import { RootProvider } from "fumadocs-ui/provider";
+import { useLocale } from "next-intl";
 import type { ReactNode } from "react";
 import "./global.css";
 
@@ -27,17 +28,21 @@ const locales = [
     },
 ];
 
-export default function Provider({ children, lang }: { children: ReactNode; lang: string }) {
+export default function Provider({ children }: { children: ReactNode }) {
+    const locale = useLocale();
+
     return (
         <RootProvider
             search={{
                 SearchDialog: CustomSearchDialog,
             }}
             i18n={{
-                locale: lang,
+                locale: locale,
                 locales,
-                onLocaleChange: () => {},
-                translations: { cn }[lang],
+                onLocaleChange: () => {
+                    // Handle locale change if needed
+                },
+                translations: { cn }[locale],
             }}
         >
             {children}
