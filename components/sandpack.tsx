@@ -2,7 +2,7 @@
 
 import { SandpackFiles, SandpackLayout, SandpackPreview, SandpackProvider } from "@codesandbox/sandpack-react";
 
-export function ReactTemplate({ files }: { files?: SandpackFiles }) {
+export function ReactTemplate({ files, previewHeight = 400 }: { files?: SandpackFiles; previewHeight?: number }) {
     return (
         <SandpackProvider
             template='react-ts'
@@ -34,10 +34,21 @@ export function ReactTemplate({ files }: { files?: SandpackFiles }) {
                 "values/characters.ts": "",
                 ...files,
             }}
+            style={{
+                width: "100%",
+                height: `${previewHeight}px`,
+                border: 0,
+                borderRadius: "4px",
+                overflow: "hidden",
+            }}
         >
             <SandpackLayout>
                 {/* <SandpackCodeEditor /> */}
-                <SandpackPreview />
+                <SandpackPreview
+                    style={{
+                        height: `${previewHeight}px`,
+                    }}
+                />
             </SandpackLayout>
         </SandpackProvider>
     );
