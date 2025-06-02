@@ -14,7 +14,7 @@ import Image from "next/image";
  * Other Topics Layout: app/other-topics/layout.tsx
  */
 export function baseOptions(locale: string): BaseLayoutProps {
-    console.log(`Using locale: ${locale}`);
+    console.log(`baseOptions ${locale}`);
     return {
         nav: {
             title: (

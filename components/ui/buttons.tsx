@@ -3,7 +3,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
 import Link from "fumadocs-core/link";
 
-export function Translate() {
+export function TranslateButton() {
     return (
         <Link
             className={cn(

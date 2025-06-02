@@ -1,14 +1,12 @@
-"use client";
-
 import { source } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle, EditOnGitHub } from "fumadocs-ui/page";
-import { useLocale } from "next-intl";
+import { getLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
-export default function MDXPage({ params, folther }: { params: { slug?: string[] }; folther: string }) {
-    const locale = useLocale();
+export default async function MDXPage({ params, folther }: { params: { slug?: string[] }; folther: string }) {
+    const locale = await getLocale();
     const page = source.getPage(params.slug, locale);
     if (!page) notFound();
 
