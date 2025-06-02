@@ -3,11 +3,13 @@ import { source } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle, EditOnGitHub } from "fumadocs-ui/page";
+import { getLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
-export default async function Page(props: { params: Promise<{ lang: string; slug?: string[] }> }) {
-    const { slug, lang } = await props.params;
-    const page = source.getPage(slug, lang);
+export default async function Page(props: { params: Promise<{ slug?: string[] }> }) {
+    const locale = await getLocale();
+    const params = await props.params;
+    const page = source.getPage(params.slug, locale);
     if (!page) notFound();
 
     const MDXContent = page.data.body;
@@ -37,9 +39,10 @@ export async function generateStaticParams() {
     return source.generateParams();
 }
 
-export async function generateMetadata(props: { params: Promise<{ lang: string; slug?: string[] }> }) {
-    const { slug, lang } = await props.params;
-    const page = source.getPage(slug, lang);
+export async function generateMetadata(props: { params: Promise<{ slug?: string[] }> }) {
+    const locale = await getLocale();
+    const params = await props.params;
+    const page = source.getPage(params.slug, locale);
     if (!page) notFound();
 
     return createMetadata({
