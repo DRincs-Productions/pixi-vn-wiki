@@ -1,0 +1,50 @@
+---
+title: Animazioni ed effetti articolati
+---
+
+Le animazioni e gli effetti articolati sono funzioni utilizzate per avviare combinazioni di più [animazioni ed effetti primitivi (Ticker)](/start/canvas-tickers). Ad esempio, la funzione `Shake` è un'animazione articolata che utilizza più `MoveTicker` per creare un effetto di scuotimento.
+
+## Shake
+
+La funzione `shakeEffect` è un'animazione articolata che scuote un componente canvas. (Utilizza più `MoveTicker` per creare l'effetto scuotimento)
+
+Questa funzione ha i seguenti parametri:
+
+- `alias`: L'[alias](/start/canvas-alias) serve a identificare il componente.
+- `props`: le proprietà dell'effetto scossa. Le proprietà sono:
+  - `speed` (Opzionale): è un numero che rappresenta la velocità dell'effetto scossa.
+  - `shocksNumber` (Opzionale): il numero di scosse.
+  - `type` (Opzionale): il tipo del effetto della scossa.
+  - `maximumShockSize` (Opzionale): la dimensione massima della scossa.
+  - `speedProgression` (Opzionale): questa proprietà può essere utilizzata nel caso in cui sia necessario aumentare/diminuire la velocità della scossa nel tempo. Puoi leggere di più a riguardo [qui](/start/canvas-tickers#speed-progression-property).
+  - `startOnlyIfHaveTexture` (Opzionale): è un valore booleano. If true, the animation will alter the properties only if the canvas component has a non-empty texture. Puoi leggere di più a riguardo [qui](/start/canvas-tickers#start-only-if-have-texture-property).
+- `priority` (Opzionale): la priorità del ticker
+
+```ts tab="labels/startLabel.ts"
+import { CANVAS_APP_GAME_LAYER_ALIAS, newLabel, shakeEffect, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await showImage("bg", "bg", { scale: 1.3 });
+        await showImage("alien", "alien", { align: 0.5 });
+        shakeEffect("alien"); // [!code focus]
+    },
+    async () => {
+        shakeEffect(CANVAS_APP_GAME_LAYER_ALIAS); // [!code focus]
+    },
+]);
+```
+
+```ts tab="utils/defineAssets.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+export async function defineAssets() {
+    Assets.add({alias: "alien", src: "https://pixijs.com/assets/eggHead.png" });
+    Assets.add({ alias: "bg", src: "https://pixijs.com/assets/bg_grass.jpg" });
+}
+```
+
+<Sandbox
+  template="q2nhhq"
+  entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
+/>
