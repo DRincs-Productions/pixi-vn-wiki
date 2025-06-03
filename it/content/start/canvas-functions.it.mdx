@@ -1,0 +1,221 @@
+---
+title: Funzioni dei componenti canvas
+---
+
+## Aggiungi
+
+Per aggiungere un componente al canvas di gioco, puoi usare `canvas.add`.
+Questa funzione ha i seguenti parametri:
+
+- `alias`: L'[alias](/start/canvas-alias) serve a identificare il componente.
+- `component`: Il componente da aggiungere.
+
+```ts tab="labels/startLabel.ts"
+import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        const sprite = new Sprite();
+        const texture = await Assets.load("egg_head");
+        sprite.texture = texture;
+        canvas.add("sprite", sprite); // [!code focus]
+    },
+]);
+```
+
+```ts tab="utils/defineAssets.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+export async function defineAssets() {
+    Assets.add({ alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" });
+}
+```
+
+<Sandbox
+  template="pm3n7c"
+  entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
+/>
+
+## Get
+
+Per ottenere un componente dal canvas di gioco, puoi usare `canvas.find`. Se il componente non esiste, restituirà `undefined`.
+Questa funzione ha i seguenti parametri:
+
+- `alias`: L'[alias](/start/canvas-alias) serve a identificare il componente.
+
+```ts tab="labels/startLabel.ts"
+import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        const sprite = new Sprite();
+        const texture = await Assets.load("egg_head");
+        sprite.texture = texture;
+        canvas.add("sprite", sprite);
+    },
+    () => {
+        const sprite = canvas.find("sprite"); // [!code focus]
+        if (sprite) {
+            sprite.x = 100;
+            sprite.y = 100;
+        }
+    },
+]);
+```
+
+```ts tab="utils/defineAssets.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+export async function defineAssets() {
+    Assets.add({ alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" });
+}
+```
+
+<Sandbox
+  template="k6xqwz"
+  entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
+/>
+
+## Rimuovi
+
+Per rimuovere un componente dal canvas di gioco, puoi usare `canvas.remove`.
+Questa funzione ha i seguenti parametri:
+
+- `alias`: L'[alias](/start/canvas-alias) serve a identificare il componente.
+
+```ts tab="labels/startLabel.ts"
+import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        const sprite = new Sprite();
+        const texture = await Assets.load("egg_head");
+        sprite.texture = texture;
+        canvas.add("sprite", sprite);
+    },
+    () => {
+        canvas.remove("sprite"); // [!code focus]
+    },
+]);
+```
+
+```ts tab="utils/defineAssets.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+export async function defineAssets() {
+    Assets.add({ alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" });
+}
+```
+
+<Sandbox
+  template="3qfr7m"
+  entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
+/>
+
+## Remove all
+
+Per rimuovere tutti i componenti dal canvas di gioco, puoi usare `canvas.removeAll`.
+
+```ts tab="labels/startLabel.ts"
+import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        const texture = await Assets.load("egg_head");
+        for (let i = 0; i < 3; i++) {
+            const sprite = new Sprite();
+            sprite.texture = texture;
+            sprite.x = i * 150;
+            canvas.add(`sprite${i}`, sprite);
+        }
+    },
+    () => {
+        canvas.removeAll(); // [!code focus]
+    },
+]);
+```
+
+```ts tab="utils/defineAssets.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+export async function defineAssets() {
+    Assets.add({ alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" });
+}
+```
+
+<Sandbox
+  template="rnktj2"
+  entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
+/>
+
+## Add a listener to an event
+
+<Callout type="info">
+It is recommended to add event-based components, such as buttons, to the [UI](/start/interface). But sometimes, such as when creating minigames, you need to add event-based components to the canvas and be able to save the current state of the canvas.
+</Callout>
+
+In Pixi'VN, rispetto a PixiJS, non c'è la possibilità di usare un [listener con il metodo `on`](https://pixijs.com/8.x/examples/events/click) (perché `on` assocerà un evento a una lambda e le lambda non possono essere salvate nello stato corrente del canvas).
+
+Puoi usare `onEvent`, che ha lo stesso comportamento di `on`, ma assocerà un evento a una classe che estende `CanvasEvent`.
+Questa funzione ha i seguenti parametri:
+
+- `eventTypes`: Il tipo di evento che verrà ascoltato. Puoi leggere l'elenco dei tipi di eventi [qui](https://pixijs.com/8.x/guides/components/interaction#event-types).
+- `eventClass`: La classe che estende `CanvasEvent`, che verrà eseguita quando l'evento viene attivato. Questa classe deve:
+  - avere il metodo `fn` che verrà eseguito quando l'evento viene attivato.
+  - avere il decorator `@eventDecorator`. `@eventDecorator` è un decorator che salva l'evento nella memoria. Ha un parametro facoltativo che è l'id utilizzato da Pixi'VN per fare riferimento a questa classe (deve essere univoco). Se non si passa l'id, verrà utilizzato come id il nome della classe. ( [Come abilitare i decorator in TypeScript?](/start/getting-started#how-enable-the-decorators-in-typescript) )
+
+```ts tab="canvas/events/ButtonEvent.ts"
+import { CanvasEvent, CanvasEventNamesType, eventDecorator, Sprite } from "@drincs/pixi-vn";
+
+@eventDecorator()
+export default class ButtonEvent extends CanvasEvent<Sprite> {
+    override fn(event: CanvasEventNamesType, sprite: Sprite): void {
+        switch (event) {
+            case "pointerdown":
+                sprite.scale.x *= 1.25;
+                sprite.scale.y *= 1.25;
+                break;
+        }
+    }
+}
+```
+
+```ts tab="labels/startLabel.ts"
+import { newLabel, showImage } from "@drincs/pixi-vn";
+import ButtonEvent from "../canvas/events/ButtonEvent";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        const bunny = await showImage("bunny", "bunny", {
+            align: 0.5,
+            anchor: 0.5,
+        });
+        // Opt-in to interactivity
+        bunny.eventMode = "static";
+        // Shows hand cursor
+        bunny.cursor = "pointer";
+        // Pointers normalize touch and mouse (good for mobile and desktop)
+        bunny.onEvent("pointerdown", ButtonEvent); // [!code focus]
+    },
+]);
+```
+
+```ts tab="utils/defineAssets.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+export async function defineAssets() {
+    Assets.add({ alias: "bunny", src: "https://pixijs.com/assets/bunny.png" });
+}
+```
+
+<Sandbox
+  template="k5hqyv"
+  entry="/src/labels/ButtonEvent.ts,/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
+/>
+
+<Comments>
+TODO ### New component and not use PixiJS Components
+TODO ### New method to add remove and find components
+TODO ### New method to add listener
+TODO ### access to PIXI.Application
+</Comments>
