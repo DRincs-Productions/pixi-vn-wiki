@@ -1,6 +1,5 @@
 "use client";
 import CustomSearchDialog from "@/components/search";
-import { useBrowserLanguage } from "@/hooks/useBrowserLanguage";
 import type { Translations } from "fumadocs-ui/i18n";
 import { RootProvider } from "fumadocs-ui/provider";
 import type { ReactNode } from "react";
@@ -27,18 +26,16 @@ const locales = [
     },
 ];
 
-export default function Provider({ children }: { children: ReactNode }) {
-    const [locale, setLocale] = useBrowserLanguage();
-
+export default function Provider({ children, locale }: { children: ReactNode; locale?: string }) {
     return (
         <RootProvider
             search={{
                 SearchDialog: CustomSearchDialog,
             }}
             i18n={{
-                locale: locale,
-                onLocaleChange(v) {
-                    setLocale(v);
+                locale: locale || "en",
+                onLocaleChange() {
+                    // setLocale(v);
                 },
                 locales,
                 translations: { cn }[locale as string],

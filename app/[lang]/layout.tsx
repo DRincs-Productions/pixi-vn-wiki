@@ -24,12 +24,12 @@ export default async function RootLayout({
     if (!hasLocale(routing.locales, lang)) {
         notFound();
     }
-    setRequestLocale("en");
+    setRequestLocale(lang);
     return (
         <html lang={lang} className={inter.className} suppressHydrationWarning>
             <body className='flex flex-col min-h-screen'>
-                <NextIntlClientProvider locale={"en"}>
-                    <Provider>{children}</Provider>
+                <NextIntlClientProvider locale={lang}>
+                    <Provider locale={lang}>{children}</Provider>
                 </NextIntlClientProvider>
             </body>
             <GoogleAnalytics gaId='G-KGCCEKXRVG' />
