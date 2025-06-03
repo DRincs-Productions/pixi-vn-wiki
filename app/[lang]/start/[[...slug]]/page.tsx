@@ -3,19 +3,19 @@ import { createMetadata } from "@/lib/metadata";
 import { source } from "@/lib/source";
 import { notFound } from "next/navigation";
 
-export default async function Page({ params }: { params: Promise<{ lang: string; slug?: string[] }> }) {
-    const { slug, lang } = await params;
+export default async function Page({ params }: { params: Promise<{ locale: string; slug?: string[] }> }) {
+    const { slug, locale } = await params;
 
-    return <MDXPage lang={lang} slug={slug} folther='start' />;
+    return <MDXPage locale={locale} slug={slug} folther='start' />;
 }
 
 export async function generateStaticParams() {
     return source.generateParams();
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ lang: string; slug?: string[] }> }) {
-    const { slug, lang } = await params;
-    const page = source.getPage(slug, lang);
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug?: string[] }> }) {
+    const { slug, locale } = await params;
+    const page = source.getPage(slug, locale);
     if (!page) notFound();
 
     return createMetadata({

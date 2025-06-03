@@ -5,8 +5,16 @@ import { DocsBody, DocsDescription, DocsPage, DocsTitle, EditOnGitHub } from "fu
 import { notFound } from "next/navigation";
 import { TranslateButton } from "./ui/buttons";
 
-export default async function MDXPage({ lang, slug, folther }: { lang?: string; slug?: string[]; folther: string }) {
-    const page = source.getPage(slug, lang);
+export default async function MDXPage({
+    locale,
+    slug,
+    folther,
+}: {
+    locale?: string;
+    slug?: string[];
+    folther: string;
+}) {
+    const page = source.getPage(slug, locale);
     if (!page) notFound();
 
     const MDXContent = page.data.body;
