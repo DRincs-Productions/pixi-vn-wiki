@@ -3,10 +3,10 @@ import { createMetadata } from "@/lib/metadata";
 import { source } from "@/lib/source";
 import { notFound } from "next/navigation";
 
-export default async function Page(props: { params: Promise<{ slug?: string[] }> }) {
-    const params = await props.params;
+export default async function Page({ params }: { params: Promise<{ slug?: string[] }> }) {
+    const { slug } = await params;
 
-    return <MDXPage params={params} folther='renpy' />;
+    return <MDXPage slug={slug} folther='renpy' />;
 }
 
 export async function generateStaticParams() {

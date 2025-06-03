@@ -1,3 +1,4 @@
+import { renpySource } from "@/lib/renpySource";
 import { source } from "@/lib/source";
 import { Image } from "fumadocs-core/framework";
 import { DocsLayoutProps } from "fumadocs-ui/layouts/docs";
@@ -312,5 +313,23 @@ export const startTree: DocsLayoutProps["tree"] = {
                 },
             ],
         },
+    ],
+};
+
+export const renpyTree: DocsLayoutProps["tree"] = {
+    ...renpySource.pageTree,
+    children: [
+        {
+            type: "folder",
+            name: "Narration with Ren’Py (In progress)",
+            defaultOpen: true,
+            index: {
+                type: "page",
+                name: "Ren’Py",
+                url: "/renpy/renpy",
+            },
+            children: [],
+        },
+        { type: "page", name: "Back", url: "/start/narration" },
     ],
 };
