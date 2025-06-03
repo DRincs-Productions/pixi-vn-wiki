@@ -4,10 +4,10 @@ import { HomeLayout } from "fumadocs-ui/layouts/home";
 import type { ReactNode } from "react";
 
 export default async function Layout({ children }: { children: ReactNode }) {
-    const locale = "en";
+    const lang = "en";
 
     return (
-        <HomeLayout {...baseOptions(locale)} links={homeLinks}>
+        <HomeLayout {...baseOptions(lang)} links={homeLinks}>
             {children}
         </HomeLayout>
     );

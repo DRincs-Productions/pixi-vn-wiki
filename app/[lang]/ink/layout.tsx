@@ -1,13 +1,13 @@
 import { baseOptions } from "@/app/layout.config";
-import { renpyTree } from "@/components/docs-layout-props";
+import { inkTree } from "@/components/docs-layout-props";
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import { type ReactNode } from "react";
 
 export default async function Layout({ children }: { children: ReactNode }) {
-    const locale = "en";
+    const lang = "en";
 
     return (
-        <DocsLayout tree={renpyTree} {...baseOptions(locale)}>
+        <DocsLayout tree={inkTree} {...baseOptions(lang)}>
             {children}
         </DocsLayout>
     );

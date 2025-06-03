@@ -1,17 +1,9 @@
 "use client";
 import CustomSearchDialog from "@/components/search";
 import { useBrowserLanguage } from "@/hooks/useBrowserLanguage";
-import { GoogleAnalytics } from "@next/third-parties/google";
 import type { Translations } from "fumadocs-ui/i18n";
 import { RootProvider } from "fumadocs-ui/provider";
-import { NextIntlClientProvider } from "next-intl";
-import { Inter } from "next/font/google";
 import type { ReactNode } from "react";
-import "./global.css";
-
-const inter = Inter({
-    subsets: ["latin"],
-});
 
 // translations
 const cn: Partial<Translations> = {
@@ -39,27 +31,20 @@ export default function Provider({ children }: { children: ReactNode }) {
     const [locale, setLocale] = useBrowserLanguage();
 
     return (
-        <html lang={locale} className={inter.className} suppressHydrationWarning>
-            <body className='flex flex-col min-h-screen'>
-                <NextIntlClientProvider locale={locale}>
-                    <RootProvider
-                        search={{
-                            SearchDialog: CustomSearchDialog,
-                        }}
-                        i18n={{
-                            locale: locale,
-                            onLocaleChange(v) {
-                                setLocale(v);
-                            },
-                            locales,
-                            translations: { cn }[locale as string],
-                        }}
-                    >
-                        {children}
-                    </RootProvider>
-                </NextIntlClientProvider>
-            </body>
-            <GoogleAnalytics gaId='G-KGCCEKXRVG' />
-        </html>
+        <RootProvider
+            search={{
+                SearchDialog: CustomSearchDialog,
+            }}
+            i18n={{
+                locale: locale,
+                onLocaleChange(v) {
+                    setLocale(v);
+                },
+                locales,
+                translations: { cn }[locale as string],
+            }}
+        >
+            {children}
+        </RootProvider>
     );
 }
