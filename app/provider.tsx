@@ -36,7 +36,7 @@ const locales = [
 ];
 
 export default function Provider({ children }: { children: ReactNode }) {
-    const locale = useBrowserLanguage();
+    const [locale, setLocale] = useBrowserLanguage();
 
     return (
         <html lang={locale} className={inter.className} suppressHydrationWarning>
@@ -48,6 +48,9 @@ export default function Provider({ children }: { children: ReactNode }) {
                         }}
                         i18n={{
                             locale: locale,
+                            onLocaleChange(v) {
+                                setLocale(v);
+                            },
                             locales,
                             translations: { cn }[locale as string],
                         }}
