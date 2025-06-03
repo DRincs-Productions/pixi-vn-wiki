@@ -1,30 +1,30 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useLocale } from "next-intl";
+import { useEffect } from "react";
 
 const SUPPORTED_LANGS = ["en", "it", "ru"];
 
 export function useBrowserLanguage() {
-    const [lang, setLang] = useState("en");
+    const locale = useLocale();
 
     useEffect(() => {
         const stored = localStorage.getItem("lang");
         if (stored && SUPPORTED_LANGS.includes(stored)) {
-            setLang(stored);
+            if (stored !== locale) {
+                // navigate to the stored language
+            }
         } else {
             const ln = (navigator.language || navigator.languages?.[0] || "en").split("-")[0];
-            setLang(SUPPORTED_LANGS.includes(ln) ? ln : "en");
+            localStorage.setItem("lang", SUPPORTED_LANGS.includes(ln) ? ln : "en");
         }
-    }, []);
-
-    useEffect(() => {
-        localStorage.setItem("lang", lang);
-    }, [lang]);
+    }, [locale]);
 
     function changeLanguage(newLang: string) {
         if (SUPPORTED_LANGS.includes(newLang)) {
-            setLang(newLang);
+            localStorage.setItem("lang", newLang);
+            // navigate to the new language
         }
     }
 
-    return [lang, changeLanguage] as const;
+    return changeLanguage;
 }
