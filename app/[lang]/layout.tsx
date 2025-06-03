@@ -1,6 +1,7 @@
 import { routing } from "@/i18n/routing";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
+import { setRequestLocale } from "next-intl/server";
 import { Inter } from "next/font/google";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
@@ -23,6 +24,7 @@ export default async function RootLayout({
     if (!hasLocale(routing.locales, lang)) {
         notFound();
     }
+    setRequestLocale("en");
     return (
         <html lang={lang} className={inter.className} suppressHydrationWarning>
             <body className='flex flex-col min-h-screen'>
