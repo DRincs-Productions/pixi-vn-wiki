@@ -1,0 +1,800 @@
+---
+title: Создайте свою первую визуальную новеллу
+---
+
+Это руководство проведет вас через процесс создания вашей первой визуальной новеллы.
+
+**Что такое визуальная новелла? ** Визуальная новелла (ВН) - это форма цифровой интерактивной фантастики. Визуальные новеллы часто ассоциируются с серединой видеоигр, но не всегда сами по себе являются таковыми. Они сочетают в себе текстовое повествование со статичными или анимированными иллюстрациями и различной степенью интерактивности. Реже этот формат называют игрой-новеллой, что является ретрансляцией термина noberu gēmu (ノベルゲーム), который чаще используется в японском языке.
+
+В целях тестирования в этом руководстве мы будем воссоздавать визуальную новеллу [Breakdown](https://joshpowlison.itch.io/breakdown) с помощью Pixi'VN. Breakdown - это короткая история, в которой есть всё, что должно быть в визуальной новелле. Джош Поулисон, создатель Breakdown, дал разрешение на использование его дикторского текста для образовательных целей❤️.
+
+Поскольку Pixi'VN даёт вам возможность написать собственное повествование, выбрав один или несколько [доступных языков повествования](/start/narration), на каждом этапе разработки будут создаваться примеры для каждого из доступных на данный момент языков.
+
+## Создать новый проект
+
+Первый шаг - создание нового проекта. Вы можете найти больше информации о том, как создать новый проект на основе шаблона [здесь](/start/getting-started#project-initialization). Мы будем использовать шаблон "Визуальная новелла - React".
+
+`Визуальная новелла -> React`
+
+После завершения создания очень важно прочитать файл `README.md`, который находится в корне проекта. Этот файл содержит важную информацию о проекте и о том, как его использовать.
+
+В нашем случае для запуска проекта достаточно выполнить следующие команды:
+
+```bash
+npm install
+npm start
+```
+
+## Создание персонажа
+
+Теперь мы определим персонажей этой истории. Для этого в файле `/values/characters.ts` мы определим персонажей, которых будем использовать. Больше информации о том, как создавать и использовать персонажей, вы можете найти на странице: [Персонажи](/start/character)
+
+Что означает `гг`? `гг` - распространенное сокращение от "Главный Герой". В визуальных романах принято использовать `mc` (Main Character) в качестве имени главного героя.
+
+```ts tab="values/characters.ts"
+import { RegisteredCharacters } from "@drincs/pixi-vn";
+import Character from "../models/Character";
+
+export const mc = new Character('mc', {
+    name: 'Me',
+});
+
+export const james = new Character('james', {
+    name: 'James',
+    color: "#0084ac"
+});
+
+export const steph = new Character('steph', {
+    name: 'Steph',
+    color: "#ac5900"
+});
+
+export const sly = new Character('sly', {
+    name: 'Sly',
+    color: "#6d00ac"
+});
+
+RegisteredCharacters.add([mc, james, steph, sly]);
+```
+
+```ts tab="App.tsx"
+// Помните импортировать файл персонажа как минимум один раз в вашем проекте. // [!code focus]
+import "./values/characters"; // [!code focus]
+
+export default function App() {
+return // ...
+}
+```
+
+## Первый набросок повествования
+
+Теперь мы можем приступить к написанию "первого черновика" [повествования] (/start/narration) визуальной новеллы.
+Мы создадим первую ["часть"](/start/labels) под названием `start`, который будет началом игры.
+
+После этого мы можем написать [диалоги](/start/dialogue.md), которые последуют в нашей визуальной новелле. Выбранный нами шаблон поддерживает [язык разметки markdown](/start/markup-markdown.md) ([Язык Разметки в _ink_](/ink/ink-markup)), поэтому мы будем использовать его для нашего повествования.
+
+<Comments>
+TODO: use Tailwind CSS -->
+</Comments>
+
+Вот пример:
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+james: You're my roommate's replacement, huh?
+james: Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you' fine!
+mc: ...
+
+He thrusts out his hand.
+
+james: James!
+mc: ...Peter.
+
+I take his hand and shake.
+
+james: Ooh, Peter! Nice, firm handshake! The last quy always gave me the dead fish. I already think we'r gonna get along fine.
+james: Come on in and... 
+james: ...
+james: I know you're both watching, come on out already!
+
+sly: I just wanted to see what the new guy was like. Hey, you, Peter- be nice to our little brother, or you'll have to deal with *us*.
+mc: ...
+james: Peter, this is Sly. Yes, that is her real name.
+
+I put out my hand.
+
+sly: I'm not shakin' your hand until I decide you're an all-right dude. Sorry, policy.
+mc: Fair enough, I'm a pretty scary guy, or so l've been told.
+james: The redhead behind her is Stephanie.
+steph: Hey! Everyone calls me Steph. I'll shake your hand.
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    () => narration.dialogue = { character: james, text: `You're my roommate's replacement, huh?` },
+    () => narration.dialogue = { character: james, text: `Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you' fine!` },
+    () => narration.dialogue = { character: mc, text: `...` },
+    () => { narration.dialogue = "He thrusts out his hand." },
+    () => narration.dialogue = { character: james, text: `James!` },
+    () => narration.dialogue = { character: mc, text: `...Peter.` },
+    () => { narration.dialogue = "I take his hand and shake." },
+    () => narration.dialogue = { character: james, text: `Ooh, Peter! Nice, firm handshake! The last quy always gave me the dead fish. I already think we'r gonna get along fine.` },
+    () => narration.dialogue = { character: james, text: `Come on in and...` },
+    () => narration.dialogue = { character: james, text: `...` },
+    () => narration.dialogue = { character: james, text: `I know you're both watching, come on out already!` },
+    () => narration.dialogue = { character: james, text: `I just wanted to see what the new guy was like. Hey, you, Peter- be nice to our little brother, or you'll have to deal with *us*.` },
+    () => narration.dialogue = { character: mc, text: `...` },
+    () => narration.dialogue = { character: james, text: `Peter, this is Sly. Yes, that is her real name.` },
+    () => { narration.dialogue = "I put out my hand." },
+    () => narration.dialogue = { character: james, text: `I'm not shakin' your hand until I decide you're an all-right dude. Sorry, policy.` },
+    () => narration.dialogue = { character: mc, text: `Fair enough, I'm a pretty scary guy, or so l've been told.` },
+    () => narration.dialogue = { character: james, text: `The redhead behind her is Stephanie.` },
+    () => narration.dialogue = { character: steph, text: `Hey! Everyone calls me Steph. I'll shake your hand.` },
+    // ...
+]);
+export default startLabel;
+```
+
+### Разделите повествование на части
+
+Не рекомендуется создавать очень длинные части (даже для линейных визуальных новелл), желательно создать несколько небольших частей и "вызывать" их по мере необходимости с помощью [функций управления игровым потоком](/start/labels-flow.md) ([_ink_ knot (или метка)](/ink/ink-label)).
+
+По этой причине, даже если в нашем случае история линейна, она будет разделена на две части, одна из которых будет та, которую мы только что создали, а вторая будет называться `second_part`.
+
+Вот пример:
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+james: You're my roommate's replacement, huh?
+james: Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you' fine!
+mc: ...
+
+He thrusts out his hand.
+
+james: James!
+mc: ...Peter.
+
+// ...
+-> second_part
+
+=== second_part ===
+
+She enters my room before I'VE even had a chance to. \\n\\n...I could've just come back and gotten the platter later...
+She sets it on a desk. I throw my two paper bags down beside the empty bed.
+
+steph: They got you a new mattress, right? That last guy was a druggie, did James tell you that?
+sly: *We're* the reason he got expelled!
+steph: Sly! If word gets out about that... well, actually, it wouldn't matter, *he's* the one who shot himself up.
+
+I'm fumbling for a new subject.
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    () => narration.dialogue = { character: james, text: `You're my roommate's replacement, huh?` },
+    () => narration.dialogue = { character: james, text: `Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you' fine!` },
+    () => narration.dialogue = { character: mc, text: `...` },
+    () => { narration.dialogue = "He thrusts out his hand." },
+    () => narration.dialogue = { character: james, text: `James!` },
+    () => narration.dialogue = { character: mc, text: `...Peter.` },
+    // ...
+    async (props) => await narration.jumpLabel(secondPart, props),
+]);
+export default startLabel;
+
+const secondPart = newLabel("second_part", [
+    () => { narration.dialogue = `She enters my room before I'VE even had a chance to. \n\n...I could've just come back and gotten the platter later...` },
+    () => { narration.dialogue = `She sets it on a desk. I throw my two paper bags down beside the empty bed.` },
+    () => narration.dialogue = { character: steph, text: `They got you a new mattress, right? That last guy was a druggie, did James tell you that?` },
+    () => narration.dialogue = { character: sly, text: `*We're* the reason he got expelled!` },
+    () => narration.dialogue = { character: steph, text: `Sly! If word gets out about that... well, actually, it wouldn't matter, *he's* the one who shot himself up.` },
+    () => { narration.dialogue = `I'm fumbling for a new subject.` },
+    // ...
+]);
+```
+
+## Меню выбора
+
+Теперь мы спросим игрока, хочет ли он продолжить знакомство со второй частью визуальной новеллы.
+
+Для этого мы воспользуемся [меню выбора](/start/choices).
+
+Вот пример:
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+// ...
+
+You want continue to the next part?
+* Yes, I want to continue
+-> second_part
+* No, I want to stop here
+-> END
+
+=== second_part ===
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    // ...
+    async () => {
+        narration.dialogue = `You want continue to the next part?`
+        narration.choiceMenuOptions = [
+            newChoiceOption("Yes, I want to continue", secondPart, {}, { type: "jump" }),
+            newCloseChoiceOption("No, I want to stop here"),
+        ]
+    },
+]);
+export default startLabel;
+
+const secondPart = newLabel("second_part", [
+    // ...
+]);
+```
+
+## Редактирование информации о персонажах и использование её в качестве переменной
+
+Теперь я дам игроку возможность изменить имя `mc`.
+
+Для этого я попрошу игрока [заполнить поле ввода, используя возможности Pixi'VN](/start/input.md) ([Используйте подсказку ввода в _ink_](/ink/ink-input)).
+
+После получения входного значения вы можете [установить имя персонажа](/start/character.md#edit-characters-in-the-game), используя полученное значение ([Редактировать имя персонажа в _ink_](/ink/ink-character#edit-character-name-in-dialogues)).
+
+Вот пример:
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+VAR _input_value_ = ""
+
+=== start ===
+// ...
+
+He thrusts out his hand.
+# request input type string default Peter
+What is your name?
+# rename mc { _input_value_ }
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    // ...
+    () => { narration.dialogue = `He thrusts out his hand.` },
+    () => {
+        narration.requestInput({ type: "string" }, "Peter")
+        narration.dialogue = `What is your name?`
+    },
+    () => {
+        mc.name = narration.inputValue as string
+    },
+    // ...
+]);
+export default startLabel;
+```
+
+Теперь мы можем использовать имена персонажей в диалогах ([Использовать имя персонажа в диалогах в _ink_](/ink/ink-character#use-character-name-in-dialogues)).
+
+Вот пример:
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+VAR steph_fullname = "Stephanie"
+
+=== start ===
+// ...
+
+sly: I just wanted to see what the new guy was like. Hey, you, [mc]- be nice to our little brother, or you'll have to deal with *us*.
+mc: ...
+james: [mc], this is [sly]. Yes, that is her real name.
+
+I put out my hand.
+
+sly: I'm not shakin' your hand until I decide you're an all-right dude. Sorry, policy.
+mc: Fair enough, I'm a pretty scary guy, or so l've been told.
+james: The redhead behind her is [steph_fullname].
+steph: Hey! Everyone calls me [steph]. I'll shake your hand.
+
+She puts out her hand, and I take it.
+
+mc: Thanks, good to meet you, [steph_fullname].
+steph: WOW, that is, like, the most perfect handshake I've ever had! Firm, but also gentle. [sly], you *gotta* shake his hand!
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+const steph_fullname = "Stephanie";
+
+const startLabel = newLabel("start", [
+    // ...
+    () => narration.dialogue = { character: sly, text: `I just wanted to see what the new guy was like. Hey, you, ${mc.name}- be nice to our little brother, or you'll have to deal with *us*.` },
+    () => narration.dialogue = { character: mc, text: `...` },
+    () => narration.dialogue = { character: james, text: `${mc.name}, this is ${sly.name}. Yes, that is her real name.` },
+    () => { narration.dialogue = `I put out my hand.` },
+    () => narration.dialogue = { character: sly, text: `I'm not shakin' your hand until I decide you're an all-right dude. Sorry, policy.` },
+    () => narration.dialogue = { character: mc, text: `Fair enough, I'm a pretty scary guy, or so I've been told.` },
+    () => narration.dialogue = { character: james, text: `The redhead behind her is ${steph_fullname}.` },
+    () => narration.dialogue = { character: steph, text: `Hey! Everyone calls me ${steph.name}. I'll shake your hand.` },
+    () => { narration.dialogue = `She puts out her hand, and I take it.` },
+    () => narration.dialogue = { character: mc, text: `Thanks, good to meet you, ${steph_fullname}.` },
+    () => narration.dialogue = { character: steph, text: `WOW, that is, like, the most perfect handshake I've ever had! Firm, but also gentle. ${sly.name}, you *gotta* shake his hand!` },
+    // ...
+]);
+export default startLabel;
+```
+
+## Использование функции "клея" в диалогах
+
+В визуальных новеллах часто бывает полезно вставить текст в текущий диалог. Например, чтобы приостановить разговор и продолжить его на следующем этапе. Для этого мы можем воспользоваться [функцией клея](/start/dialogue#dialogue-glue).
+
+Вот пример:
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+// ...
+
+james: Ooh, [mc]! Nice, firm handshake!
+<> The last guy always gave me the dead fish.
+<> I already think we're gonna get along fine.
+james: Come on in and...
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    // ...
+    async () => narration.dialogue = { character: james, text: `Ooh, ${mc.name}! Nice, firm handshake!` },
+    async () => {
+        narration.dialogGlue = true
+        narration.dialogue = ` The last guy always gave me the dead fish.`
+    },
+    async () => {
+        narration.dialogGlue = true
+        narration.dialogue = ` I already think we're gonna get along fine.`
+    },
+    async () => narration.dialogue = { character: james, text: `Come on in and...` },
+    // ...
+]);
+export default startLabel;
+```
+
+## Определите текстуры и загрузите их
+
+Один из первых шагов - выбор, где будут сохранены текстуры визуальной новеллы. В данном случае мы сохраним текстуры в хранилище Firebase (хостинговый сервис).
+
+Загрузка и работа с ресурсами (изображениями, gif-файлами, видео...) вам необходимо использовать `Assets`. `Assets` - это класс с множеством функций, который поставляется из библиотеки PixiJS, если вы хотите получить больше информации, читайте [здесь](https://pixijs.com/8.x/guides/components/assets).
+
+Перед использованием текстур настоятельно рекомендуется [инициализировать матрицу текстур](/start/assets-management#initialize-the-asset-matrix-at-project-start).
+
+По умолчанию, как вы можете видеть в файле `assets/manifest.ts`, все шаблоны в `onLoadingLabel` пытаются загрузить в фоновом режиме "bundle assets" с псевдонимом, равным id метки. Поэтому рекомендуется добавить в `manifest` "bundle assets" для каждого ярлыка с псевдонимом, равным id метки, и содержащим изображения, используемые в этой метке.
+
+Вот пример:
+
+```ts tab="utils/defineAssets.ts"
+import { Assets } from "@drincs/pixi-vn";
+import manifest from "../assets/manifest";
+
+/**
+ * Define all the assets that will be used in the game.
+ * This function will be called before the game starts.
+ * You can read more about assets management in the documentation: https://pixi-vn.web.app/start/assets-management.html
+ */
+export async function defineAssets() {
+    Assets.init({ manifest });
+
+    // Игра не запустится, пока эти текстуры не будут загружены.
+    await Assets.loadBundle("main_menu");
+
+    // Игра сразу начнётся, но эти текстуры будут загружены в фоне.
+    // Assets.backgroundLoadBundle("main_menu");
+    // Assets.backgroundLoad("background_main_menu");
+}
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        // экраны
+        {
+            name: "main_menu",
+            assets: [
+                {
+                    alias: "background_main_menu",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fmain-menu.webp?alt=media",
+                },
+            ],
+        },
+        // метки        {
+            name: "start",
+            assets: [
+                {
+                    alias: "bg01-hallway",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fbg01-hallway.webp?alt=media",
+                },
+            ],
+        },
+        {
+            name: "second_part",
+            assets: [
+                {
+                    alias: "bg02-dorm",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fbg02-dorm.webp?alt=media",
+                },
+            ],
+        },
+        // персонажи
+        {
+            name: "fm01",
+            assets: [
+                // ...
+            ],
+        },
+        {
+            name: "fm02",
+            assets: [
+                // ...
+            ],
+        },
+        {
+            name: "m01",
+            assets: [
+                // ...
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+```ts tab="src/main.ts"
+import { Assets, canvas, Container, Game } from "@drincs/pixi-vn";
+import { createRoot } from "react-dom/client";
+import App from "./App";
+import { CANVAS_UI_LAYER_NAME } from "./constans";
+import "./index.css";
+import "./values/characters";
+
+// Canvas setup with PIXI
+const body = document.body;
+if (!body) {
+    throw new Error("body element not found");
+}
+
+Game.init(body, {
+    height: 1080,
+    width: 1920,
+    backgroundColor: "#303030",
+}).then(() => {
+    // Pixi.JS UI Layer
+    canvas.addLayer(CANVAS_UI_LAYER_NAME, new Container());
+
+    // React setup with ReactDOM
+    const root = document.getElementById("root");
+    if (!root) {
+        throw new Error("root element not found");
+    }
+
+    const htmlLayer = canvas.addHtmlLayer("ui", root, {
+        position: "absolute",
+        pointerEvents: "none"
+    });
+    if (!htmlLayer) {
+        throw new Error("htmlLayer not found");
+    }
+    const reactRoot = createRoot(htmlLayer);
+
+    reactRoot.render(<App />);
+});
+
+Game.onEnd(async ({ navigate }) => {
+    Game.clear();
+    navigate("/");
+});
+
+Game.onError((type, error, { notify, t }) => {
+    notify(t("allert_error_occurred"), { variant: "error" });
+    console.error(`Error occurred: ${type}`, error);
+});
+
+Game.onLoadingLabel((_stepId, { id }) => { // [!code focus]
+    Assets.backgroundLoadBundle(id); // [!code focus]
+}); // [!code focus]
+```
+
+## Добавить фон и изображения персонажей
+
+Теперь пришло время подумать о визуальной части тоже. Мы добавим спрайты фона и персонажей на холст визуальной новеллы.
+
+**Что такое спрайт? ** В компьютерной графике спрайт - это двухмерное растровое изображение, которое интегрируется в большую сцену, чаще всего в двухмерной видеоигре.
+
+В нашем случае спрайты персонажей состоят из 3 изображений: тела, глаз и рта. Затем мы используем [ImageContainer](/start/canvas-image-container) для создания персонажа.
+
+Вы можете найти больше информации о том, как добавлять компоненты холста в [этой документации](/start/canvas-components.md) ([Использование компонентов холста в _ink_](/ink/ink-canvas)).
+
+Вот пример:
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+# show image bg bg01-hallway
+# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-neutral01] xAlign 0.5 yAlign 1
+james: You're my roommate's replacement, huh?
+# show imagecontainer james [m01-body m01-eyes-grin m01-mouth-smile01]
+james: Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you'll be fine!
+# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-grin00]
+mc: ...
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    async () => {
+        await showImage("bg", "bg01-hallway");
+        await showImageContainer("james", ["m01-body", "m01-eyes-smile", "m01-mouth-neutral01"], { xAlign: 0.5, yAlign: 1 });
+        narration.dialogue = { character: james, text: `You're my roommate's replacement, huh?` }
+    },
+    async () => {
+        await showImageContainer("james", ["m01-body", "m01-eyes-grin", "m01-mouth-smile01"])
+        narration.dialogue = { character: james, text: `Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you'll be fine!` }
+    },
+    async () => {
+        await showImageContainer("james", ["m01-body", "m01-eyes-smile", "m01-mouth-grin00"])
+        narration.dialogue = { character: mc, text: `...` }
+    },
+    // ...
+]);
+export default startLabel;
+```
+
+## Умная загрузка текстур
+
+В нашем случае мы сохранили игровые изображения на хостинге (Firebase). По этой причине загрузка текстур происходит несвоевременно.
+
+Чтобы игрок не получал слишком много загрузок, мы должны сгруппировать их в определенные фазы игры. В моем случае я буду загружать наиболее используемые изображения в начале части.
+
+Вы можете найти больше информации о том, как управлять загрузками [здесь](/start/assets-management).
+
+Вот пример:
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+# load assets bg01-hallway
+# load assets m01-body m01-eyes-grin m01-eyes-smile m01-eyes-wow m01-mouth-grin00 m01-mouth-smile00 m01-mouth-smile01
+# load assets fm01-body fm01-eyes-smile fm01-eyes-upset fm01-mouth-serious00 fm01-mouth-serious01 fm01-mouth-smile00
+# load assets fm02-body fm02-eyes-joy fm02-eyes-nervous fm02-eyes-wow fm02-mouth-nervous00 fm02-mouth-smile00
+
+# show image bg bg01-hallway
+# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-neutral01] xAlign 0.5 yAlign 1 with movein direction right speed 300
+james: You're my roommate's replacement, huh?
+# show imagecontainer james [m01-body m01-eyes-grin m01-mouth-smile01]
+james: Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you'll be fine!
+# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-grin00]
+mc: ...
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    // ...
+], {
+    onLoadingLabel: () => {
+        Assets.backgroundLoadBundle(["fm01", "fm02", "m01"]);
+    }
+});
+export default startLabel;
+```
+
+## Использовать переходы
+
+Чтобы сделать визуальную новеллу более динамичной, можно использовать переходы для показа изображений. Вы можете найти больше информации об использовании переходов [здесь](/start/canvas-transition) ([Использование переходов в _ink_](/ink/ink-canvas#show-a-canvas-component-with-transition-in-ink)).
+
+Вот пример:
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+// ...
+
+# show image bg bg01-hallway
+# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-neutral01] xAlign 0.5 yAlign 1 with movein direction right speed 300
+james: You're my roommate's replacement, huh?
+# show imagecontainer james [m01-body m01-eyes-grin m01-mouth-smile01]
+james: Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you'll be fine!
+# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-grin00]
+mc: ...
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    async () => {
+        await showImage("bg", "bg01-hallway");
+        await moveIn("james", {
+            value: ["m01-body", "m01-eyes-smile", "m01-mouth-neutral01"],
+            options: { xAlign: 0.5, yAlign: 1 }
+        }, { direction: "right", speed: 300 })
+        narration.dialogue = { character: james, text: `You're my roommate's replacement, huh?` }
+    },
+    async () => {
+        await showImageContainer("james", ["m01-body", "m01-eyes-grin", "m01-mouth-smile01"])
+        narration.dialogue = { character: james, text: `Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you'll be fine!` }
+    },
+    async () => {
+        await showImageContainer("james", ["m01-body", "m01-eyes-smile", "m01-mouth-grin00"])
+        narration.dialogue = { character: mc, text: `...` }
+    },
+    // ...
+]);
+export default startLabel;
+```
+
+## Создание анимации
+
+Чтобы сделать визуальную новеллу более динамичной, можно использовать анимацию. Вы можете найти больше информации об использовании анимаций [здесь](/start/canvas-animations-effects) ([Использование анимаций в _ink_](/ink/ink-canvas#use-the-effects-in-ink)).
+
+Я рекомендую использовать Typescript, если вам нужно задать много свойств, так у вас будет больше контроля над анимацией, больше функциональности и обратной связи.
+
+В моем случае анимация будет выводить steph из сцены и снова вставлять её в следующем шаге. Я также отзеркалю её по оси x, чтобы убедиться, что она направлена в нужную сторону.
+
+Для вывода/ввода steph я буду использовать функции `moveOut` и `moveIn`. Для зеркального эффекта я буду использовать тикер `ZoomTicker`.
+
+Важной особенностью переходов является то, что они на мгновение приостанавливают все анимации, связанные с этим компонентом, и возобновляют их по завершении перехода.
+
+Поэтому в моем случае я использую перед функцией `moveIn` функцию `addTicker`, чтобы добавить тикер `ZoomTicker`. Таким образом, после завершения перехода Steph будет зеркально отображаться на оси x.
+
+Также, поскольку я буду использовать typescript для этой анимации, я создал метку для этой анимации. Чтобы его можно было вызывать и из других языков, не являющихся JS/TS.
+
+```ts title="labels/animation01.ts"
+import { canvas, moveIn, newLabel, ZoomTicker } from "@drincs/pixi-vn";
+
+export const animation01 = newLabel("animation_01", [
+    async () => {
+        canvas.addTicker(
+            "steph",
+            new ZoomTicker({ type: "zoom", limit: 1, speed: 70 })
+        );
+
+        await moveIn("steph", {
+                value: ["fm02-body", "fm02-eyes-joy", "fm02-mouth-smile01"],
+                options: { xAlign: 0.8, yAlign: 1, scale: { y: 1, x: -1 }, anchor: 0.5 },
+            }, { direction: "right", speed: 300 }
+        );
+    },
+]);
+```
+
+Теперь я могу вызвать эту метку `animation_01` из основной части `start`. (Как объясняется [здесь](/ink/ink-label#use-the-call-script) из _ink_ я могу вызывать метки, написанные на ts, и наоборот.)
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+// ...
+
+# show imagecontainer james [m01-body m01-eyes-grin m01-mouth-grin00]
+# show imagecontainer sly [fm01-body fm01-eyes-smile fm01-mouth-smile00]
+# show imagecontainer steph [fm02-body fm02-eyes-upset fm02-mouth-nervous00]
+# remove image steph with moveout direction left speed 300
+[steph_fullname] goes through the opposite door,
+# call animation_01
+<> and returns with a HUGE tinfoil-covered platter.
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    // ...
+    async () => {
+        await showImageContainer("james", ["m01-body", "m01-eyes-grin", "m01-mouth-grin00"]);
+        await showImageContainer("sly", ["fm01-body", "fm01-eyes-smile", "fm01-mouth-smile00"]);
+        await showImageContainer("steph", ["fm02-body", "fm02-eyes-upset", "fm02-mouth-nervous00"]);
+        moveOut("steph", { direction: "left", speed: 300 });
+        narration.dialogue = `${steph_fullname} goes through the opposite door,`;
+    },
+    async (props) => {
+        narration.dialogGlue = true;
+        narration.dialogue = ` and returns with a HUGE tinfoil-covered platter.`;
+        await narration.callLabel(animation01, props);
+    },
+    // ...
+]);
+export default startLabel;
+```
+
+<Comments>
+## Используйте анимацию и эффекты или создайте свой тикер
+
+Страница в разработке.
+
+:::tabs
+
+== ink example
+
+```ink
+
+```
+
+== Typescript example
+
+```ts
+
+```
+
+:::
+
+## Добавить музыку и звуковые эффекты
+
+Страница в разработке.
+
+:::tabs
+
+== ink example
+
+```ink
+
+```
+
+== Typescript example
+
+```ts
+
+```
+
+::: -->
+
+</Comments>
+
+## Заключение
+
+Теперь вы знаете, как создать визуальную новеллу с помощью Pixi'VN. С большой силой приходит большая ответственность, так что используйте её с умом и создайте прекрасную историю! 🚀
+
+Вот интерактивный пример с минимальным UI (HTML). Прокрутя вниз, вы можете увидеть тот же результат, используя полный UI (шаблон React).
+
+<Tabs items={["ink", "Typescript"]} groupId="narrative_language">
+<Tab>
+<Sandbox
+  template="2r5f6v"
+  entry="/src/ink/start.ink"
+/>
+</Tab>
+<Tab>
+<Sandbox
+  template="zfxsqq"
+  entry="/src/labels/startLabel.ts"
+/>
+</Tab>
+</Tabs>
+
+<iframe src="https://pixi-vn-react-template.web.app/"
+    title="Visual Novel - React"
+    style={{
+        width: "100%",
+        height: "400px",
+        border: "0",
+        borderRadius: "4px",
+        overflow: "hidden",
+    }}
+    allowFullScreen={true}
+></iframe>
