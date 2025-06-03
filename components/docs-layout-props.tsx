@@ -1,4 +1,5 @@
 import { inkSource } from "@/lib/inkSource";
+import { otherTopicsSource } from "@/lib/otherTopicsSource";
 import { renpySource } from "@/lib/renpySource";
 import { source } from "@/lib/source";
 import { Image } from "fumadocs-core/framework";
@@ -366,6 +367,36 @@ export const inkTree: DocsLayoutProps["tree"] = {
             type: "page",
             name: "Back",
             url: "/start/narration",
+        },
+    ],
+};
+
+export const otherTopicsTree: DocsLayoutProps["tree"] = {
+    ...otherTopicsSource.pageTree,
+    children: [
+        {
+            type: "separator",
+            name: "Other Topics",
+        },
+        {
+            type: "page",
+            name: "FAQ",
+            url: "/other-topics/faq",
+        },
+        {
+            type: "page",
+            name: "Migration",
+            url: "/other-topics/migration",
+        },
+        {
+            type: "page",
+            name: "Intecept Events",
+            url: "/other-topics/intercept-events",
+        },
+        {
+            type: "page",
+            name: "Pixi’VN + Json Integration",
+            url: "/other-topics/pixi-vn-json",
         },
     ],
 };
