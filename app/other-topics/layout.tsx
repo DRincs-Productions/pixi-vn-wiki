@@ -4,10 +4,8 @@ import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import { type ReactNode } from "react";
 
 export default async function Layout({ children }: { children: ReactNode }) {
-    const lang = "en";
-
     return (
-        <DocsLayout tree={otherTopicsTree} {...baseOptions(lang)}>
+        <DocsLayout tree={otherTopicsTree} {...baseOptions()}>
             {children}
         </DocsLayout>
     );

@@ -13,8 +13,7 @@ import Image from "next/image";
  * Ren'Py Layout: app/renpy/layout.tsx
  * Other Topics Layout: app/other-topics/layout.tsx
  */
-export function baseOptions(locale: string): BaseLayoutProps {
-    console.log(`baseOptions ${locale}`);
+export function baseOptions(): BaseLayoutProps {
     return {
         nav: {
             title: (
