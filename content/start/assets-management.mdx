@@ -290,30 +290,52 @@ To make the game smoother by trying to remove asset loading times from a step, i
 
 To do this, you will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function of the label options. This function will be executed in `onStepStart` if the index of the step is 0 and when the user loads a save file. When you load a save file, all `onLoadingLabel` functions of the `narration.openedLabels` (current label and all labels that are in the stack).
 
+For cleaner code, it is recommended to define a bundle in your manifest with the id corresponding to the label id and define within it the assets that will be used in that label.
+
 ```ts title="labels/startLabel.ts"
 import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
 
-newLabel("start", [
+const startLabel = newLabel("start", [
     () => {
         await showImage("eggHead")
     },
     () => {
         await showImage("flowerTop")
     },
-    () => {
-        await showImage("helmlok")
-    },
-    () => {
-        await showImage("skully")
-    },
 ], {
-    onLoadingLabel: async (stepIndex, label) => { // [!code focus]
-        // The label will not start until these assets are loaded.
-        await Assets.load("eggHead")
-        await Assets.load("flowerTop")
+    onLoadingLabel: async (_stepId, label) => { // [!code focus]
         // The label will start immediately, but these assets will be loaded in the background. // [!code focus]
-        Assets.load("helmlok") // [!code focus]
-        Assets.load("skully") // [!code focus]
+        Assets.backgroundLoadBundle(label.id) // [!code focus]
     } // [!code focus]
 })
+export default startLabel;
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+import startLabel from "../labels/startLabel";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        // labels
+        {
+            name: startLabel.id,
+            assets: [
+                {
+                    alias: "eggHead",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flowerTop",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
 ```
