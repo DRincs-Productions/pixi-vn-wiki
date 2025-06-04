@@ -1,29 +1,30 @@
 ---
 title: Assets management
+description: Organization, referencing, and loading of assets (images, sounds, videos) in Pixi’VN using aliases and manifests.
 ---
 
-Загрузка и работа с ресурсами (изображениями, gif-файлами, видео...) вам необходимо использовать `Assets`. `Assets` - это класс с множеством функций, который поставляется из библиотеки PixiJS, если вы хотите получить больше информации, читайте [здесь](https://pixijs.com/8.x/guides/components/assets).
+To load and manipulate assets (images, gifs, videos, etc.) вам необходимо использовать `Assets`. `Assets` is a class with many features and comes from the PixiJS library. For more information, read [here](https://pixijs.com/8.x/guides/components/assets).
 
-In all Pixi’VN functions you can directly use the image URL, even if not defined in `Assets`.
+In all Pixi’VN functions, you can directly use the image URL, even if it is not defined in `Assets`.
 
 ```ts
 let alien1 = await showImage("alien", "https://pixijs.com/assets/eggHead.png");
 ```
 
-This method has some cons:
+This method has some drawbacks:
 
-- changing the URL of a asset from one version to another may cause incompatibilities
-- the player will have to wait for a short loading time, every time pressing "go next" a <DynamicLink href="/start/labels">step</DynamicLink> will be started which uses assets
-- writing the entire URL in code will increase its length and make it less understandable
+- Changing the URL of an asset from one version to another may cause incompatibilities.
+- The player will have to wait for a short loading time every time they press "go next" and a <DynamicLink href="/start/labels">`step`</DynamicLink> is started that uses assets.
+- Writing the entire URL in code will increase its length and make it less readable.
 
-For these reasons it is recommended to handle assets in the following ways.
+For these reasons, it is recommended to handle assets in the following ways.
 
 ## Initialize the asset matrix at project start
 
-Initializing the asset matrix at the beginning of the project allows you to reference assets by a unique alias without having to use the URL/path. This way you can change the URL of a asset (while keeping the old alias) so you don't have to worry about version compatibility.
+Initializing the asset matrix at the beginning of the project allows you to reference assets by a unique alias without having to use the URL/path. This way, you can change the URL of an asset (while keeping the old alias) and you don't have to worry about version compatibility.
 
 To do this, it is recommended to create an asynchronous function `defineAssets` that will be called at the start of the project.
-In the `defineAssets` function we will use `Assets` (e.g. `Assets.add`, `Assets.addBundle` and `Assets.init`) to assign aliases to URLs. You can find more information about them [here](https://pixijs.com/8.x/guides/components/assets) to assign an alias to each asset.
+In the `defineAssets` function, use `Assets` (e.g. `Assets.add`, `Assets.addBundle`, and `Assets.init`) to assign aliases to URLs. You can find more information about them [here](https://pixijs.com/8.x/guides/components/assets) to assign an alias to each asset.
 
 ```ts tab="utils/defineAssets.ts"
 import { Assets, sound } from "@drincs/pixi-vn";
@@ -85,11 +86,11 @@ export default manifest;
 
 By default, assets are loaded only when needed.
 
-But **in case the assets are not saved locally**, but in an <DynamicLink href="/start/assets#assets-hosting">"assets hosting"</DynamicLink> their loading may take some time. This means that starting a step may not be timely. So the player after starting the execution of the <DynamicLink href="/start/labels-flow#next-step">next step</DynamicLink> (for example with the "next" button) may have to wait some time to be able to "view" the changes and be able to run another step.
+But **if the assets are not saved locally**, but in an <DynamicLink href="/start/assets#assets-hosting">"assets hosting"</DynamicLink>, their loading may take some time. This means that starting a `step` may not be immediate. So, after starting the execution of the <DynamicLink href="/start/labels-flow#next-step">next `step`</DynamicLink> (for example with the "next" button), the player may have to wait some time to "view" the changes and be able to run another `step`.
 
-Performing these loadings at each step may be annoying to the player, even if they are very short.
+Performing these loadings at each `step` may be annoying to the player, even if they are very short.
 
-The developer to deal with this problem can start a "loading group" at a certain step of the game. This means that the player will have fewer loadings, but longer ones.
+To solve this problem, the developer can group multiple loadings at a certain stage of the game. In this way, the player will not have continuous loadings, but fewer, even if longer.
 
 Here are various ways to load the assets:
 
@@ -97,7 +98,7 @@ Here are various ways to load the assets:
 
 It is possible to load assets at project startup before the player can interact with the project, for example during the startup loading screen. It is suggested to use this procedure only for assets used in the main page or for assets used frequently, and not to exceed 100MB.
 
-To do this, you must use the `Assets.load` function and wait for it to finish (with `wait`) when the project starts. You can learn more about the `Assets.load` function [here](https://pixijs.com/8.x/guides/components/assets).
+To do this, you must use the `Assets.load` function and wait for it to finish (with `await`) when the project starts. You can learn more about the `Assets.load` function [here](https://pixijs.com/8.x/guides/components/assets).
 
 ```ts tab="utils/defineAssets.ts"
 import { Assets, sound } from "@drincs/pixi-vn";
@@ -230,11 +231,11 @@ export default manifest;
 
 ### Load assets at label start
 
-To collect the loadings from one step to another of a label in one, it is possible to load all or part of the resources used by the label before it starts. Since this will not reduce the waiting times for the player, but adds them to a single loading, it is recommended to [load them in the background](#load-assets-in-the-background-at-label-start).
+To group the loadings from one `step` to another of a `label` into a single loading, it is possible to load all or part of the assets used by the `label` before it starts. Since this does not reduce the waiting times for the player, but adds them to a single loading, it is recommended to [load them in the background](#load-assets-in-the-background-at-label-start).
 
-To do this, you must use the `Assets.load` function and wait for it to finish (with `wait`) when the project starts. And, you will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function.
+To do this, you must use the `Assets.load` function and wait for it to finish (with `await`) when the `label` starts. You will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function.
 
-For cleaner code, it is recommended to define a bundle in your manifest with the id corresponding to the label id and define within it the assets that will be used in that label.
+For cleaner code, it is recommended to define a bundle in your manifest with the id corresponding to the `label` id and define within it the assets that will be used in that `label`.
 
 ```ts title="labels/startLabel.ts"
 import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
@@ -287,7 +288,7 @@ export default manifest;
 ### Load assets in the background at label start
 
 <Callout title="Already present in the templates" type="info">
-In all templates, when a label is started, the background loading of the bundle (if it exists) with the id corresponding to the label will be started. So, it will be enough to **create a manifest with a bundle for each label**. Here is the implementation used to allow this:
+In all templates, when a `label` is started, the background loading of the bundle (if it exists) with the id corresponding to the `label` will be started. So, it is enough to **create a manifest with a bundle for each `label`**. Here is the implementation used to allow this:
 
 ```ts title="main.ts"
 import { Assets, Game } from "@drincs/pixi-vn";
@@ -297,11 +298,11 @@ Game.onLoadingLabel((_stepId, { id }) => Assets.backgroundLoadBundle(id));
 
 </Callout>
 
-To make the game smoother by trying to remove asset loading times from one step to another, it is possible start a "loading group" at the beginning of a label. This means that you may potentially not feel any loading especially in the later steps of the label.
+To make the game smoother by trying to remove asset loading times from one `step` to another, it is possible to start a "loading group" at the beginning of a `label`. This means that you may potentially not feel any loading, especially in the later `steps` of the `label`.
 
-To do this, you can use the `Assets.backgroundLoad` function when the project starts. You can learn more about the `Assets.backgroundLoad` function [here](https://pixijs.com/8.x/guides/components/assets). And, you will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function.
+To do this, you can use the `Assets.backgroundLoad` function when the `label` starts. You can learn more about the `Assets.backgroundLoad` function [here](https://pixijs.com/8.x/guides/components/assets). And, you will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function.
 
-For cleaner code, it is recommended to define a bundle in your manifest with the id corresponding to the label id and define within it the assets that will be used in that label.
+For cleaner code, it is recommended to define a bundle in your manifest with the id corresponding to the `label` id and define within it the assets that will be used in that `label`.
 
 ```ts title="labels/startLabel.ts"
 import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
