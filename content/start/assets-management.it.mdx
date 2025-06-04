@@ -228,18 +228,18 @@ const manifest: AssetsManifest = {
 export default manifest;
 ```
 
-### Carica gli assets prima che inizi una label
+### Load assets at label start
 
-To make the game smoother by trying to remove asset loading times from one step to another, it is possible to load all used assets into a label before it starts.
+To collect the loadings from one step to another of a label in one, it is possible to load all or part of the resources used by a label before it starts. Since this will not reduce the waiting times for the player, but adds them to a single loading, it is recommended to [load them in the background](#load-assets-in-the-background-at-label-start).
 
-To do this, you will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function of the label options. This function will be executed in `onStepStart` if the index of the step is 0 and when the user loads a save file. When you load a save file, all `onLoadingLabel` functions of the `narration.openedLabels` (current label and all labels that are in the stack).
+Per fare ciò, è necessario utilizzare la funzione `Assets.load` e attendere che termini (con `wait`) all'avvio del progetto. And, you will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function of the label options.
 
-If you are using **_ink_** you can read the following to get the same result in the <DynamicLink href="/ink/ink-assets">following way</DynamicLink>.
+For cleaner code, it is recommended to define a bundle in your manifest with the id corresponding to the label id and define within it the assets that will be used in that label.
 
 ```ts title="labels/startLabel.ts"
 import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
 
-newLabel("start", [
+const startLabel = newLabel("start", [
     () => {
         await showImage("eggHead")
     },
@@ -247,44 +247,106 @@ newLabel("start", [
         await showImage("flowerTop")
     },
 ], {
-    onLoadingLabel: async (stepIndex, label) => { // [!code focus]
+    onLoadingLabel: async (_stepId, label) => { // [!code focus]
         // The label will not start until these assets are loaded. // [!code focus]
-        await Assets.load("eggHead") // [!code focus]
-        await Assets.load("flowerTop") // [!code focus]
+        await Assets.loadBundle(label.id) // [!code focus]
     } // [!code focus]
 })
+export default startLabel;
 ```
 
-### Load assets in the background before a label starts
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+import startLabel from "../labels/startLabel";
 
-To make the game smoother by trying to remove asset loading times from a step, instead of loading all assets before the label starts, it is possible to load the assets used in the last steps in the background.
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        // labels
+        {
+            name: startLabel.id,
+            assets: [
+                {
+                    alias: "eggHead",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flowerTop",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
 
-To do this, you will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function of the label options. This function will be executed in `onStepStart` if the index of the step is 0 and when the user loads a save file. When you load a save file, all `onLoadingLabel` functions of the `narration.openedLabels` (current label and all labels that are in the stack).
+### Load assets in the background at label start
+
+<Callout title="Already present in the templates" type="info">
+In all templates, when a label is started, the background loading of the bundle (if it exists) with the id corresponding to the label will be started. So, it will be enough to **create a manifest with a bundle for each label**. Here is the implementation used to allow this:
+
+```ts title="main.ts"
+import { Assets, Game } from "@drincs/pixi-vn";
+
+Game.onLoadingLabel((_stepId, { id }) => Assets.backgroundLoadBundle(id));
+```
+
+</Callout>
+
+To make the game smoother by trying to remove asset loading times from one step to another, it is possible start a "loading group" at the beginning of a label. This means that you may potentially not feel any loading especially in the later steps of the label.
+
+Per fare ciò, puoi utilizzare la funzione `Assets.backgroundLoad` all'avvio del progetto. Puoi saperne di più sulla funzione `Assets.backgroundLoad` [qui](https://pixijs.com/8.x/guides/components/assets). And, you will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function of the label options.
+
+For cleaner code, it is recommended to define a bundle in your manifest with the id corresponding to the label id and define within it the assets that will be used in that label.
 
 ```ts title="labels/startLabel.ts"
 import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
 
-newLabel("start", [
+const startLabel = newLabel("start", [
     () => {
         await showImage("eggHead")
     },
     () => {
         await showImage("flowerTop")
     },
-    () => {
-        await showImage("helmlok")
-    },
-    () => {
-        await showImage("skully")
-    },
 ], {
-    onLoadingLabel: async (stepIndex, label) => { // [!code focus]
-        // The label will not start until these assets are loaded.
-        await Assets.load("eggHead")
-        await Assets.load("flowerTop")
+    onLoadingLabel: async (_stepId, label) => { // [!code focus]
         // The label will start immediately, but these assets will be loaded in the background. // [!code focus]
-        Assets.load("helmlok") // [!code focus]
-        Assets.load("skully") // [!code focus]
+        Assets.backgroundLoadBundle(label.id) // [!code focus]
     } // [!code focus]
 })
+export default startLabel;
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+import startLabel from "../labels/startLabel";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        // labels
+        {
+            name: startLabel.id,
+            assets: [
+                {
+                    alias: "eggHead",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flowerTop",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
 ```
