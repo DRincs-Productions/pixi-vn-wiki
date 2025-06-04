@@ -1,16 +1,9 @@
 import { routing } from "@/i18n/routing";
-import { GoogleAnalytics } from "@next/third-parties/google";
-import { hasLocale, NextIntlClientProvider } from "next-intl";
-import { setRequestLocale } from "next-intl/server";
-import { Inter } from "next/font/google";
+import { hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import "../global.css";
-import Provider from "../provider";
-
-const inter = Inter({
-    subsets: ["latin"],
-});
+import LayoutProvider from "../layout.provider";
 
 export default async function RootLayout({
     children,
@@ -24,15 +17,5 @@ export default async function RootLayout({
     if (!hasLocale(routing.locales, lang)) {
         notFound();
     }
-    setRequestLocale(lang);
-    return (
-        <html lang={lang} className={inter.className} suppressHydrationWarning>
-            <body className='flex flex-col min-h-screen'>
-                <NextIntlClientProvider locale={lang}>
-                    <Provider locale={lang}>{children}</Provider>
-                </NextIntlClientProvider>
-            </body>
-            <GoogleAnalytics gaId='G-KGCCEKXRVG' />
-        </html>
-    );
+    return <LayoutProvider lang={lang}>{children}</LayoutProvider>;
 }
