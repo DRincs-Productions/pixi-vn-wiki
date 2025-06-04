@@ -11,7 +11,6 @@ const inter = Inter({
 
 export default function LayoutProvider({ children, lang = "en" }: { children: ReactNode; lang?: string }) {
     setRequestLocale(lang);
-    console.log("LayoutProvider lang:", lang);
     return (
         <html lang={lang} className={inter.className} suppressHydrationWarning>
             <body className='flex flex-col min-h-screen'>
