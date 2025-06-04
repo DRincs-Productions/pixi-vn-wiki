@@ -1,29 +1,30 @@
 ---
 title: Gestione assets
+description: Organization, referencing, and loading of assets (images, sounds, videos) in Pixi’VN using aliases and manifests.
 ---
 
-Per caricare e manipolare risorse (immagini, gif, video...) sarà necessario utilizzare `Assets`. `Assets` è una classe con molte funzionalità e proviene dalla libreria PixiJS, se vuoi maggiori informazioni leggi [qui](https://pixijs.com/8.x/guides/components/assets).
+To load and manipulate assets (images, gifs, videos, etc.) sarà necessario utilizzare `Assets`. `Assets` is a class with many features and comes from the PixiJS library. For more information, read [here](https://pixijs.com/8.x/guides/components/assets).
 
-In tutte le funzioni di Pixi'VN è possibile utilizzare direttamente l'URL dell'immagine, anche se non è definito in `Assets`.
+In all Pixi’VN functions, you can directly use the image URL, even if it is not defined in `Assets`.
 
 ```ts
 let alien1 = await showImage("alien", "https://pixijs.com/assets/eggHead.png");
 ```
 
-Questo metodo presenta alcuni svantaggi:
+This method has some drawbacks:
 
-- la modifica dell'URL di una risorsa da una versione all'altra potrebbe causare incompatibilità
-- il giocatore dovrà attendere un breve tempo di caricamento, ogni volta che si preme "vai avanti" verrà avviato un <DynamicLink href="/start/labels">step</DynamicLink> che utilizza degli assets
-- scrivere l'intero URL nel codice ne aumenterà la lunghezza e lo renderà meno comprensibile
+- Changing the URL of an asset from one version to another may cause incompatibilities.
+- The player will have to wait for a short loading time every time they press "go next" and a <DynamicLink href="/start/labels">`step`</DynamicLink> is started that uses assets.
+- Writing the entire URL in code will increase its length and make it less readable.
 
-Per questi motivi si consiglia di gestire le risorse nei seguenti modi.
+For these reasons, it is recommended to handle assets in the following ways.
 
 ## Inizializza la matrice degli assets all'avvio del progetto
 
-L'inizializzazione degli assets delle risorse all'inizio del progetto consente di fare riferimento agli assets tramite un alias univoco senza dover utilizzare l'URL/percorso. In questo modo puoi modificare l'URL di una risorsa (mantenendo il vecchio alias) senza doverti preoccupare della compatibilità tra versioni.
+L'inizializzazione degli assets delle risorse all'inizio del progetto consente di fare riferimento agli assets tramite un alias univoco senza dover utilizzare l'URL/percorso. This way, you can change the URL of an asset (while keeping the old alias) and you don't have to worry about version compatibility.
 
 Per fare ciò, si consiglia di creare una funzione asincrona `defineAssets` che verrà chiamata all'avvio del progetto.
-Nella funzione `defineAssets` useremo `Assets` (ad esempio `Assets.add`, `Assets.addBundle` e `Assets.init`) per assegnare alias agli URL. Puoi trovare maggiori informazioni su di essi [qui](https://pixijs.com/8.x/guides/components/assets) per assegnare un alias a ciascun asses.
+In the `defineAssets` function, use `Assets` (e.g. `Assets.add`, `Assets.addBundle`, and `Assets.init`) to assign aliases to URLs. Puoi trovare maggiori informazioni su di essi [qui](https://pixijs.com/8.x/guides/components/assets) per assegnare un alias a ciascun asses.
 
 ```ts tab="utils/defineAssets.ts"
 import { Assets, sound } from "@drincs/pixi-vn";
@@ -85,11 +86,11 @@ export default manifest;
 
 Per impostazione predefinita, gli assets vengono caricati solo quando necessario.
 
-Tuttavia **nel caso in cui le risorse non siano salvate localmente**, ma in un <DynamicLink href="/start/assets#assets-hosting">"hosting di risorse"</DynamicLink>, il loro caricamento potrebbe richiedere del tempo. Ciò significa che l'avvio di uno step potrebbe non essere tempestivo. Pertanto, dopo aver avviato l'esecuzione del <DynamicLink href="/start/labels-flow#next-step">passaggio successivo</DynamicLink> (ad esempio con il pulsante "Avanti"), il giocatore potrebbe dover attendere un po' di tempo per poter "visualizzare" le modifiche ed eseguire un altro passaggio.
+But **if the assets are not saved locally**, but in an <DynamicLink href="/start/assets#assets-hosting">"assets hosting"</DynamicLink>, their loading may take some time. This means that starting a `step` may not be immediate. So, after starting the execution of the <DynamicLink href="/start/labels-flow#next-step">next `step`</DynamicLink> (for example with the "next" button), the player may have to wait some time to "view" the changes and be able to run another `step`.
 
-Eseguire questi caricamenti a ogni passaggio può risultare fastidioso per il giocatore, anche se sono molto brevi.
+Performing these loadings at each `step` may be annoying to the player, even if they are very short.
 
-Per risolvere questo problema, lo sviluppatore può avviare un "gruppo di caricamento" in una determinata fase del gioco. Ciò significa che il lettore avrà meno caricamenti, ma più lunghi.
+To solve this problem, the developer can group multiple loadings at a certain stage of the game. In this way, the player will not have continuous loadings, but fewer, even if longer.
 
 Ecco vari modi per caricare gli assets:
 
@@ -97,7 +98,7 @@ Ecco vari modi per caricare gli assets:
 
 È possibile caricare risorse all'avvio del progetto prima che il giocatore possa interagire con il progetto, ad esempio durante la schermata di caricamento iniziale. Si consiglia di utilizzare questa procedura solo per le risorse utilizzate nella pagina principale o per le risorse utilizzate di frequente e di non superare i 100MB.
 
-Per fare ciò, è necessario utilizzare la funzione `Assets.load` e attendere che termini (con `wait`) all'avvio del progetto. Puoi saperne di più sulla funzione `Assets.load` [qui](https://pixijs.com/8.x/guides/components/assets).
+To do this, you must use the `Assets.load` function and wait for it to finish (with `await`) when the project starts. Puoi saperne di più sulla funzione `Assets.load` [qui](https://pixijs.com/8.x/guides/components/assets).
 
 ```ts tab="utils/defineAssets.ts"
 import { Assets, sound } from "@drincs/pixi-vn";
@@ -230,11 +231,11 @@ export default manifest;
 
 ### Carica le risorse all'avvio della label
 
-To collect the loadings from one step to another of a label in one, it is possible to load all or part of the resources used by the label before it starts. Poiché ciò non ridurrà i tempi di attesa per il giocatore, ma li sommerà a un singolo caricamento, si consiglia di [caricarli in background](#load-assets-in-the-background-at-label-start).
+To group the loadings from one `step` to another of a `label` into a single loading, it is possible to load all or part of the assets used by the `label` before it starts. Since this does not reduce the waiting times for the player, but adds them to a single loading, it is recommended to [load them in the background](#load-assets-in-the-background-at-label-start).
 
-Per fare ciò, è necessario utilizzare la funzione `Assets.load` e attendere che termini (con `wait`) all'avvio del progetto. And, you will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function.
+To do this, you must use the `Assets.load` function and wait for it to finish (with `await`) when the `label` starts. You will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function.
 
-Per un codice più pulito, si consiglia di definire un bundle nel manifest con l'id corrispondente all'id della label e di definire al suo interno le risorse che verranno utilizzate in tale etichetta.
+For cleaner code, it is recommended to define a bundle in your manifest with the id corresponding to the `label` id and define within it the assets that will be used in that `label`.
 
 ```ts title="labels/startLabel.ts"
 import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
@@ -284,10 +285,10 @@ const manifest: AssetsManifest = {
 export default manifest;
 ```
 
-### Load assets in the background at label start
+### Carica le risorse in background all'avvio della label
 
 <Callout title="Already present in the templates" type="info">
-In tutti i template, quando si avvia una label, verrà avviato il caricamento in background del bundle (se esiste) con l'id corrispondente all'etichetta. So, it will be enough to **create a manifest with a bundle for each label**. Here is the implementation used to allow this:
+In all templates, when a `label` is started, the background loading of the bundle (if it exists) with the id corresponding to the `label` will be started. So, it is enough to **create a manifest with a bundle for each `label`**. Here is the implementation used to allow this:
 
 ```ts title="main.ts"
 import { Assets, Game } from "@drincs/pixi-vn";
@@ -297,11 +298,11 @@ Game.onLoadingLabel((_stepId, { id }) => Assets.backgroundLoadBundle(id));
 
 </Callout>
 
-To make the game smoother by trying to remove asset loading times from one step to another, it is possible start a "loading group" at the beginning of a label. This means that you may potentially not feel any loading especially in the later steps of the label.
+To make the game smoother by trying to remove asset loading times from one `step` to another, it is possible to start a "loading group" at the beginning of a `label`. This means that you may potentially not feel any loading, especially in the later `steps` of the `label`.
 
-Per fare ciò, puoi utilizzare la funzione `Assets.backgroundLoad` all'avvio del progetto. Puoi saperne di più sulla funzione `Assets.backgroundLoad` [qui](https://pixijs.com/8.x/guides/components/assets). And, you will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function.
+To do this, you can use the `Assets.backgroundLoad` function when the `label` starts. Puoi saperne di più sulla funzione `Assets.backgroundLoad` [qui](https://pixijs.com/8.x/guides/components/assets). E utilizzerai la funzione <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink>.
 
-Per un codice più pulito, si consiglia di definire un bundle nel manifest con l'id corrispondente all'id della label e di definire al suo interno le risorse che verranno utilizzate in tale etichetta.
+For cleaner code, it is recommended to define a bundle in your manifest with the id corresponding to the `label` id and define within it the assets that will be used in that `label`.
 
 ```ts title="labels/startLabel.ts"
 import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
