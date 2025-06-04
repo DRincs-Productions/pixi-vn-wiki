@@ -286,9 +286,20 @@ export default manifest;
 
 ### Load assets in the background at label start
 
-To make the game smoother by trying to remove asset loading times from a step, instead of loading all assets before the label starts, it is possible to load the assets used in the last steps in the background.
+<Callout title="Already present in the templates" type="info">
+In all templates, when a label is started, the background loading of the bundle (if it exists) with the id corresponding to the label will be started. So, it will be enough to create a manifest with a bundle for each label. Here is the implementation used to allow this:
 
-To do this, you will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function of the label options. This function will be executed in `onStepStart` if the index of the step is 0 and when the user loads a save file. When you load a save file, all `onLoadingLabel` functions of the `narration.openedLabels` (current label and all labels that are in the stack).
+```ts title="main.ts"
+import { Assets, Game } from "@drincs/pixi-vn";
+
+Game.onLoadingLabel((_stepId, { id }) => Assets.backgroundLoadBundle(id));
+```
+
+</Callout>
+
+To make the game smoother by trying to remove asset loading times from one step to another, it is possible start a "loading group" at the beginning of a label. This means that you may potentially not feel any loading especially in the later steps of the label.
+
+To do this, you can use the `Assets.backgroundLoad` function when the project starts. You can learn more about the `Assets.backgroundLoad` function [here](https://pixijs.com/8.x/guides/components/assets). And, you will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function of the label options.
 
 For cleaner code, it is recommended to define a bundle in your manifest with the id corresponding to the label id and define within it the assets that will be used in that label.
 
