@@ -1,0 +1,157 @@
+---
+title: Guida introduttiva
+description: Come iniziare con Pixi'VN
+---
+
+Puoi iniziare a utilizzare Pixi'VN [inizializzando un nuovo progetto](#project-initialization) o [installando il pacchetto](#installation) in un progetto esistente.
+
+## Prerequisiti
+
+Prima di iniziare, è necessario avere installato i seguenti strumenti:
+
+- [Node.js](https://nodejs.org/) versione 18 o superiore.
+- Editor di testo con supporto per TypeScript.
+  - [Visual Studio Code](https://code.visualstudio.com/)
+  - [Cursor](https://www.cursor.com/)
+  - [VSCodium](https://vscodium.com/)
+- (Raccomandato) [Git](https://git-scm.com/)
+  - Avere un [account GitHub](https://github.com/)
+
+## Inizializzazione del progetto
+
+If you want to start from a new project, you can use the following command to initialize a new project with the Pixi’VN templates:
+
+```sh tab="npm"
+npm create pixi-vn@latest
+```
+
+```sh tab="yarn"
+yarn create pixi-vn
+```
+
+```sh tab="pnpm"
+pnpm create pixi-vn
+```
+
+```sh tab="bun"
+bun create pixi-vn
+```
+
+```sh tab="deno"
+deno init --npm pixi-vn
+```
+
+Puoi vedere l'elenco dei template disponibili e delle demo interattive <DynamicLink href="/start/templates">qui</DynamicLink>.
+
+Dopo aver inizializzato il progetto, puoi aprire la directory del progetto con il tuo editor di testo (si consiglia VSCode) e iniziare a sviluppare il progetto.
+
+In tutti i modelli è presente un file `README.md` con maggiori informazioni sul progetto.
+
+## Installazione
+
+Per installare il pacchetto Pixi'VN in un progetto Javascript esistente, puoi utilizzare il seguente comando:
+
+```sh tab="npm"
+npm install @drincs/pixi-vn
+```
+
+```sh tab="yarn"
+yarn add @drincs/pixi-vn
+```
+
+```sh tab="pnpm"
+pnpm add @drincs/pixi-vn
+```
+
+```sh tab="bun"
+bun add @drincs/pixi-vn
+```
+
+```sh tab="deno"
+deno install npm:@drincs/pixi-vn
+```
+
+È possibile utilizzare la versione CDN di questo plugin:
+
+```html tab="script tag" title="index.html"
+<script src="https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@<version>/+esm"></script>
+```
+
+```html tab="map import" title="index.html"
+<script type="importmap">
+  { "imports": {
+      "@drincs/pixi-vn@<version>":        "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn/+esm"
+  } }
+</script>
+```
+
+```js tab="js import" title="index.js"
+import pixivn from "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@<version>/+esm";
+```
+
+<iframe src="https://codepen.io/BlackRam-oss/embed/oNrqgNd?default-tab=js%2Cresult"
+  height="300"
+  style={{
+    width: "100%",
+  }}
+  title="Pixi’VN"
+  loading="lazy"
+  allowFullScreen={true}
+/>
+
+Now you must [initialize the Pixi’VN](#initialize-the-game) before using the engine. For example, you can add the following code to the `main.ts` or `index.ts` (It depends on your project configuration).
+
+### Initialize the game
+
+Prima di utilizzare l'engine Pixi'VN, è necessario inizializzare il gioco. Puoi farlo chiamando il metodo `Game.init`.
+
+This function has the following parameters:
+
+- `element`: L'elemento HTML a cui aggiungere il canvas.
+- `options`: Equivale alle opzioni che puoi utilizzare durante l'inizializzazione di un'[applicazione PixiJS](https://pixijs.com/8.x/guides/basics/getting-started#creating-an-application). Le seguenti opzioni sono obbligatorie:
+  - `width`: La larghezza del canvas.
+  - `height`: L'altezza del canvas.
+- `devtoolsOptions`: Ciò equivale alle opzioni che puoi utilizzare durante l'inizializzazione di <DynamicLink href="/start/canvas#use-pixijs-devtools-with-pixivn">PixiJS Devtools</DynamicLink>.
+
+```ts title="src/main.tsx"
+import { Game } from "@drincs/pixi-vn";
+
+// Canvas setup with PIXI
+const body = document.body
+if (!body) {
+    throw new Error('body element not found')
+}
+
+Game.init(body, {
+    height: 1080,
+    width: 1920,
+    backgroundColor: "#303030",
+}).then(() => {
+    // ...
+});
+
+// read more here: https://pixi-vn.web.app/start/other-narrative-features.html#how-manage-the-end-of-the-game
+Game.onEnd(async (props) => {
+    Game.clear();
+    props.navigate("/");
+});
+
+Game.onError((type, error, { notify }) => {
+    notify("allert_error_occurred");
+});
+```
+
+```html title="index.html"
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
+```
