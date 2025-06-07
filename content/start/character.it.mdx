@@ -1,15 +1,15 @@
 ---
-title: Characters
+title: Personaggi
 ---
 
-**What are characters?** The characters are the actors that appear in the visual novel.
-In Pixi’VN, characters are created using the `CharacterBaseModel` class or a [custom class](#custom-character).
+**Cosa sono i characters?** I personaggi sono gli attori che compaiono nella visual novel.
+In Pixi'VN, i personaggi vengono creati utilizzando la classe `CharacterBaseModel` o una [classe personalizzata](#custom-character).
 
-## Initialize characters
+## Definisci i personaggi
 
-To initialize a character, you need to create a new instance of the `CharacterBaseModel` class and add it into a game character dictionary, when the game is initialized.
+Per definire un personaggio, è necessario creare una nuova istanza della classe `CharacterBaseModel` e aggiungerla al dizionario dei personaggi di gioco, quando il gioco viene inizializzato.
 
-To create a new instance of `CharacterBaseModel` you need the following parameters:
+Per creare una nuova istanza di `CharacterBaseModel` sono necessari i seguenti parametri:
 
 - `id`: A unique identifier for the character (string). It is used to reference the character in the game (must be unique).
   If you want to create a [character with an "emotion", you can pass an object](#character-emotions).
@@ -57,9 +57,9 @@ import { getCharacterById } from "@drincs/pixi-vn";
 const liam = getCharacterById('liam');
 ```
 
-## Get all characters
+## Ottieni tutti i personaggi
 
-To get all characters, you can use the `getAllCharacters` function.
+Per ottenere tutti i personaggi, puoi usare la funzione `getAllCharacters`.
 
 ```typescript
 import { getAllCharacters } from "@drincs/pixi-vn";
@@ -67,15 +67,15 @@ import { getAllCharacters } from "@drincs/pixi-vn";
 const characters = getAllCharacters();
 ```
 
-## Edit characters in the game
+## Modifica i personaggi nel gioco
 
-`CharacterBaseModel` is a <DynamicLink href="/start/stored-classes">stored class</DynamicLink>, which means that its properties are saved in <DynamicLink href="/start/storage">game storage</DynamicLink>.
+`CharacterBaseModel` è una <DynamicLink href="/start/stored-classes">classe storicizzata</DynamicLink>, il che significa che le sue proprietà sono salvate nella <DynamicLink href="/start/storage">memoria di gioco</DynamicLink>.
 
-It means that if the character's name is changed during the game, the new character name will be saved in the game storage by linking it to his `id`.
+Ciò significa che se il nome del personaggio viene modificato durante il gioco, il nuovo nome del personaggio verrà salvato nella memoria del gioco collegandolo al suo `id`.
 
-Furthermore, it is important to consider that if the **character's  id is changed**, from one version to another, the system will **not** move the data linked from the previous `id` to the new `id`.
+Inoltre, è importante considerare che se l'**id del personaggio viene modificato** da una versione all'altra, il sistema **non** sposterà i dati collegati dal precedente `id` al nuovo `id`.
 
-The properties of the `CharacterBaseModel` that are stored in the game storage are:
+Le proprietà del `CharacterBaseModel` che vengono memorizzate nella memoria del gioco sono:
 
 - `name`: The character's name.
 - `surname`: The character's surname.
@@ -116,7 +116,7 @@ export default class CharacterBaseModel extends StoredClassModel implements Char
 }
 ```
 
-## Use characters in the game
+## Usa i personaggi nel gioco
 
 You can use a game character for example to <DynamicLink href="/start/dialogue#set-the-current-dialogue">link it to the current dialogue</DynamicLink>. You can use the character's `id` or the character's instance, but it is recommended to use the instance.
 
@@ -137,16 +137,16 @@ narration.dialogue = { character: liam, text: "Hello" }
 narration.dialogue = { character: "liam_id", text: "Hello" }
 ```
 
-## Character emotions
+## Emozioni del personaggio
 
-It can often be useful to have multiple types of the same character.
+Spesso può essere utile avere più tipi dello stesso personaggio.
 
-A classic example in visual novels is to have a character "Alice" a subtype related to his/her emotional state "Angry Alice". The character and the subtype have the same characteristics, except for one or more properties, such as the icon.
+Un esempio classico nelle visual novel è quello in cui il personaggio "Alice" ha un sottotipo correlato al suo stato emotivo, "Alice arrabbiata". Il personaggio e il sottotipo hanno le stesse caratteristiche, ad eccezione di una o più proprietà, come l'icona.
 
-For this reason, with Pixi’VN it is possible to create a "character with an emotion". This is possible by passing an object, instead of the id, with the following properties:
+Per questo motivo con Pixi’VN è possibile creare un “personaggio con un’emozione”. This is possible by passing an object, instead of the id, with the following properties:
 
-- `id`, which corresponds to the id of an existing character.
-- `emotion`, which corresponds to the character's subcategory (e.g. the character's emotion).
+- `id`, che corrisponde all'id di un personaggio esistente.
+- `emotion`, che corrisponde alla sottocategoria del personaggio (ad esempio l'emozione del personaggio).
 
 ```ts title="values/characters.ts"
 import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
@@ -176,16 +176,15 @@ console.log(alice.name); // Eleonora
 console.log(angryAlice.name); // Angry Eleonora
 ```
 
-## Custom character
+## Personaggio personalizzato
 
-It is recommend creating your own class `Character` that extends `CharacterStoredClass` and "override" the interface `CharacterInterface`
-to add/edit/remove properties or methods.
+Si consiglia di creare la propria classe `Character` che estende `CharacterStoredClass` e di "sovrascrivere" l'interfaccia `CharacterInterface` per aggiungere/modificare/rimuovere proprietà o metodi.
 
-For example, if you want to create a class `Character`, you must "override" the interface `CharacterInterface` to use your properties or methods. ( See the file `pixi-vn.d.ts` )
+Ad esempio, se vuoi creare una classe `Character`, devi "sovrascrivere" l'interfaccia `CharacterInterface` per utilizzare le tue proprietà o metodi. ( Guarda il file `pixi-vn.d.ts` )
 
-Now you can create a class `Character` that extends `CharacterStoredClass` and implements the `CharacterInterface`. (For more information on how to create a class in Typescript read [here](https://www.typescriptlang.org/docs/handbook/2/classes.html))
+Now you can create a class `Character` that extends `CharacterStoredClass` and implements the `CharacterInterface`. (Per maggiori informazioni su come creare una classe in Typescript leggi [qui](https://www.typescriptlang.org/docs/handbook/2/classes.html))
 
-To create a "property" that stores its value in the game storage you can create a [Getters/Setters](https://www.typescriptlang.org/docs/handbook/2/classes.html#getters--setters) and use the `this.getStorageProperty()`/`this.setStorageProperty()` methods. ( See the file `Character.ts` )
+Per creare una "proprietà" che memorizzi il suo valore nell'archivio del gioco, puoi creare un [Getters/Setters](https://www.typescriptlang.org/docs/handbook/2/classes.html#getters--setters) e utilizzare i metodi `this.getStorageProperty()`/`this.setStorageProperty()`. ( Guarda il file `Character.ts` )
 
 ```ts tab="models/Character.ts"
 import { CharacterInterface, CharacterStoredClass } from "@drincs/pixi-vn";
