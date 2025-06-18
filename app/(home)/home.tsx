@@ -8,6 +8,7 @@ import { cva } from "class-variance-authority";
 import { File, Files, Folder } from "fumadocs-ui/components/files";
 import { Tab, Tabs } from "fumadocs-ui/components/tabs";
 import { Heart, LayoutIcon, type LucideIcon, MousePointer, SearchIcon, TimerIcon } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -121,7 +122,9 @@ function Highlight({
     );
 }
 
-function Hero() {
+async function Hero() {
+    const t = await getTranslations("HomePage");
+
     return (
         <div
             className='relative z-[2] flex flex-col border-x border-t bg-fd-background/80 px-4 pt-12 max-md:text-center md:px-12 md:pt-16 [.uwu_&]:hidden overflow-hidden
@@ -156,24 +159,19 @@ function Hero() {
                             "repeating-linear-gradient(65deg, var(--color-purple-300), var(--color-purple-300) 12px, color-mix(in oklab, var(--color-blue-600) 30%, transparent) 20px, transparent 200px)",
                     }}
                 />
-                <h1 className='mb-8 text-4xl font-medium md:hidden'>Build Your Visual Novel</h1>
-                <h1 className='mb-8 max-w-[600px] text-4xl font-medium max-md:hidden'>
-                    Build fantastic visual novel with your favorite JS Frameworks
-                </h1>
-                <p className='mb-8 text-fd-muted-foreground md:max-w-[80%] md:text-xl'>
-                    Pixi’VN is a very versatile and powerful 2D game engine. It is based on JavaScript/TypeScript and
-                    PixiJS.
-                </p>
+                <h1 className='mb-8 text-4xl font-medium md:hidden'>{t("mobile_title")}</h1>
+                <h1 className='mb-8 max-w-[600px] text-4xl font-medium max-md:hidden'>{t("title")}</h1>
+                <p className='mb-8 text-fd-muted-foreground md:max-w-[80%] md:text-xl'>{t("subtitle")}</p>
 
                 <div className='inline-flex items-center gap-3 max-md:mx-auto'>
                     <Link
                         href='/start/getting-started'
                         className={cn(buttonVariants({ size: "lg", className: "rounded-full" }))}
                     >
-                        Getting Started
+                        {t("getting_started")}
                     </Link>
                     <Link href='/start/why' className={cn(buttonVariants({ size: "lg", className: "rounded-full" }))}>
-                        Why Pixi’VN?
+                        {t("why_pixivn")}
                     </Link>
                     <a
                         href='https://discord.gg/E95FZWakzp'
@@ -187,7 +185,7 @@ function Hero() {
                             })
                         )}
                     >
-                        Discord
+                        {t("discord")}
                     </a>
                     <a
                         href='https://drincs-productions.itch.io/pixi-vn'
@@ -201,7 +199,7 @@ function Hero() {
                             })
                         )}
                     >
-                        Open Demo
+                        {t("open_demo")}
                     </a>
                 </div>
             </div>
