@@ -207,19 +207,21 @@ async function Hero() {
     );
 }
 
-function Introduction(): React.ReactElement {
+async function Introduction() {
+    const t = await getTranslations("Introduction");
+
     return (
         <div className='grid grid-cols-1 border-r md:grid-cols-2'>
             <div className='flex flex-col gap-2 border-l border-t px-6 py-12 md:py-16'>
                 <div className={cn(badgeVariants())}>1</div>
-                <h3 className='text-xl font-semibold'>Create it.</h3>
-                <p className='mb-8 text-fd-muted-foreground'>Initialize a new game with a command.</p>
+                <h3 className='text-xl font-semibold'>{t("create_it")}</h3>
+                <p className='mb-8 text-fd-muted-foreground'>{t("create_it_description")}</p>
                 <CreateAppAnimation />
             </div>
             <div className='flex flex-col gap-2 border-l border-t px-6 py-12 md:py-16'>
                 <div className={cn(badgeVariants())}>2</div>
-                <h3 className='text-xl font-semibold'>Write.</h3>
-                <p className='text-fd-muted-foreground'>{"Write your story in your favorite narrative language."}</p>
+                <h3 className='text-xl font-semibold'>{t("write")}</h3>
+                <p className='text-fd-muted-foreground'>{t("write_description")}</p>
                 <div className='relative flex flex-col'>
                     <Tabs items={["ink", "TypeScript", "Json"]} className='absolute inset-x-2 top-0 shadow-lg'>
                         <Tab>
@@ -276,10 +278,8 @@ What is your name?
             </div>
             <div className='col-span-full flex flex-col items-center gap-2 border-l border-t px-6 py-16 text-center'>
                 <div className={cn(badgeVariants())}>3</div>
-                <h3 className='text-2xl font-semibold'>Ship.</h3>
-                <p className='text-fd-muted-foreground'>
-                    Deploy your game easily with hosting platforms and video game platforms.
-                </p>
+                <h3 className='text-2xl font-semibold'>{t("ship")}</h3>
+                <p className='text-fd-muted-foreground'>{t("ship_description")}</p>
 
                 <div className='mt-4 flex flex-row flex-wrap items-center gap-8'>
                     <Link href='/start/distribution-itchio' rel='noreferrer noopener'>
