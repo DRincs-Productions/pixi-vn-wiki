@@ -81,21 +81,23 @@ async function Why() {
     return <div className='relative overflow-hidden border-x border-t p-2'></div>;
 }
 
-function Highlights(): React.ReactElement {
+async function Highlights() {
+    const t = await getTranslations("Highlights");
+
     return (
         <div className='grid grid-cols-1 border-r md:grid-cols-2 lg:grid-cols-3'>
             <div className='col-span-full flex flex-row items-start justify-center border-l border-t p-8 pb-2 text-center'>
-                <h2 className='bg-fd-primary text-fd-primary-foreground px-1 text-2xl font-semibold'>Highlights</h2>
+                <h2 className='bg-fd-primary text-fd-primary-foreground px-1 text-2xl font-semibold'>{t("info")}</h2>
                 <MousePointer className='-ml-1 mt-8' />
             </div>
-            <Highlight icon={TimerIcon} heading='Light & Fast.'>
-                Deals with specific features, giving the possibility to add more with other libraries.
+            <Highlight icon={TimerIcon} heading={t("light_title")}>
+                {t("light_subtitle")}
             </Highlight>
-            <Highlight icon={LayoutIcon} heading='Flexible & Versatile.'>
-                Usable in any JS project for various purposes.
+            <Highlight icon={LayoutIcon} heading={t("flexible_title")}>
+                {t("flexible_subtitle")}
             </Highlight>
-            <Highlight icon={SearchIcon} heading='Smart.'>
-                Use the most innovative technologies without reinventing what already exists.
+            <Highlight icon={SearchIcon} heading={t("smart_title")}>
+                {t("smart_subtitle")}
             </Highlight>
         </div>
     );
