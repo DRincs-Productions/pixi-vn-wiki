@@ -56,18 +56,17 @@ export default function Home() {
     );
 }
 
-function Architecture() {
+async function Architecture() {
+    const t = await getTranslations("HomePage");
+
     return (
         <div className='flex flex-col gap-4 border-x border-t p-8 md:px-12 lg:flex-row'>
             <div className='text-start'>
                 <p className='px-2 py-1 text-sm font-mono bg-fd-primary text-fd-primary-foreground font-bold w-fit mb-4'>
-                    Many design possibilities
+                    {t("info")}
                 </p>
-                <h2 className='text-2xl font-semibold mb-4'>More levels.</h2>
-                <p className='text-fd-muted-foreground mb-6'>
-                    2D rendering is completely based on PixiJS and Pixi’VN components. You can add more PixiJS or HTML
-                    (React Vue ...) layers to create an innovative UI.
-                </p>
+                <h2 className='text-2xl font-semibold mb-4'>{t("title")}</h2>
+                <p className='text-fd-muted-foreground mb-6'>{t("subtitle")}</p>
             </div>
             <Image
                 src={ArchImg}
