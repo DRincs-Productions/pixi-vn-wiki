@@ -292,28 +292,28 @@ What is your name?
     );
 }
 
-function Contributing() {
+async function Contributing() {
+    const t = await getTranslations("Contributing");
+
     return (
         <div className='flex flex-col items-center border-x border-t px-4 py-16 text-center'>
             <Heart fill='currentColor' className='text-pink-500 mb-4' />
-            <h2 className='mb-4 text-xl font-semibold sm:text-2xl'>Made Possible by You.</h2>
-            <p className='mb-4 text-fd-muted-foreground'>
-                Pixi’VN is 100% powered by passion and open source community.
-            </p>
+            <h2 className='mb-4 text-xl font-semibold sm:text-2xl'>{t("title")}</h2>
+            <p className='mb-4 text-fd-muted-foreground'>{t("subtitle")}</p>
             <div className='mb-8 flex flex-row items-center gap-2'>
                 <a
                     href='https://www.patreon.com/pixi_vn'
                     target='_blank'
                     className={cn(buttonVariants({ variant: "outline" }))}
                 >
-                    Patreon
+                    {t("patreon")}
                 </a>
                 <a
                     href='https://pixi-vn.fanbox.cc/'
                     target='_blank'
                     className={cn(buttonVariants({ variant: "outline" }))}
                 >
-                    FANBOX
+                    {t("fanbox")}
                 </a>
                 <a
                     href='https://github.com/DRincs-Productions/pixi-vn/graphs/contributors'
@@ -321,7 +321,7 @@ function Contributing() {
                     target='_blank'
                     className={cn(buttonVariants({ variant: "ghost" }))}
                 >
-                    Contributors
+                    {t("contributors")}
                 </a>
             </div>
         </div>
