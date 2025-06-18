@@ -57,7 +57,7 @@ export default function Home() {
 }
 
 async function Architecture() {
-    const t = await getTranslations("HomePage");
+    const t = await getTranslations("Architecture");
 
     return (
         <div className='flex flex-col gap-4 border-x border-t p-8 md:px-12 lg:flex-row'>
