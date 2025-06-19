@@ -207,6 +207,7 @@ export function HeredityFactorExample() {
   newLabel,
   pushIn,
   Repeat,
+  RotateTicker,
   showImage,
   showWithDissolve,
   showWithFade,
@@ -217,12 +218,12 @@ export const startLabel = newLabel("start_label", [
   async () => {
     await showImage("alien", "eggHead", { anchor: 0.5, align: 0 });
 
-    // canvas.addTicker(
-    //   "alien",
-    //   new RotateTicker({
-    //     speed: 6,
-    //   })
-    // );
+    canvas.addTicker(
+      "alien",
+      new RotateTicker({
+        speed: 6,
+      })
+    );
     canvas.addTickersSequence("alien", [
       new MoveTicker({
         destination: { x: 0, y: 0, type: "align" },
