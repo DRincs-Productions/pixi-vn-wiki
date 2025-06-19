@@ -8,6 +8,7 @@ import { cva } from "class-variance-authority";
 import { File, Files, Folder } from "fumadocs-ui/components/files";
 import { Tab, Tabs } from "fumadocs-ui/components/tabs";
 import { Heart, LayoutIcon, type LucideIcon, MousePointer, SearchIcon, TimerIcon } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -55,18 +56,17 @@ export default function Home() {
     );
 }
 
-function Architecture() {
+async function Architecture() {
+    const t = await getTranslations("Architecture");
+
     return (
         <div className='flex flex-col gap-4 border-x border-t p-8 md:px-12 lg:flex-row'>
             <div className='text-start'>
                 <p className='px-2 py-1 text-sm font-mono bg-fd-primary text-fd-primary-foreground font-bold w-fit mb-4'>
-                    Many design possibilities
+                    {t("info")}
                 </p>
-                <h2 className='text-2xl font-semibold mb-4'>More levels.</h2>
-                <p className='text-fd-muted-foreground mb-6'>
-                    2D rendering is completely based on PixiJS and Pixi’VN components. You can add more PixiJS or HTML
-                    (React Vue ...) layers to create an innovative UI.
-                </p>
+                <h2 className='text-2xl font-semibold mb-4'>{t("title")}</h2>
+                <p className='text-fd-muted-foreground mb-6'>{t("subtitle")}</p>
             </div>
             <Image
                 src={ArchImg}
@@ -81,21 +81,23 @@ async function Why() {
     return <div className='relative overflow-hidden border-x border-t p-2'></div>;
 }
 
-function Highlights(): React.ReactElement {
+async function Highlights() {
+    const t = await getTranslations("Highlights");
+
     return (
         <div className='grid grid-cols-1 border-r md:grid-cols-2 lg:grid-cols-3'>
             <div className='col-span-full flex flex-row items-start justify-center border-l border-t p-8 pb-2 text-center'>
-                <h2 className='bg-fd-primary text-fd-primary-foreground px-1 text-2xl font-semibold'>Highlights</h2>
+                <h2 className='bg-fd-primary text-fd-primary-foreground px-1 text-2xl font-semibold'>{t("info")}</h2>
                 <MousePointer className='-ml-1 mt-8' />
             </div>
-            <Highlight icon={TimerIcon} heading='Light & Fast.'>
-                Deals with specific features, giving the possibility to add more with other libraries.
+            <Highlight icon={TimerIcon} heading={t("light_title")}>
+                {t("light_subtitle")}
             </Highlight>
-            <Highlight icon={LayoutIcon} heading='Flexible & Versatile.'>
-                Usable in any JS project for various purposes.
+            <Highlight icon={LayoutIcon} heading={t("flexible_title")}>
+                {t("flexible_subtitle")}
             </Highlight>
-            <Highlight icon={SearchIcon} heading='Smart.'>
-                Use the most innovative technologies without reinventing what already exists.
+            <Highlight icon={SearchIcon} heading={t("smart_title")}>
+                {t("smart_subtitle")}
             </Highlight>
         </div>
     );
@@ -121,7 +123,9 @@ function Highlight({
     );
 }
 
-function Hero() {
+async function Hero() {
+    const t = await getTranslations("HomePage");
+
     return (
         <div
             className='relative z-[2] flex flex-col border-x border-t bg-fd-background/80 px-4 pt-12 max-md:text-center md:px-12 md:pt-16 [.uwu_&]:hidden overflow-hidden
@@ -156,24 +160,19 @@ function Hero() {
                             "repeating-linear-gradient(65deg, var(--color-purple-300), var(--color-purple-300) 12px, color-mix(in oklab, var(--color-blue-600) 30%, transparent) 20px, transparent 200px)",
                     }}
                 />
-                <h1 className='mb-8 text-4xl font-medium md:hidden'>Build Your Visual Novel</h1>
-                <h1 className='mb-8 max-w-[600px] text-4xl font-medium max-md:hidden'>
-                    Build fantastic visual novel with your favorite JS Frameworks
-                </h1>
-                <p className='mb-8 text-fd-muted-foreground md:max-w-[80%] md:text-xl'>
-                    Pixi’VN is a very versatile and powerful 2D game engine. It is based on JavaScript/TypeScript and
-                    PixiJS.
-                </p>
+                <h1 className='mb-8 text-4xl font-medium md:hidden'>{t("mobile_title")}</h1>
+                <h1 className='mb-8 max-w-[600px] text-4xl font-medium max-md:hidden'>{t("title")}</h1>
+                <p className='mb-8 text-fd-muted-foreground md:max-w-[80%] md:text-xl'>{t("subtitle")}</p>
 
                 <div className='inline-flex items-center gap-3 max-md:mx-auto'>
                     <Link
                         href='/start/getting-started'
                         className={cn(buttonVariants({ size: "lg", className: "rounded-full" }))}
                     >
-                        Getting Started
+                        {t("getting_started")}
                     </Link>
                     <Link href='/start/why' className={cn(buttonVariants({ size: "lg", className: "rounded-full" }))}>
-                        Why Pixi’VN?
+                        {t("why_pixivn")}
                     </Link>
                     <a
                         href='https://discord.gg/E95FZWakzp'
@@ -187,7 +186,7 @@ function Hero() {
                             })
                         )}
                     >
-                        Discord
+                        {t("discord")}
                     </a>
                     <a
                         href='https://drincs-productions.itch.io/pixi-vn'
@@ -201,7 +200,7 @@ function Hero() {
                             })
                         )}
                     >
-                        Open Demo
+                        {t("open_demo")}
                     </a>
                 </div>
             </div>
@@ -209,19 +208,21 @@ function Hero() {
     );
 }
 
-function Introduction(): React.ReactElement {
+async function Introduction() {
+    const t = await getTranslations("Introduction");
+
     return (
         <div className='grid grid-cols-1 border-r md:grid-cols-2'>
             <div className='flex flex-col gap-2 border-l border-t px-6 py-12 md:py-16'>
                 <div className={cn(badgeVariants())}>1</div>
-                <h3 className='text-xl font-semibold'>Create it.</h3>
-                <p className='mb-8 text-fd-muted-foreground'>Initialize a new game with a command.</p>
+                <h3 className='text-xl font-semibold'>{t("create_it")}</h3>
+                <p className='mb-8 text-fd-muted-foreground'>{t("create_it_description")}</p>
                 <CreateAppAnimation />
             </div>
             <div className='flex flex-col gap-2 border-l border-t px-6 py-12 md:py-16'>
                 <div className={cn(badgeVariants())}>2</div>
-                <h3 className='text-xl font-semibold'>Write.</h3>
-                <p className='text-fd-muted-foreground'>{"Write your story in your favorite narrative language."}</p>
+                <h3 className='text-xl font-semibold'>{t("write")}</h3>
+                <p className='text-fd-muted-foreground'>{t("write_description")}</p>
                 <div className='relative flex flex-col'>
                     <Tabs items={["ink", "TypeScript", "Json"]} className='absolute inset-x-2 top-0 shadow-lg'>
                         <Tab>
@@ -278,10 +279,8 @@ What is your name?
             </div>
             <div className='col-span-full flex flex-col items-center gap-2 border-l border-t px-6 py-16 text-center'>
                 <div className={cn(badgeVariants())}>3</div>
-                <h3 className='text-2xl font-semibold'>Ship.</h3>
-                <p className='text-fd-muted-foreground'>
-                    Deploy your game easily with hosting platforms and video game platforms.
-                </p>
+                <h3 className='text-2xl font-semibold'>{t("ship")}</h3>
+                <p className='text-fd-muted-foreground'>{t("ship_description")}</p>
 
                 <div className='mt-4 flex flex-row flex-wrap items-center gap-8'>
                     <Link href='/start/distribution-itchio' rel='noreferrer noopener'>
@@ -293,28 +292,28 @@ What is your name?
     );
 }
 
-function Contributing() {
+async function Contributing() {
+    const t = await getTranslations("Contributing");
+
     return (
         <div className='flex flex-col items-center border-x border-t px-4 py-16 text-center'>
             <Heart fill='currentColor' className='text-pink-500 mb-4' />
-            <h2 className='mb-4 text-xl font-semibold sm:text-2xl'>Made Possible by You.</h2>
-            <p className='mb-4 text-fd-muted-foreground'>
-                Pixi’VN is 100% powered by passion and open source community.
-            </p>
+            <h2 className='mb-4 text-xl font-semibold sm:text-2xl'>{t("title")}</h2>
+            <p className='mb-4 text-fd-muted-foreground'>{t("subtitle")}</p>
             <div className='mb-8 flex flex-row items-center gap-2'>
                 <a
                     href='https://www.patreon.com/pixi_vn'
                     target='_blank'
                     className={cn(buttonVariants({ variant: "outline" }))}
                 >
-                    Patreon
+                    {t("patreon")}
                 </a>
                 <a
                     href='https://pixi-vn.fanbox.cc/'
                     target='_blank'
                     className={cn(buttonVariants({ variant: "outline" }))}
                 >
-                    FANBOX
+                    {t("fanbox")}
                 </a>
                 <a
                     href='https://github.com/DRincs-Productions/pixi-vn/graphs/contributors'
@@ -322,7 +321,7 @@ function Contributing() {
                     target='_blank'
                     className={cn(buttonVariants({ variant: "ghost" }))}
                 >
-                    Contributors
+                    {t("contributors")}
                 </a>
             </div>
         </div>
