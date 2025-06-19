@@ -7,7 +7,7 @@ import LayoutProvider from "../layout.provider";
 export default async function Layout({ children }: { children: ReactNode }) {
     return (
         <LayoutProvider>
-            <DocsLayout tree={otherTopicsTree} {...baseOptions()}>
+            <DocsLayout tree={otherTopicsTree()} {...baseOptions()}>
                 {children}
             </DocsLayout>
         </LayoutProvider>
