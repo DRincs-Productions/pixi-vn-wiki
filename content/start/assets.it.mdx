@@ -1,0 +1,101 @@
+---
+title: Assets
+description: Panoramica delle tipologie di asset e delle opzioni di archiviazione (locale o online) in Pixi'VN, con esempi di utilizzo.
+---
+
+**Cosa sono gli assets?** Gli assets sono tutti i file che non sono codice, come immagini, suoni e video.
+
+È possibile utilizzare asset salvati localmente nel progetto oppure online (per la seconda opzione, è necessario assicurarsi che il servizio cloud utilizzato consenta le _richieste CORS_). Se i tuoi asset sono online, il gioco richiederà una connessione Internet. Se non c'è connessione, dovresti avvisare l'utente e bloccare il gioco.
+
+Se stai creando una visual novel, è consigliabile conservare localmente gli asset utilizzati di frequente. Per gli asset utilizzati una sola volta nel gioco, è meglio pubblicarli online.
+
+Per caricare e manipolare assets (immagini, gif, video, ecc.) sarà necessario utilizzare `Assets`. `Assets` è una classe con molte funzionalità e proviene dalla libreria PixiJS. Per maggiori informazioni, leggere [qui](https://pixijs.com/8.x/guides/components/assets). È inoltre molto importante leggere questa documentazione per <DynamicLink href="/start/assets-management">organizzare al meglio il caricamento delle risorse</DynamicLink>.
+
+Principalmente hai due possibilità per salvare i tuoi asset: localmente o online.
+
+## Assets del progetto
+
+Per salvare e utilizzare le risorse in locale, puoi usare qualsiasi cartella: non ci sono restrizioni. Tuttavia, si consiglia di utilizzare la cartella `assets`. All'interno di questa cartella puoi creare delle sottocartelle per organizzare meglio i tuoi assets.
+
+Ecco un esempio di come importare e caricare una risorsa nel tuo progetto:
+
+```ts title="utils/assets.ts"
+import { Assets } from "@drincs/pixi-vn";
+import bg01hallway from "../assets/images/bg01-hallway.webp";
+
+Assets.add({
+    alias: "bg01-hallway",
+    src: bg01hallway,
+});
+```
+
+![pixijs-assetpack-h3](/pixijs-assetpack.svg)
+
+### PixiJS AssetPack
+
+AssetPack è uno strumento per ottimizzare gli assets locali per il web. Può essere utilizzato per trasformare, combinare e comprimere gli assets.
+
+Se vuoi utilizzare AssetPack, puoi trovare la documentazione [qui](https://pixijs.io/assetpack).
+
+## Hosting degli assets
+
+Puoi salvare i tuoi assets online. Questa è una buona opzione se vuoi risparmiare spazio sul tuo computer. Puoi utilizzare qualsiasi servizio cloud che ti consenta di caricare file e generare un URL pubblico (CORS abilitato).
+
+Ecco un esempio di come importare e caricare una risorsa nel tuo progetto:
+
+```ts title="utils/assets.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+Assets.add({
+    alias: "bg01-hallway",
+    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fbg01-hallway.webp?alt=media",
+});
+```
+
+Puoi salvare i tuoi assets come preferisci, in totale libertà. Se intendi salvare i tuoi assets online, ecco alcune opzioni:
+
+![github-h3-bgwt](/github.svg)
+
+### Github
+
+Puoi utilizzare Github per ospitare i tuoi assets. Puoi utilizzare il raw link del file nel tuo progetto. Il collegamento sarà nel seguente formato:
+
+```text
+https://github.com/[repository]/raw/refs/heads/main/[file path]
+```
+
+- **Prezzo**: Completamente gratuito.
+- **Limiti di spazio**: Nessun limite di spazio, ma ogni singolo file non deve superare i 100 MB.
+- **Tipo di file**: puoi caricare qualsiasi tipo di file.
+- **Traffico**: La velocità non è delle migliori.
+- **Modifica risorse**: Puoi modificare il file mantenendo lo stesso URL.
+
+### Hosting di immagini
+
+L'hosting di immagini è un servizio che consente di caricare immagini. Ci sono molti siti per caricare immagini gratuitamente, ad esempio [imgbb](https://imgbb.com/), [imgix](https://www.imgix.com/), [imgur](https://imgur.com/). Puoi usare il link dell'immagine nel tuo progetto.
+
+- **Prezzo**: Completamente gratuito, ma è possibile acquistare ulteriori funzionalità.
+- **Limiti di spazio**: Nessun limite di spazio, ma ogni singolo file può avere una dimensione massima.
+- **Tipo di file**: Puoi caricare solo immagini.
+- **Traffico**: La velocità è buona.
+- **Modifica risorse**: Non è possibile modificare il file mantenendo lo stesso URL.
+
+### Cloud storage
+
+Il cloud storage è un servizio che consente di caricare file online.
+
+- **Prezzo**: Di solito a pagamento o con una versione gratuita con dei limiti.
+- **Limiti di spazio**: Costo mensile basato sullo spazio utilizzato (solitamente gratuito se non si supera una certa soglia).
+- **Tipo di file**: puoi caricare qualsiasi tipo di file.
+- **Traffico**: La velocità è buona.
+- **Modifica risorse**: Puoi modificare il file mantenendo lo stesso URL.
+
+Ecco un elenco di alcuni dei servizi di cloud storage più popolari:
+
+- ![firebase-text](/firebase.svg) **Firebase Storage** è un servizio cloud molto facile da usare. Firebase offre due piani: Spark (gratuito) e Blaze (a pagamento). Puoi trovare maggiori informazioni [qui](https://firebase.google.com/pricing).
+  **Risoluzione del problema CORS di Firebase Storage**:
+  - Installa [gcloud CLI](https://cloud.google.com/sdk/docs/install)
+  - Leggi questa [documentazione](https://medium.com/@we.viavek/setting-cors-in-firebase-19a2cce2fe28) per risolvere il problema CORS.
+- ![aws-text](/aws.svg) **Amazon S3** è un servizio cloud. Rispetto ai suoi concorrenti, ha molte impostazioni, ma potrebbe essere più difficile da usare. Per utilizzare Amazon S3 è previsto un piano di pagamento. Puoi trovare maggiori informazioni [qui](https://aws.amazon.com/s3/pricing/).
+- ![supabase-text](/supabase.svg) **Supabase** è un'alternativa open source a Firebase. Supabase offre due piani: gratuito e a pagamento. Puoi trovare maggiori informazioni [qui](https://supabase.io/pricing).
+- **Convex** è un servizio cloud che consente di archiviare e fornire contenuti generati dagli utenti, come foto, video o altri file. Convex offre due piani: gratuito e a consumo. Puoi trovare maggiori informazioni [qui](https://www.convex.dev/pricing).
