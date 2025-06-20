@@ -21,7 +21,7 @@ export function TranslateButton() {
             href={"https://crowdin.com/project/pixi-vn"}
         >
             <Globe className='size-3.5' />
-            {t("translate")}
+            {t("translate_crowdin")}
         </a>
     );
 }
