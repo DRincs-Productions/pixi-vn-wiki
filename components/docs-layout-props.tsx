@@ -259,13 +259,18 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                         children: [
                             {
                                 type: "page",
-                                name: "React UI",
+                                name: "React",
                                 url: `${preUrl}/start/interface-react`,
                             },
                             {
                                 type: "page",
-                                name: "Vue UI",
+                                name: "Vue",
                                 url: `${preUrl}/start/interface-vue`,
+                            },
+                            {
+                                type: "page",
+                                name: "PixiJS",
+                                url: `${preUrl}/start/interface-pixijs`,
                             },
                         ],
                     },
