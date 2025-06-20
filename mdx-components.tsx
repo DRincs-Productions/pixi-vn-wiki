@@ -100,6 +100,19 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
                     />
                 );
             }
+            if (props.alt.endsWith("-maxheight")) {
+                return (
+                    <ImageZoom
+                        {...props}
+                        style={{
+                            maxHeight: "300px",
+                            width: "auto",
+                            height: "auto",
+                            ...props.style,
+                        }}
+                    />
+                );
+            }
             return <ImageZoom {...props} />;
         },
         Sandbox: ({
