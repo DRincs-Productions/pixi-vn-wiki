@@ -245,10 +245,10 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
             },
             {
                 type: "folder",
-                name: "UI with JavaScript Framework",
+                name: "User Interface (UI)",
                 index: {
                     type: "page",
-                    name: "UI with JavaScript Framework",
+                    name: "User Interface (UI)",
                     url: `${preUrl}/start/interface`,
                 },
                 children: [
