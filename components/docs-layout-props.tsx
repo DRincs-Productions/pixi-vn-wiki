@@ -133,10 +133,10 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
             },
             {
                 type: "folder",
-                name: "PixiJS Canvas",
+                name: "Game canvas",
                 index: {
                     type: "page",
-                    name: "PixiJS Canvas",
+                    name: "Game canvas",
                     url: `${preUrl}/start/canvas`,
                 },
                 children: [
