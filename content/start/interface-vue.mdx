@@ -14,45 +14,56 @@ First of all you need to have a Vue application and <DynamicLink href="/start/ge
 Now you can replace the content of following files with the code below:
 
 ```tsx tab="src/main.ts"
-import { canvas, Game, Container, RotateTicker, showImage } from '@drincs/pixi-vn'
-import { createApp } from 'vue'
-import './style.css'
-import App from './App.vue'
+import { canvas, Container, Game, RotateTicker, showImage } from '@drincs/pixi-vn'
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.tsx'
 
-createApp(App).mount('#app') // [!code --]
+createRoot(document.getElementById('root')!).render( // [!code --]
 const body = document.body; // [!code ++]
 if (!body) { // [!code ++]
-  throw new Error("body element not found"); 
-} 
-Game.init(body, { 
-    height: 1080, 
-    width: 1920, 
-    backgroundColor: "#303030", 
-  }) 
-  .then(() => { 
-    // Pixi.JS UI Layer
-    canvas.addLayer("ui", new Container()); 
-    showImage( 
-      "juliette", 
-      "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fcharacters%2Fjuliette-icon.webp?alt=media&token=cbcdd613-12e4-48b5-b7b3-16443b4e125e", 
-      { xAlign: 0.9, yAlign: 0.1, anchor: 0.5 } 
-    ); 
-    canvas.addTicker("juliette", new RotateTicker({ speed: 1 })); 
-    // React setup with ReactDOM
-    const app = document.getElementById("app"); 
-    if (!app) { 
-      throw new Error("app element not found"); 
-    } 
-    const htmlLayer = canvas.addHtmlLayer("ui", app, { 
-      position: "absolute", 
-      pointerEvents: "none"
-    }); 
-    if (!htmlLayer) { 
-      throw new Error("htmlLayer not found"); 
-    } 
-    createApp(App).mount(htmlLayer)
-  } 
-)
+  throw new Error("body element not found"); // [!code ++]
+} // [!code ++]
+ // [!code ++]
+Game.init(body, { // [!code ++]
+    height: 1080, // [!code ++]
+    width: 1920, // [!code ++]
+    backgroundColor: "#303030", // [!code ++]
+  }) // [!code ++]
+  .then(() => { // [!code ++]
+ // [!code ++]
+    // Pixi.JS UI Layer [!code ++]
+    canvas.addLayer("ui", new Container()); // [!code ++]
+    showImage( // [!code ++]
+      "juliette", // [!code ++]
+      "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fcharacters%2Fjuliette-icon.webp?alt=media&token=cbcdd613-12e4-48b5-b7b3-16443b4e125e", // [!code ++]
+      { xAlign: 0.9, yAlign: 0.1, anchor: 0.5 } // [!code ++]
+    ); // [!code ++]
+    canvas.addTicker("juliette", new RotateTicker({ speed: 1 })); // [!code ++]
+ // [!code ++]
+    // React setup with ReactDOM [!code ++]
+    const root = document.getElementById("root"); // [!code ++]
+    if (!root) { // [!code ++]
+      throw new Error("root element not found"); // [!code ++]
+    } // [!code ++]
+ // [!code ++]
+    const htmlLayer = canvas.addHtmlLayer("ui", root, { // [!code ++]
+      position: "absolute", // [!code ++]
+      pointerEvents: "none" // [!code ++]
+    }); // [!code ++]
+    if (!htmlLayer) { // [!code ++]
+      throw new Error("htmlLayer not found"); // [!code ++]
+    } // [!code ++]
+    const reactRoot = createRoot(htmlLayer); // [!code ++]
+ // [!code ++]
+    reactRoot.render( // [!code ++]
+      <StrictMode>
+        <App />
+      </StrictMode>,
+    ); // [!code ++]
+  } // [!code ++]
+) // [!code ++]
 ```
 
 ```css tab="src/index.css"
