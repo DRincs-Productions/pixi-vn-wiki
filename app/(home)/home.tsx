@@ -3,6 +3,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
 import { createMetadata } from "@/lib/metadata";
 import { source } from "@/lib/source";
+import ArchImg from "@/public/arch.png";
 import LogoImg from "@/public/logo.webp";
 import { cva } from "class-variance-authority";
 import { File, Files, Folder } from "fumadocs-ui/components/files";
@@ -12,7 +13,6 @@ import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import ArchImg from "./arch.png";
 import { CreateAppAnimation } from "./home.client";
 import { ItchLogo } from "./icons";
 
