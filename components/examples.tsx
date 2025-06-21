@@ -473,3 +473,51 @@ export default manifest;`,
         />
     );
 }
+
+export function MirrorExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { canvas, newLabel, Repeat, showImage, ZoomTicker } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    await showImage("alien", "alien", { align: 0.5, anchor: 0.5 });
+    canvas.addTickersSequence("alien", [
+      new ZoomTicker({
+        type: "unzoom",
+        limit: { x: -1, y: 0 },
+        speed: { x: 5, y: 0 },
+      }),
+      new ZoomTicker({
+        limit: 1,
+        speed: { x: 10, y: 0 },
+      }),
+      Repeat,
+    ]);
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "alien",
+          src: "https://pixijs.com/assets/eggHead.png",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
