@@ -568,3 +568,48 @@ export default manifest;`,
         />
     );
 }
+
+export function ShakeExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { CANVAS_APP_GAME_LAYER_ALIAS, newLabel, shakeEffect, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    await showImage("bg", "bg", { scale: 1.3 });
+    await showImage("alien", "alien", { align: 0.5 });
+    shakeEffect("alien");
+  },
+  async () => {
+    shakeEffect(CANVAS_APP_GAME_LAYER_ALIAS);
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "alien",
+          src: "https://pixijs.com/assets/eggHead.png",
+        },
+        {
+          alias: "bg",
+          src: "https://pixijs.com/assets/bg_grass.jpg",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
