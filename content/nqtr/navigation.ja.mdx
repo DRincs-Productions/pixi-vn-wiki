@@ -18,3 +18,87 @@ The navigation system is composed of the following elements:
 The player can move between rooms. The location and the map are also determined based on the room in which the player is located.
 
 The developer can designate "index" rooms for places or maps, to implement features that allow moving from one location or map to another.
+
+## Initialize
+
+To initialize a room/location/map, create a new instance of the `RoomBaseModel`/`LocationBaseModel`/`MapBaseModel` class (or your [custom class](#custom-class)) and add it to the game room/location/map dictionary when the game is initialized.
+
+To create a new instance of `RoomBaseModel`/`LocationBaseModel`/`MapBaseModel`, you need the following parameters:
+
+```ts title="values/rooms.ts"
+import { RegisteredRooms, RoomBaseModel } from "@drincs/nqtr";
+import { bed } from "./activity";
+import { mcHome } from "./locations";
+
+export const mcRoom = new RoomBaseModel("mc_room", mcHome, {
+    name: "MC room",
+    image: "location_myroom",
+    activities: [bed],
+});
+
+export const aliceRoom = new RoomBaseModel("alice_room", mcHome, {
+    name: "Alice room",
+    image: "location_aliceroom",
+});
+
+export const annRoom = new RoomBaseModel("ann_room", mcHome, {
+    name: "Ann room",
+    image: "location_annroom",
+});
+
+export const bathroom = new RoomBaseModel("bathroom", mcHome, {
+    name: "Bathroom",
+    image: "location_bathroom",
+});
+
+export const lounge = new RoomBaseModel("lounge", mcHome, {
+    name: "Lounge",
+    image: "location_lounge",
+});
+
+export const terrace = new RoomBaseModel("terrace", mcHome, {
+    name: "Terrace",
+    image: "location_terrace",
+});
+
+RegisteredRooms.add([mcRoom, aliceRoom, annRoom, bathroom, lounge, terrace]);
+```
+
+```ts title="values/locations.ts"
+import { LocationBaseModel, RegisteredLocations } from "@drincs/nqtr";
+import { mainMap } from "./maps";
+
+export const mcHome = new LocationBaseModel("mc_home", mainMap, {
+    name: "MC Home",
+});
+
+export const gym = new LocationBaseModel("gym", mainMap, {
+    name: "Gym",
+});
+
+export const school = new LocationBaseModel("school", mainMap, {
+    name: "School",
+});
+
+RegisteredLocations.add([mcHome, gym, school]);
+```
+
+```ts title="values/maps.ts"
+import { MapBaseModel, RegisteredMaps } from "@drincs/nqtr";
+
+export const mainMap = new MapBaseModel("main_map", {
+    name: "Main Map",
+    image: "map",
+});
+
+export const nightcityMap = new MapBaseModel("nightcity_map", {
+    name: "Nightcity",
+    image: "nightcity_map",
+});
+
+RegisteredMaps.add([mainMap, nightcityMap]);
+```
+
+`RegisteredRooms.add`/`RegisteredLocations.add`/`RegisteredMaps.add` is **required** to save the rooms/locations/maps in the game.
+
+You can also create a function to load rooms/locations/maps. The important thing is that it is called at least once before the rooms/locations/maps are used in the game, otherwise they will not be available.
