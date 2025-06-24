@@ -404,14 +404,15 @@ export default function ChoiceMenu() {
         height: "100%",
         overflow: "auto",
         gap: 1,
-        pointerEvents: "auto",
         maxHeight: "100%",
       }}
     >
       {menu?.map((item, index) => {
         return (
           <Grid key={"choice-" + index} justifyContent='center' alignItems='center'>
-            <button onClick={() => selectChoice(item)}>{item.text}</button>
+            <button style={{ pointerEvents: "auto" }} onClick={() => selectChoice(item)}>
+              {item.text}
+            </button>
           </Grid>
         );
       })}

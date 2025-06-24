@@ -891,3 +891,57 @@ export default manifest;`,
         />
     );
 }
+
+export function AddListenerGivenEvent() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { newLabel, showImage } from "@drincs/pixi-vn";
+import ButtonEvent from "../canvas/events/ButtonEvent";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    const bunny = await showImage("bunny", "bunny", {
+      align: 0.5,
+      anchor: 0.5,
+    });
+    // Opt-in to interactivity
+    bunny.eventMode = "static";
+    // Shows hand cursor
+    bunny.cursor = "pointer";
+    // Pointers normalize touch and mouse (good for mobile and desktop)
+    bunny.onEvent("pointerdown", ButtonEvent);
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [{ alias: "bunny", src: "https://pixijs.com/assets/bunny.png" }],
+    },
+  ],
+};
+export default manifest;`,
+                "canvas/events/ButtonEvent.ts": `import { CanvasEvent, CanvasEventNamesType, eventDecorator, Sprite } from "@drincs/pixi-vn";
+
+@eventDecorator()
+export default class ButtonEvent extends CanvasEvent<Sprite> {
+  override fn(event: CanvasEventNamesType, sprite: Sprite): void {
+    switch (event) {
+      case "pointerdown":
+        sprite.scale.x *= 1.25;
+        sprite.scale.y *= 1.25;
+        break;
+    }
+  }
+}`,
+            }}
+        />
+    );
+}
