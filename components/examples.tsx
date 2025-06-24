@@ -613,3 +613,56 @@ export default manifest;`,
         />
     );
 }
+
+export function ShowImageContainerExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { canvas, MoveTicker, newLabel, showImageContainer } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    let james = await showImageContainer("james", ["m01-body", "m01-eyes", "m01-mouth"], {
+      xAlign: 0.5,
+      yAlign: 1,
+    });
+  },
+  () => {
+    canvas.removeAllTickers();
+    let tickerId = canvas.addTicker("james", new MoveTicker({ destination: { x: 0, y: 1, type: "align" } }));
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "m01-body",
+          src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media",
+        },
+        {
+          alias: "m01-eyes",
+          src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media",
+        },
+        {
+          alias: "m01-mouth",
+          src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+                "constants.ts": `export const HEIGHT = 1080;
+export const WIDTH = 1920;`,
+            }}
+        />
+    );
+}
