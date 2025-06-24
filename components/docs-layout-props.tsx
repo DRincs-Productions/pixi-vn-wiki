@@ -113,20 +113,20 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                             { type: "page", name: "Input prompt", url: `${preUrl}/start/input` },
                             { type: "page", name: "History", url: `${preUrl}/start/history` },
                             { type: "page", name: "Translating", url: `${preUrl}/start/translate` },
-                            {
-                                type: "folder",
-                                name: "Markup language (to add text style)",
-                                index: {
-                                    type: "page",
-                                    name: "Markup language (to add text style)",
-                                    url: `${preUrl}/start/markup`,
-                                },
-                                children: [
-                                    { type: "page", name: "Markdown", url: `${preUrl}/start/markup-markdown` },
-                                    { type: "page", name: "Tailwind CSS", url: `${preUrl}/start/markup-tailwindcss` },
-                                ],
-                            },
                             { type: "page", name: "Other features", url: `${preUrl}/start/other-narrative-features` },
+                        ],
+                    },
+                    {
+                        type: "folder",
+                        name: "Markup language (to add text style)",
+                        index: {
+                            type: "page",
+                            name: "Markup language (to add text style)",
+                            url: `${preUrl}/start/markup`,
+                        },
+                        children: [
+                            { type: "page", name: "Markdown", url: `${preUrl}/start/markup-markdown` },
+                            { type: "page", name: "Tailwind CSS", url: `${preUrl}/start/markup-tailwindcss` },
                         ],
                     },
                 ],
