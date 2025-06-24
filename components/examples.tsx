@@ -804,3 +804,45 @@ export default manifest;`,
         />
     );
 }
+
+export function RemoveCanvasComponents() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    const sprite = new Sprite();
+    const texture = await Assets.load("egg_head");
+    sprite.texture = texture;
+    canvas.add("sprite", sprite);
+  },
+  () => {
+    canvas.remove("sprite");
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "egg_head",
+          src: "https://pixijs.com/assets/eggHead.png",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
