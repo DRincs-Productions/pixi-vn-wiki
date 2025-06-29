@@ -1,0 +1,166 @@
+---
+title: Navigation and Map
+---
+
+<Callout title="Nomenclature" type="info">
+Usually in video games the navigation elements used to identify the position of the characters are the room, the location (for example restaurant, house, hospital etc...), the map. For this reason it was decided to keep names that follow this logic.
+
+This does not prevent using these elements to manage navigation with the same logic but with different terms. For example in a game set in the space in which the player moves between planets, the rooms can be the planets, the locations can be the solar systems and the maps can be the galaxy.
+
+</Callout>
+
+The navigation system is composed of the following elements:
+
+- rooms: These are the core elements of navigation, from which the position of the mc and npc is deduced.
+- locations: is a container of rooms.
+- maps: is a container of locations.
+
+The player can move between rooms. The location and the map are also determined based on the room in which the player is located.
+
+The developer can designate "index" rooms for places or maps, to implement features that allow moving from one location or map to another.
+
+## Inizializzare
+
+To initialize a room/location/map, create a new instance of the `RoomBaseModel`/`LocationBaseModel`/`MapBaseModel` class (or your [custom class](#custom-class)) and add it to the game room/location/map dictionary when the game is initialized.
+
+To create a new instance of `RoomBaseModel`/`LocationBaseModel`/`MapBaseModel`, you need the following parameters:
+
+```ts title="values/rooms.ts"
+import { RegisteredRooms, RoomBaseModel } from "@drincs/nqtr";
+import { bed } from "./activity";
+import { mcHome } from "./locations";
+
+export const mcRoom = new RoomBaseModel("mc_room", mcHome, {
+    name: "MC room",
+    image: "location_myroom",
+    activities: [bed],
+});
+
+export const aliceRoom = new RoomBaseModel("alice_room", mcHome, {
+    name: "Alice room",
+    image: "location_aliceroom",
+});
+
+export const annRoom = new RoomBaseModel("ann_room", mcHome, {
+    name: "Ann room",
+    image: "location_annroom",
+});
+
+export const bathroom = new RoomBaseModel("bathroom", mcHome, {
+    name: "Bathroom",
+    image: "location_bathroom",
+});
+
+export const lounge = new RoomBaseModel("lounge", mcHome, {
+    name: "Lounge",
+    image: "location_lounge",
+});
+
+export const terrace = new RoomBaseModel("terrace", mcHome, {
+    name: "Terrace",
+    image: "location_terrace",
+});
+
+RegisteredRooms.add([mcRoom, aliceRoom, annRoom, bathroom, lounge, terrace]);
+```
+
+```ts title="values/locations.ts"
+import { LocationBaseModel, RegisteredLocations } from "@drincs/nqtr";
+import { mainMap } from "./maps";
+
+export const mcHome = new LocationBaseModel("mc_home", mainMap, {
+    name: "MC Home",
+});
+
+export const gym = new LocationBaseModel("gym", mainMap, {
+    name: "Gym",
+});
+
+export const school = new LocationBaseModel("school", mainMap, {
+    name: "School",
+});
+
+RegisteredLocations.add([mcHome, gym, school]);
+```
+
+```ts title="values/maps.ts"
+import { MapBaseModel, RegisteredMaps } from "@drincs/nqtr";
+
+export const mainMap = new MapBaseModel("main_map", {
+    name: "Main Map",
+    image: "map",
+});
+
+export const nightcityMap = new MapBaseModel("nightcity_map", {
+    name: "Nightcity",
+    image: "nightcity_map",
+});
+
+RegisteredMaps.add([mainMap, nightcityMap]);
+```
+
+`RegisteredRooms.add`/`RegisteredLocations.add`/`RegisteredMaps.add` is **required** to save the rooms/locations/maps in the game.
+
+You can also create a function to load rooms/locations/maps. The important thing is that it is called at least once before the rooms/locations/maps are used in the game, otherwise they will not be available.
+
+It is also recommended to [set the current room](#navigate) during the start of the game.
+
+```ts title="labels/startLabel.ts"
+import { navigator } from "@drincs/nqtr";
+import { newLabel } from "@drincs/pixi-vn";
+import { mcRoom } from "../values/rooms";
+
+const startLabel = newLabel("start", [
+    async () => {
+        navigator.currentRoom = mcRoom;
+        // ... other initialization logic
+    },
+]);
+export default startLabel;
+```
+
+## Ottieni
+
+To get a room/location/map by its `id`, use the `RegisteredRooms.get`/`RegisteredLocations.get`/`RegisteredMaps.get` function.
+
+```typescript
+import { RegisteredRooms } from "@drincs/nqtr";
+
+const mcRoom = RegisteredRooms.get('mc_room');
+```
+
+```typescript
+import { RegisteredLocations } from "@drincs/nqtr";
+
+const mcHome = RegisteredLocations.get('mc_home');
+```
+
+```typescript
+import { RegisteredMaps } from "@drincs/nqtr";
+
+const mainMap = RegisteredMaps.get('main_map');
+```
+
+## Ottieni tutti
+
+To get all rooms/locations/maps, use the `RegisteredRooms.values`/`RegisteredLocations.values`/`RegisteredMaps.values` function.
+
+```typescript
+import { RegisteredRooms } from "@drincs/nqtr";
+
+const rooms = RegisteredRooms.values();
+```
+
+```typescript
+import { RegisteredLocations } from "@drincs/nqtr";
+
+const locations = RegisteredLocations.values();
+```
+
+```typescript
+import { RegisteredMaps } from "@drincs/nqtr";
+
+const maps = RegisteredMaps.values();
+```
+
+## Navigate
