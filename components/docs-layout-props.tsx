@@ -473,13 +473,21 @@ export function nqtrTree(lang?: string): DocsLayoutProps["tree"] {
         ...otherTopicsSource.pageTree,
         children: [
             {
-                type: "separator",
-                name: "NQTR",
-            },
-            {
-                type: "page",
-                name: "Navigation",
-                url: `${preUrl}/nqtr/navigation`,
+                type: "folder",
+                name: "Navigation Quest Time Routine (NQTR)",
+                defaultOpen: true,
+                index: {
+                    type: "page",
+                    name: "NQTR",
+                    url: `${preUrl}/nqtr`,
+                },
+                children: [
+                    {
+                        type: "page",
+                        name: "Navigation",
+                        url: `${preUrl}/nqtr/navigation`,
+                    },
+                ],
             },
         ],
     };
