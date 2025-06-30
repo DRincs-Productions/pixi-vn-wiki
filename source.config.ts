@@ -4,7 +4,7 @@ import { defineConfig, defineDocs, frontmatterSchema, metaSchema } from "fumadoc
 // see https://fumadocs.vercel.app/docs/mdx/collections#define-docs
 export const docs = defineDocs({
     // Specifies the directory where your docs are located
-    dir: ["content/start", "content/ink", "content/other-topics", "content/renpy"],
+    dir: ["content/start", "content/ink", "content/other-topics", "content/renpy", "content/nqtr"],
     docs: {
         schema: frontmatterSchema,
     },

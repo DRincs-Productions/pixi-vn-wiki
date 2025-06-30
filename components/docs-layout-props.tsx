@@ -466,3 +466,21 @@ export function homeLinks(lang?: string): LinkItemType[] {
         },
     ];
 }
+
+export function nqtrTree(lang?: string): DocsLayoutProps["tree"] {
+    const preUrl = lang ? `/${lang}` : "";
+    return {
+        ...otherTopicsSource.pageTree,
+        children: [
+            {
+                type: "separator",
+                name: "NQTR",
+            },
+            {
+                type: "page",
+                name: "Navigation",
+                url: `${preUrl}/nqtr/navigation`,
+            },
+        ],
+    };
+}
