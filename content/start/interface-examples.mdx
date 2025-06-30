@@ -284,3 +284,81 @@ export default function useNarrationFunctions() {
 ```
 
 ## Go back button
+
+For example:
+
+```tsx tab="React"
+import { useState } from "react";
+import useNarrationFunctions from "../hooks/useNarrationFunctions";
+import { useQueryCanGoBack } from "../hooks/useQueryInterface";
+
+export default function BackButton() {
+    const { data: canGoBack = false } = useQueryCanGoBack();
+    const [loading, setLoading] = useState(false);
+    const { goBack } = useNarrationFunctions();
+
+    if (!canGoBack) {
+        return null;
+    }
+
+    return (
+        <button
+            onClick={() => {
+                setLoading(true);
+                goBack()
+                    .then(() => setLoading(false))
+                    .catch(() => setLoading(false));
+            }}
+            disabled={loading}
+            style={{
+                width: 40,
+                height: 20,
+                pointerEvents: "auto",
+            }}
+        >
+            Back
+        </button>
+    );
+}
+```
+
+```ts tab="hooks/useQueryInterface.ts"
+import { CharacterBaseModel, narration, stepHistory } from "@drincs/pixi-vn";
+import { useQuery } from "@tanstack/react-query";
+
+export const INTERFACE_DATA_USE_QUEY_KEY = "interface_data_use_quey_key";
+
+const CAN_GO_BACK_USE_QUEY_KEY = "can_go_back_use_quey_key";
+export function useQueryCanGoBack() {
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, CAN_GO_BACK_USE_QUEY_KEY],
+        queryFn: async () => stepHistory.canGoBack,
+    });
+}
+```
+
+```ts tab="hooks/useNarrationFunctions.ts"
+import { narration, stepHistory, StoredIndexedChoiceInterface } from "@drincs/pixi-vn";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
+import { INTERFACE_DATA_USE_QUEY_KEY } from "./useQueryInterface";
+
+export default function useNarrationFunctions() {
+    const queryClient = useQueryClient();
+    const gameProps = {};
+
+    const goBack = useCallback(async () => {
+        return stepHistory
+            .goBack((_path) => {
+                // TODO: navigate in the url path
+                // READ THIS: https://pixi-vn.web.app/start/interface.html#navigate-switch-between-ui-screens
+            })
+            .then(() => queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] }))
+            .catch((e) => console.error(e));
+    }, [gameProps, queryClient]);
+
+    return {
+        goBack,
+    };
+}
+```
