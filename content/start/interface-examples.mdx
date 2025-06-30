@@ -197,3 +197,90 @@ export default function useNarrationFunctions() {
     };
 }
 ```
+
+## Go next button
+
+For example:
+
+```tsx tab="React"
+import { useState } from "react";
+import useNarrationFunctions from "../hooks/useNarrationFunctions";
+import { useQueryCanGoNext } from "../hooks/useQueryInterface";
+
+export default function NextButton() {
+    const { data: canGoNext = false } = useQueryCanGoNext();
+    const [loading, setLoading] = useState(false);
+    const { goNext } = useNarrationFunctions();
+
+    if (!canGoNext) {
+        return null;
+    }
+
+    return (
+        <button
+            onClick={() => {
+                setLoading(true);
+                goNext()
+                    .then(() => setLoading(false))
+                    .catch(() => setLoading(false));
+            }}
+            disabled={loading}
+            style={{
+                width: 40,
+                height: 20,
+                pointerEvents: "auto",
+            }}
+        >
+            Next
+        </button>
+    );
+}
+```
+
+```ts tab="hooks/useQueryInterface.ts"
+import { narration } from "@drincs/pixi-vn";
+import { useQuery } from "@tanstack/react-query";
+
+export const INTERFACE_DATA_USE_QUEY_KEY = "interface_data_use_quey_key";
+
+const CAN_GO_NEXT_USE_QUEY_KEY = "can_go_next_use_quey_key";
+export function useQueryCanGoNext() {
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, CAN_GO_NEXT_USE_QUEY_KEY],
+        queryFn: async () => narration.canGoNext && !narration.isRequiredInput,
+    });
+}
+```
+
+```ts tab="hooks/useNarrationFunctions.ts"
+import { narration } from "@drincs/pixi-vn";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
+import { INTERFACE_DATA_USE_QUEY_KEY } from "./useQueryInterface";
+
+export default function useNarrationFunctions() {
+    const queryClient = useQueryClient();
+    const gameProps = {};
+
+    const goNext = useCallback(async () => {
+        try {
+            if (!narration.canGoNext) {
+                return;
+            }
+            return narration
+                .goNext(gameProps)
+                .then(() => queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] }))
+                .catch((e) => console.error(e));
+        } catch (e) {
+            console.error(e);
+            return;
+        }
+    }, [gameProps, queryClient]);
+
+    return {
+        goNext,
+    };
+}
+```
+
+## Go back button
