@@ -362,3 +362,106 @@ export default function useNarrationFunctions() {
     };
 }
 ```
+
+## Input prompt dialog UI
+
+For example:
+
+```tsx tab="React"
+import { narration } from "@drincs/pixi-vn";
+import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { INTERFACE_DATA_USE_QUEY_KEY, useQueryDialogue, useQueryInputValue } from "../../hooks/useQueryInterface";
+
+export default function TextInput() {
+    const { data: { text } = {} } = useQueryDialogue();
+    const {
+        data: { isRequired: open, currentValue } = {
+            currentValue: undefined,
+            isRequired: false,
+        },
+    } = useQueryInputValue<string | number>();
+    const [tempValue, setTempValue] = useState<string | number>();
+    const queryClient = useQueryClient();
+
+    return (
+        <dialog
+            open={open}
+            style={{
+                pointerEvents: "auto",
+            }}
+        >
+            <p>{text}</p>
+            {open && (
+                <input
+                    defaultValue={currentValue || ""}
+                    onChange={(e) => {
+                        if (e && e.target && "value" in e.target) {
+                            let value: any = e.target.value;
+                            if ("type" in e.target && e.target.type === "number" && "valueAsNumber" in e.target) {
+                                value = e.target.valueAsNumber;
+                            }
+                            setTempValue(value);
+                        }
+                    }}
+                />
+            )}
+            <button
+                onClick={() => {
+                    narration.inputValue = tempValue || currentValue;
+                    setTempValue(undefined);
+                    queryClient.invalidateQueries({
+                        queryKey: [INTERFACE_DATA_USE_QUEY_KEY],
+                    });
+                }}
+            >
+                Confirm
+            </button>
+        </dialog>
+    );
+}
+```
+
+```ts tab="hooks/useQueryInterface.ts"
+import { CharacterBaseModel, narration, stepHistory } from "@drincs/pixi-vn";
+import { useQuery } from "@tanstack/react-query";
+
+export const INTERFACE_DATA_USE_QUEY_KEY = "interface_data_use_quey_key";
+
+const INPUT_VALUE_USE_QUEY_KEY = "input_value_use_quey_key";
+export function useQueryInputValue<T>() {
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, INPUT_VALUE_USE_QUEY_KEY],
+        queryFn: async () => ({
+            isRequired: narration.isRequiredInput,
+            type: narration.inputType,
+            currentValue: narration.inputValue as T | undefined,
+        }),
+    });
+}
+
+const DIALOGUE_USE_QUEY_KEY = "dialogue_use_quey_key";
+export function useQueryDialogue() {
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, DIALOGUE_USE_QUEY_KEY],
+        queryFn: async ({ queryKey }) => {
+            let dialogue = narration.dialogue;
+            let text = dialogue?.text;
+            if (Array.isArray(text)) {
+                text = text.join(" ");
+            }
+            let character = dialogue?.character as string | CharacterBaseModel | undefined;
+            if (typeof character === "string") {
+                character = new CharacterBaseModel(character, {
+                    name: character,
+                });
+            }
+
+            return {
+                text,
+                character,
+            };
+        },
+    });
+}
+```
