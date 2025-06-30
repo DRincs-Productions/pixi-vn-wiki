@@ -1,12 +1,12 @@
 ---
-title: UI screen examples
+title: Esempi di schermate dell'UI
 ---
 
 <Callout type="info">
-All examples were created using basic HTML elements, you will need to replace them with UI components from your favorite library to improve the graphics.
+Tutti gli esempi sono stati creati utilizzando elementi HTML di base; per migliorare la grafica, sarà necessario sostituirli con componenti UI dalla propria libreria preferita.
 </Callout>
 
-## Narrative dialogue UI screen
+## Schermata dell'UI del dialogo narrativo
 
 Ad esempio:
 
@@ -108,7 +108,7 @@ export function useQueryDialogue() {
 }
 ```
 
-## Choice menu UI screen
+## Schermata dell'UI del menu di scelta
 
 Ad esempio:
 
@@ -323,7 +323,7 @@ export default function BackButton() {
 ```
 
 ```ts tab="hooks/useQueryInterface.ts"
-import { CharacterBaseModel, narration, stepHistory } from "@drincs/pixi-vn";
+import { stepHistory } from "@drincs/pixi-vn";
 import { useQuery } from "@tanstack/react-query";
 
 export const INTERFACE_DATA_USE_QUEY_KEY = "interface_data_use_quey_key";
@@ -338,7 +338,7 @@ export function useQueryCanGoBack() {
 ```
 
 ```ts tab="hooks/useNarrationFunctions.ts"
-import { narration, stepHistory, StoredIndexedChoiceInterface } from "@drincs/pixi-vn";
+import { stepHistory } from "@drincs/pixi-vn";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { INTERFACE_DATA_USE_QUEY_KEY } from "./useQueryInterface";
@@ -360,5 +360,265 @@ export default function useNarrationFunctions() {
     return {
         goBack,
     };
+}
+```
+
+## Input prompt dialog UI
+
+Ad esempio:
+
+```tsx tab="React"
+import { narration } from "@drincs/pixi-vn";
+import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { INTERFACE_DATA_USE_QUEY_KEY, useQueryDialogue, useQueryInputValue } from "../../hooks/useQueryInterface";
+
+export default function TextInput() {
+    const { data: { text } = {} } = useQueryDialogue();
+    const {
+        data: { isRequired: open, currentValue } = {
+            currentValue: undefined,
+            isRequired: false,
+        },
+    } = useQueryInputValue<string | number>();
+    const [tempValue, setTempValue] = useState<string | number>();
+    const queryClient = useQueryClient();
+
+    return (
+        <dialog
+            open={open}
+            style={{
+                pointerEvents: "auto",
+            }}
+        >
+            <p>{text}</p>
+            {open && (
+                <input
+                    defaultValue={currentValue || ""}
+                    onChange={(e) => {
+                        if (e && e.target && "value" in e.target) {
+                            let value: any = e.target.value;
+                            if ("type" in e.target && e.target.type === "number" && "valueAsNumber" in e.target) {
+                                value = e.target.valueAsNumber;
+                            }
+                            setTempValue(value);
+                        }
+                    }}
+                />
+            )}
+            <button
+                onClick={() => {
+                    narration.inputValue = tempValue || currentValue;
+                    setTempValue(undefined);
+                    queryClient.invalidateQueries({
+                        queryKey: [INTERFACE_DATA_USE_QUEY_KEY],
+                    });
+                }}
+            >
+                Confirm
+            </button>
+        </dialog>
+    );
+}
+```
+
+```ts tab="hooks/useQueryInterface.ts"
+import { CharacterBaseModel, narration } from "@drincs/pixi-vn";
+import { useQuery } from "@tanstack/react-query";
+
+export const INTERFACE_DATA_USE_QUEY_KEY = "interface_data_use_quey_key";
+
+const INPUT_VALUE_USE_QUEY_KEY = "input_value_use_quey_key";
+export function useQueryInputValue<T>() {
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, INPUT_VALUE_USE_QUEY_KEY],
+        queryFn: async () => ({
+            isRequired: narration.isRequiredInput,
+            type: narration.inputType,
+            currentValue: narration.inputValue as T | undefined,
+        }),
+    });
+}
+
+const DIALOGUE_USE_QUEY_KEY = "dialogue_use_quey_key";
+export function useQueryDialogue() {
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, DIALOGUE_USE_QUEY_KEY],
+        queryFn: async ({ queryKey }) => {
+            let dialogue = narration.dialogue;
+            let text = dialogue?.text;
+            if (Array.isArray(text)) {
+                text = text.join(" ");
+            }
+            let character = dialogue?.character as string | CharacterBaseModel | undefined;
+            if (typeof character === "string") {
+                character = new CharacterBaseModel(character, {
+                    name: character,
+                });
+            }
+
+            return {
+                text,
+                character,
+            };
+        },
+    });
+}
+```
+
+## History UI screen
+
+Ad esempio:
+
+```tsx tab="React"
+import { Box, Stack } from "@mui/system";
+import React from "react";
+import { useQueryNarrativeHistory } from "../use_query/useQueryInterface";
+
+export default function HistoryScreen() {
+    const { data = [] } = useQueryNarrativeHistory();
+
+    return (
+        <dialog
+            open={true}
+            style={{
+                height: "80%",
+            }}
+        >
+            <Box
+                sx={{
+                    display: "flex",
+                    flex: 1,
+                    minHeight: 0,
+                    px: 2,
+                    py: 3,
+                    overflowY: "scroll",
+                    flexDirection: "column-reverse",
+                    pointerEvents: "auto",
+                    overflow: "auto",
+                    height: "80%",
+                }}
+            >
+                <Stack spacing={2} justifyContent="flex-end">
+                {data.map((data, index) => {
+                    return (
+                    <React.Fragment key={"history" + index}>
+                        <Stack direction="row" spacing={1.5}>
+                            <img
+                                src={data.icon}
+                                loading="lazy"
+                                alt=""
+                                style={{
+                                    verticalAlign: "middle",
+                                    maxWidth: "50px",
+                                    maxHeight: "50px",
+                                    borderRadius: "50%",
+                                }}
+                            />
+                            <Box sx={{ flex: 1 }}>
+                                {data.character && data.character}
+                                <div />
+                                {data.text}
+                            </Box>
+                        </Stack>
+                        <Stack direction="row" spacing={0.5}>
+                            <Box sx={{ flex: 1 }}>
+                                {data.choices &&
+                                data.choices.map((choice, index) => {
+                                    if (choice.hidden) {
+                                        return null;
+                                    }
+                                    if (choice.isResponse) {
+                                        return (
+                                            <div
+                                                key={"choices-success" + index}
+                                                style={{
+                                                    display: "inline-block",
+                                                    padding: "5px 5px",
+                                                    fontSize: "12px",
+                                                    borderRadius: "25px",
+                                                    backgroundColor: "#21ff3e",
+                                                }}
+                                            >
+                                                {choice.text}
+                                            </div>
+                                        );
+                                    }
+                                    return (
+                                        <div
+                                            key={"choices" + index}
+                                            style={{
+                                                display: "inline-block",
+                                                padding: "5px 5px",
+                                                fontSize: "12px",
+                                                borderRadius: "25px",
+                                                backgroundColor: "#bcfdff",
+                                            }}
+                                        >
+                                            {choice.text}
+                                        </div>
+                                    );
+                                })}
+                                {data.inputValue && (
+                                    <div
+                                        key={"choices-success" + index}
+                                        style={{
+                                            display: "inline-block",
+                                            padding: "5px 5px",
+                                            fontSize: "12px",
+                                            borderRadius: "25px",
+                                            backgroundColor: "#b0c2b2",
+                                        }}
+                                    >
+                                        {data.inputValue.toString()}
+                                    </div>
+                                )}
+                            </Box>
+                        </Stack>
+                    </React.Fragment>
+                    );
+                })}
+                </Stack>
+            </Box>
+        </dialog>
+    );
+}
+```
+
+```ts tab="hooks/useQueryInterface.ts"
+import {
+    CharacterBaseModel,
+    getCharacterById,
+    narration,
+} from "@drincs/pixi-vn";
+import { useQuery } from "@tanstack/react-query";
+
+export const INTERFACE_DATA_USE_QUEY_KEY = "interface_data_use_quey_key";
+
+const NARRATIVE_HISTORY_USE_QUEY_KEY = "narrative_history_use_quey_key";
+export function useQueryNarrativeHistory() {
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, NARRATIVE_HISTORY_USE_QUEY_KEY],
+        queryFn: () => {
+            return narration.narrativeHistory.map((step) => {
+                let character = step.dialoge?.character
+                    ? getCharacterById(step.dialoge?.character) ??
+                        new CharacterBaseModel(step.dialoge?.character, {
+                            name: step.dialoge?.character,
+                        })
+                    : undefined;
+                return {
+                    character: character?.name
+                        ? character.name +
+                        (character.surname ? " " + character.surname : "")
+                        : undefined,
+                    text: step.dialoge?.text || "",
+                    icon: character?.icon,
+                    choices: step.choices,
+                    inputValue: step.inputValue,
+                };
+            });
+        },
+    });
 }
 ```
