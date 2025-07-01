@@ -1,16 +1,19 @@
 ---
-title: Game storage
+title: Storage di gioco
 ---
 
-**What is the game storage?** The game storage is a place where you can save variables that you want to keep between game sessions.
+**Che cos'è lo storage di gioco? ** Lo storage di gioco è un luogo in cui è possibile salvare le variabili che si desidera conservare tra le sessioni di gioco.
 
-It is essential to understand that if variables are not saved in the game memory, the engine will not be able to handle them, when you <DynamicLink href="/start/save#load">load a save</DynamicLink> or when you <DynamicLink href="/start/labels-flow#go-back">go back</DynamicLink>.
+È fondamentale capire che se le variabili non vengono salvate nella memoria del gioco, il motore non sarà in grado di gestirle quando si <DynamicLink href="/start/save#load">carica un salvataggio</DynamicLink> o quando si <DynamicLink href="/start/labels-flow#go-back">torna indietro</DynamicLink>.
 
-Additionally, in the game archive you can save any type of variable, except `class` and `function` (because they cannot be converted to JSON), such as: `string`, `number`, `boolean`, `object`, `array`... If you want to save "flags" (boolean) it is recommended to use the <DynamicLink href="/start/flags">flags functionality</DynamicLink>, a very high-performance flag management system.
+Inoltre, nell'archivio del gioco è possibile salvare qualsiasi tipo di variabile, eccetto `class` e `function` (perché non possono essere convertite in JSON), come: `string`, `number`, `boolean`, `object`, `array`... Se si desidera salvare i "flag" (booleani) si consiglia di utilizzare la <DynamicLink href="/start/flags">funzionalità flag</DynamicLink>, un sistema di gestione dei flag ad altissime prestazioni.
 
-## Set a variable in the game storage
+## Set
 
-To set a variable in the game storage, you can use the `storage.setVariable`, which takes two parameters: the variable name and the value.
+To set a variable in the game storage, you can use the `storage.setVariable`. Questa funzione ha i seguenti parametri:
+
+- `name`: The name of the variable to set.
+- `value`: The value of the variable to set.
 
 ```typescript
 import { storage } from '@drincs/pixi-vn'
@@ -18,9 +21,11 @@ import { storage } from '@drincs/pixi-vn'
 storage.setVariable("myVariable", 42);
 ```
 
-## Get a variable from the game storage
+## Ottieni
 
-To get a variable from the game storage, you can use the `storage.getVariable`, which takes one parameter: the variable name.
+To get a variable from the game storage, you can use the `storage.getVariable`. Questa funzione ha i seguenti parametri:
+
+- `name`: The name of the variable to get.
 
 ```typescript
 import { storage } from '@drincs/pixi-vn'
@@ -28,9 +33,11 @@ import { storage } from '@drincs/pixi-vn'
 const myVariable = storage.getVariable<number>("myVariable");
 ```
 
-## Remove a variable from the game storage
+## Rimuovi
 
-To remove a variable from the game storage, you can use the `storage.removeVariable`, which takes one parameter: the variable name.
+To remove a variable from the game storage, you can use the `storage.removeVariable`. Questa funzione ha i seguenti parametri:
+
+- `name`: The name of the variable to remove.
 
 ```typescript
 import { storage } from '@drincs/pixi-vn'
@@ -38,15 +45,18 @@ import { storage } from '@drincs/pixi-vn'
 storage.removeVariable("myVariable");
 ```
 
-## Temporary storage
+## Storage temporaneo
 
-In many occasions it is useful to use variables only during a certain period of the narrative. Using normal storage we should worry about eliminating these variables once they are no longer needed, to ensure that we take up less space and have lighter saves.
+In molte occasioni è utile utilizzare le variabili solo durante un certo periodo della narrazione. Utilizzando un archivio normale dovremmo preoccuparci di eliminare queste variabili quando non sono più necessarie, per assicurarci di occupare meno spazio e avere salvataggi più leggeri.
 
-To solve this problem, Pixi’VN has a temporary storage system. Temporary variables initialized in a label will be deleted when the label is closed. So if a another label is called from it, the temporary variable will still be accessible from the child label. Obviously, if a another label is called from it with the "jump" (so the current label will be closed and the new one started) the temporary variable will no longer be accessible.
+Per risolvere questo problema, Pixi’VN dispone di un sistema di archiviazione temporanea. Le variabili temporanee inizializzate in un'etichetta verranno eliminate quando l'etichetta viene chiusa. Pertanto, se da essa viene richiamata un'altra label, la variabile temporanea sarà comunque accessibile dalla label figlia. Ovviamente, se da essa viene chiamata un'altra label con il "jump" (quindi la label corrente verrà chiusa e quella nuova verrà avviata) la variabile temporanea non sarà più accessibile.
 
-**Set a temporary variable**:
+**Imposta una variabile temporanea**:
 
-To set a temporary variable, you can use the `storage.setTempVariable`, which takes two parameters: the variable name and the value.
+To set a temporary variable, you can use the `storage.setTempVariable`. Questa funzione ha i seguenti parametri:
+
+- `name`: The name of the variable to set.
+- `value`: The value of the variable to set.
 
 ```typescript
 import { storage } from '@drincs/pixi-vn'
@@ -54,13 +64,15 @@ import { storage } from '@drincs/pixi-vn'
 storage.setTempVariable("myTempVariable", 42);
 ```
 
-**Get a temporary variable**:
+**Ottieni una variabile temporanea**:
 
-To get a temporary variable, you can use the normal [`storage.getVariable` function](#get-a-variable-from-the-game-storage).
+To get a temporary variable, you can use the normal [`storage.getVariable` function](#get).
 
-**Remove a temporary variable**:
+**Rimuovi una variabile temporanea**:
 
-To remove a temporary variable, you can use the `storage.removeTempVariable`, which takes one parameter: the variable name.
+To remove a temporary variable, you can use the `storage.removeTempVariable`. Questa funzione ha i seguenti parametri:
+
+- `name`: The name of the variable to remove.
 
 ```typescript
 import { storage } from '@drincs/pixi-vn'
@@ -68,22 +80,22 @@ import { storage } from '@drincs/pixi-vn'
 storage.removeTempVariable("myTempVariable");
 ```
 
-## System variables
+## Variabili di sistema
 
-In game storage, there are some system variables that are used by the game engine. All system variables start with the prefix `___`.
-So please avoid using this prefix in your variables.
+Nello storage di gioco sono presenti alcune variabili di sistema utilizzate dal motore di gioco. Tutte le variabili di sistema iniziano con il prefisso `___`.
+Si prega quindi di evitare di utilizzare questo prefisso nelle tue variabili.
 
-You can get all system variable keys from the `SYSTEM_RESERVED_STORAGE_KEYS` constant.
+È possibile ottenere tutte le chiavi delle variabili di sistema dalla costante `SYSTEM_RESERVED_STORAGE_KEYS`.
 
 ![keyv-h2](/keyv.svg)
 
 ## Keyv
 
-The entire storage system was developed using Map, a native JavaScript object, so you can use Keyv interact with game storage.
+L'intero sistema di storage è stato sviluppato utilizzando Map, un oggetto JavaScript nativo, in modo da poter utilizzare Keyv per interagire con lo storage di gioco.
 
-**What is Keyv?** Keyv is a simple key-value storage. It is a very easy-to-use system and very popular in the Node.js community. Keyv can be combined with other libraries, such as [Cacheable](https://cacheable.org/) (Caching for Nodejs based on Keyv). You can learn more on the [Keyv website](https://keyv.org/).
+**Cos'è Keyv?** Keyv è un semplice sistema di archiviazione chiave-valore. È un sistema molto semplice da usare e molto popolare nella comunità Node.js. Keyv può essere combinato con altre librerie, come [Cacheable](https://cacheable.org/) (Caching per Nodejs basata su Keyv). Per saperne di più, visita il [sito web Keyv](https://keyv.org/).
 
-**How to use Keyv with Pixi’VN?** You can use Keyv with Pixi’VN by creating a new instance of Keyv and passing the storage object as a parameter.
+**Come utilizzare Keyv con Pixi'VN?** È possibile utilizzare Keyv con Pixi'VN creando una nuova istanza di Keyv e passando lo storage come parametro.
 
 ```typescript
 import { storage } from '@drincs/pixi-vn'
