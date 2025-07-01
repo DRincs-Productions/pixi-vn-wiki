@@ -276,6 +276,11 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                     },
                     {
                         type: "page",
+                        name: "UI screen examples",
+                        url: `${preUrl}/start/interface-examples`,
+                    },
+                    {
+                        type: "page",
                         name: "Navigate/switch between UI screens",
                         url: `${preUrl}/start/interface-navigate`,
                     },
