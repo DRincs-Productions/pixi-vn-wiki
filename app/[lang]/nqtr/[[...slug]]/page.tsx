@@ -1,6 +1,6 @@
 import MDXPage from "@/components/page";
 import { createMetadata } from "@/lib/metadata";
-import { source } from "@/lib/source";
+import { nqtrSource } from "@/lib/nqtrSource";
 import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
@@ -12,12 +12,12 @@ export default async function Page({ params }: { params: Promise<{ lang: string;
 }
 
 export async function generateStaticParams() {
-    return source.generateParams();
+    return nqtrSource.generateParams();
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string; slug?: string[] }> }) {
     const { slug, lang } = await params;
-    const page = source.getPage(slug, lang);
+    const page = nqtrSource.getPage(slug, lang);
     if (!page) notFound();
 
     return createMetadata({
