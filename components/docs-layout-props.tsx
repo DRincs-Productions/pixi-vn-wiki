@@ -1,4 +1,5 @@
 import { inkSource } from "@/lib/inkSource";
+import { nqtrSource } from "@/lib/nqtrSource";
 import { otherTopicsSource } from "@/lib/otherTopicsSource";
 import { renpySource } from "@/lib/renpySource";
 import { source } from "@/lib/source";
@@ -475,7 +476,7 @@ export function homeLinks(lang?: string): LinkItemType[] {
 export function nqtrTree(lang?: string): DocsLayoutProps["tree"] {
     const preUrl = lang ? `/${lang}` : "";
     return {
-        ...otherTopicsSource.pageTree,
+        ...nqtrSource.pageTree,
         children: [
             {
                 type: "folder",
