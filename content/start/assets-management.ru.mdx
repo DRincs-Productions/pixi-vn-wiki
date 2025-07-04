@@ -19,12 +19,12 @@ let alien1 = await showImage("alien", "https://pixijs.com/assets/eggHead.png");
 
 По этим причинам рекомендуется работать с ресурсами следующим образом.
 
-## Initialize the asset matrix at project start
+## Инициализация матрицы ресурсов в начале проекта
 
-Initializing the asset matrix at the beginning of the project allows you to reference assets by a unique alias without having to use the URL/path. Using the alias you can change the URL of an asset without having to worry about version compatibility.
+Инициализация матрицы ресурсов в начале проекта позволяет ссылаться на ресурсы по уникальному псевдониму без необходимости использовать URL/путь. Используя псевдоним, вы можете изменить URL-адрес ресурсов, не заботясь о совместимости версий.
 
-To do this, it is recommended to create an asynchronous function `defineAssets` that will be called at the start of the project.
-In the `defineAssets` function, use `Assets` (e.g. `Assets.add`, `Assets.addBundle`, and `Assets.init`) to assign aliases to URLs. You can find more information about them [here](https://pixijs.com/8.x/guides/components/assets) to assign an alias to each asset.
+Для этого рекомендуется создать асинхронную функцию `defineAssets`, которая будет вызываться при старте проекта.
+В функции `defineAssets` используйте `Assets` (например, `Assets.add`, `Assets.addBundle` и `Assets.init`) для назначения псевдонимов URL. Более подробную информацию о них можно найти [здесь](https://pixijs.com/8.x/guides/components/assets), чтобы назначить псевдоним каждым ресурсам.
 
 ```ts tab="utils/defineAssets.ts"
 import { Assets, sound } from "@drincs/pixi-vn";
@@ -82,23 +82,23 @@ const manifest: AssetsManifest = {
 export default manifest;
 ```
 
-## Load assets
+## Загрузка ресурсов
 
-By default, assets are loaded only when needed.
+По умолчанию ресурсы загружаются только при необходимости.
 
-But **if the assets are not saved locally**, but in an <DynamicLink href="/start/assets#assets-hosting">"assets hosting"</DynamicLink>, their loading may take some time. This means that starting a `step` may not be immediate. So, after starting the execution of the <DynamicLink href="/start/labels-flow#next-step">next `step`</DynamicLink> (for example with the "next" button), the player may have to wait some time to "view" the changes and be able to run another `step`.
+Но **если ресурсы сохранены не локально**, а на <DynamicLink href="/start/assets#assets-hosting">"хостинге ресурсов"</DynamicLink>, их загрузка может занять некоторое время. Это означает, что начало `шага` может быть не мгновенным. Итак, после запуска <DynamicLink href="/start/labels-flow#next-step">следующего `шага`</DynamicLink> (например, с кнопкой "далее"), игроку, возможно, придется подождать некоторое время для "просмотра" изменений и иметь возможность выполнить еще один `шаг`.
 
-Performing these loadings at each `step` may be annoying to the player, even if they are very short.
+Выполнение этих загрузок на каждом `шаге` может раздражать игрока, даже если они очень короткие.
 
-To solve this problem, the developer can group multiple loadings at a certain stage of the game. In this way, the player will not have continuous loadings, but fewer, even if longer.
+Чтобы решить эту проблему, разработчик может сгруппировать несколько загрузок на определенном этапе игры. Таким образом, игрок будет испытывать не постоянные загрузки, а меньшие, пусть и более длительные.
 
-Here are various ways to load the assets:
+Вот различные способы загрузки ресурсов:
 
-### Load assets at project start
+### Загрузка ресурсов при запуске проекта
 
-It is possible to load assets at project startup before the player can interact with the project, for example during the startup loading screen. It is suggested to use this procedure only for assets used in the main page or for assets used frequently, and not to exceed 100MB.
+Возможно загружать ресурсы при запуске проекта, прежде чем игрок сможет взаимодействовать с проектом, например при загрузке экрана. Рекомендуется использовать эту процедуру только для ресурсов, используемых на главной странице или часто используемых, и не превышающих 100МБ.
 
-To do this, you must use the `Assets.load` function and wait for it to finish (with `await`) when the project starts. You can learn more about the `Assets.load` function [here](https://pixijs.com/8.x/guides/components/assets).
+Для этого вы должны использовать функцию `Assets.load` и дождаться ее завершения (с помощью `await`), когда проект запустится. Подробнее о функции `Assets.load` вы можете узнать [здесь](https://pixijs.com/8.x/guides/components/assets).
 
 ```ts tab="utils/defineAssets.ts"
 import { Assets, sound } from "@drincs/pixi-vn";
@@ -160,11 +160,11 @@ const manifest: AssetsManifest = {
 export default manifest;
 ```
 
-### Load assets in the background at project start
+### Загрузка ресурсов в фоновом режиме при запуске проекта
 
-It is possible to load assets in the background when the project starts, reducing loading times when your project starts. It is recommended not to exceed 2GB.
+Возможно загружать ресурсы в фоновом режиме при запуске проекта, что сокращает время загрузки при запуске проекта. Рекомендуется не превышать размер 2ГБ.
 
-To do this, you can use the `Assets.backgroundLoad` function when the project starts. You can learn more about the `Assets.backgroundLoad` function [here](https://pixijs.com/8.x/guides/components/assets).
+Для этого можно использовать функцию `Assets.backgroundLoad` при запуске проекта. Подробнее о функции `Assets.backgroundLoad` вы можете узнать [здесь](https://pixijs.com/8.x/guides/components/assets).
 
 ```ts tab="utils/defineAssets.ts"
 import { Assets, sound } from "@drincs/pixi-vn";
@@ -229,13 +229,13 @@ const manifest: AssetsManifest = {
 export default manifest;
 ```
 
-### Load assets at label start
+### Загрузка ресурсов при запуске части
 
-To group the loadings from one `step` to another of a `label` into a single loading, it is possible to load all or part of the assets used by the `label` before it starts. Since this does not reduce the waiting times for the player, but adds them to a single loading, it is recommended to [load them in the background](#load-assets-in-the-background-at-label-start).
+Чтобы сгруппировать загрузку от одного `шага` до другой `части` в одну загрузку, возможно загрузить все или часть ресурсов, используемых `частью`, до её запуска. Поскольку это не уменьшает время ожидания для игрока, а добавляет его к одной загрузке, рекомендуется [загружать их в фоновом режиме](#load-assets-in-the-background-at-label-start).
 
-To do this, you must use the `Assets.load` function and wait for it to finish (with `await`) when the `label` starts. You will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function.
+Для этого вы должны использовать функцию `Assets.load` и дождаться ее завершения (с помощью `await`), когда `часть` запустится. Вы будете использовать функцию <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink>.
 
-For cleaner code, it is recommended to define a bundle in your manifest with the id corresponding to the `label` id and define within it the assets that will be used in that `label`.
+Чтобы код был чище, рекомендуется определить в манифесте пакет с id, соответствующим id `части`, и определить в нем ресурсы, которые будут использоваться в этой `части`.
 
 ```ts title="labels/startLabel.ts"
 import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
@@ -285,10 +285,10 @@ const manifest: AssetsManifest = {
 export default manifest;
 ```
 
-### Load assets in the background at label start
+### Загрузка ресурсов в фоновом режиме при запуске части
 
 <Callout title="Already present in the templates" type="info">
-In all templates, when a `label` is started, the background loading of the bundle (if it exists) with the id corresponding to the `label` will be started. So, it is enough to **create a manifest with a bundle for each `label`**. Here is the implementation used to allow this:
+Во всех шаблонах при запуске `части` будет запущена фоновая загрузка пакета (если он существует) с идентификатором, соответствующим `части`. Поэтому достаточно **создать манифест с пакетом для каждой `части`**. Вот реализация, используемая для этого:
 
 ```ts title="main.ts"
 import { Assets, Game } from "@drincs/pixi-vn";
@@ -298,11 +298,11 @@ Game.onLoadingLabel((_stepId, { id }) => Assets.backgroundLoadBundle(id));
 
 </Callout>
 
-To make the game smoother by trying to remove asset loading times from one `step` to another, it is possible to start a "loading group" at the beginning of a `label`. This means that you may potentially not feel any loading, especially in the later `steps` of the `label`.
+Чтобы сделать игру более плавной, пытаясь уменьшить время загрузки ресурсов от одного `шага` к другому, можно запустить "группу загрузки" в начале `части`. Это означает, что потенциально вы можете не почувствовать никакой загрузки, особенно на поздних `шагах` `части`.
 
-To do this, you can use the `Assets.backgroundLoad` function when the `label` starts. You can learn more about the `Assets.backgroundLoad` function [here](https://pixijs.com/8.x/guides/components/assets). And, you will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function.
+Для этого можно использовать функцию `Assets.backgroundLoad` при запуске части. Подробнее о функции `Assets.backgroundLoad` вы можете узнать [здесь](https://pixijs.com/8.x/guides/components/assets). И вы будете использовать функцию <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink>.
 
-For cleaner code, it is recommended to define a bundle in your manifest with the id corresponding to the `label` id and define within it the assets that will be used in that `label`.
+Чтобы код был чище, рекомендуется определить в манифесте пакет с id, соответствующим id `части`, и определить в нем ресурсы, которые будут использоваться в этой `части`.
 
 ```ts title="labels/startLabel.ts"
 import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
