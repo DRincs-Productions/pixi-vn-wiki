@@ -60,7 +60,7 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                     },
                     {
                         type: "page",
-                        name: "Point and Click adventure game",
+                        name: "Point & Click Adventure",
                         url: `${preUrl}/start/make-point-and-click`,
                     },
                     {
@@ -431,7 +431,7 @@ export function homeLinks(lang?: string): LinkItemType[] {
                     url: `${preUrl}/start/make-visual-novel`,
                 },
                 {
-                    text: "Point and Click adventure game",
+                    text: "Point & Click Adventure",
                     url: `${preUrl}/start/make-point-and-click`,
                 },
                 {
