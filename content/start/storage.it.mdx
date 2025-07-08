@@ -1,16 +1,17 @@
 ---
 title: Storage di gioco
+description: How to store, retrieve, and manage persistent and temporary variables in Pixi’VN, including Keyv integration.
 ---
 
 **Che cos'è lo storage di gioco? ** Lo storage di gioco è un luogo in cui è possibile salvare le variabili che si desidera conservare tra le sessioni di gioco.
 
-È fondamentale capire che se le variabili non vengono salvate nella memoria del gioco, il motore non sarà in grado di gestirle quando si <DynamicLink href="/start/save#load">carica un salvataggio</DynamicLink> o quando si <DynamicLink href="/start/labels-flow#go-back">torna indietro</DynamicLink>.
+It is essential to understand that if variables are not saved in the game memory, the engine will not be able to handle them when you <DynamicLink href="/start/save#load">load a save</DynamicLink> or when you <DynamicLink href="/start/labels-flow#go-back">go back</DynamicLink>.
 
-Inoltre, nell'archivio del gioco è possibile salvare qualsiasi tipo di variabile, eccetto `class` e `function` (perché non possono essere convertite in JSON), come: `string`, `number`, `boolean`, `object`, `array`... Se si desidera salvare i "flag" (booleani) si consiglia di utilizzare la <DynamicLink href="/start/flags">funzionalità flag</DynamicLink>, un sistema di gestione dei flag ad altissime prestazioni.
+Additionally, in the game archive you can save any type of variable, except `class` and `function` (because they cannot be converted to JSON), such as: `string`, `number`, `boolean`, `object`, `array`, etc. If you want to save "flags" (boolean), it is recommended to use the <DynamicLink href="/start/flags">flags functionality</DynamicLink>, a very high-performance flag management system.
 
 ## Set
 
-Per impostare una variabile nell'archivio di gioco, puoi usare `storage.setVariable`. Questa funzione ha i seguenti parametri:
+To set a variable in the game storage, use `storage.setVariable`. Questa funzione ha i seguenti parametri:
 
 - `name`: Il nome della variabile da impostare.
 - `value`: Il valore della variabile da impostare.
@@ -23,7 +24,7 @@ storage.setVariable("myVariable", 42);
 
 ## Ottieni
 
-Per ottenere una variabile dall'archivio del gioco, puoi usare `storage.getVariable`. Questa funzione ha i seguenti parametri:
+To get a variable from the game storage, use `storage.getVariable`. Questa funzione ha i seguenti parametri:
 
 - `name`: Il nome della variabile da ottenere.
 
@@ -35,7 +36,7 @@ const myVariable = storage.getVariable<number>("myVariable");
 
 ## Rimuovi
 
-Per rimuovere una variabile dall'archivio del gioco, puoi usare `storage.removeVariable`. Questa funzione ha i seguenti parametri:
+To remove a variable from the game storage, use `storage.removeVariable`. Questa funzione ha i seguenti parametri:
 
 - `name`: Il nome della variabile da rimuovere.
 
@@ -47,13 +48,13 @@ storage.removeVariable("myVariable");
 
 ## Storage temporaneo
 
-In molte occasioni è utile utilizzare le variabili solo durante un certo periodo della narrazione. Utilizzando un archivio normale dovremmo preoccuparci di eliminare queste variabili quando non sono più necessarie, per assicurarci di occupare meno spazio e avere salvataggi più leggeri.
+In many cases, it is useful to use variables only during a certain period of the narrative. Using normal storage, you would need to manually remove these variables when they are no longer needed, to keep saves light and efficient.
 
-Per risolvere questo problema, Pixi’VN dispone di un sistema di archiviazione temporanea. Le variabili temporanee inizializzate in un'etichetta verranno eliminate quando l'etichetta viene chiusa. Pertanto, se da essa viene richiamata un'altra label, la variabile temporanea sarà comunque accessibile dalla label figlia. Ovviamente, se da essa viene chiamata un'altra label con il "jump" (quindi la label corrente verrà chiusa e quella nuova verrà avviata) la variabile temporanea non sarà più accessibile.
+Per risolvere questo problema, Pixi’VN dispone di un sistema di archiviazione temporanea. Temporary variables initialized in a `label` will be deleted when the `label` is closed. If another `label` is called from it, the temporary variable will still be accessible from the child `label`. However, if another `label` is called with `jump` (so the current `label` will be closed and the new one started), the temporary variable will no longer be accessible.
 
 **Imposta una variabile temporanea**:
 
-Per impostare una variabile temporanea, è possibile utilizzare `storage.setTempVariable`. Questa funzione ha i seguenti parametri:
+To set a temporary variable, use `storage.setTempVariable`. Questa funzione ha i seguenti parametri:
 
 - `name`: Il nome della variabile da impostare.
 - `value`: Il valore della variabile da impostare.
@@ -66,11 +67,11 @@ storage.setTempVariable("myTempVariable", 42);
 
 **Ottieni una variabile temporanea**:
 
-Per ottenere una variabile temporanea, puoi usare la normale funzione [`storage.getVariable`](#get).
+To get a temporary variable, use the normal [`storage.getVariable` function](#get).
 
 **Rimuovi una variabile temporanea**:
 
-Per rimuovere una variabile temporanea, è possibile utilizzare `storage.removeTempVariable`. Questa funzione ha i seguenti parametri:
+To remove a temporary variable, use `storage.removeTempVariable`. Questa funzione ha i seguenti parametri:
 
 - `name`: Il nome della variabile da rimuovere.
 
@@ -91,9 +92,9 @@ Si prega quindi di evitare di utilizzare questo prefisso nelle tue variabili.
 
 ## Keyv
 
-L'intero sistema di storage è stato sviluppato utilizzando Map, un oggetto JavaScript nativo, in modo da poter utilizzare Keyv per interagire con lo storage di gioco.
+The entire storage system was developed using `Map`, a native JavaScript object, so you can use Keyv to interact with game storage.
 
-**Cos'è Keyv?** Keyv è un semplice sistema di archiviazione chiave-valore. È un sistema molto semplice da usare e molto popolare nella comunità Node.js. Keyv può essere combinato con altre librerie, come [Cacheable](https://cacheable.org/) (Caching per Nodejs basata su Keyv). Per saperne di più, visita il [sito web Keyv](https://keyv.org/).
+**Cos'è Keyv?** Keyv è un semplice sistema di archiviazione chiave-valore. È un sistema molto semplice da usare e molto popolare nella comunità Node.js. Keyv can be combined with other libraries, such as [Cacheable](https://cacheable.org/) (Caching for Node.js based on Keyv). Per saperne di più, visita il [sito web Keyv](https://keyv.org/).
 
 **Come utilizzare Keyv con Pixi'VN?** È possibile utilizzare Keyv con Pixi'VN creando una nuova istanza di Keyv e passando lo storage come parametro.
 
