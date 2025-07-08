@@ -1,4 +1,4 @@
-import { docs } from "@/.source";
+import { startDocs } from "@/.source";
 import { loader } from "fumadocs-core/source";
 import { icons } from "lucide-react";
 import { createElement } from "react";
@@ -8,7 +8,7 @@ import { i18n } from "./i18n";
 export const source = loader({
     // it assigns a URL to your pages
     baseUrl: "/start",
-    source: docs.toFumadocsSource(),
+    source: startDocs.toFumadocsSource(),
     icon(icon) {
         switch (icon) {
             case "page":
