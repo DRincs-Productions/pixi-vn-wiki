@@ -29,6 +29,7 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                         type: "page",
                         name: "Ren'Py vs Pixi’VN",
                         url: `${preUrl}/start/versus-renpy`,
+                        icon: <Image width={16} height={16} src='/renpy.svg' alt="Ren'Py" />,
                     },
                 ],
             },
@@ -90,11 +91,22 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                     url: `${preUrl}/start/narration`,
                 },
                 children: [
-                    { type: "page", name: "Narration with ink", url: `${preUrl}/ink/ink` },
-                    { type: "page", name: "Narration with Ren’Py", url: `${preUrl}/renpy/renpy` },
+                    {
+                        type: "page",
+                        name: "Narration with ink",
+                        url: `${preUrl}/ink/ink`,
+                        icon: <Image width={16} height={16} src='/ink.svg' alt='ink' />,
+                    },
+                    {
+                        type: "page",
+                        name: "Narration with Ren’Py",
+                        url: `${preUrl}/renpy/renpy`,
+                        icon: <Image width={16} height={16} src='/renpy.svg' alt="Ren'Py" />,
+                    },
                     {
                         type: "folder",
                         name: "Narration with JS/TS",
+                        icon: <Image width={16} height={16} src='/typescript.svg' alt='TypeScript' />,
                         children: [
                             { type: "page", name: "Dialogue", url: `${preUrl}/start/dialogue` },
                             {
@@ -126,8 +138,18 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                             url: `${preUrl}/start/markup`,
                         },
                         children: [
-                            { type: "page", name: "Markdown", url: `${preUrl}/start/markup-markdown` },
-                            { type: "page", name: "Tailwind CSS", url: `${preUrl}/start/markup-tailwindcss` },
+                            {
+                                type: "page",
+                                name: "Markdown",
+                                url: `${preUrl}/start/markup-markdown`,
+                                icon: <Image width={16} height={16} src='/markdown.svg' alt='Markdown' />,
+                            },
+                            {
+                                type: "page",
+                                name: "Tailwind CSS",
+                                url: `${preUrl}/start/markup-tailwindcss`,
+                                icon: <Image width={16} height={16} src='/tailwindcss.svg' alt='Tailwind CSS' />,
+                            },
                         ],
                     },
                 ],
