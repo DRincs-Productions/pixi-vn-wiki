@@ -4,7 +4,7 @@ import { cn } from "@/lib/cn";
 import { Globe } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-export function TranslateButton({ lang, folther }: { lang?: string; folther: string; path: string }) {
+export function TranslateButton({ lang, folther }: { lang: string; folther: string; path: string }) {
     const t = useTranslations("common");
 
     return (
