@@ -5,7 +5,7 @@ import { createElement } from "react";
 import { i18n } from "./i18n";
 
 // See https://fumadocs.vercel.app/docs/headless/source-api for more info
-export const source = loader({
+export const startSource = loader({
     // it assigns a URL to your pages
     baseUrl: "/start",
     source: docs.toFumadocsSource(),
