@@ -26,7 +26,7 @@ export default async function MDXPage({ lang, slug, folther }: { lang?: string; 
                         <Edit className='size-3.5' />
                         {t("edit_github")}
                     </EditOnGitHub>
-                    <TranslateButton />
+                    <TranslateButton lang={lang} folther={folther} path={page.file.path} />
                 </div>
                 <MDXContent
                     components={getMDXComponents({

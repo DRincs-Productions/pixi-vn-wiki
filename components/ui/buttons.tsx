@@ -4,7 +4,7 @@ import { cn } from "@/lib/cn";
 import { Globe } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-export function TranslateButton() {
+export function TranslateButton({ lang, folther }: { lang?: string; folther: string; path: string }) {
     const t = useTranslations("common");
 
     return (
@@ -18,7 +18,7 @@ export function TranslateButton() {
                     className: "gap-1.5 not-prose padding-6 padding-x-2",
                 })
             )}
-            href={"https://crowdin.com/project/pixi-vn"}
+            href={`https://crowdin.com/project/pixi-vn/${lang}#/pixi-vn-wiki%20%2F%20main/content/${folther}`}
         >
             <Globe className='size-3.5' />
             {t("translate_crowdin")}
