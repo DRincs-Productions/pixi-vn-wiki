@@ -2,7 +2,6 @@ import { CodeBlockPre } from "@/components/code-block";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
 import { createMetadata } from "@/lib/metadata";
-import { source } from "@/lib/source";
 import ArchImg from "@/public/arch.png";
 import LogoImg from "@/public/logo.webp";
 import { cva } from "class-variance-authority";
@@ -19,10 +18,6 @@ import { ItchLogo } from "./icons";
 const badgeVariants = cva(
     "inline-flex size-7 items-center justify-center rounded-full bg-fd-primary font-medium text-fd-primary-foreground"
 );
-
-export async function generateStaticParams() {
-    return source.generateParams();
-}
 
 export default function Home() {
     const gridColor = "color-mix(in oklab, var(--color-fd-primary) 10%, transparent)";
