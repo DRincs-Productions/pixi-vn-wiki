@@ -2,14 +2,14 @@ import { inkSource } from "@/lib/inkSource";
 import { nqtrSource } from "@/lib/nqtrSource";
 import { otherTopicsSource } from "@/lib/otherTopicsSource";
 import { renpySource } from "@/lib/renpySource";
-import { source } from "@/lib/source";
+import { startSource } from "@/lib/startSource";
 import { Image } from "fumadocs-core/framework";
 import { DocsLayoutProps, LinkItemType } from "fumadocs-ui/layouts/docs";
 
 export function startTree(lang?: string): DocsLayoutProps["tree"] {
     const preUrl = lang ? `/${lang}` : "";
     return {
-        ...source.pageTree,
+        ...startSource.pageTree,
         name: "Pixi’VN",
         children: [
             {
