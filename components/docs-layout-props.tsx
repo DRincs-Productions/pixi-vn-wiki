@@ -1,15 +1,11 @@
-import { inkSource } from "@/lib/inkSource";
-import { nqtrSource } from "@/lib/nqtrSource";
-import { otherTopicsSource } from "@/lib/otherTopicsSource";
-import { renpySource } from "@/lib/renpySource";
-import { startSource } from "@/lib/startSource";
+import { source } from "@/lib/source";
 import { Image } from "fumadocs-core/framework";
 import { DocsLayoutProps, LinkItemType } from "fumadocs-ui/layouts/docs";
 
 export function startTree(lang?: string): DocsLayoutProps["tree"] {
     const preUrl = lang ? `/${lang}` : "";
     return {
-        ...startSource.pageTree,
+        ...source.pageTree,
         name: "Pixi’VN",
         children: [
             {
@@ -352,7 +348,8 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
 export function renpyTree(lang?: string): DocsLayoutProps["tree"] {
     const preUrl = lang ? `/${lang}` : "";
     return {
-        ...renpySource.pageTree,
+        ...source.pageTree,
+        name: "Ren’Py",
         children: [
             {
                 type: "folder",
@@ -373,7 +370,8 @@ export function renpyTree(lang?: string): DocsLayoutProps["tree"] {
 export function inkTree(lang?: string): DocsLayoutProps["tree"] {
     const preUrl = lang ? `/${lang}` : "";
     return {
-        ...inkSource.pageTree,
+        ...source.pageTree,
+        name: "ink",
         children: [
             {
                 type: "folder",
@@ -411,7 +409,8 @@ export function inkTree(lang?: string): DocsLayoutProps["tree"] {
 export function otherTopicsTree(lang?: string): DocsLayoutProps["tree"] {
     const preUrl = lang ? `/${lang}` : "";
     return {
-        ...otherTopicsSource.pageTree,
+        ...source.pageTree,
+        name: "Other Topics",
         children: [
             {
                 type: "separator",
@@ -498,7 +497,8 @@ export function homeLinks(lang?: string): LinkItemType[] {
 export function nqtrTree(lang?: string): DocsLayoutProps["tree"] {
     const preUrl = lang ? `/${lang}` : "";
     return {
-        ...nqtrSource.pageTree,
+        ...source.pageTree,
+        name: "Navigation Quest Time Routine (NQTR)",
         children: [
             {
                 type: "folder",
