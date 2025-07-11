@@ -1,4 +1,4 @@
-import { source } from "@/lib/source";
+import { inkSource, otherTopicsSource } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle, EditOnGitHub } from "fumadocs-ui/page";
@@ -7,8 +7,25 @@ import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { TranslateButton } from "./ui/buttons";
 
-export default async function MDXPage({ lang, slug, folther }: { lang?: string; slug?: string[]; folther: string }) {
-    const page = source.getPage(slug, lang);
+export default async function MDXPage({
+    lang,
+    slug,
+    folther,
+}: {
+    lang?: string;
+    slug?: string[];
+    folther: "ink" | "other-topics";
+}) {
+    let page;
+    switch (folther) {
+        case "ink":
+            page = inkSource.getPage(slug, lang);
+            break;
+        case "other-topics":
+            page = otherTopicsSource.getPage(slug, lang);
+        default:
+            notFound();
+    }
     if (!page) notFound();
     const t = await getTranslations("common");
 
@@ -31,7 +48,7 @@ export default async function MDXPage({ lang, slug, folther }: { lang?: string; 
                 <MDXContent
                     components={getMDXComponents({
                         // this allows you to link to other pages with relative file paths
-                        a: createRelativeLink(source, page),
+                        a: createRelativeLink(inkSource, page),
                     })}
                 />
             </DocsBody>
