@@ -96,7 +96,7 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                     {
                         type: "page",
                         name: "Narration with Ren’Py",
-                        url: `${preUrl}/renpy/renpy`,
+                        url: `${preUrl}/renpy`,
                         icon: <Image width={16} height={16} src='/renpy.svg' alt="Ren'Py" />,
                     },
                     {
@@ -361,7 +361,7 @@ export function renpyTree(lang?: string): DocsLayoutProps["tree"] {
                 index: {
                     type: "page",
                     name: "Ren’Py",
-                    url: `${preUrl}/renpy/renpy`,
+                    url: `${preUrl}/renpy`,
                 },
                 children: [],
             },
