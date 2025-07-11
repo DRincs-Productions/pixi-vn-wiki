@@ -1,4 +1,4 @@
-import { docs, inkDocs, otherTopicsDocs } from "@/.source";
+import { docs, inkDocs, nqtrDocs, otherTopicsDocs, renpyDocs } from "@/.source";
 import { loader } from "fumadocs-core/source";
 import { icons } from "lucide-react";
 import { createElement } from "react";
@@ -111,6 +111,17 @@ export const otherTopicsSource = loader({
     // it assigns a URL to your pages
     baseUrl: "/other-topics",
     source: otherTopicsDocs.toFumadocsSource(),
+    icon(icon) {
+        if (icon && icon in icons) return createElement(icons[icon as keyof typeof icons]);
+    },
+    pageTree: {},
+    i18n,
+});
+
+export const renpySource = loader({
+    // it assigns a URL to your pages
+    baseUrl: "/renpy",
+    source: renpyDocs.toFumadocsSource(),
     icon(icon) {
         if (icon && icon in icons) return createElement(icons[icon as keyof typeof icons]);
     },
