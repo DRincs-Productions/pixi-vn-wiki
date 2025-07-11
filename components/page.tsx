@@ -1,4 +1,4 @@
-import { inkSource, otherTopicsSource } from "@/lib/source";
+import { inkSource, otherTopicsSource, source } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle, EditOnGitHub } from "fumadocs-ui/page";
@@ -14,10 +14,13 @@ export default async function MDXPage({
 }: {
     lang?: string;
     slug?: string[];
-    folther: "ink" | "other-topics";
+    folther: "start" | "ink" | "other-topics";
 }) {
     let page;
     switch (folther) {
+        case "start":
+            page = source.getPage(slug, lang);
+            break;
         case "ink":
             page = inkSource.getPage(slug, lang);
             break;
