@@ -1,4 +1,4 @@
-import { source } from "@/lib/source";
+import { inkSource, nqtrSource, otherTopicsSource, renpySource, source } from "@/lib/source";
 import { Image } from "fumadocs-core/framework";
 import { DocsLayoutProps, LinkItemType } from "fumadocs-ui/layouts/docs";
 
@@ -348,7 +348,7 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
 export function renpyTree(lang?: string): DocsLayoutProps["tree"] {
     const preUrl = lang ? `/${lang}` : "";
     return {
-        ...source.pageTree,
+        ...renpySource.pageTree,
         name: "Ren’Py",
         children: [
             {
@@ -370,7 +370,7 @@ export function renpyTree(lang?: string): DocsLayoutProps["tree"] {
 export function inkTree(lang?: string): DocsLayoutProps["tree"] {
     const preUrl = lang ? `/${lang}` : "";
     return {
-        ...source.pageTree,
+        ...inkSource.pageTree,
         name: "ink",
         children: [
             {
@@ -409,7 +409,7 @@ export function inkTree(lang?: string): DocsLayoutProps["tree"] {
 export function otherTopicsTree(lang?: string): DocsLayoutProps["tree"] {
     const preUrl = lang ? `/${lang}` : "";
     return {
-        ...source.pageTree,
+        ...otherTopicsSource.pageTree,
         name: "Other Topics",
         children: [
             {
@@ -497,7 +497,7 @@ export function homeLinks(lang?: string): LinkItemType[] {
 export function nqtrTree(lang?: string): DocsLayoutProps["tree"] {
     const preUrl = lang ? `/${lang}` : "";
     return {
-        ...source.pageTree,
+        ...nqtrSource.pageTree,
         name: "Navigation Quest Time Routine (NQTR)",
         children: [
             {
