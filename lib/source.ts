@@ -128,3 +128,14 @@ export const renpySource = loader({
     pageTree: {},
     i18n,
 });
+
+export const nqtrSource = loader({
+    // it assigns a URL to your pages
+    baseUrl: "/nqtr",
+    source: nqtrDocs.toFumadocsSource(),
+    icon(icon) {
+        if (icon && icon in icons) return createElement(icons[icon as keyof typeof icons]);
+    },
+    pageTree: {},
+    i18n,
+});
