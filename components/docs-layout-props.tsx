@@ -90,7 +90,7 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                     {
                         type: "page",
                         name: "Narration with ink",
-                        url: `${preUrl}/ink/ink`,
+                        url: `${preUrl}/ink`,
                         icon: <Image width={16} height={16} src='/ink.svg' alt='ink' />,
                     },
                     {
@@ -383,7 +383,7 @@ export function inkTree(lang?: string): DocsLayoutProps["tree"] {
                 index: {
                     type: "page",
                     name: "ink",
-                    url: `${preUrl}/ink/ink`,
+                    url: `${preUrl}/ink`,
                 },
                 children: [
                     { type: "page", name: "Characters", url: `${preUrl}/ink/ink-character` },
