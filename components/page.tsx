@@ -26,10 +26,13 @@ export default async function MDXPage({
             break;
         case "other-topics":
             page = otherTopicsSource.getPage(slug, lang);
+            break;
         case "renpy":
             page = renpySource.getPage(slug, lang);
+            break;
         case "nqtr":
             page = nqtrSource.getPage(slug, lang);
+            break;
         default:
             notFound();
     }
