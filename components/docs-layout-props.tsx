@@ -80,7 +80,6 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
             {
                 type: "folder",
                 name: "Narration",
-                defaultOpen: true,
                 index: {
                     type: "page",
                     name: "Narration",
@@ -120,8 +119,6 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                             },
                             { type: "page", name: "Choice Menus", url: `${preUrl}/start/choices` },
                             { type: "page", name: "Input prompt", url: `${preUrl}/start/input` },
-                            { type: "page", name: "History", url: `${preUrl}/start/history` },
-                            { type: "page", name: "Translating", url: `${preUrl}/start/translate` },
                             { type: "page", name: "Other features", url: `${preUrl}/start/other-narrative-features` },
                         ],
                     },
@@ -148,14 +145,16 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                             },
                         ],
                     },
+                    { type: "page", name: "History", url: `${preUrl}/start/history` },
+                    { type: "page", name: "Translating", url: `${preUrl}/start/translate` },
                 ],
             },
             {
                 type: "folder",
-                name: "Game canvas",
+                name: "Canvas (WebGL)",
                 index: {
                     type: "page",
-                    name: "Game canvas",
+                    name: "Canvas (WebGL)",
                     url: `${preUrl}/start/canvas`,
                 },
                 children: [
