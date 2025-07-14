@@ -251,6 +251,11 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                 children: [
                     {
                         type: "page",
+                        name: "Temporary storage",
+                        url: `${preUrl}/start/temp-storage`,
+                    },
+                    {
+                        type: "page",
                         name: "Flags Management",
                         url: `${preUrl}/start/flags`,
                     },
