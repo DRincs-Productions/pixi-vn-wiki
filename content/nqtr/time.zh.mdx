@@ -8,10 +8,44 @@ It was decided to use the very generic terms date and time. The reason is that, 
 
 The navigation system is composed of the following elements:
 
-- date: A counter used to determine the date of the game.
-- time: A counter is used to determine the time of day and which is reset every time date is incremented.
+- `date`: A counter used to determine the date of the game.
+- `time`: A counter is used to determine the time of day and which is reset every time date is incremented.
+
+You can use `timeTracker` instance to manage your time system. It provides methods to initialize, get, increment time, etc. The time system is designed to be flexible and can be adapted to various game requirements.
 
 ## Initialize
+
+To initialize the time system, you need use the `initialize` method of the `timeTracker` instance. This function has the following parameters:
+
+- `defaultTimeSpent`: The default time spent in the game (number). It is used to increment the time when no specific time is set.
+- `dayStartTime`: The minimum time of the day (number). It is used to determine the start time of the day.
+- `dayEndTime`: The maximum time of the day (number). It is used to determine the end time of the day.
+- `timeSlots`: An array of time slots. Each slot is an object with the following properties:
+  - `name`: The name of the time slot (string).
+  - `startTime`: The start time of the time slot (number). It is used to determine the start time of the slot.
+- `weekLength`: The length of the week (number). It is used to determine the number of days in the week.
+- `weekendStartDay`: The start day of the weekend (number). It is used to determine the weekend days.
+- `getDayName`: A function that returns the name of the day based on the week day number (number). It is used to determine the name of the day.
+
+```ts name="main.ts"
+timeTracker.initialize({
+    defaultTimeSpent: 1,
+    dayStartTime: 0,
+    dayEndTime: 24,
+    timeSlots: [
+        { name: timeSlots.morning.description, startTime: timeSlots.morning.value },
+        { name: timeSlots.afternoon.description, startTime: timeSlots.afternoon.value },
+        { name: timeSlots.evening.description, startTime: timeSlots.evening.value },
+        { name: timeSlots.night.description, startTime: timeSlots.night.value },
+    ],
+    getDayName: (weekDayNumber: number) => {
+        const weekDaysNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        return weekDaysNames[weekDayNumber];
+    },
+    weekendStartDay: 6,
+    weekLength: 7,
+});
+```
 
 ## Get
 
