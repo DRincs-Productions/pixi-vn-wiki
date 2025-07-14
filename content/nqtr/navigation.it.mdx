@@ -1,39 +1,63 @@
 ---
-title: Navigation and Map
+title: Navigazione e mappa
+description: Come definire, organizzare e navigare tra stanze, luoghi e mappe in Pixi'VN, incluse classi personalizzate ed esempi di utilizzo.
 ---
 
 <Callout title="Nomenclature" type="info">
-Usually in video games the navigation elements used to identify the position of the characters are the room, the location (for example restaurant, house, hospital etc...), the map. For this reason it was decided to keep names that follow this logic.
+Solitamente nei videogiochi gli elementi di navigazione utilizzati per identificare la posizione dei personaggi sono chiamati stanza, luogo (ad esempio ristorante, casa, ospedale, ecc.) e mappa. Per questo motivo vengono utilizzati nomi che seguono questa logica.
 
-This does not prevent using these elements to manage navigation with the same logic but with different terms. For example in a game set in the space in which the player moves between planets, the rooms can be the planets, the locations can be the solar systems and the maps can be the galaxy.
+Ciò non impedisce di utilizzare questi elementi per gestire la navigazione con la stessa logica ma con termini diversi. Ad esempio, in un gioco ambientato nello spazio in cui il giocatore si sposta tra i pianeti, le stanze possono rappresentare i pianeti, i luoghi i sistemi solari e le mappe la galassia.
 
 </Callout>
 
-The navigation system is composed of the following elements:
+Il sistema di navigazione è composto dai seguenti elementi:
 
-- rooms: These are the core elements of navigation, from which the position of the mc and npc is deduced.
-- locations: is a container of rooms.
-- maps: is a container of locations.
+- `rooms`: Gli elementi fondamentali della navigazione, da cui si deduce la posizione di `mc` e `npc`.
+- `locations`: Un contenitore di `stanze`.
+- `maps`: Un contenitore di `luoghi`.
 
-The player can move between rooms. The location and the map are also determined based on the room in which the player is located.
+Il giocatore può muoversi tra le `stanze`. The `location` and the `map` are also determined based on the `room` in which the player is located.
 
-The developer can designate "index" rooms for places or maps, to implement features that allow moving from one location or map to another.
+The developer can designate "index" `rooms` for places or maps, to implement features that allow moving from one `location` or `map` to another.
 
 ## Inizializzare
 
-To initialize a room/location/map, create a new instance of the `RoomBaseModel` / `LocationBaseModel` / `MapBaseModel` class (or your [custom class](#custom-class)) and add it to the game room/location/map dictionary when the game is initialized.
+Per definire una `stanza`/`luogo`/`mappa`, crea una nuova istanza della classe `RoomBaseModel` / `LocationBaseModel` / `MapBaseModel` (o la tua [classe personalizzata](#custom-class)) e aggiungila al dizionario stanza/luogo/mappa del gioco quando il gioco viene inizializzato.
 
 <Callout type="info">
 It is recommended to import the instances at project startup, see the `src/main.ts` file.
 </Callout>
 
-To create a new instance of `RoomBaseModel`, you need the following parameters:
+Per creare una nuova istanza di `RoomBaseModel`, sono necessari i seguenti parametri:
+
+- `id`: Un identificatore univoco (stringa). Used to reference the `room` in the game (must be unique).
+- `location`: The `location` where the `room` is.
+- `props`: An object with the room's properties:
+  - `name` (Optional): The room's name.
+  - `image` (Optional): The room's image URL.
+  - `activities` (Optional): The activities available in this room.
+  - `disabled` (Optional): Whether the room is disabled. You can also pass a Pixi’VN flag name.
+  - `hidden` (Optional): Whether the room is hidden. You can also pass a Pixi’VN flag name.
+  - `icon` (Optional): The room's icon image URL.
 
 To create a new instance of `LocationBaseModel`, you need the following parameters:
 
+- `id`: Un identificatore univoco (stringa). Used to reference the `location` in the game (must be unique).
+- `map`: The `map` where the `location` is.
+- `props`: An object with the location's properties:
+  - `name` (Optional): The location's name.
+  - `icon` (Optional): The location's icon image URL.
+  - `activities` (Optional): The activities available in this location.
+  - `disabled` (Optional): Whether the location is disabled. You can also pass a Pixi’VN flag name.
+  - `hidden` (Optional): Whether the location is hidden. You can also pass a Pixi’VN flag name.
+
 To create a new instance of `MapBaseModel`, you need the following parameters:
 
-TODO: ...
+- `id`: Un identificatore univoco (stringa). Used to reference the `map` in the game (must be unique).
+- `props`: An object with the map's properties:
+  - `name` (Optional): The map's name.
+  - `image` (Optional): The map's image URL.
+  - `activities` (Optional): The activities available in this map.
 
 ```ts tab="values/rooms.ts"
 import { RegisteredRooms, RoomBaseModel } from "@drincs/nqtr";
@@ -117,9 +141,9 @@ import "./values/maps";
 // ...
 ```
 
-`RegisteredRooms.add` / `RegisteredLocations.add` / `RegisteredMaps.add` is **required** to save the rooms/locations/maps in the game.
+`RegisteredRooms.add` / `RegisteredLocations.add` / `RegisteredMaps.add` is **required** to save the `rooms`/`locations`/`maps` in the game.
 
-You can also create a function to load rooms/locations/maps. The important thing is that it is called at least once before the rooms/locations/maps are used in the game, otherwise they will not be available.
+You can also create a function to load `rooms`/`locations`/`maps`. The important thing is that it is called at least once before the `rooms`/`locations`/`maps` are used in the game, otherwise they will not be available.
 
 It is also recommended to [set the current room](#navigate) during the start of the game.
 
@@ -139,7 +163,7 @@ export default startLabel;
 
 ## Ottieni
 
-To get a room/location/map by its `id`, use the `RegisteredRooms.get` / `RegisteredLocations.get` / `RegisteredMaps.get` function.
+To get a `room`/`location`/`map` by its `id`, use the `RegisteredRooms.get` / `RegisteredLocations.get` / `RegisteredMaps.get` function.
 
 ```ts tab="Rooms"
 import { RegisteredRooms } from "@drincs/nqtr";
@@ -161,7 +185,7 @@ const mainMap = RegisteredMaps.get('main_map');
 
 ## Ottieni tutti
 
-To get all rooms/locations/maps, use the `RegisteredRooms.values` / `RegisteredLocations.values` / `RegisteredMaps.values` function.
+To get all `rooms`/`locations`/`maps`, use the `RegisteredRooms.values` / `RegisteredLocations.values` / `RegisteredMaps.values` function.
 
 ```ts tab="Rooms"
 import { RegisteredRooms } from "@drincs/nqtr";
@@ -183,9 +207,9 @@ const maps = RegisteredMaps.values();
 
 ## Navigate
 
-As explained above, the player can navigate between rooms, and the current room determines the current location and map.
+As explained above, the player can navigate between `rooms`, and the current `room` determines the current `location` and `map`.
 
-To navigate to a room, set the `navigator.currentRoom` property to the desired room instance. This will automatically update the current location and map based on the room's location and map.
+To navigate to a `room`, set the `navigator.currentRoom` property to the desired room instance. This will automatically update the current `location` and `map` based on the room's location and map.
 
 ```ts
 import { navigator } from "@drincs/nqtr";
