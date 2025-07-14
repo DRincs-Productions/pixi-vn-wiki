@@ -17,8 +17,6 @@ The navigation system is composed of the following elements:
 
 The player can move between `rooms`. The `location` and the `map` are also determined based on the `room` in which the player is located.
 
-The developer can designate "index" `rooms` for places or maps, to implement features that allow moving from one `location` or `map` to another.
-
 ## Initialize
 
 To initialize a `room`/`location`/`map`, create a new instance of the `RoomBaseModel` / `LocationBaseModel` / `MapBaseModel` class (or your [custom class](#custom-class)) and add it to the game room/location/map dictionary when the game is initialized.
@@ -443,3 +441,98 @@ declare module '@drincs/nqtr' {
     }
 }
 ```
+
+## FAQ
+
+<Accordions>
+
+<Accordion title="How do I set a room for a location that will open by default?" id="how-set-default-room-for-location">
+
+The developer can designate "index" `room` for locations.
+
+To set a default room for a location, you can add in your [Custom class](#custom-class) a property `isEntrance` to the `Room` class, which will be set to `true` for the default room of the location, and then use the `entrance` property of the `Location` class to get the default room.
+
+For example:
+
+```ts tab="mcRoom.ts"
+import { navigator, RegisteredRooms } from "@drincs/nqtr";
+import { ImageSprite } from "@drincs/pixi-vn";
+import { NAVIGATION_ROUTE } from "../constans";
+import Location from "../models/nqtr/Location";
+import Room from "../models/nqtr/Room";
+import { mainMap } from "./maps";
+
+export const mcHome = new Location("mc_home", mainMap, {
+    name: "MC Home",
+    icon: (location, { navigate }) => {
+        const icon = new ImageSprite(
+            { xAlign: 0.3, yAlign: 0.2, height: 120, width: 120, eventMode: "static", cursor: "pointer" },
+            "icon_location_home"
+        );
+        icon.on("pointerdown", () => {
+            const entrance = location.entrance;
+            if (entrance) {
+                navigator.currentRoom = entrance;
+                navigate(NAVIGATION_ROUTE);
+            }
+        });
+        icon.load();
+        return icon;
+    },
+});
+
+export const mcRoom = new Room("mc_room", mcHome, {
+    name: "MC room",
+    image: "location_myroom",
+});
+
+RegisteredRooms.add([mcRoom]);
+```
+
+```ts tab="models/nqtr/Room.ts"
+import { RoomInterface, RoomStoredClass } from "@drincs/nqtr";
+
+export default class Room extends RoomStoredClass implements RoomInterface {
+    constructor() {
+        // ... other initializations
+        this.isEntrance = props.isEntrance || false;
+    }
+    // ... other methods and properties
+    readonly isEntrance: boolean;
+}
+```
+
+```ts tab="models/nqtr/Location.ts"
+import { LocationInterface, LocationStoredClass, RoomInterface } from "@drincs/nqtr";
+
+export default class Location extends LocationStoredClass implements LocationInterface {
+    // ... other methods and properties
+    get entrance(): RoomInterface | undefined {
+        if (super.rooms.length === 0) {
+            return undefined;
+        }
+        return super.rooms.find((room) => room.isEntrance) || super.rooms[0];
+    }
+}
+```
+
+```ts tab="nqtr.d.ts"
+declare module "@drincs/nqtr" {
+    interface LocationInterface {
+        /**
+         * The entrance room of the location.
+         */
+        readonly entrance: RoomInterface | undefined;
+    }
+    interface RoomInterface {
+        /**
+         * If is the entrance of the location. (the first room)
+         */
+        readonly isEntrance: boolean;
+    }
+}
+```
+
+</Accordion>
+
+</Accordions>
