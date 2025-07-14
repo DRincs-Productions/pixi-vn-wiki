@@ -514,8 +514,13 @@ export function nqtrTree(lang?: string): DocsLayoutProps["tree"] {
                 children: [
                     {
                         type: "page",
-                        name: "Navigation",
+                        name: "Navigation and map",
                         url: `${preUrl}/nqtr/navigation`,
+                    },
+                    {
+                        type: "page",
+                        name: "Time system",
+                        url: `${preUrl}/nqtr/time`,
                     },
                 ],
             },
