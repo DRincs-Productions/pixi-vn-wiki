@@ -18,8 +18,6 @@ Il sistema di navigazione è composto dai seguenti elementi:
 
 Il giocatore può muoversi tra le `stanze`. The `location` and the `map` are also determined based on the `room` in which the player is located.
 
-The developer can designate "index" `rooms` for places or maps, to implement features that allow moving from one `location` or `map` to another.
-
 ## Inizializzare
 
 Per definire una `stanza`/`luogo`/`mappa`, crea una nuova istanza della classe `RoomBaseModel` / `LocationBaseModel` / `MapBaseModel` (o la tua [classe personalizzata](#custom-class)) e aggiungila al dizionario stanza/luogo/mappa del gioco quando il gioco viene inizializzato.
@@ -30,17 +28,17 @@ It is recommended to import the instances at project startup, see the `src/main.
 
 Per creare una nuova istanza di `RoomBaseModel`, sono necessari i seguenti parametri:
 
-- `id`: Un identificatore univoco (stringa). Used to reference the `room` in the game (must be unique).
-- `location`: The `location` where the `room` is.
-- `props`: An object with the room's properties:
-  - `name` (Optional): The room's name.
-  - `image` (Optional): The room's image URL.
-  - `activities` (Optional): The activities available in this room.
-  - `disabled` (Optional): Whether the room is disabled. You can also pass a Pixi’VN flag name.
-  - `hidden` (Optional): Whether the room is hidden. You can also pass a Pixi’VN flag name.
-  - `icon` (Optional): The room's icon image URL.
+- `id`: Un identificatore univoco (stringa). Utilizzato per fare riferimento alla `stanza` nel gioco (deve essere univoco).
+- `location`: Il `luogo` in cui si trova la `stanza`.
+- `props`: Un oggetto con le proprietà della stanza:
+  - `name` (Opzionale): Il nome della stanza.
+  - `image` (Opzionale): URL dell'immagine della stanza.
+  - `activities` (Opzionale): Le attività disponibili in questa stanza.
+  - `disabled` (Opzionale): Se la stanza è disabilitata. You can also pass a Pixi’VN flag name.
+  - `hidden` (Opzionale): Se la stanza è nascosta. You can also pass a Pixi’VN flag name.
+  - `icon` (Opzionale): URL dell'immagine dell'icona della stanza.
 
-To create a new instance of `LocationBaseModel`, you need the following parameters:
+Per creare una nuova istanza di `LocationBaseModel`, sono necessari i seguenti parametri:
 
 - `id`: Un identificatore univoco (stringa). Used to reference the `location` in the game (must be unique).
 - `map`: The `map` where the `location` is.
@@ -444,3 +442,98 @@ declare module '@drincs/nqtr' {
     }
 }
 ```
+
+## FAQ
+
+<Accordions>
+
+<Accordion title="How do I set a room for a location that will open by default?" id="how-set-default-room-for-location">
+
+The developer can designate "index" `room` for locations.
+
+To set a default room for a location, you can add in your [Custom class](#custom-class) a property `isEntrance` to the `Room` class, which will be set to `true` for the default room of the location, and then use the `entrance` property of the `Location` class to get the default room.
+
+Ad esempio:
+
+```ts tab="mcRoom.ts"
+import { navigator, RegisteredRooms } from "@drincs/nqtr";
+import { ImageSprite } from "@drincs/pixi-vn";
+import { NAVIGATION_ROUTE } from "../constans";
+import Location from "../models/nqtr/Location";
+import Room from "../models/nqtr/Room";
+import { mainMap } from "./maps";
+
+export const mcHome = new Location("mc_home", mainMap, {
+    name: "MC Home",
+    icon: (location, { navigate }) => {
+        const icon = new ImageSprite(
+            { xAlign: 0.3, yAlign: 0.2, height: 120, width: 120, eventMode: "static", cursor: "pointer" },
+            "icon_location_home"
+        );
+        icon.on("pointerdown", () => {
+            const entrance = location.entrance;
+            if (entrance) {
+                navigator.currentRoom = entrance;
+                navigate(NAVIGATION_ROUTE);
+            }
+        });
+        icon.load();
+        return icon;
+    },
+});
+
+export const mcRoom = new Room("mc_room", mcHome, {
+    name: "MC room",
+    image: "location_myroom",
+});
+
+RegisteredRooms.add([mcRoom]);
+```
+
+```ts tab="models/nqtr/Room.ts"
+import { RoomInterface, RoomStoredClass } from "@drincs/nqtr";
+
+export default class Room extends RoomStoredClass implements RoomInterface {
+    constructor() {
+        // ... other initializations
+        this.isEntrance = props.isEntrance || false;
+    }
+    // ... other methods and properties
+    readonly isEntrance: boolean;
+}
+```
+
+```ts tab="models/nqtr/Location.ts"
+import { LocationInterface, LocationStoredClass, RoomInterface } from "@drincs/nqtr";
+
+export default class Location extends LocationStoredClass implements LocationInterface {
+    // ... other methods and properties
+    get entrance(): RoomInterface | undefined {
+        if (super.rooms.length === 0) {
+            return undefined;
+        }
+        return super.rooms.find((room) => room.isEntrance) || super.rooms[0];
+    }
+}
+```
+
+```ts tab="nqtr.d.ts"
+declare module "@drincs/nqtr" {
+    interface LocationInterface {
+        /**
+         * The entrance room of the location.
+         */
+        readonly entrance: RoomInterface | undefined;
+    }
+    interface RoomInterface {
+        /**
+         * If is the entrance of the location. (the first room)
+         */
+        readonly isEntrance: boolean;
+    }
+}
+```
+
+</Accordion>
+
+</Accordions>
