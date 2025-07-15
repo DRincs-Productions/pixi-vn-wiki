@@ -1,7 +1,7 @@
 import { inkSource, nqtrSource, otherTopicsSource, renpySource, source } from "@/lib/source";
 import { Image } from "fumadocs-core/framework";
 import { DocsLayoutProps, LinkItemType } from "fumadocs-ui/layouts/docs";
-import { Album, BookOpenText, Hammer, MessageCircleQuestion, User } from "lucide-react";
+import { Album, BookOpenText, Boxes, Database, Hammer, MessageCircleQuestion, Music, Rocket, User } from "lucide-react";
 
 export function startTree(lang?: string): DocsLayoutProps["tree"] {
     const preUrl = lang ? `/${lang}` : "";
@@ -228,10 +228,12 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                 type: "page",
                 name: "Sounds and Music",
                 url: `${preUrl}/start/sound`,
+                icon: <Music />,
             },
             {
                 type: "folder",
                 name: "Assets",
+                icon: <Boxes />,
                 index: {
                     type: "page",
                     name: "Assets",
@@ -248,6 +250,7 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
             {
                 type: "folder",
                 name: "Game storage",
+                icon: <Database />,
                 index: {
                     type: "page",
                     name: "Game storage",
@@ -330,6 +333,7 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
             {
                 type: "folder",
                 name: "Distribution",
+                icon: <Rocket />,
                 index: {
                     type: "page",
                     name: "Distribution",
