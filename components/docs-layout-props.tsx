@@ -1,6 +1,7 @@
 import { inkSource, nqtrSource, otherTopicsSource, renpySource, source } from "@/lib/source";
 import { Image } from "fumadocs-core/framework";
 import { DocsLayoutProps, LinkItemType } from "fumadocs-ui/layouts/docs";
+import { Album, BookOpenText, Hammer, MessageCircleQuestion, User } from "lucide-react";
 
 export function startTree(lang?: string): DocsLayoutProps["tree"] {
     const preUrl = lang ? `/${lang}` : "";
@@ -14,7 +15,25 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
             },
             {
                 type: "folder",
+                name: "Quick Start",
+                icon: <Album />,
+                index: {
+                    type: "page",
+                    name: "Quick Start",
+                    url: `${preUrl}/start/getting-started`,
+                },
+                children: [
+                    {
+                        type: "page",
+                        name: "Templates",
+                        url: `${preUrl}/start/templates`,
+                    },
+                ],
+            },
+            {
+                type: "folder",
                 name: "Why Pixi’VN?",
+                icon: <MessageCircleQuestion />,
                 index: {
                     type: "page",
                     name: "Why Pixi’VN?",
@@ -31,24 +50,9 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
             },
             {
                 type: "folder",
-                name: "Quick Start",
-                index: {
-                    type: "page",
-                    name: "Quick Start",
-                    url: `${preUrl}/start/getting-started`,
-                },
-                children: [
-                    {
-                        type: "page",
-                        name: "Templates",
-                        url: `${preUrl}/start/templates`,
-                    },
-                ],
-            },
-            {
-                type: "folder",
                 name: "Make your first",
                 defaultOpen: true,
+                icon: <Hammer />,
                 children: [
                     {
                         type: "page",
@@ -76,10 +80,11 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                 type: "separator",
                 name: "First steps",
             },
-            { type: "page", name: "Characters", url: `${preUrl}/start/character` },
+            { type: "page", name: "Characters", url: `${preUrl}/start/character`, icon: <User /> },
             {
                 type: "folder",
                 name: "Narration",
+                icon: <BookOpenText />,
                 index: {
                     type: "page",
                     name: "Narration",
