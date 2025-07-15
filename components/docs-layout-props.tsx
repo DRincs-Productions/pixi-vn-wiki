@@ -111,10 +111,10 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                             { type: "page", name: "Dialogue", url: `${preUrl}/start/dialogue` },
                             {
                                 type: "folder",
-                                name: "Label and Game Step",
+                                name: "Labels and steps",
                                 index: {
                                     type: "page",
-                                    name: "Label and Game Step",
+                                    name: "Labels and steps",
                                     url: `${preUrl}/start/labels`,
                                 },
                                 children: [
