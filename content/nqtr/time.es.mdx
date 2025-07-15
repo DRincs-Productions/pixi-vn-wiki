@@ -2,6 +2,8 @@
 title: Time system
 ---
 
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
+
 <Callout title="Nomenclature" type="info">
 It was decided to use the very generic terms date and time. The reason is that, depending on what is being developed, time can correspond to hours, minutes, or a long period of time. The same applies to date.
 </Callout>
@@ -33,10 +35,10 @@ timeTracker.initialize({
     dayStartTime: 0,
     dayEndTime: 24,
     timeSlots: [
-        { name: timeSlots.morning.description, startTime: timeSlots.morning.value },
-        { name: timeSlots.afternoon.description, startTime: timeSlots.afternoon.value },
-        { name: timeSlots.evening.description, startTime: timeSlots.evening.value },
-        { name: timeSlots.night.description, startTime: timeSlots.night.value },
+        { name: "Morning", startTime: 5 },
+        { name: "Afternoon", startTime: 12 },
+        { name: "Evening", startTime: 18 },
+        { name: "Night", startTime: 22 },
     ],
     getDayName: (weekDayNumber: number) => {
         const weekDaysNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -109,8 +111,100 @@ import { timeTracker } from "@drincs/nqtr";
 timeTracker.increaseDate(1, 8); // Increment date by 1 and set time to 8
 ```
 
-## Now is between
-
 ## Is weekend
 
-## Image that changes based on the time period
+To check if the current day is a weekend, use the `timeTracker.isWeekend` property. It returns a boolean indicating whether the current day is a weekend.
+
+```ts tab="main.ts"
+import { timeTracker } from "@drincs/nqtr";
+
+const isWeekend: boolean = timeTracker.isWeekend;
+```
+
+```ts tab="main.ts"
+timeTracker.initialize({
+    defaultTimeSpent: 1,
+    dayStartTime: 0,
+    dayEndTime: 24,
+    timeSlots: [
+        { name: "Morning", startTime: 5 },
+        { name: "Afternoon", startTime: 12 },
+        { name: "Evening", startTime: 18 },
+        { name: "Night", startTime: 22 },
+    ],
+    getDayName: (weekDayNumber: number) => {
+        const weekDaysNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        return weekDaysNames[weekDayNumber];
+    },
+    weekendStartDay: 6, // [!code focus]
+    weekLength: 7, // [!code focus]
+});
+```
+
+## FAQ
+
+<Accordions>
+
+<Accordion title="Image that changes based on the time period" id="image-time-period">
+
+You can create a class that manages the image based on the current time slot. The class can have properties for each time slot and a method to get the current image based on the time slot.
+
+For example:
+
+```ts tab="models/ImageTimeSlots.ts"
+import { timeTracker } from "@drincs/nqtr";
+
+export default class ImageTimeSlots {
+    constructor(data: { morning: string; afternoon: string; evening: string; night: string } | string) {
+        if (typeof data === "string") {
+            this.morning = data;
+            this.afternoon = data;
+            this.evening = data;
+            this.night = data;
+            return;
+        }
+        this.morning = data.morning;
+        this.afternoon = data.afternoon;
+        this.evening = data.evening;
+        this.night = data.night;
+    }
+    get src(): string {
+        if (timeTracker.currentTimeSlot === 0) {
+            return this.morning;
+        } else if (timeTracker.currentTimeSlot === 2) {
+            return this.evening;
+        } else if (timeTracker.currentTimeSlot === 3) {
+            return this.night;
+        }
+        return this.afternoon;
+    }
+    morning: string;
+    afternoon: string;
+    evening: string;
+    night: string;
+}
+```
+
+```ts tab="main.ts"
+timeTracker.initialize({
+    defaultTimeSpent: 1,
+    dayStartTime: 0,
+    dayEndTime: 24,
+    timeSlots: [ // [!code focus]
+        { name: "Morning", startTime: 5 }, // [!code focus]
+        { name: "Afternoon", startTime: 12 }, // [!code focus]
+        { name: "Evening", startTime: 18 }, // [!code focus]
+        { name: "Night", startTime: 22 }, // [!code focus]
+    ], // [!code focus]
+    getDayName: (weekDayNumber: number) => {
+        const weekDaysNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        return weekDaysNames[weekDayNumber];
+    },
+    weekendStartDay: 6,
+    weekLength: 7,
+});
+```
+
+</Accordion>
+
+</Accordions>
