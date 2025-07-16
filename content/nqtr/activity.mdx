@@ -5,4 +5,63 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
 ## Initialize
 
+To initialize a `activity`, create a new instance of the `ActivityBaseModel` class (or your [custom class](#custom-class)) and add it to the game activity dictionary when the game is initialized.
+
+<Callout type="info">
+
+It is recommended to import the instances at project startup, see the `src/main.ts` file.
+
+</Callout>
+
+To create a new instance of `ActivityBaseModel`, you need the following parameters:
+
+```ts tab="values/activities.ts"
+import { ActivityBaseModel, RegisteredActivities, timeTracker } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { napLabel, sleepLabel } from "../labels/sleepNapLabels";
+import { orderProductLabel, takeKeyLabel } from "../labels/variousActionsLabels";
+
+export const bed = new ActivityBaseModel(
+    "bed",
+    async (_, props) => {
+        if (timeTracker.nowIsBetween(5, 22)) {
+            await narration.jumpLabel(napLabel, props);
+        } else {
+            await narration.jumpLabel(sleepLabel, props);
+        }
+    },
+    {
+        name: "bed",
+    }
+);
+
+export const orderProduct = new ActivityBaseModel(
+    "order_product",
+    async (_, props) => await narration.jumpLabel(orderProductLabel, props),
+    {
+        name: "order_product",
+    }
+);
+
+export const takeProduct = new ActivityBaseModel(
+    "take_product",
+    async (_, props) => await narration.jumpLabel(takeKeyLabel, props),
+    {
+        name: "take_product",
+    }
+);
+
+RegisteredActivities.add([bed, orderProduct, takeProduct]);
+```
+
+```ts tab="src/main.ts"
+import "./values/activities";
+
+// ...
+```
+
+`RegisteredActivities.add` is **required** to save the `activities` in the game.
+
+You can also create a function to load `activities`. The important thing is that it is called at least once before the `activities` are used in the game, otherwise they will not be available.
+
 ## Get
