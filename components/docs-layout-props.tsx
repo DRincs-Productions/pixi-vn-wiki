@@ -536,6 +536,11 @@ export function nqtrTree(lang?: string): DocsLayoutProps["tree"] {
                         name: "Time system",
                         url: `${preUrl}/nqtr/time`,
                     },
+                    {
+                        type: "page",
+                        name: "Activity",
+                        url: `${preUrl}/nqtr/activity`,
+                    },
                 ],
             },
         ],
