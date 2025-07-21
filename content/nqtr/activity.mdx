@@ -3,7 +3,7 @@ title: Activity
 ---
 import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
-The `activity` are actions the player can take, and they can be linked to a navigation element. The developer will decide how the player interacts with them.
+The `activity` are actions the player can take, and they can be linked to a <DynamicLink href="/nqtr/navigation">navigation element</DynamicLink>. The developer will decide how the player interacts with them.
 
 ## Initialize
 
@@ -77,6 +77,94 @@ import "./values/activities";
 `RegisteredActivities.add` is **required** to save the `activities` in the game.
 
 You can also create a function to load `activities`. The important thing is that it is called at least once before the `activities` are used in the game, otherwise they will not be available.
+
+## Link
+
+To link an activity to a <DynamicLink href="/nqtr/navigation">navigation element</DynamicLink>, you have two options:
+
+* Link it during navigation element initialization
+* Link it during the game
+
+### During navigation element initialization
+
+When the game starts, a list of related activities will be defined. This list will not be saved when the game is saved. Therefore, the developer can modify this list from one version of the game to another without having to worry about migrations for older versions.
+
+```ts tab="values/rooms.ts"
+import { RegisteredRooms, RoomBaseModel } from "@drincs/nqtr";
+import { bed } from "./activity";
+import { mcHome } from "./locations";
+
+export const mcRoom = new RoomBaseModel("mc_room", mcHome, {
+    name: "MC room",
+    image: "location_myroom",
+    activities: [bed],
+});
+
+RegisteredRooms.add([mcRoom]);
+```
+
+```ts tab="values/activities.ts"
+import { ActivityBaseModel, RegisteredActivities, timeTracker } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { napLabel, sleepLabel } from "../labels/sleepNapLabels";
+
+export const bed = new ActivityBaseModel(
+    "bed",
+    async (_, props) => {
+        if (timeTracker.nowIsBetween(5, 22)) {
+            await narration.jumpLabel(napLabel, props);
+        } else {
+            await narration.jumpLabel(sleepLabel, props);
+        }
+    },
+    {
+        name: "bed",
+    }
+);
+
+RegisteredActivities.add([bed]);
+```
+
+### During the game
+
+You can also link an activity to a navigation element during the game. This feature is useful if you want to temporarily add an activity. The list of activities added this way will be included in your game saves.
+
+```ts tab="Example"
+import { orderProduct } from "../activities";
+import { mcRoom } from "../rooms";
+
+mcRoom.addActivity(orderProduct);
+```
+
+```ts tab="values/activities.ts"
+import { ActivityBaseModel, RegisteredActivities } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { orderProductLabel } from "../labels/variousActionsLabels";
+
+export const orderProduct = new ActivityBaseModel(
+    "order_product",
+    async (_, props) => await narration.jumpLabel(orderProductLabel, props),
+    {
+        name: "order_product",
+    }
+);
+
+RegisteredActivities.add([orderProduct]);
+```
+
+```ts tab="values/rooms.ts"
+import { RegisteredRooms, RoomBaseModel } from "@drincs/nqtr";
+import { mcHome } from "./locations";
+
+export const mcRoom = new RoomBaseModel("mc_room", mcHome, {
+    name: "MC room",
+    image: "location_myroom",
+});
+
+RegisteredRooms.add([mcRoom]);
+```
+
+## Unlink
 
 ## Get
 
