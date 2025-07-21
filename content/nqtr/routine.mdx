@@ -1,3 +1,71 @@
 ---
 title: Routine
 ---
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
+
+## Initialize
+
+To initialize a `commitment`, create a new instance of the `CommitmentBaseModel` class (or your [custom class](#custom-class)) and add it to the game commitment dictionary when the game is initialized.
+
+<Callout type="info">
+
+It is recommended to import the instances at project startup, see the `src/main.ts` file.
+
+</Callout>
+
+To create a new instance of `CommitmentBaseModel`, you need the following parameters:
+
+```ts tab="values/routine.ts"
+import { CommitmentBaseModel, RegisteredCommitments } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { NARRATION_ROUTE } from "../constans";
+import { TALK_SLEEP_LABEL_KEY } from "../labels/variousActionsLabelKeys";
+import { aliceTalkMenuLabel } from "../labels/variousActionsLabels";
+import { alice } from "./characters";
+import { aliceRoom, classRoom, terrace } from "./rooms";
+
+const aliceSleep = new CommitmentBaseModel("alice_sleep", alice, aliceRoom, {
+    priority: 1,
+    timeSlot: {
+        from: 20,
+        to: 10,
+    },
+    onRun: (_, event) => {
+        event.navigate(NARRATION_ROUTE);
+        narration.jumpLabel(TALK_SLEEP_LABEL_KEY, event);
+    },
+});
+
+const aliceGoSchool = new CommitmentBaseModel("alice_go_school", alice, classRoom, {
+    timeSlot: {
+        from: 8,
+        to: 14,
+    },
+    priority: 2,
+});
+
+const aliceSmokes = new CommitmentBaseModel("alice_smokes", alice, terrace, {
+    timeSlot: {
+        from: 10,
+        to: 20,
+    },
+    onRun: (_, event) => {
+        event.navigate(NARRATION_ROUTE);
+        narration.jumpLabel(aliceTalkMenuLabel, event);
+    },
+});
+
+export const fixedRoutine = [aliceSleep, aliceGoSchool, aliceSmokes];
+
+RegisteredCommitments.add(fixedRoutine);
+```
+
+```ts tab="src/main.ts"
+import "./values/routine";
+
+// ...
+```
+
+`RegisteredCommitments.add` is **required** to save the `commitments` in the game.
+
+You can also create a function to load `commitments`. The important thing is that it is called at least once before the `commitments` are used in the game, otherwise they will not be available.
