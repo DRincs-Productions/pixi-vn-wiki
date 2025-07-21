@@ -541,6 +541,11 @@ export function nqtrTree(lang?: string): DocsLayoutProps["tree"] {
                         name: "Activity",
                         url: `${preUrl}/nqtr/activity`,
                     },
+                    {
+                        type: "page",
+                        name: "Routine",
+                        url: `${preUrl}/nqtr/routine`,
+                    },
                 ],
             },
         ],
