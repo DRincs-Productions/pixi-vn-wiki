@@ -129,6 +129,8 @@ RegisteredActivities.add([bed]);
 
 You can also link an activity to a navigation element during the game. This feature is useful if you want to temporarily add an activity. The list of activities added this way will be included in your game saves.
 
+To link an activity to a navigation element during the game, you can use the `addActivity` method.
+
 ```ts tab="Example"
 import { orderProduct } from "../activities";
 import { mcRoom } from "../rooms";
@@ -165,6 +167,43 @@ RegisteredRooms.add([mcRoom]);
 ```
 
 ## Unlink
+
+To unlink an activity from a navigation element, you can use the `removeActivity` method.
+
+```ts tab="Example"
+import { orderProduct } from "../activities";
+import { mcRoom } from "../rooms";
+
+mcRoom.removeActivity(orderProduct);
+```
+
+```ts tab="values/activities.ts"
+import { ActivityBaseModel, RegisteredActivities } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { orderProductLabel } from "../labels/variousActionsLabels";
+
+export const orderProduct = new ActivityBaseModel(
+    "order_product",
+    async (_, props) => await narration.jumpLabel(orderProductLabel, props),
+    {
+        name: "order_product",
+    }
+);
+
+RegisteredActivities.add([orderProduct]);
+```
+
+```ts tab="values/rooms.ts"
+import { RegisteredRooms, RoomBaseModel } from "@drincs/nqtr";
+import { mcHome } from "./locations";
+
+export const mcRoom = new RoomBaseModel("mc_room", mcHome, {
+    name: "MC room",
+    image: "location_myroom",
+});
+
+RegisteredRooms.add([mcRoom]);
+```
 
 ## Get
 
