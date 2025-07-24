@@ -2,7 +2,20 @@ import { inkSource, nqtrSource, otherTopicsSource, renpySource, source } from "@
 import { Image } from "fumadocs-core/framework";
 import { DocsLayoutProps, LinkItemType } from "fumadocs-ui/layouts/docs";
 import { SidebarOptions } from "fumadocs-ui/layouts/docs/shared";
-import { Album, BookOpenText, Boxes, Database, Hammer, MessageCircleQuestion, Music, Rocket, User } from "lucide-react";
+import {
+    Album,
+    BookOpenText,
+    Boxes,
+    Database,
+    Globe,
+    Hammer,
+    History,
+    MessageCircleQuestion,
+    Music,
+    Rocket,
+    Sparkles,
+    User,
+} from "lucide-react";
 import { ReactNode } from "react";
 
 export function startTree(lang?: string): DocsLayoutProps["tree"] {
@@ -132,6 +145,7 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                     {
                         type: "folder",
                         name: "Markup language (to add text style)",
+                        icon: <Sparkles />,
                         index: {
                             type: "page",
                             name: "Markup language (to add text style)",
@@ -163,8 +177,8 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                             },
                         ],
                     },
-                    { type: "page", name: "History", url: `${preUrl}/start/history` },
-                    { type: "page", name: "Translating", url: `${preUrl}/start/translate` },
+                    { type: "page", name: "History", icon: <History />, url: `${preUrl}/start/history` },
+                    { type: "page", name: "Translating", icon: <Globe />, url: `${preUrl}/start/translate` },
                 ],
             },
             {
