@@ -142,7 +142,18 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                                 type: "page",
                                 name: "Markdown",
                                 url: `${preUrl}/start/markup-markdown`,
-                                icon: <Image width={16} height={16} src='/markdown.svg' alt='Markdown' />,
+                                icon: (
+                                    <Image
+                                        width={16}
+                                        height={16}
+                                        src='/markdown.svg'
+                                        alt='Markdown'
+                                        style={{
+                                            backgroundColor: "white",
+                                            borderRadius: "50%",
+                                        }}
+                                    />
+                                ),
                             },
                             {
                                 type: "page",
