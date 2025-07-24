@@ -1,7 +1,9 @@
 import { inkSource, nqtrSource, otherTopicsSource, renpySource, source } from "@/lib/source";
 import { Image } from "fumadocs-core/framework";
 import { DocsLayoutProps, LinkItemType } from "fumadocs-ui/layouts/docs";
+import { SidebarOptions } from "fumadocs-ui/layouts/docs/shared";
 import { Album, BookOpenText, Boxes, Database, Hammer, MessageCircleQuestion, Music, Rocket, User } from "lucide-react";
+import { ReactNode } from "react";
 
 export function startTree(lang?: string): DocsLayoutProps["tree"] {
     const preUrl = lang ? `/${lang}` : "";
@@ -547,6 +549,42 @@ export function nqtrTree(lang?: string): DocsLayoutProps["tree"] {
                         url: `${preUrl}/nqtr/routine`,
                     },
                 ],
+            },
+        ],
+    };
+}
+
+export function sidebar(lang?: string): Partial<SidebarOptions> & {
+    enabled?: boolean;
+    component?: ReactNode;
+} {
+    const preUrl = lang ? `/${lang}` : "";
+    return {
+        tabs: [
+            {
+                title: "Pixi’VN",
+                description: "Getting started with Pixi’VN",
+                url: `${preUrl}/start/getting-started`,
+            },
+            {
+                title: "NQTR",
+                description: "Navigation Quest Time Routine",
+                url: `${preUrl}/nqtr`,
+            },
+            {
+                title: "ink",
+                description: "ink narration",
+                url: `${preUrl}/ink`,
+            },
+            {
+                title: "Ren’Py",
+                description: "Ren’Py narration",
+                url: `${preUrl}/renpy`,
+            },
+            {
+                title: "Other Topics",
+                description: "Other topics",
+                url: `${preUrl}/other-topics/faq`,
             },
         ],
     };
