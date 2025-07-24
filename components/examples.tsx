@@ -945,3 +945,37 @@ export default class ButtonEvent extends CanvasEvent<Sprite> {
         />
     );
 }
+
+export function ReturningDifferentStepLists() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { narration, newLabel, storage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", () => {
+  let condition = storage.getFlag("condition");
+  if (condition) {
+    return [
+      () => {
+        narration.dialogue = "Step 2";
+      },
+      () => {
+        narration.dialogue = "Restart";
+      },
+    ];
+  } else {
+    return [
+      () => {
+        narration.dialogue = "Step 1";
+      },
+      async (props, { labelId }) => {
+        storage.setFlag("condition", true);
+        return await narration.jumpLabel(labelId, props);
+      },
+    ];
+  }
+});`,
+            }}
+        />
+    );
+}
