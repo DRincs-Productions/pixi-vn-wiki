@@ -979,3 +979,45 @@ export const startLabel = newLabel("start_label", () => {
         />
     );
 }
+
+export function ChoiceMenus() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { narration, newChoiceOption, newCloseChoiceOption, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    narration.dialogue = "Choose a fruit:";
+    narration.choiceMenuOptions = [
+      newChoiceOption("Orange", orangeLabel, {}), // by default, the label will be called by call
+      newChoiceOption("Banana", bananaLabel, {}, { type: "jump" }),
+      newChoiceOption("Apple", appleLabel, { quantity: 5 }, { type: "call" }),
+      newCloseChoiceOption("Cancel"),
+    ];
+  },
+  () => {
+    narration.dialogue = "Restart";
+  },
+  async (props) => await narration.jumpLabel("start_label", props),
+]);
+
+const appleLabel = newLabel<{ quantity: number }>("AppleLabel", [
+  (props) => {
+    narration.dialogue = \`You have \${props?.quantity ?? 0} apples\`;
+  },
+]);
+const orangeLabel = newLabel("OrangeLabel", [
+  () => {
+    narration.dialogue = "You have an orange";
+  },
+]);
+const bananaLabel = newLabel("BananaLabel", [
+  () => {
+    narration.dialogue = "You have a banana";
+  },
+]);`,
+            }}
+        />
+    );
+}
