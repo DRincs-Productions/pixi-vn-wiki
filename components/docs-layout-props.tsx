@@ -251,11 +251,11 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
             },
             {
                 type: "folder",
-                name: "Game storage",
+                name: "Storage",
                 icon: <Database />,
                 index: {
                     type: "page",
-                    name: "Game storage",
+                    name: "Storage",
                     url: `${preUrl}/start/storage`,
                 },
                 children: [
