@@ -563,21 +563,24 @@ export function sidebar(lang?: string): Partial<SidebarOptions> & {
         tabs: [
             {
                 title: "Pixi’VN",
+                icon: <Image width={16} height={16} src='/icon.png' alt='Pixi’VN' />,
                 description: "Getting started with Pixi’VN",
                 url: `${preUrl}/start/getting-started`,
             },
             {
-                title: "NQTR",
+                title: "NQTR (Beta)",
                 description: "Navigation Quest Time Routine",
                 url: `${preUrl}/nqtr`,
             },
             {
                 title: "ink",
+                icon: <Image width={16} height={16} src='/ink.svg' alt='ink' />,
                 description: "ink narration",
                 url: `${preUrl}/ink`,
             },
             {
                 title: "Ren’Py",
+                icon: <Image width={16} height={16} src='/renpy.svg' alt="Ren'Py" />,
                 description: "Ren’Py narration",
                 url: `${preUrl}/renpy`,
             },
