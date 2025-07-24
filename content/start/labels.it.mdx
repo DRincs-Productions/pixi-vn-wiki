@@ -23,12 +23,13 @@ Un `step` è un'azione o un evento individuale che si verifica all'interno di un
 Il ciclo di vita di base del gioco è il seguente:
 
 - Il gioco inizia <DynamicLink href="/start/labels-flow#run-a-label">chiamando una label</DynamicLink>. Il primo step della label viene eseguito automaticamente.
-- After that, by connecting the <DynamicLink href="/start/labels-flow#next-step">Next Step</DynamicLink> function to an event (such as a button click), each time the function is called, the next step of the label is executed. Some steps can also start other labels.
-- The game ends only when all steps are completed. At that point, the <DynamicLink href="/start/other-narrative-features#how-manage-the-end-of-the-game">Game.onEnd</DynamicLink> function is triggered.
+- Dopodiché, collegando la funzione <DynamicLink href="/start/labels-flow#next-step">Next Step</DynamicLink> a un evento (ad esempio il click di un pulsante), ogni volta che la funzione viene chiamata, viene eseguito il step successivo della label. Alcuni step possono anche avviare altre label.
+- Il gioco termina solo quando tutti i passaggi sono stati completati. A quel punto viene attivata la funzione <DynamicLink href="/start/other-narrative-features#how-manage-the-end-of-the-game">Game.onEnd</DynamicLink>.
 
-## Adding a Label
+## Aggiungi
 
-To create a label, use the `newLabel()` function and provide:
+To create a label, use the `newLabel()` function.
+Questa funzione ha i seguenti parametri:
 
 - A unique `id` for the label.
 - The `steps` of the label, as an array of functions to be executed in order, or a function that returns such an array.
@@ -56,13 +57,13 @@ export const startLabel = newLabel("start_label",
 
 <Callout title="Templates" type="info">
 
-In all templates, the `StepLabelProps` interface is already overridden. You can find it in the `pixi-vn.d.ts` file.
+In tutti i template, l'interfaccia `StepLabelProps` è già sovrascritta. La puoi trovare nel file `pixi-vn.d.ts`.
 
 </Callout>
 
-All <DynamicLink href="/start/labels-flow">label flow control functions</DynamicLink> require an object matching the `StepLabelProps` interface, which is passed to each step.
+All <DynamicLink href="/start/labels-flow">label flow control functions</DynamicLink> require an object matching the `StepLabelProps` interface.
 
-By default, `StepLabelProps` is `{ [key: string]: any }`. You can "override" the `StepLabelProps` interface in your `.d.ts` file to specify required parameters.
+By default, `StepLabelProps` is `{ [key: string]: any }`. È possibile "sovrascrivere" l'interfaccia `StepLabelProps` nel file `.d.ts` per specificare i parametri richiesti.
 
 ```ts tab="pixi-vn.d.ts"
 import { narration } from '@drincs/pixi-vn'
@@ -92,7 +93,7 @@ export const startLabel = newLabel("start_label",
 
 <Accordion title="Step pros" id="step-pros">
 
-You can pass a type to the `newLabel` function to add custom parameters for that label, in addition to [`StepLabelProps`](#overriding-steplabelprops).
+È possibile passare un tipo alla funzione `newLabel` per aggiungere parametri personalizzati per tale label, oltre a [`StepLabelProps`](#overriding-steplabelprops).
 
 ```ts title="labels/startLabel.ts"
 import { narration } from '@drincs/pixi-vn'
@@ -117,9 +118,9 @@ narration.callLabel(startLabel, {
 
 <Accordion title="Step results" id="step-results">
 
-Steps can return a `StepLabelResult` object. By default, `StepLabelResult` is `{ [key: string]: any }`.
+I passaggi possono restituire un oggetto `StepLabelResult`. By default, `StepLabelResult` is `{ [key: string]: any }`.
 
-You can "override" the `StepLabelResult` interface in your `.d.ts` file to define custom properties for step results.
+È possibile "sovrascrivere" l'interfaccia `StepLabelResult` nel file `.d.ts` per definire proprietà personalizzate per i risultati degli step.
 
 ```ts tab="pixi-vn.d.ts"
 declare module '@drincs/pixi-vn' {
@@ -147,11 +148,11 @@ export const startLabel = newLabel("start_label",
 
 </Accordions>
 
-## Step Save Limit
+## Step save limit
 
-At each step, all information about the current game state is <DynamicLink href="/start/save">saved</DynamicLink>.
+At each step, all information about the current game state is saved.
 
-To prevent the save file from growing too large, there is a limit on the number of steps saved. By default, only the last 20 steps are saved, but you can increase this limit (e.g., to 100). When the limit is reached, only essential information from older steps is kept. This allows you to display the full <DynamicLink href="/start/history">narrative history</DynamicLink>, but you cannot <DynamicLink href="/start/labels-flow#go-back">return</DynamicLink> to a specific step beyond the limit.
+Per evitare che il file di salvataggio diventi troppo grande, è previsto un limite al numero di step salvati. Per impostazione predefinita, vengono salvati solo gli ultimi 20 step, ma è possibile aumentare questo limite (ad esempio a 100). Una volta raggiunto il limite, vengono conservate solo le informazioni essenziali dei passaggi precedenti. This allows you to display the full <DynamicLink href="/start/history">narrative history</DynamicLink>, but you cannot <DynamicLink href="/start/labels-flow#go-back">return</DynamicLink> to a specific step beyond the limit.
 
 You can change the step save limit by setting the `stepLimitSaved` property in the `stepHistory` object.
 
