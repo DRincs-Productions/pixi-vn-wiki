@@ -31,7 +31,7 @@ import { narration } from '@drincs/pixi-vn'
 narration.callLabel(startLabel, {})
 ```
 
-If you execute `narration.callLabel` inside a `step`, you should return the <DynamicLink href="/start/labels#all-steps-result">result of the first `step` of the called `label`</DynamicLink> and use `await`. This ensures the history is managed correctly.
+If you execute `narration.callLabel` inside a `step`, you should return the result of `narration.callLabel` and use `await`. This ensures the history is managed correctly.
 
 ```ts title="labels/startLabel.ts"
 import { narration, newLabel } from '@drincs/pixi-vn'
@@ -68,7 +68,7 @@ import { narration } from '@drincs/pixi-vn'
 narration.jumpLabel(startLabel, {})
 ```
 
-If you execute `narration.jumpLabel` inside a `step`, you should return the <DynamicLink href="/start/labels#all-steps-result">result of the first `step` of the called `label`</DynamicLink> and use `await`. This ensures the first `step` of the new `label` is awaited.
+If you execute `narration.jumpLabel` inside a `step`, you should return the result of `narration.jumpLabel` and use `await`. This ensures the first `step` of the new `label` is awaited.
 
 ```ts title="labels/startLabel.ts"
 import { narration } from '@drincs/pixi-vn'
@@ -118,7 +118,7 @@ narration.goNext({})
 
 <Accordion title="Call goNext inside a step" id="call-gonext-inside-a-step">
 
-If you call `narration.goNext()` inside a `step`, the "go next" request will be queued and executed when the `steps` queue is empty.
+If you call `narration.goNext()` inside a `step`, the "go next" request will be queued and executed when the queue is empty.
 
 ```ts title="labels/startLabel.ts"
 import { narration, newLabel } from '@drincs/pixi-vn'
@@ -155,12 +155,12 @@ const label2 = newLabel("label_02", [
 
 In this example, the output will be `2`, `1`, `3`. The steps are:
 
-1. `await narration.callLabel(label2, props)` calls label2 and awaits its first `step`. (1 item in the `step` queue)
-2. The first `step` of label2 executes `await narration.goNext(props)`, but the goNext request is queued because the `step` queue is not empty. (2 items in the `step` queue)
-3. `console.log(2)` runs, finishing the first `step` of label2. (1 item in the `step` queue)
-4. `console.log(1)` runs, finishing the first `step` of startLabel. (0 items in the `step` queue)
-5. Now the goNext request is executed, and the second `step` of startLabel runs. (1 item in the `step` queue)
-6. `console.log(3)` runs, finishing the second `step` of startLabel. (0 items in the `step` queue)
+1. `await narration.callLabel(label2, props)` calls label2 and awaits its first `step`. (1 item in the queue)
+2. The first `step` of label2 executes `await narration.goNext(props)`, but the goNext request is queued because the queue is not empty. (2 items in the queue)
+3. `console.log(2)` runs, finishing the first `step` of label2. (1 item in the queue)
+4. `console.log(1)` runs, finishing the first `step` of startLabel. (0 items in the queue)
+5. Now the goNext request is executed, and the second `step` of startLabel runs. (1 item in the queue)
+6. `console.log(3)` runs, finishing the second `step` of startLabel. (0 items in the queue)
 
 </Accordion>
 
