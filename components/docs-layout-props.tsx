@@ -395,17 +395,10 @@ export function renpyTree(lang?: string): DocsLayoutProps["tree"] {
         name: "Ren’Py",
         children: [
             {
-                type: "folder",
-                name: "Narration with Ren’Py (In progress)",
-                defaultOpen: true,
-                index: {
-                    type: "page",
-                    name: "Ren’Py",
-                    url: `${preUrl}/renpy`,
-                },
-                children: [],
+                type: "page",
+                name: "Quick Start",
+                url: `${preUrl}/renpy`,
             },
-            { type: "page", name: "Back", url: `${preUrl}/start/narration` },
         ],
     };
 }
@@ -417,34 +410,22 @@ export function inkTree(lang?: string): DocsLayoutProps["tree"] {
         name: "ink",
         children: [
             {
-                type: "folder",
-                name: "Narration with ink",
-                defaultOpen: true,
-                index: {
-                    type: "page",
-                    name: "ink",
-                    url: `${preUrl}/ink`,
-                },
-                children: [
-                    { type: "page", name: "Characters", url: `${preUrl}/ink/ink-character` },
-                    { type: "page", name: "Open a knot", url: `${preUrl}/ink/ink-label` },
-                    { type: "page", name: "Variables", url: `${preUrl}/ink/ink-variables` },
-                    { type: "page", name: "Markup language (to add text style)", url: `${preUrl}/ink/ink-markup` },
-                    { type: "page", name: "Input prompt", url: `${preUrl}/ink/ink-input` },
-                    { type: "page", name: "Canvas", url: `${preUrl}/ink/ink-canvas` },
-                    { type: "page", name: "Sounds and Music", url: `${preUrl}/ink/ink-sound` },
-                    { type: "page", name: "Assets management", url: `${preUrl}/ink/ink-assets` },
-                    { type: "page", name: "Pause", url: `${preUrl}/ink/ink-pause` },
-                    { type: "page", name: "Text replacement", url: `${preUrl}/ink/ink-replacement` },
-                    { type: "page", name: "Translating", url: `${preUrl}/ink/ink-translate` },
-                    { type: "page", name: "Custom Hashtag Script", url: `${preUrl}/ink/ink-hashtag` },
-                ],
-            },
-            {
                 type: "page",
-                name: "Back",
-                url: `${preUrl}/start/narration`,
+                name: "Quick Start",
+                url: `${preUrl}/ink`,
             },
+            { type: "page", name: "Characters", url: `${preUrl}/ink/ink-character` },
+            { type: "page", name: "Open a knot", url: `${preUrl}/ink/ink-label` },
+            { type: "page", name: "Variables", url: `${preUrl}/ink/ink-variables` },
+            { type: "page", name: "Markup language (to add text style)", url: `${preUrl}/ink/ink-markup` },
+            { type: "page", name: "Input prompt", url: `${preUrl}/ink/ink-input` },
+            { type: "page", name: "Canvas", url: `${preUrl}/ink/ink-canvas` },
+            { type: "page", name: "Sounds and Music", url: `${preUrl}/ink/ink-sound` },
+            { type: "page", name: "Assets management", url: `${preUrl}/ink/ink-assets` },
+            { type: "page", name: "Pause", url: `${preUrl}/ink/ink-pause` },
+            { type: "page", name: "Text replacement", url: `${preUrl}/ink/ink-replacement` },
+            { type: "page", name: "Translating", url: `${preUrl}/ink/ink-translate` },
+            { type: "page", name: "Custom Hashtag Script", url: `${preUrl}/ink/ink-hashtag` },
         ],
     };
 }
@@ -544,36 +525,29 @@ export function nqtrTree(lang?: string): DocsLayoutProps["tree"] {
         name: "Navigation Quest Time Routine (NQTR)",
         children: [
             {
-                type: "folder",
-                name: "Navigation Quest Time Routine (NQTR)",
-                defaultOpen: true,
-                index: {
-                    type: "page",
-                    name: "NQTR",
-                    url: `${preUrl}/nqtr`,
-                },
-                children: [
-                    {
-                        type: "page",
-                        name: "Navigation and map",
-                        url: `${preUrl}/nqtr/navigation`,
-                    },
-                    {
-                        type: "page",
-                        name: "Time system",
-                        url: `${preUrl}/nqtr/time`,
-                    },
-                    {
-                        type: "page",
-                        name: "Activity",
-                        url: `${preUrl}/nqtr/activity`,
-                    },
-                    {
-                        type: "page",
-                        name: "Routine",
-                        url: `${preUrl}/nqtr/routine`,
-                    },
-                ],
+                type: "page",
+                name: "Quick Start",
+                url: `${preUrl}/nqtr`,
+            },
+            {
+                type: "page",
+                name: "Navigation and map",
+                url: `${preUrl}/nqtr/navigation`,
+            },
+            {
+                type: "page",
+                name: "Time system",
+                url: `${preUrl}/nqtr/time`,
+            },
+            {
+                type: "page",
+                name: "Activity",
+                url: `${preUrl}/nqtr/activity`,
+            },
+            {
+                type: "page",
+                name: "Routine",
+                url: `${preUrl}/nqtr/routine`,
             },
         ],
     };
