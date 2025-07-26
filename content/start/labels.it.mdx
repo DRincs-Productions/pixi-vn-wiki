@@ -11,7 +11,7 @@ Le visual novel sono solitamente costituite da una sequenza di scene con immagin
 
 Il termine `label` è preso da Ren'Py, dove funge da "segnalibro" o "punto di riferimento" nella storia. Nel linguaggio ink, il termine equivalente è `knot`.
 
-Il termine `step` è stato introdotto da Pixi'VN per rappresentare le singole azioni o eventi che si verificano all'interno di un'etichetta.
+Il termine `step` è stato introdotto da Pixi'VN per rappresentare le singole azioni o eventi che si verificano all'interno di una `label`.
 
 </Callout>
 
@@ -19,25 +19,25 @@ In Pixi’VN, l’intero flusso narrativo si basa sui concetti di `labels` e `st
 
 Una `label` viene utilizzata per organizzare la narrazione; funziona come un "segnalibro" o una sezione della storia. Tecnicamente, una `label` è una classe che funge da contenitore per i `label`.
 
-Un `step` è un'azione o un evento individuale che si verifica all'interno di un'etichetta. I steps vengono utilizzati per visualizzare immagini, testo e altri elementi narrativi.
+Un `step` è un'azione o un evento individuale che si verifica all'interno di una `label`. I steps vengono utilizzati per visualizzare immagini, testo e altri elementi narrativi.
 
 Il ciclo di vita di base del gioco è il seguente:
 
-- Il gioco inizia <DynamicLink href="/start/labels-flow#run-a-label">chiamando una label</DynamicLink>. Il primo step della label viene eseguito automaticamente.
-- Dopodiché, collegando la funzione <DynamicLink href="/start/labels-flow#next-step">Next Step</DynamicLink> a un evento (ad esempio il click di un pulsante), ogni volta che la funzione viene chiamata, viene eseguito il step successivo della label. Alcuni step possono anche avviare altre label.
-- Il gioco termina solo quando tutti i passaggi sono stati completati. A quel punto viene attivata la funzione <DynamicLink href="/start/other-narrative-features#how-manage-the-end-of-the-game">Game.onEnd</DynamicLink>.
+- Il gioco inizia <DynamicLink href="/start/labels-flow#run-a-label">chiamando una `label`</DynamicLink>. Il primo `step` della `label` viene eseguito automaticamente.
+- After that, by connecting the <DynamicLink href="/start/labels-flow#next-step">Next Step</DynamicLink> function to an event (such as a button click), each time the function is called, the next `step` of the `label` is executed. Some `steps` can also start other `labels`.
+- The game ends only when all `steps` are completed. A quel punto viene attivata la funzione <DynamicLink href="/start/other-narrative-features#how-manage-the-end-of-the-game">Game.onEnd</DynamicLink>.
 
 ## Aggiungi
 
-Per creare una label, utilizza la funzione `newLabel()`.
+To create a `label`, use the `newLabel()` function.
 Questa funzione ha i seguenti parametri:
 
-- A unique `id` for the label.
-- The `steps` of the label, as an array of functions to be executed in order, or a function that returns such an array.
-- Optional `options` for the label, as an object with the following properties:
-  - `onStepStart`: A function executed before each step. See more <DynamicLink href="/start/labels-advanced#onstepstart">here</DynamicLink>.
-  - `onStepEnd`: A function executed after each step. See more <DynamicLink href="/start/labels-advanced#onstepend">here</DynamicLink>.
-  - `onLoadingLabel`: A function executed in `onStepStart` if the step index is 0, or when loading a save file. See more <DynamicLink href="/start/labels-advanced#onloadinglabel">here</DynamicLink>.
+- `id`: Un identificatore univoco (stringa). Used to reference the `label` in the game (must be unique).
+- `steps`: An array of functions to be executed in order, or a function that returns such an array.
+- `options` (Optional): An object with the `label`'s options:
+  - `onStepStart` (Optional): A function executed before each `step`. See more <DynamicLink href="/start/labels-advanced#onstepstart">here</DynamicLink>.
+  - `onStepEnd` (Optional): A function executed after each `step`. See more <DynamicLink href="/start/labels-advanced#onstepend">here</DynamicLink>.
+  - `onLoadingLabel` (Optional): A function executed in `onStepStart` if the `step` index is 0, or when loading a save file. See more <DynamicLink href="/start/labels-advanced#onloadinglabel">here</DynamicLink>.
 
 ```ts title="labels/startLabel.ts"
 import { narration, StepLabelProps } from '@drincs/pixi-vn'
@@ -94,7 +94,7 @@ export const startLabel = newLabel("start_label",
 
 <Accordion title="Step pros" id="step-pros">
 
-È possibile passare un tipo alla funzione `newLabel` per aggiungere parametri personalizzati per tale label, oltre a [`StepLabelProps`](#steplabelprops).
+You can pass a type to the `newLabel` function to add custom parameters for that `label`, in addition to [`StepLabelProps`](#steplabelprops).
 
 ```ts title="labels/startLabel.ts"
 import { narration } from '@drincs/pixi-vn'
@@ -121,7 +121,7 @@ narration.callLabel(startLabel, {
 
 I passaggi possono restituire un oggetto `StepLabelResult`. Per impostazione predefinita, `StepLabelResult` è `{ [key: string]: any }`.
 
-È possibile "sovrascrivere" l'interfaccia `StepLabelResult` nel file `.d.ts` per definire proprietà personalizzate per i risultati degli step.
+You can "override" the `StepLabelResult` interface in your `.d.ts` file to define custom properties for `step` results.
 
 ```ts tab="pixi-vn.d.ts"
 declare module '@drincs/pixi-vn' {
@@ -148,25 +148,3 @@ export const startLabel = newLabel("start_label",
 </Accordion>
 
 </Accordions>
-
-## Step save limit
-
-At each step, all information about the current game state is saved.
-
-Per evitare che il file di salvataggio diventi troppo grande, è previsto un limite al numero di step salvati. Per impostazione predefinita, vengono salvati solo gli ultimi 20 step, ma è possibile aumentare questo limite (ad esempio a 100). Una volta raggiunto il limite, vengono conservate solo le informazioni essenziali dei passaggi precedenti. This allows you to display the full <DynamicLink href="/start/history">narrative history</DynamicLink>, but you cannot <DynamicLink href="/start/labels-flow#go-back">return</DynamicLink> to a specific step beyond the limit.
-
-You can change the step save limit by setting the `stepLimitSaved` property in the `stepHistory` object.
-
-```typescript
-import { stepHistory } from '@drincs/pixi-vn'
-
-stepHistory.stepLimitSaved = 100
-```
-
-To disable the step save limit, set `stepLimitSaved` to `Infinity`.
-
-```typescript
-import { stepHistory } from '@drincs/pixi-vn'
-
-stepHistory.stepLimitSaved = Infinity
-```
