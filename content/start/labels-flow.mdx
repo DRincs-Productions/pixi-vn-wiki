@@ -18,11 +18,11 @@ This function has the following parameters:
 * `label`: the `label` to be called
 * `props`: the properties to pass to the `label`. The interface corresponds to <DynamicLink href="/start/labels#steplabelprops">`StepLabelProps`</DynamicLink>.
 
-When you call a `label`, the first step of that `label` is executed. If another `label` was running before the call, the remaining `steps` of that previous `label` will resume after the called `label` finishes.
+When you call a `label`, the first `step` of that `label` is executed. If another `label` was running before the call, the remaining `steps` of that previous `label` will resume after the called `label` finishes.
 
-For example, if the game is running step 5 of `label` A and you **call** `label` B, after all `steps` of `label` B are executed, the game continues with step 6 of `label` A.
+For example, if the game is running `step` 5 of `label` A and you **call** `label` B, after all `steps` of `label` B are executed, the game continues with `step` 6 of `label` A.
 
-`narration.callLabel` returns the <DynamicLink href="/start/labels#all-steps-result">result of the first step of the called `label`</DynamicLink>.
+`narration.callLabel` returns the <DynamicLink href="/start/labels#all-steps-result">result of the first `step` of the called `label`</DynamicLink>.
 
 ```ts
 import { narration } from '@drincs/pixi-vn'
@@ -30,7 +30,7 @@ import { narration } from '@drincs/pixi-vn'
 narration.callLabel(startLabel, {})
 ```
 
-If you execute `narration.callLabel` inside a step, you should return the <DynamicLink href="/start/labels#all-steps-result">result of the first step of the called `label`</DynamicLink> and use `await`. This ensures the history is managed correctly.
+If you execute `narration.callLabel` inside a `step`, you should return the <DynamicLink href="/start/labels#all-steps-result">result of the first `step` of the called `label`</DynamicLink> and use `await`. This ensures the history is managed correctly.
 
 ```ts title="labels/startLabel.ts"
 import { narration, newLabel } from '@drincs/pixi-vn'
@@ -57,9 +57,9 @@ This function has the following parameters:
 
 When you jump to a `label`, the current `label`'s `steps` are stopped and the new `label`'s `steps` begin.
 
-For example, if the game is running step 5 of `label` A, and you **call** `label` B, but then **jump** to `label` C, after `label` C finishes, the game continues with step 6 of `label` A. When you jump to `label` C, `label` B is closed.
+For example, if the game is running `step` 5 of `label` A, and you **call** `label` B, but then **jump** to `label` C, after `label` C finishes, the game continues with `step` 6 of `label` A. When you jump to `label` C, `label` B is closed.
 
-`narration.jumpLabel` returns the <DynamicLink href="/start/labels#all-steps-result">result of the first step of the called `label`</DynamicLink>.
+`narration.jumpLabel` returns the <DynamicLink href="/start/labels#all-steps-result">result of the first `step` of the called `label`</DynamicLink>.
 
 ```ts
 import { narration } from '@drincs/pixi-vn'
@@ -67,7 +67,7 @@ import { narration } from '@drincs/pixi-vn'
 narration.jumpLabel(startLabel, {})
 ```
 
-If you execute `narration.jumpLabel` inside a step, you should return the <DynamicLink href="/start/labels#all-steps-result">result of the first step of the called `label`</DynamicLink> and use `await`. This ensures the first step of the new `label` is awaited.
+If you execute `narration.jumpLabel` inside a `step`, you should return the <DynamicLink href="/start/labels#all-steps-result">result of the first `step` of the called `label`</DynamicLink> and use `await`. This ensures the first `step` of the new `label` is awaited.
 
 ```ts title="labels/startLabel.ts"
 import { narration } from '@drincs/pixi-vn'
@@ -90,7 +90,7 @@ export const startLabel = newLabel("start_label",
 
 ### Next step
 
-To execute the next step, use the `narration.goNext()` function.
+To execute the next `step`, use the `narration.goNext()` function.
 This function has the following parameters:
 
 * `props`: the properties to pass to the `label`. The interface corresponds to <DynamicLink href="/start/labels#steplabelprops">`StepLabelProps`</DynamicLink>.
@@ -101,7 +101,7 @@ import { narration } from '@drincs/pixi-vn'
 await narration.goNext({})
 ```
 
-`narration.goNext()` is asynchronous, so you can use `.then` to, for example, disable a "Next" button until the step is complete.
+`narration.goNext()` is asynchronous, so you can use `.then` to, for example, disable a "Next" button until the `step` is complete.
 
 ```ts
 import { narration } from '@drincs/pixi-vn'
@@ -117,7 +117,7 @@ narration.goNext({})
 
 <Accordion title="Call goNext inside a step" id="call-gonext-inside-a-step">
 
-If you call `narration.goNext()` inside a step, the "go next" request will be queued and executed when the `steps` queue is empty.
+If you call `narration.goNext()` inside a `step`, the "go next" request will be queued and executed when the `steps` queue is empty.
 
 ```ts title="labels/startLabel.ts"
 import { narration, newLabel } from '@drincs/pixi-vn'
@@ -154,22 +154,22 @@ const label2 = newLabel("label_02", [
 
 In this example, the output will be `2`, `1`, `3`. The steps are:
 
-1. `await narration.callLabel(label2, props)` calls label2 and awaits its first step. (1 item in the step queue)
-2. The first step of label2 executes `await narration.goNext(props)`, but the goNext request is queued because the step queue is not empty. (2 items in the step queue)
-3. `console.log(2)` runs, finishing the first step of label2. (1 item in the step queue)
-4. `console.log(1)` runs, finishing the first step of startLabel. (0 items in the step queue)
-5. Now the goNext request is executed, and the second step of startLabel runs. (1 item in the step queue)
-6. `console.log(3)` runs, finishing the second step of startLabel. (0 items in the step queue)
+1. `await narration.callLabel(label2, props)` calls label2 and awaits its first `step`. (1 item in the `step` queue)
+2. The first `step` of label2 executes `await narration.goNext(props)`, but the goNext request is queued because the `step` queue is not empty. (2 items in the `step` queue)
+3. `console.log(2)` runs, finishing the first `step` of label2. (1 item in the `step` queue)
+4. `console.log(1)` runs, finishing the first `step` of startLabel. (0 items in the `step` queue)
+5. Now the goNext request is executed, and the second `step` of startLabel runs. (1 item in the `step` queue)
+6. `console.log(3)` runs, finishing the second `step` of startLabel. (0 items in the `step` queue)
 
 </Accordion>
 
 <Accordion title="Check if can go to the next step" id="can-go-next">
 
-You can use the `narration.canGoNext` property to check if the next step can be executed.
+You can use the `narration.canGoNext` property to check if the next `step` can be executed.
 
 `narration.canGoNext` is `false` when:
 
-* A step is running
+* A `step` is running
 * The player must <DynamicLink href="/start/choices">make a choice</DynamicLink>
 * The player must <DynamicLink href="/start/input">enter a value</DynamicLink>
 
@@ -193,9 +193,9 @@ function NextButton() {
 
 ### Go back
 
-At every step, the system saves the current state of the game. To go back to the previous step, use the `stepHistory.goBack()` function.
+At every `step`, the system saves the current state of the game. To go back to the previous `step`, use the `stepHistory.goBack()` function.
 
-You must pass a function `navigate: (path: string) => void` as a parameter. This function will be called with the <DynamicLink href="/start/start/interface-navigate">URL Path or Route</DynamicLink> of the previous step, so you can <DynamicLink href="/start/interface-navigate">navigate to the previous UI screen</DynamicLink>.
+You must pass a function `navigate: (path: string) => void` as a parameter. This function will be called with the <DynamicLink href="/start/start/interface-navigate">URL Path or Route</DynamicLink> of the previous `step`, so you can <DynamicLink href="/start/interface-navigate">navigate to the previous UI screen</DynamicLink>.
 
 For example, if you use [React Router Dom](https://reactrouter.com):
 
