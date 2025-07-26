@@ -401,6 +401,7 @@ export function renpyTree(lang?: string): DocsLayoutProps["tree"] {
             {
                 type: "page",
                 name: "Quick Start",
+                icon: <Album />,
                 url: `${preUrl}/renpy`,
             },
         ],
@@ -420,6 +421,7 @@ export function inkTree(lang?: string): DocsLayoutProps["tree"] {
             {
                 type: "page",
                 name: "Quick Start",
+                icon: <Album />,
                 url: `${preUrl}/ink`,
             },
             {
@@ -543,6 +545,7 @@ export function nqtrTree(lang?: string): DocsLayoutProps["tree"] {
             {
                 type: "page",
                 name: "Quick Start",
+                icon: <Album />,
                 url: `${preUrl}/nqtr`,
             },
             {
