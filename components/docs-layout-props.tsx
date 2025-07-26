@@ -35,7 +35,7 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                 index: {
                     type: "page",
                     name: "Quick Start",
-                    url: `${preUrl}/start/getting-started`,
+                    url: `${preUrl}/start`,
                 },
                 children: [
                     {
@@ -510,7 +510,7 @@ export function homeLinks(lang?: string): LinkItemType[] {
         },
         {
             text: "Guide",
-            url: `${preUrl}/start/getting-started`,
+            url: `${preUrl}/start`,
         },
         {
             type: "menu",
@@ -590,7 +590,7 @@ export function sidebar(lang?: string): Partial<SidebarOptions> & {
                 title: "Pixi’VN",
                 icon: <Image width={16} height={16} src='/icon.png' alt='Pixi’VN' />,
                 description: "Getting started with Pixi’VN",
-                url: `${preUrl}/start/getting-started`,
+                url: `${preUrl}/start`,
             },
             {
                 title: "NQTR (Beta)",

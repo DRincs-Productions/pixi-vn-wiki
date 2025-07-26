@@ -165,10 +165,7 @@ async function Hero() {
                 <p className='mb-8 text-fd-muted-foreground md:max-w-[80%] md:text-xl'>{t("subtitle")}</p>
 
                 <div className='inline-flex items-center gap-3 max-md:mx-auto'>
-                    <Link
-                        href='/start/getting-started'
-                        className={cn(buttonVariants({ size: "lg", className: "rounded-full" }))}
-                    >
+                    <Link href='/start' className={cn(buttonVariants({ size: "lg", className: "rounded-full" }))}>
                         {t("getting_started")}
                     </Link>
                     <Link href='/start/why' className={cn(buttonVariants({ size: "lg", className: "rounded-full" }))}>
