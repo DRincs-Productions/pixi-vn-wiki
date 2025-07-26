@@ -578,7 +578,7 @@ export function sidebar(lang?: string): Partial<SidebarOptions> & {
                 url: `${preUrl}/ink`,
             },
             {
-                title: "Ren’Py",
+                title: "Ren’Py (Cooming soon)",
                 icon: <Image width={16} height={16} src='/renpy.svg' alt="Ren'Py" />,
                 description: "Ren’Py narration",
                 url: `${preUrl}/renpy`,
