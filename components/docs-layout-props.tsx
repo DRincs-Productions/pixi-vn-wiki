@@ -395,6 +395,10 @@ export function renpyTree(lang?: string): DocsLayoutProps["tree"] {
         name: "Ren’Py",
         children: [
             {
+                type: "separator",
+                name: "Introduction",
+            },
+            {
                 type: "page",
                 name: "Quick Start",
                 url: `${preUrl}/renpy`,
@@ -410,9 +414,17 @@ export function inkTree(lang?: string): DocsLayoutProps["tree"] {
         name: "ink",
         children: [
             {
+                type: "separator",
+                name: "Introduction",
+            },
+            {
                 type: "page",
                 name: "Quick Start",
                 url: `${preUrl}/ink`,
+            },
+            {
+                type: "separator",
+                name: "First steps",
             },
             { type: "page", name: "Characters", url: `${preUrl}/ink/ink-character` },
             { type: "page", name: "Open a knot", url: `${preUrl}/ink/ink-label` },
@@ -525,9 +537,17 @@ export function nqtrTree(lang?: string): DocsLayoutProps["tree"] {
         name: "Navigation Quest Time Routine (NQTR)",
         children: [
             {
+                type: "separator",
+                name: "Introduction",
+            },
+            {
                 type: "page",
                 name: "Quick Start",
                 url: `${preUrl}/nqtr`,
+            },
+            {
+                type: "separator",
+                name: "First steps",
             },
             {
                 type: "page",
