@@ -137,7 +137,7 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                                     { type: "page", name: "Label features", url: `${preUrl}/start/labels-advanced` },
                                 ],
                             },
-                            { type: "page", name: "Choice Menus", url: `${preUrl}/start/choices` },
+                            { type: "page", name: "Choice menus", url: `${preUrl}/start/choices` },
                             { type: "page", name: "Input prompt", url: `${preUrl}/start/input` },
                             { type: "page", name: "Other features", url: `${preUrl}/start/other-narrative-features` },
                         ],
@@ -291,12 +291,12 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                     },
                     {
                         type: "page",
-                        name: "Flags Management",
+                        name: "Flags management",
                         url: `${preUrl}/start/flags`,
                     },
                     {
                         type: "page",
-                        name: "Stored Classes",
+                        name: "Stored classes",
                         url: `${preUrl}/start/stored-classes`,
                     },
                 ],
