@@ -1,24 +1,22 @@
 ---
 title: History
+description: Describes how Pixi'VN tracks and manages narrative history, including dialogue, choices, step counters, and save limits.
 ---
 
 <Callout title="UI screen" type="info">
-
-You can find the example of the history UI screen in the <DynamicLink href="/start/interface-examples#history">interface examples</DynamicLink> section.
-
+You can find an example of the history UI screen in the <DynamicLink href="/start/interface-examples#history">interface examples</DynamicLink> section.
 </Callout>
 
-Pixi’VN save all dialogues, choices and responses that have been displayed in the game and all `label` and `step` opened.
+Pixi’VN saves all dialogues, choices, responses, and every opened `label` and `step` during the game.
 
 <Accordions>
 
 <Accordion title="Check if the label has already been completed" id="check-if-the-label-has-already-been-completed">
 
-To check if a `label` has already been completed, you can use the `narration.isLabelAlreadyCompleted` function.
+To check if a `label` has already been completed, use the `narration.isLabelAlreadyCompleted` function.
+This function has the following parameters:
 
-The function takes the following parameters:
-
-* `label`: The <DynamicLink href="/start/labels">label</DynamicLink> to check if it is already completed.
+* `label`: The <DynamicLink href="/start/labels">label</DynamicLink> to check.
 
 ```typescript
 const isLabelCompleted = narration.isLabelAlreadyCompleted(startLabel)
@@ -27,9 +25,9 @@ const isLabelCompleted = narration.isLabelAlreadyCompleted("labelid")
 
 </Accordion>
 
-<Accordion title="Get already been made choices of current step" id="get-already-been-made-choices-of-current step">
+<Accordion title="Get already made choices of current step" id="get-already-been-made-choices-of-current-step">
 
-To get the already been made choices of the current `step`, you can use the `narration.alreadyCurrentStepMadeChoices`.
+To get the choices already made in the current `step`, use `narration.alreadyCurrentStepMadeChoices`.
 
 ```typescript
 const choices = narration.alreadyCurrentStepMadeChoices
@@ -37,9 +35,9 @@ const choices = narration.alreadyCurrentStepMadeChoices
 
 </Accordion>
 
-<Accordion title="Check if current step is already been opened" id="check-if-current-step-is-already-been-opened">
+<Accordion title="Check if current step has already been opened" id="check-if-current-step-is-already-been-opened">
 
-To check if the current `step` is already been opened, you can use the `narration.isCurrentStepAlreadyOpened`.
+To check if the current `step` has already been opened, use `narration.isCurrentStepAlreadyOpened`.
 
 ```typescript
 const isCurrentStepOpened = narration.isCurrentStepAlreadyOpened;
@@ -49,7 +47,8 @@ const isCurrentStepOpened = narration.isCurrentStepAlreadyOpened;
 
 <Accordion title="Counter of execution times of the current step" id="counter-of-execution-times-of-the-current-step">
 
-To get the counter of execution times of the current `step`, you can use the `narration.currentStepTimesCounter`. **Important**: The counter will be incremented only if `narration.currentStepTimesCounter` is called at least once in a `step`.
+To get the execution count for the current `step`, use `narration.currentStepTimesCounter`.  
+**Important:** The counter is incremented only if `narration.currentStepTimesCounter` is accessed at least once in a `step`.
 
 ```ts title="labels/startLabel.ts"
 export const label = newLabel("id",
@@ -68,7 +67,7 @@ export const label = newLabel("id",
     () => {
         if (narration.currentStepTimesCounter === 0) { // ✅ will be incremented
             // ...
-        } else if (narration.currentStepTimesCounter === 1) { // ✅ It will not be incremented, because it has already been incremented in this step
+        } else if (narration.currentStepTimesCounter === 1) { // ✅ Not incremented again in this step
             // ...
         }
     }
@@ -79,7 +78,7 @@ export const label = newLabel("id",
 export const label = newLabel("id",
     () => {
         if (flag) {
-            if (narration.currentStepTimesCounter === 1) { // ❌ It will be incremented only if "flag" is true
+            if (narration.currentStepTimesCounter === 1) { // ❌ Only incremented if "flag" is true
                 // ...
             }
         }
@@ -87,7 +86,7 @@ export const label = newLabel("id",
 )
 ```
 
-To restart the counter of execution times of the current `step`, you can use the `narration.currentStepTimesCounter = 0`.
+To reset the execution counter for the current `step`, set `narration.currentStepTimesCounter = 0`.
 
 ```typescript
 narration.currentStepTimesCounter = 0;
@@ -99,9 +98,8 @@ narration.currentStepTimesCounter = 0;
 
 ## Get
 
-The Narration timeline of the game is a list of all dialogues that have been displayed. It is useful to show the history of dialogues and choices to the player.
-
-To get the narrative history of the game, you can use the `stepHistory.narrativeHistory`. It returns a list of `NarrativeHistory<T>[]`.
+The narration timeline is a list of all dialogues and choices shown to the player.  
+To get the narrative history, use `stepHistory.narrativeHistory`. It returns a list of `NarrativeHistory<T>[]`.
 
 ```typescript
 const dialogues: NarrativeHistory[] = stepHistory.narrativeHistory;
@@ -109,16 +107,16 @@ const dialogues: NarrativeHistory[] = stepHistory.narrativeHistory;
 
 ## Remove
 
-To delete all the narrative history, use the `stepHistory.removeNarrativeHistory`.
+To delete all narrative history, use `stepHistory.removeNarrativeHistory()`.
 
 ```typescript
 stepHistory.removeNarrativeHistory();
 ```
 
-To delete a part of the narrative history, use the `stepHistory.removeNarrativeHistory`.
+To delete part of the narrative history, pass a number to remove the first N elements:
 
 ```typescript
-// delete the first 2 elements
+// Delete the first 2 elements
 stepHistory.removeNarrativeHistory(2);
 ```
 
