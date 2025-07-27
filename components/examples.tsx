@@ -1021,3 +1021,43 @@ const bananaLabel = newLabel("BananaLabel", [
         />
     );
 }
+
+export function InputPrompt() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { narration, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  () => {
+    narration.dialogue = "Hello";
+  },
+  () => {
+    narration.dialogue = "What is your name?";
+    narration.requestInput({ type: "string" });
+  },
+  () => {
+    narration.dialogue = \`My name is \${narration.inputValue}\`;
+  },
+  () => {
+    narration.dialogue = "How old are you?";
+    narration.requestInput({ type: "number" }, 18);
+  },
+  () => {
+    narration.dialogue = \`I am \${narration.inputValue} years old\`;
+  },
+  () => {
+    narration.dialogue = "Describe who you are:";
+    narration.requestInput({ type: "html textarea" });
+  },
+  () => {
+    narration.dialogue = \`\${narration.inputValue}\`;
+  },
+  () => {
+    narration.dialogue = "Restart";
+  },
+]);`,
+            }}
+        />
+    );
+}
