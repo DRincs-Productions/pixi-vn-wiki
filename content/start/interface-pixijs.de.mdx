@@ -1,0 +1,47 @@
+---
+title: PixiJS UI
+description: How to use PixiJS layers and components to build custom UI screens in Pixi’VN, and combine them with HTML UI.
+---
+
+As explained in more detail <DynamicLink href="/start/canvas">here</DynamicLink>, the entire rendering part of Pixi’VN is based on PixiJS. By taking advantage of <DynamicLink href="/start/interface#adding-pixijs-ui-layers">PixiJS Layers</DynamicLink>, you can use PixiJS to create custom UI screens.
+
+<Callout title="Templates" type="info">
+
+In all templates, a PixiJS Layer called "ui" is created on startup. You can use this layer to create your UI screens.
+
+</Callout>
+
+You can also combine HTML Layer components with PixiJS Layer ones. To do this, add the PixiJS components during the first rendering of an HTML screen and clean up the PixiJS Layer when the screen is closed.
+
+For example:
+
+```tsx title="React"
+import { useEffect } from "react";
+import { Assets, canvas } from "@drincs/pixi-vn";
+import { Sprite } from "pixi.js";
+
+export default function MyScreen() {
+    useEffect(() => {
+        let layer = canvas.getLayer("ui");
+        if (layer) {
+            const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
+            const bunny = new Sprite(texture);
+            layer.addChild(bg);
+        }
+
+        return () => {
+            canvas.getLayer("ui")?.removeChildren();
+        };
+    });
+
+    return null;
+}
+```
+
+## Best PixiJS component libraries
+
+To create a beautiful user interface, you can use some of the best PixiJS component libraries:
+
+- [PixiJS](https://pixijs.com/)
+- [PixiUI](https://github.com/pixijs/ui)
+- [PixiLayout](https://github.com/pixijs/layout)
