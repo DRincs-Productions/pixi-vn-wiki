@@ -5,9 +5,11 @@ description: How to define, organize, and navigate rooms, locations, and maps in
 import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
 <Callout title="Nomenclature" type="info">
+
 Usually in video games, navigation elements used to identify the position of characters are called room, location (e.g. restaurant, house, hospital, etc.), and map. For this reason, names that follow this logic are used.
 
 This does not prevent you from using these elements to manage navigation with the same logic but with different terms. For example, in a game set in space where the player moves between planets, rooms can be the planets, locations can be the solar systems, and maps can be the galaxy.
+
 </Callout>
 
 The navigation system is composed of the following elements:
@@ -35,7 +37,7 @@ To create a new instance of `RoomBaseModel`, you need the following parameters:
 * `props`: An object with the room's properties:
   * `name` (Optional): The room's name.
   * `image` (Optional): The room's image URL.
-  * `activities` (Optional): The activities available in this room.
+  * `activities` (Optional): The <DynamicLink href="/nqtr/activity">activities</DynamicLink> available in this room.
   * `disabled` (Optional): Whether the room is disabled. You can also pass a <DynamicLink href="/start/flags">Pixi’VN flag</DynamicLink> name.
   * `hidden` (Optional): Whether the room is hidden. You can also pass a <DynamicLink href="/start/flags">Pixi’VN flag</DynamicLink> name.
   * `icon` (Optional): The room's icon image URL.
@@ -47,7 +49,7 @@ To create a new instance of `LocationBaseModel`, you need the following paramete
 * `props`: An object with the location's properties:
   * `name` (Optional): The location's name.
   * `icon` (Optional): The location's icon image URL.
-  * `activities` (Optional): The activities available in this location.
+  * `activities` (Optional): The <DynamicLink href="/nqtr/activity">activities</DynamicLink> available in this location.
   * `disabled` (Optional): Whether the location is disabled. You can also pass a <DynamicLink href="/start/flags">Pixi’VN flag</DynamicLink> name.
   * `hidden` (Optional): Whether the location is hidden. You can also pass a <DynamicLink href="/start/flags">Pixi’VN flag</DynamicLink> name.
 
@@ -57,7 +59,7 @@ To create a new instance of `MapBaseModel`, you need the following parameters:
 * `props`: An object with the map's properties:
   * `name` (Optional): The map's name.
   * `image` (Optional): The map's image URL.
-  * `activities` (Optional): The activities available in this map.
+  * `activities` (Optional): The <DynamicLink href="/nqtr/activity">activities</DynamicLink> available in this map.
 
 ```ts tab="values/rooms.ts"
 import { RegisteredRooms, RoomBaseModel } from "@drincs/nqtr";
@@ -221,7 +223,9 @@ navigator.currentRoom = mcRoom;
 ## Custom class
 
 <Callout title="Templates" type="info">
+
 In all templates, the `Room` / `Location` / `Map` class is already defined in the file `models/nqtr/Room.ts` / `models/nqtr/Location.ts` / `models/nqtr/Map.ts`. You can use it directly or modify it to suit your needs.
+
 </Callout>
 
 It is recommended to create your own class `Room` / `Location` / `Map` that extends `RoomStoredClass` / `LocationStoredClass` / `MapStoredClass` and "override" the interface `RoomInterface` / `LocationInterface` / `MapInterface` to add, edit, or remove properties or methods.
@@ -233,8 +237,7 @@ Now you can create a class `Room` / `Location` / `Map` that extends `RoomStoredC
 To create a property that stores its value in the game storage, you can create [Getters/Setters](https://www.typescriptlang.org/docs/handbook/2/classes.html#getters--setters) and use the `this.getStorageProperty()` / `this.setStorageProperty()` methods. (See the file `Room.ts` / `Location.ts` / `Map.ts`)
 
 ```ts tab="models/nqtr/Room.ts"
-import { ActivityInterface, LocationInterface, RoomInterface, RoomStoredClass } from "@drincs/nqtr";
-import ImageTimeSlots from "../ImageTimeSlots";
+import { ActivityInterface, LocationInterface, OnRunProps, RoomInterface, RoomStoredClass } from "@drincs/nqtr";
 
 export default class Room extends RoomStoredClass implements RoomInterface {
     constructor(
@@ -244,24 +247,31 @@ export default class Room extends RoomStoredClass implements RoomInterface {
             name: string;
             disabled?: boolean | (() => boolean);
             hidden?: boolean | (() => boolean);
-            image: ImageTimeSlots;
+            background: string | ContainerChild | ((props: Room, runProps: OnRunProps) => ContainerChild);
             activities?: ActivityInterface[];
             isEntrance?: boolean;
         }
     ) {
         super(id, location, props.activities);
         this.name = props.name;
-        this._defaultdisabled = props.disabled || false;
-        this._defaulthidden = props.hidden || false;
-        this.image = props.image;
+        this._defaultDisabled = props.disabled || false;
+        this._defaultHidden = props.hidden || false;
+        this._background = props.background;
         this.isEntrance = props.isEntrance || false;
     }
     readonly name: string;
-    readonly image: ImageTimeSlots;
+    private readonly _background: string | ContainerChild | ((props: Room, runProps: OnRunProps) => ContainerChild);
+    get background(): string | ContainerChild | ((props: OnRunProps) => ContainerChild) {
+        const background = this._background;
+        if (typeof background === "function") {
+            return (runProps: OnRunProps) => background(this, runProps);
+        }
+        return background;
+    }
     readonly isEntrance: boolean;
-    private _defaultdisabled: boolean | (() => boolean) = false;
+    private _defaultDisabled: boolean | (() => boolean) = false;
     get disabled(): boolean {
-        let value = this.getStorageProperty<boolean>("disabled") || this._defaultdisabled;
+        let value = this.getStorageProperty<boolean>("disabled") || this._defaultDisabled;
         if (typeof value === "function") {
             return value();
         }
@@ -270,9 +280,9 @@ export default class Room extends RoomStoredClass implements RoomInterface {
     set disabled(value: boolean) {
         this.setStorageProperty("disabled", value);
     }
-    private _defaulthidden: boolean | (() => boolean) = false;
+    private _defaultHidden: boolean | (() => boolean) = false;
     get hidden(): boolean {
-        let value = this.getStorageProperty<boolean>("hidden") || this._defaulthidden;
+        let value = this.getStorageProperty<boolean>("hidden") || this._defaultHidden;
         if (typeof value === "function") {
             return value();
         }
@@ -285,8 +295,15 @@ export default class Room extends RoomStoredClass implements RoomInterface {
 ```
 
 ```ts tab="models/nqtr/Location.ts"
-import { ActivityInterface, LocationInterface, LocationStoredClass, MapInterface, RoomInterface } from "@drincs/nqtr";
-import { ImageSprite, StepLabelProps } from "@drincs/pixi-vn";
+import {
+    ActivityInterface,
+    LocationInterface,
+    LocationStoredClass,
+    MapInterface,
+    OnRunProps,
+    RoomInterface,
+} from "@drincs/nqtr";
+import { ContainerChild } from "@drincs/pixi-vn";
 
 export default class Location extends LocationStoredClass implements LocationInterface {
     constructor(
@@ -297,26 +314,27 @@ export default class Location extends LocationStoredClass implements LocationInt
             name: string;
             disabled?: boolean | (() => boolean);
             hidden?: boolean | (() => boolean);
-            icon: ImageSprite | ((location: Location, props: StepLabelProps) => ImageSprite);
+            sprite: ContainerChild | ((props: Location, runProps: OnRunProps) => ContainerChild);
         }
     ) {
         super(id, map, props.activities);
         this.name = props.name;
-        this._defaultdisabled = props.disabled || false;
-        this._defaulthidden = props.hidden || false;
-        this._icon = props.icon;
+        this._defaultDisabled = props.disabled || false;
+        this._defaultHidden = props.hidden || false;
+        this._sprite = props.sprite;
     }
     readonly name: string;
-    private readonly _icon: ImageSprite | ((location: Location, props: StepLabelProps) => ImageSprite);
-    getIcon(props: StepLabelProps): ImageSprite {
-        if (typeof this._icon === "function") {
-            return this._icon(this, props);
+    private readonly _sprite: ContainerChild | ((props: Location, runProps: OnRunProps) => ContainerChild);
+    get sprite(): ContainerChild | ((props: OnRunProps) => ContainerChild) {
+        let sprite = this._sprite;
+        if (typeof sprite === "function") {
+            return (runProps: OnRunProps) => sprite(this, runProps);
         }
-        return this._icon;
+        return sprite;
     }
-    private _defaultdisabled: boolean | (() => boolean) = false;
+    private _defaultDisabled: boolean | (() => boolean) = false;
     get disabled(): boolean {
-        let value = this.getStorageProperty<boolean>("disabled") || this._defaultdisabled;
+        let value = this.getStorageProperty<boolean>("disabled") || this._defaultDisabled;
         if (typeof value === "function") {
             return value();
         }
@@ -325,9 +343,9 @@ export default class Location extends LocationStoredClass implements LocationInt
     set disabled(value: boolean) {
         this.setStorageProperty("disabled", value);
     }
-    private _defaulthidden: boolean | (() => boolean) = false;
+    private _defaultHidden: boolean | (() => boolean) = false;
     get hidden(): boolean {
-        let value = this.getStorageProperty<boolean>("hidden") || this._defaulthidden;
+        let value = this.getStorageProperty<boolean>("hidden") || this._defaultHidden;
         if (typeof value === "function") {
             return value();
         }
@@ -349,9 +367,7 @@ export default class Location extends LocationStoredClass implements LocationInt
 ```
 
 ```ts tab="models/nqtr/Map.ts"
-import { ActivityInterface, LocationInterface, MapInterface, MapStoredClass } from "@drincs/nqtr";
-import { NeighboringMaps } from "../../nqtr";
-import ImageTimeSlots from "../ImageTimeSlots";
+import { ActivityInterface, LocationInterface, MapInterface, MapStoredClass, OnRunProps } from "@drincs/nqtr";
 
 export default class Map extends MapStoredClass implements MapInterface {
     constructor(
@@ -359,18 +375,22 @@ export default class Map extends MapStoredClass implements MapInterface {
         props: {
             activities?: ActivityInterface[];
             name: string;
-            image: ImageTimeSlots;
-            neighboringMaps: NeighboringMaps;
+            background: string | ContainerChild | ((props: Map, runProps: OnRunProps) => ContainerChild);
         }
     ) {
         super(id, props.activities);
         this.name = props.name;
-        this.image = props.image;
-        this.neighboringMaps = props.neighboringMaps;
+        this._background = props.background;
     }
     readonly name: string;
-    readonly image: ImageTimeSlots;
-    readonly neighboringMaps: NeighboringMaps;
+    private readonly _background: string | ContainerChild | ((props: Map, runProps: OnRunProps) => ContainerChild);
+    get background(): string | ContainerChild | ((props: OnRunProps) => ContainerChild) {
+        const background = this._background;
+        if (typeof background === "function") {
+            return (runProps: OnRunProps) => background(this, runProps);
+        }
+        return background;
+    }
     override get locations(): LocationInterface[] {
         return super.locations.filter((location) => !location.hidden);
     }
@@ -378,10 +398,9 @@ export default class Map extends MapStoredClass implements MapInterface {
 ```
 
 ```ts tab="nqtr.d.ts"
-import { ImageSprite, StepLabelProps } from "@drincs/pixi-vn";
-import ImageTimeSlots from "./models/ImageTimeSlots";
+import { ContainerChild } from "@drincs/pixi-vn";
 
-declare module '@drincs/nqtr' {
+declare module "@drincs/nqtr" {
     interface RoomInterface {
         /**
          * The name.
@@ -389,9 +408,9 @@ declare module '@drincs/nqtr' {
          */
         readonly name: string;
         /**
-         * The image of the room.
+         * The background of the room.
          */
-        readonly image: ImageTimeSlots;
+        readonly background: string | ContainerChild | ((props: OnRunProps) => ContainerChild);
         /**
          * Whether is disabled.
          */
@@ -420,9 +439,9 @@ declare module '@drincs/nqtr' {
          */
         hidden: boolean;
         /**
-         * The icon of the location.
+         * The sprite of the location.
          */
-        getIcon(props: StepLabelProps): ImageSprite;
+        readonly sprite: ContainerChild | ((props: OnRunProps) => ContainerChild);
         /**
          * The entrance room of the location.
          */
@@ -434,13 +453,9 @@ declare module '@drincs/nqtr' {
          */
         readonly name: string;
         /**
-         * The image of the map.
+         * The background of the map.
          */
-        readonly image: ImageTimeSlots;
-        /**
-         * Neighboring maps.
-         */
-        readonly neighboringMaps: NeighboringMaps;
+        readonly background: string | ContainerChild | ((props: OnRunProps) => ContainerChild);
     }
 }
 ```

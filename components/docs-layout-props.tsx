@@ -1,7 +1,22 @@
 import { inkSource, nqtrSource, otherTopicsSource, renpySource, source } from "@/lib/source";
 import { Image } from "fumadocs-core/framework";
 import { DocsLayoutProps, LinkItemType } from "fumadocs-ui/layouts/docs";
-import { Album, BookOpenText, Boxes, Database, Hammer, MessageCircleQuestion, Music, Rocket, User } from "lucide-react";
+import { SidebarOptions } from "fumadocs-ui/layouts/docs/shared";
+import {
+    Album,
+    BookOpenText,
+    Boxes,
+    Database,
+    Globe,
+    Hammer,
+    History,
+    MessageCircleQuestion,
+    Music,
+    Rocket,
+    Sparkles,
+    User,
+} from "lucide-react";
+import { ReactNode } from "react";
 
 export function startTree(lang?: string): DocsLayoutProps["tree"] {
     const preUrl = lang ? `/${lang}` : "";
@@ -20,7 +35,7 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                 index: {
                     type: "page",
                     name: "Quick Start",
-                    url: `${preUrl}/start/getting-started`,
+                    url: `${preUrl}/start`,
                 },
                 children: [
                     {
@@ -122,7 +137,7 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                                     { type: "page", name: "Label features", url: `${preUrl}/start/labels-advanced` },
                                 ],
                             },
-                            { type: "page", name: "Choice Menus", url: `${preUrl}/start/choices` },
+                            { type: "page", name: "Choice menus", url: `${preUrl}/start/choices` },
                             { type: "page", name: "Input prompt", url: `${preUrl}/start/input` },
                             { type: "page", name: "Other features", url: `${preUrl}/start/other-narrative-features` },
                         ],
@@ -130,6 +145,7 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                     {
                         type: "folder",
                         name: "Markup language (to add text style)",
+                        icon: <Sparkles />,
                         index: {
                             type: "page",
                             name: "Markup language (to add text style)",
@@ -140,7 +156,18 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                                 type: "page",
                                 name: "Markdown",
                                 url: `${preUrl}/start/markup-markdown`,
-                                icon: <Image width={16} height={16} src='/markdown.svg' alt='Markdown' />,
+                                icon: (
+                                    <Image
+                                        width={16}
+                                        height={16}
+                                        src='/markdown.svg'
+                                        alt='Markdown'
+                                        style={{
+                                            backgroundColor: "white",
+                                            borderRadius: "50%",
+                                        }}
+                                    />
+                                ),
                             },
                             {
                                 type: "page",
@@ -150,8 +177,8 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                             },
                         ],
                     },
-                    { type: "page", name: "History", url: `${preUrl}/start/history` },
-                    { type: "page", name: "Translating", url: `${preUrl}/start/translate` },
+                    { type: "page", name: "History", icon: <History />, url: `${preUrl}/start/history` },
+                    { type: "page", name: "Translating", icon: <Globe />, url: `${preUrl}/start/translate` },
                 ],
             },
             {
@@ -249,11 +276,11 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
             },
             {
                 type: "folder",
-                name: "Game storage",
+                name: "Storage",
                 icon: <Database />,
                 index: {
                     type: "page",
-                    name: "Game storage",
+                    name: "Storage",
                     url: `${preUrl}/start/storage`,
                 },
                 children: [
@@ -264,12 +291,12 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                     },
                     {
                         type: "page",
-                        name: "Flags Management",
+                        name: "Flags management",
                         url: `${preUrl}/start/flags`,
                     },
                     {
                         type: "page",
-                        name: "Stored Classes",
+                        name: "Stored classes",
                         url: `${preUrl}/start/stored-classes`,
                     },
                 ],
@@ -368,17 +395,15 @@ export function renpyTree(lang?: string): DocsLayoutProps["tree"] {
         name: "Ren’Py",
         children: [
             {
-                type: "folder",
-                name: "Narration with Ren’Py (In progress)",
-                defaultOpen: true,
-                index: {
-                    type: "page",
-                    name: "Ren’Py",
-                    url: `${preUrl}/renpy`,
-                },
-                children: [],
+                type: "separator",
+                name: "Introduction",
             },
-            { type: "page", name: "Back", url: `${preUrl}/start/narration` },
+            {
+                type: "page",
+                name: "Quick Start",
+                icon: <Album />,
+                url: `${preUrl}/renpy`,
+            },
         ],
     };
 }
@@ -390,34 +415,31 @@ export function inkTree(lang?: string): DocsLayoutProps["tree"] {
         name: "ink",
         children: [
             {
-                type: "folder",
-                name: "Narration with ink",
-                defaultOpen: true,
-                index: {
-                    type: "page",
-                    name: "ink",
-                    url: `${preUrl}/ink`,
-                },
-                children: [
-                    { type: "page", name: "Characters", url: `${preUrl}/ink/ink-character` },
-                    { type: "page", name: "Open a knot", url: `${preUrl}/ink/ink-label` },
-                    { type: "page", name: "Variables", url: `${preUrl}/ink/ink-variables` },
-                    { type: "page", name: "Markup language (to add text style)", url: `${preUrl}/ink/ink-markup` },
-                    { type: "page", name: "Input prompt", url: `${preUrl}/ink/ink-input` },
-                    { type: "page", name: "Canvas", url: `${preUrl}/ink/ink-canvas` },
-                    { type: "page", name: "Sounds and Music", url: `${preUrl}/ink/ink-sound` },
-                    { type: "page", name: "Assets management", url: `${preUrl}/ink/ink-assets` },
-                    { type: "page", name: "Pause", url: `${preUrl}/ink/ink-pause` },
-                    { type: "page", name: "Text replacement", url: `${preUrl}/ink/ink-replacement` },
-                    { type: "page", name: "Translating", url: `${preUrl}/ink/ink-translate` },
-                    { type: "page", name: "Custom Hashtag Script", url: `${preUrl}/ink/ink-hashtag` },
-                ],
+                type: "separator",
+                name: "Introduction",
             },
             {
                 type: "page",
-                name: "Back",
-                url: `${preUrl}/start/narration`,
+                name: "Quick Start",
+                icon: <Album />,
+                url: `${preUrl}/ink`,
             },
+            {
+                type: "separator",
+                name: "First steps",
+            },
+            { type: "page", name: "Characters", url: `${preUrl}/ink/ink-character` },
+            { type: "page", name: "Open a knot", url: `${preUrl}/ink/ink-label` },
+            { type: "page", name: "Variables", url: `${preUrl}/ink/ink-variables` },
+            { type: "page", name: "Markup language (to add text style)", url: `${preUrl}/ink/ink-markup` },
+            { type: "page", name: "Input prompt", url: `${preUrl}/ink/ink-input` },
+            { type: "page", name: "Canvas", url: `${preUrl}/ink/ink-canvas` },
+            { type: "page", name: "Sounds and Music", url: `${preUrl}/ink/ink-sound` },
+            { type: "page", name: "Assets management", url: `${preUrl}/ink/ink-assets` },
+            { type: "page", name: "Pause", url: `${preUrl}/ink/ink-pause` },
+            { type: "page", name: "Text replacement", url: `${preUrl}/ink/ink-replacement` },
+            { type: "page", name: "Translating", url: `${preUrl}/ink/ink-translate` },
+            { type: "page", name: "Custom Hashtag Script", url: `${preUrl}/ink/ink-hashtag` },
         ],
     };
 }
@@ -483,7 +505,7 @@ export function homeLinks(lang?: string): LinkItemType[] {
         },
         {
             text: "Guide",
-            url: `${preUrl}/start/getting-started`,
+            url: `${preUrl}/start`,
         },
         {
             type: "menu",
@@ -517,26 +539,77 @@ export function nqtrTree(lang?: string): DocsLayoutProps["tree"] {
         name: "Navigation Quest Time Routine (NQTR)",
         children: [
             {
-                type: "folder",
-                name: "Navigation Quest Time Routine (NQTR)",
-                defaultOpen: true,
-                index: {
-                    type: "page",
-                    name: "NQTR",
-                    url: `${preUrl}/nqtr`,
-                },
-                children: [
-                    {
-                        type: "page",
-                        name: "Navigation and map",
-                        url: `${preUrl}/nqtr/navigation`,
-                    },
-                    {
-                        type: "page",
-                        name: "Time system",
-                        url: `${preUrl}/nqtr/time`,
-                    },
-                ],
+                type: "separator",
+                name: "Introduction",
+            },
+            {
+                type: "page",
+                name: "Quick Start",
+                icon: <Album />,
+                url: `${preUrl}/nqtr`,
+            },
+            {
+                type: "separator",
+                name: "First steps",
+            },
+            {
+                type: "page",
+                name: "Navigation and map",
+                url: `${preUrl}/nqtr/navigation`,
+            },
+            {
+                type: "page",
+                name: "Time system",
+                url: `${preUrl}/nqtr/time`,
+            },
+            {
+                type: "page",
+                name: "Activity",
+                url: `${preUrl}/nqtr/activity`,
+            },
+            {
+                type: "page",
+                name: "Routine",
+                url: `${preUrl}/nqtr/routine`,
+            },
+        ],
+    };
+}
+
+export function sidebar(lang?: string): Partial<SidebarOptions> & {
+    enabled?: boolean;
+    component?: ReactNode;
+} {
+    const preUrl = lang ? `/${lang}` : "";
+    return {
+        tabs: [
+            {
+                title: "Pixi’VN",
+                icon: <Image width={16} height={16} src='/icon.png' alt='Pixi’VN' />,
+                description: "Getting started with Pixi’VN",
+                url: `${preUrl}/start`,
+            },
+            {
+                title: "NQTR (Beta)",
+                description: "Navigation Quest Time Routine",
+                url: `${preUrl}/nqtr`,
+            },
+            {
+                title: "ink",
+                icon: <Image width={16} height={16} src='/ink.svg' alt='ink' />,
+                description: "ink narration",
+                url: `${preUrl}/ink`,
+            },
+            {
+                title: "Ren’Py (Cooming soon)",
+                icon: <Image width={16} height={16} src='/renpy.svg' alt="Ren'Py" />,
+                description: "Ren’Py narration",
+                url: `${preUrl}/renpy`,
+            },
+            {
+                title: "Other Topics",
+                description: "Other topics",
+                url: `${preUrl}/other-topics/faq`,
             },
         ],
     };

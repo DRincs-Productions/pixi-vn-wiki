@@ -945,3 +945,119 @@ export default class ButtonEvent extends CanvasEvent<Sprite> {
         />
     );
 }
+
+export function ReturningDifferentStepLists() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { narration, newLabel, storage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", () => {
+  let condition = storage.getFlag("condition");
+  if (condition) {
+    return [
+      () => {
+        narration.dialogue = "Step 2";
+      },
+      () => {
+        narration.dialogue = "Restart";
+      },
+    ];
+  } else {
+    return [
+      () => {
+        narration.dialogue = "Step 1";
+      },
+      async (props, { labelId }) => {
+        storage.setFlag("condition", true);
+        return await narration.jumpLabel(labelId, props);
+      },
+    ];
+  }
+});`,
+            }}
+        />
+    );
+}
+
+export function ChoiceMenus() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { narration, newChoiceOption, newCloseChoiceOption, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    narration.dialogue = "Choose a fruit:";
+    narration.choiceMenuOptions = [
+      newChoiceOption("Orange", orangeLabel, {}), // by default, the label will be called by call
+      newChoiceOption("Banana", bananaLabel, {}, { type: "jump" }),
+      newChoiceOption("Apple", appleLabel, { quantity: 5 }, { type: "call" }),
+      newCloseChoiceOption("Cancel"),
+    ];
+  },
+  () => {
+    narration.dialogue = "Restart";
+  },
+  async (props) => await narration.jumpLabel("start_label", props),
+]);
+
+const appleLabel = newLabel<{ quantity: number }>("AppleLabel", [
+  (props) => {
+    narration.dialogue = \`You have \${props?.quantity ?? 0} apples\`;
+  },
+]);
+const orangeLabel = newLabel("OrangeLabel", [
+  () => {
+    narration.dialogue = "You have an orange";
+  },
+]);
+const bananaLabel = newLabel("BananaLabel", [
+  () => {
+    narration.dialogue = "You have a banana";
+  },
+]);`,
+            }}
+        />
+    );
+}
+
+export function InputPrompt() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { narration, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  () => {
+    narration.dialogue = "Hello";
+  },
+  () => {
+    narration.dialogue = "What is your name?";
+    narration.requestInput({ type: "string" });
+  },
+  () => {
+    narration.dialogue = \`My name is \${narration.inputValue}\`;
+  },
+  () => {
+    narration.dialogue = "How old are you?";
+    narration.requestInput({ type: "number" }, 18);
+  },
+  () => {
+    narration.dialogue = \`I am \${narration.inputValue} years old\`;
+  },
+  () => {
+    narration.dialogue = "Describe who you are:";
+    narration.requestInput({ type: "html textarea" });
+  },
+  () => {
+    narration.dialogue = \`\${narration.inputValue}\`;
+  },
+  () => {
+    narration.dialogue = "Restart";
+  },
+]);`,
+            }}
+        />
+    );
+}

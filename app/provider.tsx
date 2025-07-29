@@ -18,12 +18,20 @@ const locales = [
         locale: "en",
     },
     {
-        name: "Русский (Русский)",
+        name: "Русский",
         locale: "ru",
     },
     {
-        name: "Italiano (Incompleto)",
+        name: "Italiano",
         locale: "it",
+    },
+    {
+        name: "中文",
+        locale: "zh",
+    },
+    {
+        name: "日本語",
+        locale: "ja",
     },
 ];
 
