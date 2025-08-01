@@ -5,9 +5,10 @@ import type { ReactNode } from "react";
 import LayoutProvider from "../layout.provider";
 
 export default async function Layout({ children }: { children: ReactNode }) {
+    const linksVar = await homeLinks();
     return (
         <LayoutProvider>
-            <HomeLayout {...baseOptions()} links={homeLinks()}>
+            <HomeLayout {...baseOptions()} links={linksVar}>
                 {children}
             </HomeLayout>
         </LayoutProvider>
