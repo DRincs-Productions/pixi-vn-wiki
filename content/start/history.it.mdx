@@ -1,6 +1,6 @@
 ---
-title: History
-description: Describes how Pixi'VN tracks and manages narrative history, including dialogue, choices, step counters, and save limits.
+title: Cronologia
+description: Descrive come Pixi'VN tiene traccia e gestisce la cronologia narrativa, inclusi dialoghi, scelte, contatori di passi e limiti di salvataggio.
 ---
 
 import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
@@ -13,97 +13,10 @@ You can find an example of the history UI screen in the <DynamicLink href="/star
 
 Pixi’VN saves all dialogues, choices, responses, and every opened `label` and `step` during the game.
 
-<Accordions>
-
-<Accordion title="Check if the label has already been completed" id="check-if-the-label-has-already-been-completed">
-
-To check if a `label` has already been completed, use the `narration.isLabelAlreadyCompleted` function.
-Questa funzione ha i seguenti parametri:
-
-- `label`: The <DynamicLink href="/start/labels">label</DynamicLink> to check.
-
-```typescript
-const isLabelCompleted = narration.isLabelAlreadyCompleted(startLabel)
-const isLabelCompleted = narration.isLabelAlreadyCompleted("labelid")
-```
-
-</Accordion>
-
-<Accordion title="Get already made choices of current step" id="get-already-been-made-choices-of-current-step">
-
-To get the choices already made in the current `step`, use `narration.alreadyCurrentStepMadeChoices`.
-
-```typescript
-const choices = narration.alreadyCurrentStepMadeChoices
-```
-
-</Accordion>
-
-<Accordion title="Check if current step has already been opened" id="check-if-current-step-is-already-been-opened">
-
-To check if the current `step` has already been opened, use `narration.isCurrentStepAlreadyOpened`.
-
-```typescript
-const isCurrentStepOpened = narration.isCurrentStepAlreadyOpened;
-```
-
-</Accordion>
-
-<Accordion title="Counter of execution times of the current step" id="counter-of-execution-times-of-the-current-step">
-
-To get the execution count for the current `step`, use `narration.currentStepTimesCounter`.\
-**Important:** The counter is incremented only if `narration.currentStepTimesCounter` is accessed at least once in a `step`.
-
-```ts title="labels/startLabel.ts"
-export const label = newLabel("id",
-    () => {
-        if (narration.currentStepTimesCounter === 0) { // ✅ will be incremented
-            // ...
-        } else {
-            // ...
-        }
-    }
-)
-```
-
-```ts title="labels/startLabel.ts"
-export const label = newLabel("id",
-    () => {
-        if (narration.currentStepTimesCounter === 0) { // ✅ will be incremented
-            // ...
-        } else if (narration.currentStepTimesCounter === 1) { // ✅ Not incremented again in this step
-            // ...
-        }
-    }
-)
-```
-
-```ts title="labels/startLabel.ts"
-export const label = newLabel("id",
-    () => {
-        if (flag) {
-            if (narration.currentStepTimesCounter === 1) { // ❌ Only incremented if "flag" is true
-                // ...
-            }
-        }
-    }
-)
-```
-
-To reset the execution counter for the current `step`, set `narration.currentStepTimesCounter = 0`.
-
-```typescript
-narration.currentStepTimesCounter = 0;
-```
-
-</Accordion>
-
-</Accordions>
-
 ## Ottieni
 
-The narration timeline is a list of all dialogues and choices shown to the player.\
-To get the narrative history, use `stepHistory.narrativeHistory`. It returns a list of `NarrativeHistory<T>[]`.
+La cronologia della narrazione è un elenco di tutti i dialoghi e delle scelte mostrati al giocatore.\
+Per ottenere la cronologia narrativa, utilizza `stepHistory.narrativeHistory`. Restituisce un elenco di `NarrativeHistory<T>[]`.
 
 ```typescript
 const dialogues: NarrativeHistory[] = stepHistory.narrativeHistory;
@@ -111,13 +24,13 @@ const dialogues: NarrativeHistory[] = stepHistory.narrativeHistory;
 
 ## Rimuovi
 
-To delete all narrative history, use `stepHistory.removeNarrativeHistory()`.
+Per eliminare tutta la cronologia narrativa, utilizza `stepHistory.removeNarrativeHistory()`.
 
 ```typescript
 stepHistory.removeNarrativeHistory();
 ```
 
-To delete part of the narrative history, pass a number to remove the first N elements:
+Per eliminare una parte della cronologia narrativa, passa un numero per rimuovere i primi N elementi:
 
 ```typescript
 // Delete the first 2 elements
@@ -128,7 +41,7 @@ stepHistory.removeNarrativeHistory(2);
 
 At each `step`, all information about the current game state is saved.
 
-To prevent the save file from growing too large, there is a limit on the number of `steps` saved. By default, only the last 20 `steps` are saved, but you can increase this limit (e.g., to 100). When the limit is reached, only essential information from older `steps` is kept. This allows you to display the full <DynamicLink href="/start/history">narrative history</DynamicLink>, but you cannot <DynamicLink href="/start/labels-flow#go-back">return</DynamicLink> to a specific `step` beyond the limit.
+Per evitare che il file di salvataggio diventi troppo grande, è previsto un limite al numero di `steps` salvati. Per impostazione predefinita, vengono salvati solo gli ultimi 20 `steps`, ma è possibile aumentare questo limite (ad esempio a 100). Una volta raggiunto il limite, vengono conservate solo le informazioni essenziali dei `steps` precedenti. This allows you to display the full <DynamicLink href="/start/history">narrative history</DynamicLink>, but you cannot <DynamicLink href="/start/labels-flow#go-back">return</DynamicLink> to a specific `step` beyond the limit.
 
 You can change the `step` save limit by setting the `stepLimitSaved` property in the `stepHistory` object.
 
