@@ -200,56 +200,37 @@ export function HeredityFactorExample() {
     return (
         <ReactTemplate
             files={{
-                "labels/startLabel.ts": `import {
-  canvas,
-  moveIn,
-  MoveTicker,
-  newLabel,
-  pushIn,
-  Repeat,
-  RotateTicker,
-  showImage,
-  showWithDissolve,
-  showWithFade,
-  zoomIn,
-} from "@drincs/pixi-vn";
+                "labels/startLabel.ts": `import { canvas, moveIn, newLabel, pushIn, showImage, showWithDissolve, showWithFade, zoomIn } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start_label", [
   async () => {
-    await showImage("alien", "eggHead", { anchor: 0.5, align: 0 });
+    await showImage("alien", "eggHead", { anchor: 0.5, align: 0.5 });
 
-    canvas.addTicker(
+    canvas.animate(
       "alien",
-      new RotateTicker({
-        speed: 6,
-      })
+      {
+        angle: 360,
+      },
+      {
+        duration: 5,
+        repeat: Infinity,
+      }
     );
-    canvas.addTickersSequence("alien", [
-      new MoveTicker({
-        destination: { x: 0, y: 0, type: "align" },
-        speed: 30,
-      }),
-      new MoveTicker({
-        destination: { x: 0, y: 1, type: "align" },
-        speed: 30,
-      }),
-      new MoveTicker({
-        destination: { x: 1, y: 1, type: "align" },
-        speed: 30,
-      }),
-      new MoveTicker({
-        destination: { x: 1, y: 0, type: "align" },
-        speed: 30,
-      }),
-      Repeat,
-    ]);
+    canvas.animate(
+      "alien",
+      { xAlign: [0, 1, 1, 0, 0], yAlign: [0, 0, 1, 1, 0] },
+      {
+        repeat: Infinity,
+        duration: 10,
+      }
+    );
   },
   async () => await showImage("alien", "flowerTop"),
   async () => await showWithDissolve("alien", "helmlok"),
   async () => await showWithFade("alien", "skully"),
-  async () => await moveIn("alien", "eggHead", { speed: 100 }),
-  async () => await zoomIn("alien", "flowerTop"),
-  async () => await pushIn("alien", "helmlok", { speed: 100 }),
+  async () => await moveIn("alien", "eggHead", { removeOldComponentWithMoveOut: true }),
+  async () => await zoomIn("alien", "flowerTop", { removeOldComponentWithZoomOut: true }),
+  async () => await pushIn("alien", "helmlok"),
 ]);`,
                 "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
 
