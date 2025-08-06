@@ -273,26 +273,16 @@ export function MoveExample() {
     return (
         <ReactTemplate
             files={{
-                "labels/startLabel.ts": `import { canvas, MoveTicker, newLabel, Repeat, showImage } from "@drincs/pixi-vn";
+                "labels/startLabel.ts": `import { canvas, ImageSprite, newLabel, showImage } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start_label", [
   async () => {
-    await showImage("alien");
-    canvas.addTickersSequence("alien", [
-      new MoveTicker({
-        destination: { x: 1, y: 0, type: "align" },
-      }),
-      new MoveTicker({
-        destination: { x: 1, y: 1, type: "align" },
-        speed: 50,
-      }),
-      new MoveTicker({
-        destination: { x: 0, y: 0, type: "align" },
-        speed: 20,
-      }),
-      Repeat,
-    ]);
+    const alien = await showImage("alien");
+    canvas.animate(alien, { xAlign: 1, yAlign: 0 }, { ease: "easeOut" });
   },
+  () => canvas.animate<ImageSprite>("alien", { xAlign: 1, yAlign: 1 }, { ease: "backOut" }),
+  () => canvas.animate<ImageSprite>("alien", { xAlign: 0, yAlign: 1 }, { ease: "circIn" }),
+  () => canvas.animate<ImageSprite>("alien", { xAlign: 0, yAlign: 0 }, { ease: "linear" }),
 ]);`,
                 "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
 

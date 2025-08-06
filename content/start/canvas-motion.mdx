@@ -1,6 +1,8 @@
 ---
 title: Animate (motion)
 ---
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
+import { MoveExample, RotateExample, FadeExample, ZoomExample, MirrorExample } from "@/components/examples";
 
 Pixi’VN gives the developer the ability to animate canvas components using a function called `animate`. This function is nothing more than a re-implementation of the [animate function from the motion library](https://motion.dev/docs/animate). This re-implementation uses PixiJS tickers to trigger animation events.
 
@@ -13,8 +15,261 @@ There are two variants of this function:
 
 ## Usage
 
-## Props
+How `canvas.animate` works is as follows: the developer defines a state that the component must reach (for example, the component's x-y position). Once the animation starts, an event will be continuously triggered that will modify the component until it reaches the user-defined state. Furthermore, the developer can customize the animation with unique effects using the options.
+This function has the following parameters:
 
-## Functions
+* `components`: The PixiJS component(s) to animate. It can be a single component, an array of components, or a string representing the <DynamicLink href="/start/canvas-alias">component's alias</DynamicLink>.
+* `keyframes`: The keyframes to animate the component(s) with. It is an object that contains the properties to animate and their values at different points in time.
+* `options`: Additional options for the animation, including duration, easing, and ticker. The following options have been added to `motion`:
+  * `aliasToRemoveAfter` (Optional): is a string[] that contains the aliases of the <DynamicLink href="/start/canvas-components">canvas component</DynamicLink> that will be removed after the animation is completed.
+  * `tickerIdToResume` (Optional): is a string that contains the ticker id that will be resumed after the animation is completed.
+  * `tickerAliasToResume` (Optional): in case you want to continue some tickers that were previously paused, you can pass the aliases of the canvas components that have the tickers to be resumed.
+* `priority`: The priority of the PixiJS ticker. It is an optional parameter that can be used to set the priority of the ticker. The default value is `UPDATE_PRIORITY.NORMAL`.
+
+Here are some examples:
+
+<Accordions>
+
+<Accordion title="Move" id="move">
+
+```ts tab="labels/startLabel.ts"
+import { canvas, ImageSprite, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        const alien = await showImage("alien");
+        canvas.animate(alien, { xAlign: 1, yAlign: 0 }, { ease: "easeOut" });
+    },
+    () => canvas.animate<ImageSprite>("alien", { xAlign: 1, yAlign: 1 }, { ease: "backOut" }),
+    () => canvas.animate<ImageSprite>("alien", { xAlign: 0, yAlign: 1 }, { ease: "circIn" }),
+    () => canvas.animate<ImageSprite>("alien", { xAlign: 0, yAlign: 0 }, { ease: "linear" }),
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<MoveExample />
+
+</Accordion>
+
+<Accordion title="Rotate" id="rotate">
+
+```ts tab="labels/startLabel.ts"
+import { canvas, newLabel, Repeat, RotateTicker, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await showImage("alien", "alien", { align: 0.5, anchor: 0.5 });
+        canvas.addTickersSequence("alien", [
+            new RotateTicker({}, 2), // [!code focus]
+            new RotateTicker({ // [!code focus]
+                clockwise: false, // [!code focus]
+                speed: 10, // [!code focus]
+            }, 3), // [!code focus]
+            Repeat,
+        ]);
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<RotateExample />
+
+</Accordion>
+
+<Accordion title="Fade" id="fade">
+
+```ts tab="labels/startLabel.ts"
+import { canvas, FadeAlphaTicker, newLabel, Repeat, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await showImage("alien", "alien", { align: 0.5, anchor: 0.5 });
+        canvas.addTickersSequence("alien", [
+            new FadeAlphaTicker({}), // [!code focus]
+            new FadeAlphaTicker({ // [!code focus]
+                type: "show", // [!code focus]
+            }), // [!code focus]
+            Repeat,
+        ]);
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<FadeExample />
+
+</Accordion>
+
+<Accordion title="Zoom" id="zoom">
+
+```ts tab="labels/startLabel.ts"
+import { canvas, newLabel, Repeat, showImage, ZoomTicker } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await showImage("alien", "alien", { align: 0.5, anchor: 0.5 });
+        canvas.addTickersSequence("alien", [
+            new ZoomTicker({ // [!code focus]
+                limit: 3, // [!code focus]
+            }), // [!code focus]
+            new ZoomTicker({ // [!code focus]
+                type: "unzoom", // [!code focus]
+                limit: -3, // [!code focus]
+            }), // [!code focus]
+            Repeat,
+        ]);
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<ZoomExample />
+
+</Accordion>
+
+<Accordion title="Mirror" id="mirror">
+
+```ts tab="labels/startLabel.ts"
+import { canvas, newLabel, Repeat, showImage, ZoomTicker } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await showImage("alien", "alien", { align: 0.5, anchor: 0.5 });
+        canvas.addTickersSequence("alien", [
+            new ZoomTicker({ // [!code focus]
+                type: "unzoom", // [!code focus]
+                limit: { x: -1, y: 0 }, // [!code focus]
+                speed: { x: 5, y: 0 },, // [!code focus]
+            }), // [!code focus]
+            new ZoomTicker({ // [!code focus]
+                limit: 1, // [!code focus]
+                speed: { x: 10, y: 0 },, // [!code focus]
+            }), // [!code focus]
+            Repeat,
+        ]);
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<MirrorExample />
+
+</Accordion>
+
+</Accordions>
+
+### Sequence
+
+## Methods
 
 `canvas.animate` function was created using Pixi’VN Tickers, so you can use all the <DynamicLink href="/start/canvas-tickers-functions">functions used to control Pixi’VN Tickers</DynamicLink>.
