@@ -4,30 +4,36 @@ title: Animate (motion)
 import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 import { MoveExample, RotateExample, FadeExample, ZoomExample, MirrorExample, SequenceExample, MotionSequenceExample } from "@/components/examples";
 
-Pixi’VN gives the developer the ability to animate canvas components using a function called `animate`. This function is nothing more than a re-implementation of the [animate function from the motion library](https://motion.dev/docs/animate). This re-implementation uses PixiJS tickers to trigger animation events.
+Pixi’VN allows developers to animate canvas components using a function called `animate`. This function is a re-implementation of the [animate function from the motion library](https://motion.dev/docs/animate), adapted to use PixiJS tickers for triggering animation events.
 
-**What is motion?** `motion` is a library that provides a simple, powerful and popular way to create animations in JavaScript. You can read more about it [here](https://motion.dev/).
+**What is motion?**  
+`motion` is a popular JavaScript library that provides a simple and powerful way to create animations. You can read more about it [here](https://motion.dev/).
 
 There are two variants of this function:
 
-* `animate`: This function is intended for animating PixiJS or Pixi’VN elements used for <DynamicLink href="/start/interface-pixijs">UI</DynamicLink>. Pixi’VN will not save the current state of animations created with this function. Since it is identical to [motion’s animate function](https://motion.dev/docs/animate), it will not be explained further.
-* `canvas.animate`: This function is intended for animating Pixi’VN canvas components. It will save the current state of animations created with this function, so you can use it to create transitions between different states of your game. This feature has some differences from the original `animate` function, so it will be explained in detail.
+* `animate`: Intended for animating PixiJS or Pixi’VN elements used for <DynamicLink href="/start/interface-pixijs">UI</DynamicLink>. Pixi’VN does not save the current state of animations created with this function. Since it is identical to [motion’s animate function](https://motion.dev/docs/animate), it will not be explained further here.
+* `canvas.animate`: Designed for animating Pixi’VN canvas components. It saves the current state of animations, allowing you to create transitions between different states of your game. This function has some differences from the original `animate` function, which will be explained in detail below.
 
 ## Usage
 
-How `canvas.animate` works is as follows: the developer defines a state that the component must reach (for example, the component's x-y position). Once the animation starts, an event will be continuously triggered that will modify the component until it reaches the user-defined state. Furthermore, the developer can customize the animation with unique effects using the options.
-This function has the following parameters:
+The `canvas.animate` function works as follows:  
+The developer defines a target state for the component (for example, its x-y position). Once the animation starts, an event is continuously triggered to update the component until it reaches the desired state. You can further customize the animation with various options.
 
-* `components`: The PixiJS component(s) to animate. It can be a single component, an array of components, or a string representing the <DynamicLink href="/start/canvas-alias">component's alias</DynamicLink>.
-* `keyframes`: The keyframes to animate the component(s) with. It is an object that contains the properties to animate and their values at different points in time.
-* `options`: Additional options for the animation, including duration, easing, and ticker. The following options have been added to `motion`:
-  * `aliasToRemoveAfter` (Optional): is a string[] that contains the aliases of the <DynamicLink href="/start/canvas-components">canvas component</DynamicLink> that will be removed after the animation is completed.
-  * `tickerIdToResume` (Optional): is a string that contains the ticker id that will be resumed after the animation is completed.
-  * `tickerAliasToResume` (Optional): in case you want to continue some tickers that were previously paused, you can pass the aliases of the canvas components that have the tickers to be resumed.
-  * `forceCompleteBeforeNext` (Optional): is a boolean that indicates if the animation must be completed before the next step of the game. If set to `true`, the game will force the animation to complete before moving to the next step.
-* `priority`: The priority of the PixiJS ticker. It is an optional parameter that can be used to set the priority of the ticker. The default value is `UPDATE_PRIORITY.NORMAL`.
+This function accepts the following parameters:
 
-This function will return the id of the ticker that was created to animate the component(s).
+* `components`: The PixiJS component(s) to animate. This can be a single component, an array of components, or a string representing the <DynamicLink href="/start/canvas-alias">component's alias</DynamicLink>.
+* `keyframes`: The keyframes to animate the component(s) with. This is an object containing the properties to animate and their values at different points in time.
+* `options`: Additional options for the animation, including duration, easing, and ticker. The following options extend those from `motion`:
+  * `aliasToRemoveAfter` (Optional): An array of strings containing the aliases of the <DynamicLink href="/start/canvas-components">canvas components</DynamicLink> to remove after the animation completes.
+  * `tickerIdToResume` (Optional): A string containing the ticker ID to resume after the animation completes.
+  * `tickerAliasToResume` (Optional): If you want to resume tickers that were previously paused, provide the aliases of the canvas components whose tickers should be resumed.
+  * `forceCompleteBeforeNext` (Optional): A boolean indicating whether the animation must complete before the next step of the game. If `true`, the game will force the animation to finish before proceeding.
+* `priority`: The priority of the PixiJS ticker. This optional parameter sets the ticker's priority. The default is `UPDATE_PRIORITY.NORMAL`.
+
+The function returns the ID of the ticker created to animate the component(s).
+
+> **Note:**  
+> In Pixi’VN, a **label** is a named sequence of steps (actions or animations) that define a part of your game's flow. A **step** is a single action or animation within a label.
 
 Here are some examples:
 
