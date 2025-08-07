@@ -24,21 +24,21 @@ The `showWithDissolve` function show a canvas element with dissolve transition. 
   * a `{ value: string, options: ImageSpriteOptions }`, where `value` is the URL/path and `options` is the the options of the <DynamicLink href="/start/canvas-images">ImageSprite</DynamicLink>. In this case, if URL/path is a video will be added a <DynamicLink href="/start/canvas-videos">VideoSprite</DynamicLink>, else a <DynamicLink href="/start/canvas-images">ImageSprite</DynamicLink>.
   * a `{ value: string[], options: ImageContainerOptions }`, where `value` is the array of URL/paths and `options` is the the options of the <DynamicLink href="/start/canvas-images">ImageContainer</DynamicLink>.
   * a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink>.
-* `props` (Optional): The properties of the effect. It corresponds to the props of the <DynamicLink href="/start/canvas-animations-effects#fade">Fade effect</DynamicLink>.
+* `options` (Optional): The animation options. It corresponds to the options of the <DynamicLink href="/start/canvas-motion">`options` of animate function</DynamicLink>.
 * `priority` (Optional): The priority of the effect.
 
 The `removeWithDissolve` function remove a canvas element with dissolve transition. This function has the following parameters:
 
 * `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> of the component to remove.
-* `props` (Optional): The properties of the effect. It corresponds to the props of the <DynamicLink href="/start/canvas-animations-effects#fade">Fade effect</DynamicLink>.
+* `options` (Optional): The animation options. It corresponds to the options of the <DynamicLink href="/start/canvas-motion">`options` of animate function</DynamicLink>.
 * `priority` (Optional): The priority of the effect.
 
 ```ts tab="labels/startLabel.ts"
-import { Assets, newLabel, removeWithDissolve, showWithDissolve } from "@drincs/pixi-vn";
+import { newLabel, removeWithDissolve, showWithDissolve } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start_label", [
     async () => {
-        await showWithDissolve("alien", "egg_head", { duration: 5 }); // [!code focus]
+        await showWithDissolve("alien", "egg_head"); // [!code focus]
         await showWithDissolve("human", { // [!code focus]
             value: ["m01-body", "m01-eyes", "m01-mouth"], // [!code focus]
             options: { scale: 0.5, xAlign: 0.7 }, // [!code focus]
@@ -48,23 +48,46 @@ export const startLabel = newLabel("start_label", [
         await showWithDissolve("alien", "flower_top"); // [!code focus]
         removeWithDissolve("human"); // [!code focus]
     },
-], {
-    onLoadingLabel: async () => {
-        await Assets.load(["egg_head", "m01-mouth", "m01-body", "m01-eyes"]);
-    },
-});
+]);
 ```
 
-```ts tab="utils/defineAssets.ts"
-import { Assets } from "@drincs/pixi-vn";
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
 
-export async function defineAssets() {
-    Assets.add({ alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" });
-    Assets.add({ alias: "flower_top", src: "https://pixijs.com/assets/flowerTop.png" });
-    Assets.add({ alias: "m01-body", src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media" });
-    Assets.add({ alias: "m01-eyes", src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media" });
-    Assets.add({ alias: "m01-mouth", src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media" });
-}
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                {
+                    alias: "m01-body",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
 ```
 
 <Sandbox
@@ -90,17 +113,17 @@ The `showWithFade` function show a canvas element with fade transition. This fun
   * a `{ value: string, options: ImageSpriteOptions }`, where `value` is the URL/path and `options` is the the options of the <DynamicLink href="/start/canvas-images">ImageSprite</DynamicLink>. In this case, if URL/path is a video will be added a <DynamicLink href="/start/canvas-videos">VideoSprite</DynamicLink>, else a <DynamicLink href="/start/canvas-images">ImageSprite</DynamicLink>.
   * a `{ value: string[], options: ImageContainerOptions }`, where `value` is the array of URL/paths and `options` is the the options of the <DynamicLink href="/start/canvas-images">ImageContainer</DynamicLink>.
   * a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink>.
-* `props` (Optional): The properties of the effect. It corresponds to the props of the <DynamicLink href="/start/canvas-animations-effects#fade">Fade effect</DynamicLink>.
+* `options` (Optional): The animation options. It corresponds to the options of the <DynamicLink href="/start/canvas-motion">`options` of animate function</DynamicLink>.
 * `priority` (Optional): The priority of the effect.
 
 The `removeWithFade` function remove a canvas element with fade transition. This function has the following parameters:
 
 * `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> of the component to remove.
-* `props` (Optional): The properties of the effect. It corresponds to the props of the <DynamicLink href="/start/canvas-animations-effects#fade">Fade effect</DynamicLink>.
+* `options` (Optional): The animation options. It corresponds to the options of the <DynamicLink href="/start/canvas-motion">`options` of animate function</DynamicLink>.
 * `priority` (Optional): The priority of the effect.
 
 ```ts tab="labels/startLabel.ts"
-import { Assets, newLabel, removeWithFade, showWithFade } from "@drincs/pixi-vn";
+import { newLabel, removeWithFade, showWithFade } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start_label", [
     async () => {
@@ -114,23 +137,46 @@ export const startLabel = newLabel("start_label", [
         await showWithFade("alien", "flower_top"); // [!code focus]
         removeWithFade("human"); // [!code focus]
     },
-], {
-    onLoadingLabel: async () => {
-        await Assets.load(["egg_head", "m01-mouth", "m01-body", "m01-eyes"]);
-    },
-});
+]);
 ```
 
 ```ts tab="utils/defineAssets.ts"
-import { Assets } from "@drincs/pixi-vn";
+import { AssetsManifest } from "@drincs/pixi-vn";
 
-export async function defineAssets() {
-    Assets.add({ alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" });
-    Assets.add({ alias: "flower_top", src: "https://pixijs.com/assets/flowerTop.png" });
-    Assets.add({ alias: "m01-body", src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media" });
-    Assets.add({ alias: "m01-eyes", src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media" });
-    Assets.add({ alias: "m01-mouth", src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media" });
-}
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                {
+                    alias: "m01-body",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
 ```
 
 <Sandbox
@@ -156,7 +202,7 @@ The `moveIn` function show a canvas element with move in transition. This functi
   * a `{ value: string, options: ImageSpriteOptions }`, where `value` is the URL/path and `options` is the the options of the <DynamicLink href="/start/canvas-images">ImageSprite</DynamicLink>. In this case, if URL/path is a video will be added a <DynamicLink href="/start/canvas-videos">VideoSprite</DynamicLink>, else a <DynamicLink href="/start/canvas-images">ImageSprite</DynamicLink>.
   * a `{ value: string[], options: ImageContainerOptions }`, where `value` is the array of URL/paths and `options` is the the options of the <DynamicLink href="/start/canvas-images">ImageContainer</DynamicLink>.
   * a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink>.
-* `props` (Optional): The properties of the effect. It combines the properties of the <DynamicLink href="/start/canvas-animations-effects#move">Move effect</DynamicLink> with following properties:
+* `options` (Optional): The animation options. It corresponds to the options of the <DynamicLink href="/start/canvas-motion">`options` of animate function</DynamicLink>. Additionally, it can have the following properties:
   * `direction`: The direction of the move. It can be `right`, `left`, `top`, `bottom`. default is `right`.
   * `removeOldComponentWithMoveOut` (Optional): If a component with the same alias exists, the existing component will be removed with a `moveOut` effect when the new component transition is complete. default is `false`.
 * `priority` (Optional): The priority of the effect.
@@ -164,12 +210,12 @@ The `moveIn` function show a canvas element with move in transition. This functi
 The `moveOut` function remove a canvas element with move out transition. This function has the following parameters:
 
 * `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> of the component to remove.
-* `props` (Optional): The properties of the effect. It combines the properties of the <DynamicLink href="/start/canvas-animations-effects#move">Move effect</DynamicLink> with following properties:
+* `options` (Optional): The animation options. It corresponds to the options of the <DynamicLink href="/start/canvas-motion">`options` of animate function</DynamicLink>. Additionally, it can have the following properties:
   * `direction`: The direction of the move. It can be `right`, `left`, `top`, `bottom`. default is `right`.
 * `priority` (Optional): The priority of the effect.
 
 ```ts tab="labels/startLabel.ts"
-import { Assets, moveIn, moveOut, newLabel } from "@drincs/pixi-vn";
+import { moveIn, moveOut, newLabel } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start_label", [
     async () => {
@@ -183,23 +229,46 @@ export const startLabel = newLabel("start_label", [
         await moveIn("alien", "flower_top", { direction: "up" }); // [!code focus]
         moveOut("human"); // [!code focus]
     },
-], {
-    onLoadingLabel: async () => {
-        await Assets.load(["egg_head", "m01-mouth", "m01-body", "m01-eyes"]);
-    },
-});
+]);
 ```
 
 ```ts tab="utils/defineAssets.ts"
-import { Assets } from "@drincs/pixi-vn";
+import { AssetsManifest } from "@drincs/pixi-vn";
 
-export async function defineAssets() {
-    Assets.add({ alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" });
-    Assets.add({ alias: "flower_top", src: "https://pixijs.com/assets/flowerTop.png" });
-    Assets.add({ alias: "m01-body", src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media" });
-    Assets.add({ alias: "m01-eyes", src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media" });
-    Assets.add({ alias: "m01-mouth", src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media" });
-}
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                {
+                    alias: "m01-body",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
 ```
 
 <Sandbox
@@ -225,19 +294,19 @@ The `pushIn` function show a canvas element with push in transition. This functi
   * a `{ value: string, options: ImageSpriteOptions }`, where `value` is the URL/path and `options` is the the options of the <DynamicLink href="/start/canvas-images">ImageSprite</DynamicLink>. In this case, if URL/path is a video will be added a <DynamicLink href="/start/canvas-videos">VideoSprite</DynamicLink>, else a <DynamicLink href="/start/canvas-images">ImageSprite</DynamicLink>.
   * a `{ value: string[], options: ImageContainerOptions }`, where `value` is the array of URL/paths and `options` is the the options of the <DynamicLink href="/start/canvas-images">ImageContainer</DynamicLink>.
   * a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink>.
-* `props` (Optional): The properties of the effect. It combines the properties of the <DynamicLink href="/start/canvas-animations-effects#move">Move effect</DynamicLink> with following properties:
+* `options` (Optional): The animation options. It corresponds to the options of the <DynamicLink href="/start/canvas-motion">`options` of animate function</DynamicLink>. Additionally, it can have the following properties:
   * `direction`: The direction of the move. It can be `right`, `left`, `top`, `bottom`. default is `right`.
 * `priority` (Optional): The priority of the effect.
 
 The `pushOut` function remove a canvas element with push out transition. This function has the following parameters:
 
 * `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> of the component to remove.
-* `props` (Optional): The properties of the effect. It combines the properties of the <DynamicLink href="/start/canvas-animations-effects#move">Move effect</DynamicLink> with following properties:
+* `options` (Optional): The animation options. It corresponds to the options of the <DynamicLink href="/start/canvas-motion">`options` of animate function</DynamicLink>. Additionally, it can have the following properties:
   * `direction`: The direction of the move. It can be `right`, `left`, `top`, `bottom`. default is `right`.
 * `priority` (Optional): The priority of the effect.
 
 ```ts tab="labels/startLabel.ts"
-import { Assets, newLabel, pushIn, pushOut } from "@drincs/pixi-vn";
+import { newLabel, pushIn, pushOut } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start_label", [
     async () => {
@@ -251,23 +320,46 @@ export const startLabel = newLabel("start_label", [
         await pushIn("alien", "flower_top", { direction: "up" }); // [!code focus]
         pushOut("human"); // [!code focus]
     },
-], {
-    onLoadingLabel: async () => {
-        await Assets.load(["egg_head", "m01-mouth", "m01-body", "m01-eyes"]);
-    },
-});
+]);
 ```
 
 ```ts tab="utils/defineAssets.ts"
-import { Assets } from "@drincs/pixi-vn";
+import { AssetsManifest } from "@drincs/pixi-vn";
 
-export async function defineAssets() {
-    Assets.add({ alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" });
-    Assets.add({ alias: "flower_top", src: "https://pixijs.com/assets/flowerTop.png" });
-    Assets.add({ alias: "m01-body", src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media" });
-    Assets.add({ alias: "m01-eyes", src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media" });
-    Assets.add({ alias: "m01-mouth", src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media" });
-}
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                {
+                    alias: "m01-body",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
 ```
 
 <Sandbox
@@ -293,7 +385,7 @@ The `zoomIn` function show a canvas element with zoom in transition. This functi
   * a `{ value: string, options: ImageSpriteOptions }`, where `value` is the URL/path and `options` is the the options of the <DynamicLink href="/start/canvas-images">ImageSprite</DynamicLink>. In this case, if URL/path is a video will be added a <DynamicLink href="/start/canvas-videos">VideoSprite</DynamicLink>, else a <DynamicLink href="/start/canvas-images">ImageSprite</DynamicLink>.
   * a `{ value: string[], options: ImageContainerOptions }`, where `value` is the array of URL/paths and `options` is the the options of the <DynamicLink href="/start/canvas-images">ImageContainer</DynamicLink>.
   * a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink>.
-* `props` (Optional): The properties of the effect. It combines the properties of the <DynamicLink href="/start/canvas-animations-effects#zoom">Zoom effect</DynamicLink> with following properties:
+* `options` (Optional): The animation options. It corresponds to the options of the <DynamicLink href="/start/canvas-motion">`options` of animate function</DynamicLink>. Additionally, it can have the following properties:
   * `direction`: The direction of the zoom. It can be `right`, `left`, `top`, `bottom`. default is `right`.
   * `removeOldComponentWithZoomOut` (Optional): If a component with the same alias exists, the existing component will be removed with a `zoomOut` effect when the new component transition is complete. default is `false`.
 * `priority` (Optional): The priority of the effect.
@@ -301,12 +393,12 @@ The `zoomIn` function show a canvas element with zoom in transition. This functi
 The `zoomOut` function remove a canvas element with zoom out transition. This function has the following parameters:
 
 * `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> of the component to remove.
-* `props` (Optional): The properties of the effect. It combines the properties of the <DynamicLink href="/start/canvas-animations-effects#zoom">Zoom effect</DynamicLink> with following properties:
+* `options` (Optional): The animation options. It corresponds to the options of the <DynamicLink href="/start/canvas-motion">`options` of animate function</DynamicLink>. Additionally, it can have the following properties:
   * `direction`: The direction of the zoom. It can be `right`, `left`, `top`, `bottom`. default is `right`.
 * `priority` (Optional): The priority of the effect.
 
 ```ts tab="labels/startLabel.ts"
-import { Assets, newLabel, zoomIn, zoomOut } from "@drincs/pixi-vn";
+import { newLabel, zoomIn, zoomOut } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start_label", [
     async () => {
@@ -320,23 +412,46 @@ export const startLabel = newLabel("start_label", [
         await zoomIn("alien", "flower_top"); // [!code focus]
         zoomOut("human"); // [!code focus]
     },
-], {
-    onLoadingLabel: async () => {
-        await Assets.load(["egg_head", "m01-mouth", "m01-body", "m01-eyes"]);
-    },
-});
+]);
 ```
 
 ```ts tab="utils/defineAssets.ts"
-import { Assets } from "@drincs/pixi-vn";
+import { AssetsManifest } from "@drincs/pixi-vn";
 
-export async function defineAssets() {
-    Assets.add({ alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" });
-    Assets.add({ alias: "flower_top", src: "https://pixijs.com/assets/flowerTop.png" });
-    Assets.add({ alias: "m01-body", src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media" });
-    Assets.add({ alias: "m01-eyes", src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media" });
-    Assets.add({ alias: "m01-mouth", src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media" });
-}
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                {
+                    alias: "m01-body",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
 ```
 
 <Sandbox
