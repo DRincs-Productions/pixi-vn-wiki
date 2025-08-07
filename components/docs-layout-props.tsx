@@ -230,7 +230,6 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                     },
                     { type: "page", name: "Components functions", url: `${preUrl}/start/canvas-functions` },
                     { type: "page", name: "Position properties", url: `${preUrl}/start/canvas-position` },
-                    { type: "page", name: "Transitions", url: `${preUrl}/start/canvas-transition` },
                     {
                         type: "folder",
                         name: "Animations and Effects",
@@ -242,10 +241,27 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                         children: [
                             {
                                 type: "folder",
-                                name: "Primitives (ticker)",
+                                name: "Animate (motion)",
                                 index: {
                                     type: "page",
-                                    name: "Primitives (ticker)",
+                                    name: "Animate (motion)",
+                                    url: `${preUrl}/start/canvas-motion`,
+                                },
+                                children: [
+                                    {
+                                        type: "page",
+                                        name: "Articulated",
+                                        url: `${preUrl}/start/canvas-articulated-animations-effects`,
+                                    },
+                                ],
+                            },
+                            { type: "page", name: "Transitions", url: `${preUrl}/start/canvas-transition` },
+                            {
+                                type: "folder",
+                                name: "Ticker",
+                                index: {
+                                    type: "page",
+                                    name: "Ticker",
                                     url: `${preUrl}/start/canvas-tickers`,
                                 },
                                 children: [
@@ -255,11 +271,6 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                                         url: `${preUrl}/start/canvas-tickers-functions`,
                                     },
                                 ],
-                            },
-                            {
-                                type: "page",
-                                name: "Articulated",
-                                url: `${preUrl}/start/canvas-articulated-animations-effects`,
                             },
                         ],
                     },
