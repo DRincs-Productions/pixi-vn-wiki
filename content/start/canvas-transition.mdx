@@ -465,7 +465,8 @@ export default async function showWithDissolve(
     priority?: UPDATE_PRIORITY
 ): Promise<string[] | undefined> {
     let { forceCompleteBeforeNext = true, ...options } = props;
-    canvas.add(alias, canvasElement)
+    // add the new component
+    canvas.add(alias, component)
     // edit the properties of the new component
     component.alpha = 0;
     // create the ticker and play it
@@ -509,16 +510,16 @@ export default async function showWithDissolve(
     priority?: UPDATE_PRIORITY
 ): Promise<string[] | undefined> {
     let { forceCompleteBeforeNext = true, ...options } = props;
-    // check if the alias is already exist
-    let oldComponentAlias: string | undefined = undefined;
-    if (canvas.find(alias)) {
-        oldComponentAlias = alias + "_temp_disolve";
-        canvas.editAlias(alias, oldComponentAlias);
-    }
+    // check if the alias is already exist // [!code ++]
+    let oldComponentAlias: string | undefined = undefined; // [!code ++]
+    if (canvas.find(alias)) { // [!code ++]
+        oldComponentAlias = alias + "_temp_disolve"; // [!code ++]
+        canvas.editAlias(alias, oldComponentAlias); // [!code ++]
+    } // [!code ++]
     // add the new component and transfer the properties of the old component to the new component
-    canvas.add(alias, canvasElement)
-    oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
-    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate");
+    canvas.add(alias, component)
+    oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias); // [!code ++]
+    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate"); // [!code ++]
     // edit the properties of the new component
     component.alpha = 0;
     // create the ticker and play it
@@ -549,26 +550,26 @@ export default async function showWithDissolve(
 To remove the previous component with a transition, run another animation with <DynamicLink href="/start/canvas-motion">`canvas.animate`</DynamicLink> and use the <DynamicLink href="/start/canvas-motion">`tickerIdToResume` property</DynamicLink>.
 
 ```typescript title="canvas/transitions/showWithFade.ts"
-import { AnimationOptions, canvas, ImageSprite, showWithDissolve, UPDATE_PRIORITY } from "@drincs/pixi-vn";
+import { AnimationOptions, canvas, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn";
 
-export async function showWithFade(
+export default async function showWithDissolve(
     alias: string,
     component: ImageSprite,
     props: AnimationOptions = {},
     priority?: UPDATE_PRIORITY
 ): Promise<string[] | undefined> {
     let { forceCompleteBeforeNext = true, ...options } = props;
-    let res: string[] = [];
-    // check if the alias is already exist
-    if (!canvas.find(alias)) {
-        return showWithDissolve(alias, component, props, priority);
-    }
-    let oldComponentAlias = alias + "_temp_fade";
-    canvas.editAlias(alias, oldComponentAlias);
-    // add the new component and transfer the properties of the old component to the new component
+    let res: string[] = []; // [!code ++]
+    // check if the alias is already exist // [!code ++]
+    if (!canvas.find(alias)) { // [!code ++]
+        return showWithDissolve(alias, component, props, priority); // [!code ++]
+    } // [!code ++]
+    let oldComponentAlias = alias + "_temp_fade"; // [!code ++]
+    canvas.editAlias(alias, oldComponentAlias); // [!code ++]
+    // add the new component and transfer the properties of the old component to the new component // [!code ++]
     canvas.add(alias, component);
-    oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
-    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate");
+    oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias); // [!code ++]
+    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate"); // [!code ++]
     // edit the properties of the new component
     component.alpha = 0;
     // create the ticker and play it
@@ -583,33 +584,31 @@ export async function showWithFade(
         },
         priority
     );
-    if (id) {
-        res.push(id);
-
-        // pause the ticker
-        canvas.pauseTicker({ id: id });
-        // remove the old component
-        canvas.animate(
-            alias,
-            {
-                alpha: 0,
-            },
-            {
-                ...options,
-                tickerIdToResume: id,
-                aliasToRemoveAfter: oldComponentAlias,
-                forceCompleteBeforeNext,
-            },
-            priority
-        );
-    }
+    if (id) { // [!code ++]
+        // pause the ticker // [!code ++]
+        canvas.pauseTicker({ id: id }); // [!code ++]
+        // remove the old component // [!code ++]
+        canvas.animate( // [!code ++]
+            alias, // [!code ++]
+            { // [!code ++]
+                alpha: 0, // [!code ++]
+            }, // [!code ++]
+            { // [!code ++]
+                ...options, // [!code ++]
+                tickerIdToResume: id, // [!code ++]
+                aliasToRemoveAfter: oldComponentAlias, // [!code ++]
+                forceCompleteBeforeNext, // [!code ++]
+            }, // [!code ++]
+            priority // [!code ++]
+        ); // [!code ++]
+    } // [!code ++]
     // load the image if the image is not loaded
     if (component.haveEmptyTexture) {
         await component.load();
     }
     // return the ids of the tickers
-    if (res.length > 0) {
-        return res;
+    if (id) {
+        return [id];
     }
 }
 ```
