@@ -1088,3 +1088,183 @@ export default manifest;`,
         />
     );
 }
+
+export function DissolveTransitionExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { newLabel, removeWithDissolve, showWithDissolve } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    await showWithDissolve("alien", "egg_head");
+    await showWithDissolve("human", {
+      value: ["m01-body", "m01-eyes", "m01-mouth"],
+      options: { scale: 0.5, xAlign: 0.7 },
+    });
+  },
+  async () => {
+    await showWithDissolve("alien", "flower_top");
+    removeWithDissolve("human");
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "egg_head",
+          src: "https://pixijs.com/assets/eggHead.png",
+        },
+        {
+          alias: "flower_top",
+          src: "https://pixijs.com/assets/flowerTop.png",
+        },
+        {
+          alias: "m01-body",
+          src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media",
+        },
+        {
+          alias: "m01-eyes",
+          src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media",
+        },
+        {
+          alias: "m01-mouth",
+          src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function FadeTransitionExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { newLabel, removeWithFade, showWithFade } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await showWithFade("alien", "egg_head", { duration: 5 }); // [!code focus]
+        await showWithFade("human", { // [!code focus]
+            value: ["m01-body", "m01-eyes", "m01-mouth"], // [!code focus]
+            options: { scale: 0.5, xAlign: 0.7 }, // [!code focus]
+        }); // [!code focus]
+    },
+    async () => {
+        await showWithFade("alien", "flower_top"); // [!code focus]
+        removeWithFade("human"); // [!code focus]
+    },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                {
+                    alias: "m01-body",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function MoveinTransitionExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { moveIn, moveOut, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await moveIn("alien", "egg_head", { direction: "up" }); // [!code focus]
+        await moveIn("human", { // [!code focus]
+            value: ["m01-body", "m01-eyes", "m01-mouth"], // [!code focus]
+            options: { scale: 0.5, xAlign: 0.7 }, // [!code focus]
+        }); // [!code focus]
+    },
+    async () => {
+        await moveIn("alien", "flower_top", { direction: "up" }); // [!code focus]
+        moveOut("human"); // [!code focus]
+    },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                {
+                    alias: "m01-body",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
