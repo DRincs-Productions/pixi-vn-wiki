@@ -4,9 +4,7 @@ title: Transitions
 
 In Pixi’VN provides various transition effect to show or remove an <DynamicLink href="/start/canvas-components">canvas component</DynamicLink> and the possibility to [create your own transitions](#create-your-own-transition).
 
-[( More are on the way )](https://github.com/DRincs-Productions/pixi-vn/issues/20)
-
-## Dissolve transition
+## Dissolve
 
 The dissolve transition when:
 
@@ -95,7 +93,7 @@ export default manifest;
   entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
 />
 
-## Fade transition
+## Fade
 
 The fade transition when:
 
@@ -184,7 +182,7 @@ export default manifest;
   entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
 />
 
-## Move in/out transition
+## Move in/out
 
 The move in/out transition when:
 
@@ -276,7 +274,7 @@ export default manifest;
   entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
 />
 
-## Push in/out transition
+## Push in/out
 
 The push in/out transition when:
 
@@ -367,7 +365,7 @@ export default manifest;
   entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
 />
 
-## Zoom in/out transition
+## Zoom in/out
 
 The zoom in/out transition when:
 
@@ -461,35 +459,47 @@ export default manifest;
 
 ## Create your own transition
 
-Create your own transition is very simple, you can combine more <DynamicLink href="/start/canvas-animations-effects">Animations and Effects</DynamicLink> to create your own transition.
+<Callout type="info">
 
-( The Pixi’VN Team welcomes new proposals/sharing to make this library more and more complete. So you can create a [discussion](https://github.com/DRincs-Productions/pixi-vn/discussions/categories/show-and-tell) to share/propose it. )
+The Pixi’VN Team welcomes new proposals/sharing to make this library more and more complete. So you can create a [discussion](https://github.com/DRincs-Productions/pixi-vn/discussions/categories/show-and-tell) to share/propose it.
 
-To better understand how to create one, a simplified version of [`showWithDissolve`](#dissolve-transition) will be left as an example below.
+</Callout>
+
+Create your own transition is very simple, you can use <DynamicLink href="/start/canvas-motion">`canvas.animate`</DynamicLink> to create your own transition.
+
+To better understand how to create one, a simplified version of [`showWithDissolve`](#dissolve) will be left as an example below.
 
 ```typescript
-import { canvas, FadeAlphaTicker, FadeAlphaTickerProps, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn"
+import { AnimationOptions, canvas, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn";
 
 export async function showWithDissolve(
     alias: string,
-    canvasElement: ImageSprite,
-    props: FadeAlphaTickerProps = {},
-    priority?: UPDATE_PRIORITY,
+    component: ImageSprite,
+    props: AnimationOptions = {},
+    priority?: UPDATE_PRIORITY
 ): Promise<string[] | undefined> {
-    canvas.add(alias, canvasElement)
-    canvasElement.alpha = 0
-
-    let effect = new FadeAlphaTicker({
-        ...props,
-        type: "show",
-        startOnlyIfHaveTexture: true,
-    }, undefined, priority)
-    let id = canvas.addTicker(alias, effect)
-    if (canvasElement.haveEmptyTexture) {
-        await canvasElement.load()
+    let { forceCompleteBeforeNext = true, ...options } = props;
+    // edit the properties of the new component
+    component.alpha = 0;
+    // create the ticker and play it
+    let id = canvas.animate(
+        alias,
+        {
+            alpha: 1,
+        },
+        {
+            ...options,
+            forceCompleteBeforeNext,
+        },
+        priority
+    );
+    // load the image if the image is not loaded
+    if (component.haveEmptyTexture) {
+        await component.load();
     }
+    // return the ids of the tickers
     if (id) {
-        return [id]
+        return [id];
     }
 }
 ```
