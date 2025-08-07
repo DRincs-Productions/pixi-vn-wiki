@@ -472,13 +472,14 @@ To better understand how to create one, a simplified version of [`showWithDissol
 ```typescript
 import { AnimationOptions, canvas, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn";
 
-export async function showWithDissolve(
+export default async function showWithDissolve(
     alias: string,
     component: ImageSprite,
     props: AnimationOptions = {},
     priority?: UPDATE_PRIORITY
 ): Promise<string[] | undefined> {
     let { forceCompleteBeforeNext = true, ...options } = props;
+    canvas.add(alias, canvasElement)
     // edit the properties of the new component
     component.alpha = 0;
     // create the ticker and play it
@@ -504,47 +505,6 @@ export async function showWithDissolve(
 }
 ```
 
-### Force completion of the transition at the end of the step
-
-It is recommended to create a transition that forces the completion of the transition at the end of the `step`.
-
-To do this, you can use the <DynamicLink href="/start/canvas-tickers-functions#force-completion-of-the-transition-at-the-end-of-the-step">`canvas.completeTickerOnStepEnd` function</DynamicLink>.
-
-This example shows how to create a transition that forces the completion of the transition at the end of the `step`.
-
-```typescript title="canvas/transitions/showWithDissolve.ts"
-import { canvas, FadeAlphaTicker, FadeAlphaTickerProps, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn"
-
-export default async function showWithDissolve(
-    alias: string,
-    canvasElement: ImageSprite,
-    props: FadeAlphaTickerProps && {
-        forceCompleteBeforeNext?: boolean // [!code ++]
-    } = {},
-    priority?: UPDATE_PRIORITY,
-): Promise<string[] | undefined> {
-    let forceCompleteBeforeNext = props.forceCompleteBeforeNext ?? true // [!code ++]
-    canvas.add(alias, canvasElement)
-    canvasElement.alpha = 0
-
-    let effect = new FadeAlphaTicker({
-        ...props,
-        type: "show",
-        startOnlyIfHaveTexture: true,
-    }, undefined, priority)
-    let id = canvas.addTicker(alias, effect)
-    if (id) { // [!code ++]
-        forceCompleteBeforeNext && canvas.completeTickerOnStepEnd({ id: id }) // [!code ++]
-    } // [!code ++]
-    if (canvasElement.haveEmptyTexture) {
-        await canvasElement.load()
-    }
-    if (id) {
-        return [id]
-    }
-}
-```
-
 ### If a component with the same alias already exists
 
 If a component with the same alias already exists, you can
@@ -558,37 +518,46 @@ If a component with the same alias already exists, you can
 To remove the previous component when the new component transition is complete, you can use the `aliasToRemoveAfter` property. The `aliasToRemoveAfter` property is the alias of the component to remove when the new component transition is complete, it is available in all <DynamicLink href="/start/canvas-animations-effects">Animations and Effects</DynamicLink> provided by Pixi’VN.
 
 ```typescript title="canvas/transitions/showWithDissolve.ts"
-import { canvas, FadeAlphaTicker, FadeAlphaTickerProps, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn"
+import { AnimationOptions, canvas, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn";
 
 export default async function showWithDissolve(
     alias: string,
-    canvasElement: ImageSprite,
-    props: FadeAlphaTickerProps = {},
-    priority?: UPDATE_PRIORITY,
+    component: ImageSprite,
+    props: AnimationOptions = {},
+    priority?: UPDATE_PRIORITY
 ): Promise<string[] | undefined> {
-    let oldCanvasAlias: string | undefined = undefined // [!code ++]
-    if (canvas.find(alias)) { // [!code ++]
-        oldCanvasAlias = alias + "_temp_disolve" // [!code ++]
-        canvas.editAlias(alias, oldCanvasAlias) // [!code ++]
-    } // [!code ++]
-
-    canvas.add(alias, canvasElement)
-    oldCanvasAlias && canvas.copyCanvasElementProperty(oldCanvasAlias, alias) // [!code ++]
-    oldCanvasAlias && canvas.transferTickers(oldCanvasAlias, alias, "duplicate") // [!code ++]
-    canvasElement.alpha = 0
-
-    let effect = new FadeAlphaTicker({
-        ...props,
-        type: "show",
-        aliasToRemoveAfter: oldCanvasAlias, // [!code ++]
-        startOnlyIfHaveTexture: true,
-    }, undefined, priority)
-    let id = canvas.addTicker(alias, effect)
-    if (canvasElement.haveEmptyTexture) {
-        await canvasElement.load()
+    let { forceCompleteBeforeNext = true, ...options } = props;
+    // check if the alias is already exist
+    let oldComponentAlias: string | undefined = undefined;
+    if (canvas.find(alias)) {
+        oldComponentAlias = alias + "_temp_disolve";
+        canvas.editAlias(alias, oldComponentAlias);
     }
+    // add the new component and transfer the properties of the old component to the new component
+    canvas.add(alias, canvasElement)
+    oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
+    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate");
+    // edit the properties of the new component
+    component.alpha = 0;
+    // create the ticker and play it
+    let id = canvas.animate(
+        alias,
+        {
+            alpha: 1,
+        },
+        {
+            ...options,
+            forceCompleteBeforeNext,
+        },
+        priority
+    );
+    // load the image if the image is not loaded
+    if (component.haveEmptyTexture) {
+        await component.load();
+    }
+    // return the ids of the tickers
     if (id) {
-        return [id]
+        return [id];
     }
 }
 ```
