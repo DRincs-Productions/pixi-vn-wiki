@@ -313,22 +313,12 @@ export function RotateExample() {
     return (
         <ReactTemplate
             files={{
-                "labels/startLabel.ts": `import { canvas, newLabel, Repeat, RotateTicker, showImage } from "@drincs/pixi-vn";
+                "labels/startLabel.ts": `import { canvas, newLabel, showImage } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start_label", [
   async () => {
-    await showImage("alien", "alien", { align: 0.5, anchor: 0.5 });
-    canvas.addTickersSequence("alien", [
-      new RotateTicker({}, 2),
-      new RotateTicker(
-        {
-          clockwise: false,
-          speed: 10,
-        },
-        3
-      ),
-      Repeat,
-    ]);
+    const alien = await showImage("alien", "alien", { align: 0.5, anchor: 0.5 });
+    canvas.animate(alien, { angle: 360 }, { duration: 1, type: "spring", repeat: Infinity, repeatDelay: 0.2 });
   },
 ]);`,
                 "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
@@ -360,19 +350,13 @@ export function FadeExample() {
     return (
         <ReactTemplate
             files={{
-                "labels/startLabel.ts": `import { canvas, FadeAlphaTicker, newLabel, Repeat, showImage } from "@drincs/pixi-vn";
+                "labels/startLabel.ts": `import { canvas, newLabel, showImage } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start_label", [
-  async () => {
-    await showImage("alien", "alien", { align: 0.5, anchor: 0.5 });
-    canvas.addTickersSequence("alien", [
-      new FadeAlphaTicker({}),
-      new FadeAlphaTicker({
-        type: "show",
-      }),
-      Repeat,
-    ]);
-  },
+    async () => {
+        const alien = await showImage("alien", "alien", { align: 0.5, anchor: 0.5, alpha: 0 });
+        canvas.animate(alien, { alpha: 1 }, { ease: "linear", duration: 1 });
+    },
 ]);`,
                 "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
 
@@ -403,21 +387,12 @@ export function ZoomExample() {
     return (
         <ReactTemplate
             files={{
-                "labels/startLabel.ts": `import { canvas, newLabel, Repeat, showImage, ZoomTicker } from "@drincs/pixi-vn";
+                "labels/startLabel.ts": `import { canvas, newLabel, showImage } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start_label", [
   async () => {
-    await showImage("alien", "alien", { align: 0.5, anchor: 0.5 });
-    canvas.addTickersSequence("alien", [
-      new ZoomTicker({
-        limit: 3,
-      }),
-      new ZoomTicker({
-        type: "unzoom",
-        limit: -3,
-      }),
-      Repeat,
-    ]);
+    const alien = await showImage("alien", "alien", { align: 0.5, anchor: 0.5, scale: 0 });
+    canvas.animate(alien, { scaleX: 1, scaleY: 1 }, { ease: "circInOut", duration: 1 });
   },
 ]);`,
                 "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
