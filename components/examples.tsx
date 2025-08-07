@@ -424,24 +424,14 @@ export function MirrorExample() {
     return (
         <ReactTemplate
             files={{
-                "labels/startLabel.ts": `import { canvas, newLabel, Repeat, showImage, ZoomTicker } from "@drincs/pixi-vn";
+                "labels/startLabel.ts": `import { canvas, newLabel, showImage } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start_label", [
   async () => {
-    await showImage("alien", "alien", { align: 0.5, anchor: 0.5 });
-    canvas.addTickersSequence("alien", [
-      new ZoomTicker({
-        type: "unzoom",
-        limit: { x: -1, y: 0 },
-        speed: { x: 5, y: 0 },
-      }),
-      new ZoomTicker({
-        limit: 1,
-        speed: { x: 10, y: 0 },
-      }),
-      Repeat,
-    ]);
+    const alien = await showImage("alien", "alien", { align: 0.5, anchor: 0.5 });
+    canvas.animate(alien, { scaleX: -1 });
   },
+  () => canvas.animate("alien", { scaleX: 1 }),
 ]);`,
                 "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
 
