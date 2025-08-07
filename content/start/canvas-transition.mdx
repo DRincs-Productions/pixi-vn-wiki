@@ -505,17 +505,13 @@ export default async function showWithDissolve(
 }
 ```
 
-### If a component with the same alias already exists
+### Replace or remove the previous component
 
-If a component with the same alias already exists, you can
+If a component with the same alias already exists, you can let it be replaced or:
 
-* Let it be replaced
-* Remove the previous component with a transition
-* Remove the previous component when the new component transition is complete
+#### Remove the previous component after completion
 
-#### Remove the previous component when the new component transition is complete
-
-To remove the previous component when the new component transition is complete, you can use the `aliasToRemoveAfter` property. The `aliasToRemoveAfter` property is the alias of the component to remove when the new component transition is complete, it is available in all <DynamicLink href="/start/canvas-animations-effects">Animations and Effects</DynamicLink> provided by Pixi’VN.
+To remove the previous component when the new component transition is complete, you can use the <DynamicLink href="/start/canvas-motion">`aliasToRemoveAfter` property</DynamicLink>.
 
 ```typescript title="canvas/transitions/showWithDissolve.ts"
 import { AnimationOptions, canvas, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn";
@@ -564,71 +560,70 @@ export default async function showWithDissolve(
 
 #### Remove the previous component with a transition
 
-To remove the previous component with a transition, you can run a  <DynamicLink href="/start/canvas-animations-effects">Animations or Effects</DynamicLink> to remove the previous component before the new component transition is complete.
-
-To do this you will also need to use many other functions depending on the transition you are creating.
+To remove the previous component with a transition, you can run a another animation with the <DynamicLink href="/start/canvas-motion">`canvas.animate`</DynamicLink> function, and use the <DynamicLink href="/start/canvas-motion">`tickerIdToResume` property</DynamicLink>
 
 ```typescript title="canvas/transitions/showWithFade.ts"
-import { canvas, FadeAlphaTicker, FadeAlphaTickerProps, ImageSprite, UPDATE_PRIORITY, Pause } from "@drincs/pixi-vn"
+import { AnimationOptions, canvas, ImageSprite, showWithDissolve, UPDATE_PRIORITY } from "@drincs/pixi-vn";
 
-export default async function showWithFade(
+export async function showWithFade(
     alias: string,
-    canvasElement: ImageSprite,
-    props: FadeAlphaTickerProps = {},
-    priority?: UPDATE_PRIORITY,
+    component: ImageSprite,
+    props: AnimationOptions = {},
+    priority?: UPDATE_PRIORITY
 ): Promise<string[] | undefined> {
-    let oldCanvasAlias: string | undefined = undefined // [!code ++]
-    if (canvas.find(alias)) { // [!code ++]
-        oldCanvasAlias = alias + "_temp_fade" // [!code ++]
-        canvas.editAlias(alias, oldCanvasAlias) // [!code ++]
-    } // [!code ++]
-
-    canvas.add(alias, canvasElement)
-    oldCanvasAlias && canvas.copyCanvasElementProperty(oldCanvasAlias, alias) // [!code ++]
-    oldCanvasAlias && canvas.transferTickers(oldCanvasAlias, alias, "duplicate") // [!code ++]
-    canvasElement.alpha = 0
-
-    let res: undefined | string[] = undefined // [!code ++]
-
-    if (oldCanvasAlias) { // [!code ++]
-        let id1 = canvas.addTicker(oldCanvasAlias, // [!code ++]
-            new FadeAlphaTicker({ // [!code ++]
-                ...props, // [!code ++]
-                type: "hide", // [!code ++]
-                startOnlyIfHaveTexture: true, // [!code ++]
-                tickerAliasToResume: alias // [!code ++]
-            }, undefined, priority), // [!code ++]
-        ) // [!code ++]
-        if (id1) { // [!code ++]
-            res = [id1] // [!code ++]
-        } // [!code ++]
-        let id2 = canvas.addTicker(alias, // [!code ++]
-            new FadeAlphaTicker({ // [!code ++]
-                ...props, // [!code ++]
-                type: "show", // [!code ++]
-                startOnlyIfHaveTexture: true, // [!code ++]
-                aliasToRemoveAfter: oldCanvasAlias, // [!code ++]
-            }, undefined, priority) // [!code ++]
-        ) // [!code ++]
-        canvas.pauseTicker(alias) // [!code ++]
-        if (id2) { // [!code ++]
-            res ? res.push(id2) : res = [id2] // [!code ++]
-        } // [!code ++]
-    } // [!code ++]
-    else { // [!code ++]
-        let effect = new FadeAlphaTicker({
-            ...props,
-            type: "show",
-            startOnlyIfHaveTexture: true,
-        }, undefined, priority)
-        let id = canvas.addTicker(alias, effect)
-        if (id) { // [!code ++]
-            res = [id] // [!code ++]
-        } // [!code ++]
-    } // [!code ++]
-    if (canvasElement.haveEmptyTexture) {
-        await canvasElement.load()
+    let { forceCompleteBeforeNext = true, ...options } = props;
+    let res: string[] = [];
+    // check if the alias is already exist
+    if (!canvas.find(alias)) {
+        return showWithDissolve(alias, component, props, priority);
     }
-    return res // [!code ++]
+    let oldComponentAlias = alias + "_temp_fade";
+    canvas.editAlias(alias, oldComponentAlias);
+    // add the new component and transfer the properties of the old component to the new component
+    canvas.add(alias, component);
+    oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
+    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate");
+    // edit the properties of the new component
+    component.alpha = 0;
+    // create the ticker and play it
+    let id = canvas.animate(
+        alias,
+        {
+            alpha: 1,
+        },
+        {
+            ...options,
+            forceCompleteBeforeNext,
+        },
+        priority
+    );
+    if (id) {
+        res.push(id);
+
+        // pause the ticker
+        canvas.pauseTicker({ id: id });
+        // remove the old component
+        canvas.animate(
+            alias,
+            {
+                alpha: 0,
+            },
+            {
+                ...options,
+                tickerIdToResume: id,
+                aliasToRemoveAfter: oldComponentAlias,
+                forceCompleteBeforeNext,
+            },
+            priority
+        );
+    }
+    // load the image if the image is not loaded
+    if (component.haveEmptyTexture) {
+        await component.load();
+    }
+    // return the ids of the tickers
+    if (res.length > 0) {
+        return res;
+    }
 }
 ```
