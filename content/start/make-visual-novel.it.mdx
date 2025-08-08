@@ -69,14 +69,14 @@ return // ...
 
 ## Prima bozza della narrazione
 
+<Callout title="Markup" type="info">
+
+All templates have  <DynamicLink href="/start/markup-markdown">Markdown</DynamicLink> and <DynamicLink href="/start/markup-tailwindcss">Tailwind CSS</DynamicLink> support, so we will use it for our narration.
+
+</Callout>
+
 Ora possiamo iniziare a scrivere la "prima bozza" della <DynamicLink href="/start/narration">narrazione</DynamicLink> della visual novel.
-Creeremo la prima <DynamicLink href="/start/labels">`label`</DynamicLink> chiamata `start`, che sarà l'inizio del gioco.
-
-Dopodiché potremo scrivere i <DynamicLink href="/start/dialogue">dialoghi</DynamicLink> che seguiranno nella nostra visual novel. Il template che abbiamo scelto supporta il <DynamicLink href="/start/markup-markdown">linguaggio di markup markdown</DynamicLink> (<DynamicLink href="/ink/ink-markup">Linguaggio di markup in _ink_</DynamicLink>), quindi lo useremo per la nostra narrazione.
-
-<Comments>
-TODO: use Tailwind CSS -->
-</Comments>
+Creeremo la prima <DynamicLink href="/start/labels">`label`</DynamicLink> chiamata `start`, che sarà l'inizio del gioco. Dopodiché potremo scrivere i <DynamicLink href="/start/dialogue">dialoghi</DynamicLink> che seguiranno nella nostra visual novel.
 
 Questo è l'esempio:
 
@@ -107,7 +107,8 @@ I put out my hand.
 sly: I'm not shakin' your hand until I decide you're an all-right dude. Sorry, policy.
 mc: Fair enough, I'm a pretty scary guy, or so l've been told.
 james: The redhead behind her is Stephanie.
-steph: Hey! Everyone calls me Steph. I'll shake your hand.
+// Example of using Tailwind CSS
+steph: <span class="inline-block motion-translate-y-loop-25">Hey</span>! Everyone calls me Steph. I'll shake your hand.
 
 // ...
 -> DONE
@@ -133,7 +134,8 @@ const startLabel = newLabel("start", [
     () => narration.dialogue = { character: james, text: `I'm not shakin' your hand until I decide you're an all-right dude. Sorry, policy.` },
     () => narration.dialogue = { character: mc, text: `Fair enough, I'm a pretty scary guy, or so l've been told.` },
     () => narration.dialogue = { character: james, text: `The redhead behind her is Stephanie.` },
-    () => narration.dialogue = { character: steph, text: `Hey! Everyone calls me Steph. I'll shake your hand.` },
+    // Example of using Tailwind CSS
+    () => narration.dialogue = { character: steph, text: `<span class="inline-block motion-translate-y-loop-25">Hey</span>! Everyone calls me Steph. I'll shake your hand.` },
     // ...
 ]);
 export default startLabel;
@@ -141,7 +143,7 @@ export default startLabel;
 
 ### Dividi la narrazione in più label
 
-Non è consigliabile creare `labels` molto lunghe (anche per visual novel lineari), ma è consigliabile creare più `labels` piccole e "chiamarle" quando necessario con le <DynamicLink href="/start/labels-flow">funzionalità di controllo del flusso di narrazione</DynamicLink> (<DynamicLink href="/ink/ink-label">_ink_ knot (o label)</DynamicLink>).
+It is not advisable to create very long `labels` (even for linear visual novels), but it is advisable to create multiple small `labels` and "call" them when needed with the <DynamicLink href="/start/labels-flow">narration flow control features</DynamicLink>.
 
 Per questo motivo, anche se nel nostro caso la nostra storia è lineare, verrà divisa in due `labels`, la prima sarà quella che abbiamo appena creato, mentre la seconda si chiamerà `second_part`.
 
@@ -246,9 +248,9 @@ const secondPart = newLabel("second_part", [
 
 Ora darò al giocatore la possibilità di cambiare il nome del `mc`.
 
-Per fare ciò, chiederò al giocatore di <DynamicLink href="/start/input">completare una casella di input utilizzando le funzionalità di Pixi’VN</DynamicLink> (<DynamicLink href="/ink/ink-input">Utilizzare il prompt di input in _ink_</DynamicLink>).
+To do this, I will ask the player to <DynamicLink href="/start/input">complete an input box using Pixi’VN's features</DynamicLink>.
 
-Dopo aver ottenuto il valore di input, puoi <DynamicLink href="/start/character#edit-characters-in-the-game">impostare il nome del personaggio</DynamicLink> utilizzando il valore ottenuto (<DynamicLink href="/ink/ink-character#edit-character-name-in-dialogues">Modifica il nome del personaggio in _ink_</DynamicLink>).
+After getting the input value, you can <DynamicLink href="/start/character#edit">set the character name</DynamicLink> using the obtained value.
 
 Questo è l'esempio:
 
@@ -283,7 +285,7 @@ const startLabel = newLabel("start", [
 export default startLabel;
 ```
 
-Ora potremmo usare i nomi dei personaggi nei dialoghi (<DynamicLink href="/ink/ink-character#use-character-name-in-dialogues">Usa il nome del personaggio nei dialoghi in _ink_</DynamicLink>).
+Now we could <DynamicLink href="/start/character#use">use character names</DynamicLink> within dialogues.
 
 Questo è l'esempio:
 
@@ -371,41 +373,25 @@ const startLabel = newLabel("start", [
 export default startLabel;
 ```
 
-## Definisci le assets e caricale
+## Definisci gli assets e caricali
 
-Uno dei primi `steps` è scegliere dove salvare le risorse della tua visual novel. In questo caso salveremo gli assets nello storage Firebase (un servizio di hosting).
+<Callout type="info">
 
-Per caricare e manipolare risorse (immagini, gif, video...) sarà necessario utilizzare `Assets`. `Assets` è una classe con molte funzionalità e proviene dalla libreria PixiJS, se vuoi maggiori informazioni leggi [qui](https://pixijs.com/8.x/guides/components/assets).
+To load and manipulate assets (images, gifs, videos...) you will need to use `Assets`. `Assets` is a class with many features and comes from the PixiJS library, if you want more information read [here](https://pixijs.com/8.x/guides/components/assets).
+
+</Callout>
+
+Uno dei primi `steps` è scegliere dove salvare le risorse della tua visual novel. In questo caso salveremo gli assets nello storage Firebase (un servizio di hosting). You can use any hosting service you prefer or even save the assets locally in the project, read more about it <DynamicLink href="/start/assets">here</DynamicLink>.
 
 Prima di utilizzare un asset, si consiglia vivamente di <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">inizializzare la matrice degli asset</DynamicLink>.
 
-Per impostazione predefinita, come puoi vedere nel file `assets/manifest.ts`, tutti i template in `onLoadingLabel` tentano di caricare in background il "bundle asset" con l'alias uguale all'id della `label`. Si consiglia quindi di aggiungere nel `manifest` un `bundle assets` per ogni `label` con alias uguale all'id della `label` e contenente le immagini utilizzate in quella `label`.
+By default, as you can see in the `assets/manifest.ts` file, all templates in the `onLoadingLabel` try to load in the background the "bundle assets" with the alias equal to the current `label` id. Si consiglia quindi di aggiungere nel `manifest` un `bundle assets` per ogni `label` con alias uguale all'id della `label` e contenente le immagini utilizzate in quella `label`.
 
 Questo è l'esempio:
 
-```ts tab="utils/defineAssets.ts"
-import { Assets } from "@drincs/pixi-vn";
-import manifest from "../assets/manifest";
-
-/**
- * Define all the assets that will be used in the game.
- * This function will be called before the game starts.
- * You can read more about assets management in the documentation: https://pixi-vn.web.app/start/assets-management.html
- */
-export async function defineAssets() {
-    Assets.init({ manifest });
-
-    // The game will not start until these asserts are loaded.
-    await Assets.loadBundle("main_menu");
-
-    // The game will start immediately, but these asserts will be loaded in the background.
-    // Assets.backgroundLoadBundle("main_menu");
-    // Assets.backgroundLoad("background_main_menu");
-}
-```
-
 ```ts tab="assets/manifest.ts"
 import { AssetsManifest } from "@drincs/pixi-vn";
+import { MAIN_MENU_ROUTE } from "../constans";
 
 /**
  * Manifest for the assets used in the game.
@@ -415,7 +401,7 @@ const manifest: AssetsManifest = {
     bundles: [
         // screens
         {
-            name: "main_menu",
+            name: MAIN_MENU_ROUTE,
             assets: [
                 {
                     alias: "background_main_menu",
@@ -446,24 +432,242 @@ const manifest: AssetsManifest = {
         {
             name: "fm01",
             assets: [
-                // ...
+                {
+                    alias: "fm01-body",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-body.webp?alt=media",
+                },
+                {
+                    alias: "fm01-eyes-grin",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-eyes-grin.webp?alt=media",
+                },
+                {
+                    alias: "fm01-eyes-smile",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-eyes-smile.webp?alt=media",
+                },
+                {
+                    alias: "fm01-eyes-soft",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-eyes-soft.webp?alt=media",
+                },
+                {
+                    alias: "fm01-eyes-upset",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-eyes-upset.webp?alt=media",
+                },
+                {
+                    alias: "fm01-eyes-wow",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-eyes-wow.webp?alt=media",
+                },
+                {
+                    alias: "fm01-mouth-grin00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-grin00.webp?alt=media",
+                },
+                {
+                    alias: "fm01-mouth-serious00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-serious00.webp?alt=media",
+                },
+                {
+                    alias: "fm01-mouth-serious01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-serious01.webp?alt=media",
+                },
+                {
+                    alias: "fm01-mouth-smile00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-smile00.webp?alt=media",
+                },
+                {
+                    alias: "fm01-mouth-smile01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-smile01.webp?alt=media",
+                },
+                {
+                    alias: "fm01-mouth-soft00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-soft00.webp?alt=media",
+                },
+                {
+                    alias: "fm01-mouth-soft01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-soft01.webp?alt=media",
+                },
+                {
+                    alias: "fm01-mouth-upset00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-upset00.webp?alt=media",
+                },
+                {
+                    alias: "fm01-mouth-upset01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-upset01.webp?alt=media",
+                },
+                {
+                    alias: "fm01-mouth-wow01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-wow01.webp?alt=media",
+                },
             ],
         },
         {
             name: "fm02",
             assets: [
-                // ...
+                {
+                    alias: "fm02-body",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-body.webp?alt=media",
+                },
+                {
+                    alias: "fm02-eyes-bawl",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-eyes-bawl.webp?alt=media",
+                },
+                {
+                    alias: "fm02-eyes-joy",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-eyes-joy.webp?alt=media",
+                },
+                {
+                    alias: "fm02-eyes-nervous",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-eyes-nervous.webp?alt=media",
+                },
+                {
+                    alias: "fm02-eyes-smile",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-eyes-smile.webp?alt=media",
+                },
+                {
+                    alias: "fm02-eyes-upset",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-eyes-upset.webp?alt=media",
+                },
+                {
+                    alias: "fm02-eyes-wow",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-eyes-wow.webp?alt=media",
+                },
+                {
+                    alias: "fm02-mouth-cry01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-mouth-cry01.webp?alt=media",
+                },
+                {
+                    alias: "fm02-mouth-nervous00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-mouth-nervous00.webp?alt=media",
+                },
+                {
+                    alias: "fm02-mouth-nervous01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-mouth-nervous01.webp?alt=media",
+                },
+                {
+                    alias: "fm02-mouth-smile00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-mouth-smile00.webp?alt=media",
+                },
+                {
+                    alias: "fm02-mouth-smile01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-mouth-smile01.webp?alt=media",
+                },
+                {
+                    alias: "fm02-mouth-upset00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-mouth-upset00.webp?alt=media",
+                },
+                {
+                    alias: "fm02-mouth-upset01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-mouth-upset01.webp?alt=media",
+                },
+                {
+                    alias: "fm02-mouth-wow01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-mouth-wow01.webp?alt=media",
+                },
             ],
         },
         {
             name: "m01",
             assets: [
-                // ...
+                {
+                    alias: "m01-body",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes-annoy",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-annoy.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes-concern",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-concern.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes-cry",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-cry.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes-grin",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-grin.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes-smile",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes-wow",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-wow.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth-annoy00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-annoy00.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth-annoy01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-annoy01.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth-concern00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-concern00.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth-concern01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-concern01.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth-cry00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-cry00.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth-cry01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-cry01.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth-grin00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-grin00.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth-neutral00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-neutral00.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth-neutral01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-neutral01.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth-smile00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth-smile01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile01.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth-wow01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-wow01.webp?alt=media",
+                },
             ],
         },
     ],
 };
 export default manifest;
+```
+
+```ts tab="utils/defineAssets.ts"
+import { Assets } from "@drincs/pixi-vn";
+import manifest from "../assets/manifest";
+
+/**
+ * Define all the assets that will be used in the game.
+ * This function will be called before the game starts.
+ * You can read more about assets management in the documentation: https://pixi-vn.web.app/start/assets-management.html
+ */
+export async function defineAssets() {
+    Assets.init({ manifest });
+
+    // The game will not start until these asserts are loaded.
+    await Assets.loadBundle("main_menu");
+
+    // The game will start immediately, but these asserts will be loaded in the background.
+    // Assets.backgroundLoadBundle("main_menu");
+    // Assets.backgroundLoad("background_main_menu");
+}
 ```
 
 ```ts tab="src/main.ts"
@@ -474,47 +678,7 @@ import { CANVAS_UI_LAYER_NAME } from "./constans";
 import "./index.css";
 import "./values/characters";
 
-// Canvas setup with PIXI
-const body = document.body;
-if (!body) {
-    throw new Error("body element not found");
-}
-
-Game.init(body, {
-    height: 1080,
-    width: 1920,
-    backgroundColor: "#303030",
-}).then(() => {
-    // Pixi.JS UI Layer
-    canvas.addLayer(CANVAS_UI_LAYER_NAME, new Container());
-
-    // React setup with ReactDOM
-    const root = document.getElementById("root");
-    if (!root) {
-        throw new Error("root element not found");
-    }
-
-    const htmlLayer = canvas.addHtmlLayer("ui", root, {
-        position: "absolute",
-        pointerEvents: "none"
-    });
-    if (!htmlLayer) {
-        throw new Error("htmlLayer not found");
-    }
-    const reactRoot = createRoot(htmlLayer);
-
-    reactRoot.render(<App />);
-});
-
-Game.onEnd(async ({ navigate }) => {
-    Game.clear();
-    navigate("/");
-});
-
-Game.onError((type, error, { notify, t }) => {
-    notify(t("allert_error_occurred"), { variant: "error" });
-    console.error(`Error occurred: ${type}`, error);
-});
+// ...
 
 Game.onLoadingLabel((_stepId, { id }) => { // [!code focus]
     Assets.backgroundLoadBundle(id); // [!code focus]
