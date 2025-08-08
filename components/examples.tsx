@@ -204,10 +204,10 @@ export function HeredityFactorExample() {
 
 export const startLabel = newLabel("start_label", [
   async () => {
-    await showImage("alien", "eggHead", { anchor: 0.5, align: 0.5 });
+    const alien = await showImage("alien", "eggHead", { anchor: 0.5, align: 0.5 });
 
     canvas.animate(
-      "alien",
+      alien,
       {
         angle: 360,
       },
@@ -217,7 +217,7 @@ export const startLabel = newLabel("start_label", [
       }
     );
     canvas.animate(
-      "alien",
+      alien,
       { xAlign: [0, 1, 1, 0, 0], yAlign: [0, 0, 1, 1, 0] },
       {
         repeat: Infinity,
