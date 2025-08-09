@@ -3,6 +3,8 @@ title: Make your first Visual Novel
 description: Step-by-step guide to creating a visual novel with Pixi’VN, covering project setup, narrative, assets, and interactivity.
 ---
 
+import { TSVisualNovelExample } from "@/components/vn-examples";
+
 This tutorial will guide you through the process of creating your first Visual Novel.
 
 **What is a Visual Novel?** A visual novel (VN) is a form of digital interactive fiction. Visual novels are often associated with the medium of video games, but are not always labeled as such themselves. They combine a textual narrative with static or animated illustrations and a varying degree of interactivity. The format is more rarely referred to as novel game, a retranscription of the wasei-eigo term noberu gēmu (ノベルゲーム), which is more often used in Japanese.
@@ -691,9 +693,7 @@ Now it's time to think about the visual part too. We will add the background and
 
 **What is a sprite?** In computer graphics, a sprite is a two-dimensional bitmap that is integrated into a larger scene, most often in a 2D video game.
 
-In our case the character sprites are composed of 3 images: the body, the eyes and the mouth. Then we use <DynamicLink href="/start/canvas-image-container">ImageContainer</DynamicLink> to compose the character.
-
-You can find more information on how to add canvas components in <DynamicLink href="/start/canvas-components">this documentation</DynamicLink> (<DynamicLink href="/ink/ink-canvas">Use canvas components in _ink_</DynamicLink>).
+In our case the character sprites are composed of 3 images: the body, the eyes and the mouth. Then we use <DynamicLink href="/start/canvas-image-container">ImageContainer</DynamicLink> to compose the character. You can find more information on how to add canvas components in <DynamicLink href="/start/canvas-components">this documentation</DynamicLink>.
 
 This is the example:
 
@@ -743,10 +743,7 @@ This is the example:
 
 ```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
 === start ===
-# load assets bg01-hallway
-# load assets m01-body m01-eyes-grin m01-eyes-smile m01-eyes-wow m01-mouth-grin00 m01-mouth-smile00 m01-mouth-smile01
-# load assets fm01-body fm01-eyes-smile fm01-eyes-upset fm01-mouth-serious00 fm01-mouth-serious01 fm01-mouth-smile00
-# load assets fm02-body fm02-eyes-joy fm02-eyes-nervous fm02-eyes-wow fm02-mouth-nervous00 fm02-mouth-smile00
+# lazyload bundle m01 fm01 fm02
 
 # show image bg bg01-hallway
 # show imagecontainer james [m01-body m01-eyes-smile m01-mouth-neutral01] xAlign 0.5 yAlign 1 with movein direction right speed 300
@@ -773,7 +770,7 @@ export default startLabel;
 
 ## Use transitions
 
-To make the visual novel more dynamic, you can use transitions to show images. You can find more information about using transitions <DynamicLink href="/start/canvas-transition">here</DynamicLink> (<DynamicLink href="/ink/ink-canvas#show-a-canvas-component-with-transition-in-ink">Using transitions in _ink_</DynamicLink>).
+To make the visual novel more dynamic, you can use transitions to show images. You can find more information about using transitions <DynamicLink href="/start/canvas-transition">here</DynamicLink>.
 
 This is the example:
 
@@ -797,19 +794,26 @@ mc: ...
 const startLabel = newLabel("start", [
     async () => {
         await showImage("bg", "bg01-hallway");
-        await moveIn("james", {
-            value: ["m01-body", "m01-eyes-smile", "m01-mouth-neutral01"],
-            options: { xAlign: 0.5, yAlign: 1 }
-        }, { direction: "right", speed: 300 })
-        narration.dialogue = { character: james, text: `You're my roommate's replacement, huh?` }
+        await moveIn(
+            "james",
+            {
+                value: ["m01-body", "m01-eyes-smile", "m01-mouth-neutral01"],
+                options: { xAlign: 0.5, yAlign: 1 },
+            },
+            { direction: "right", ease: "circInOut", type: "spring" }
+        );
+        narration.dialogue = { character: james, text: `You're my roommate's replacement, huh?` };
     },
     async () => {
-        await showImageContainer("james", ["m01-body", "m01-eyes-grin", "m01-mouth-smile01"])
-        narration.dialogue = { character: james, text: `Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you'll be fine!` }
+        await showImageContainer("james", ["m01-body", "m01-eyes-grin", "m01-mouth-smile01"]);
+        narration.dialogue = {
+            character: james,
+            text: `Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you'll be fine!`,
+        };
     },
     async () => {
-        await showImageContainer("james", ["m01-body", "m01-eyes-smile", "m01-mouth-grin00"])
-        narration.dialogue = { character: mc, text: `...` }
+        await showImageContainer("james", ["m01-body", "m01-eyes-smile", "m01-mouth-grin00"]);
+        narration.dialogue = { character: mc, text: `...` };
     },
     // ...
 ]);
@@ -818,34 +822,40 @@ export default startLabel;
 
 ## Building an animation
 
-To make the visual novel more dynamic, you can use animations. You can find more information about how to use animations <DynamicLink href="/start/canvas-animations-effects">here</DynamicLink> (<DynamicLink href="/ink/ink-canvas#use-the-effects-in-ink">Using animations in _ink_</DynamicLink>).
+To make the visual novel more dynamic, you can use animations. You can find more information about how to use animations <DynamicLink href="/start/canvas-animations-effects">here</DynamicLink>.
 
 I recommend using Typescript if you need to set a lot of properties, this way you have more control over the animation, more functionality and type feedback.
 
 In my case my animation will take `steph` out of the scene and reinsert her in the next `step`. I'll also mirror her on the x-axis to make sure she's facing the right way.
 
-For taking `steph` out/in I will use the `moveOut` and `moveIn` functions. For the mirror effect I will use the `ZoomTicker` ticker.
+For taking `steph` out/in I will use the `moveOut` and `moveIn` functions. For the mirror effect I will use the `canvas.animate` function.
 
-An important feature of transitions is that they momentarily pause all animations connected to that component and resume them when the transition is complete.
+So, in my case, I will use before the `moveIn` function the `canvas.animate` function to create an animation that sets the `scaleX` property to `-1` (mirroring on the x-axis) and then set it back to `1` with `autoplay: false` so that it does not start immediately.
 
-So, in my case, I will use before the `moveIn` function the `addTicker` function to add the `ZoomTicker` ticker. This way `steph` will be mirrored on the x-axis after the transition is complete.
+Then I will use the `moveIn` function to move `steph` into the scene, and I will pass the `tickerId` of the animation to the `moveIn` function so that it can be resumed after the transition is complete.
 
 Also since I will use Typescript for this animation, I created a `label` for this animation. So that it can be called also from other languages ​​that are not JS/TS.
 
 ```ts title="labels/animation01.ts"
-import { canvas, moveIn, newLabel, ZoomTicker } from "@drincs/pixi-vn";
+import { canvas, ImageContainer, moveIn, newLabel } from "@drincs/pixi-vn";
 
 export const animation01 = newLabel("animation_01", [
     async () => {
-        canvas.addTicker(
+        let tickerId = canvas.animate<ImageContainer>(
             "steph",
-            new ZoomTicker({ type: "zoom", limit: 1, speed: 70 })
+            {
+                scaleX: 1,
+            },
+            { autoplay: false }
         );
 
-        await moveIn("steph", {
+        await moveIn(
+            "steph",
+            {
                 value: ["fm02-body", "fm02-eyes-joy", "fm02-mouth-smile01"],
                 options: { xAlign: 0.8, yAlign: 1, scale: { y: 1, x: -1 }, anchor: 0.5 },
-            }, { direction: "right", speed: 300 }
+            },
+            { direction: "right", ease: "easeInOut", tickerIdToResume: tickerId }
         );
     },
 ]);
@@ -946,10 +956,7 @@ Here is an interactive example with a minimal UI (HTML). Scrolling down you can 
 />
 </Tab>
 <Tab>
-<Sandbox
-  template="zfxsqq"
-  entry="/src/labels/startLabel.ts"
-/>
+<TSVisualNovelExample />
 </Tab>
 </Tabs>
 
