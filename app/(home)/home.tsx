@@ -128,7 +128,7 @@ async function Hero() {
 
     return (
         <div className='relative z-2 flex flex-col border-x border-t bg-fd-background/80 px-4 pt-12 max-md:text-center md:px-12 md:pt-16 [.uwu_&]:hidden overflow-hidden'>
-            <div className='relative flex flex-col md:flex-row md:items-center'>
+            <div className='flex flex-col md:flex-row md:items-center'>
                 {/* logo div */}
                 <div className='order-1 md:order-2 flex justify-center items-center mt-8 md:mt-0 md:w-[30%] h-full relative'>
                     <div
