@@ -3,11 +3,11 @@ title: キャラクター
 description: Pixi’VNでキャラクターを定義、使用、カスタマイズする方法（ストレージ、感情、カスタムプロパティを含む）。
 ---
 
-**キャラクターとは？** キャラクターはビジュアルノベルに登場する役者です。 Pixi’VNでは、キャラクターは`CharacterBaseModel`クラスまたは[カスタムクラス](#custom-class)を使用して作成されます。
+**What are `characters`?** Characters are the actors that appear in a visual novel. Pixi’VNでは、キャラクターは`CharacterBaseModel`クラスまたは[カスタムクラス](#custom-class)を使用して作成されます。
 
-## Initialize
+## 初期化
 
-To initialize a character, create a new instance of the `CharacterBaseModel` class (or your [custom class](#custom-class)) and add it to the game character dictionary when the game is initialized.
+キャラクターを初期化するには、`CharacterBaseModel`クラスの新しいインスタンス（または独自の[カスタムクラス](#custom-class)）を作成し、ゲームが初期化されるときにそれをゲームキャラクターディクショナリに追加します。
 
 <Callout type="info">
 
@@ -15,15 +15,15 @@ It is recommended to import the instances at project startup, see the `src/main.
 
 </Callout>
 
-To create a new instance of `CharacterBaseModel`, you need the following parameters:
+`CharacterBaseModel`の新しいインスタンスを作成するには、次のパラメータが必要です：
 
-- `id`: A unique identifier (string). It is used to reference the character in the game (must be unique). If you want to create a [character with an "emotion", you can pass an object](#character-emotions).
-- `props`: An object with the character's properties:
-  - `name`: The character's name.
-  - `surname` (Optional): The character's surname.
-  - `age` (Optional): The character's age.
-  - `icon` (Optional): The character's icon image URL.
-  - `color` (Optional): The character's color.
+- `id`: A unique identifier (string). ゲーム内のキャラクターを参照するために使用されます（ユニークである必要があります）。 [感情を持つ"キャラクター"を作成したい場合は、オブジェクトを渡すことができます](#character-emotions)。
+- `props`: キャラクターのプロパティを持つオブジェクト：
+  - `name`: キャラクターの名前。
+  - `surname`（オプション）: キャラクターの姓。
+  - `age`（オプション）: キャラクターの年齢。
+  - `icon`（オプション）: キャラクターのアイコン画像のURL。
+  - `color`（オプション）: キャラクターの色。
 
 ```ts tab="values/characters.ts"
 import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
@@ -53,13 +53,13 @@ import "./values/characters";
 // ...
 ```
 
-`RegisteredCharacters.add` is **required** to save the characters in the game.
+`RegisteredCharacters.add`は、キャラクターをゲームに保存するために**必須**です。
 
-You can also create a function to load characters. The important thing is that it is called at least once before the characters are used in the game, otherwise they will not be available.
+キャラクターをロードするための関数も作成できます。 重要なのは、キャラクターがゲームで使用される前に、少なくとも一度は呼び出される必要があることです。さもなければ、利用できなくなります。
 
 ## Get
 
-To get a character by its `id`, use the `RegisteredCharacters.get` function.
+`id`でキャラクターを取得するには、`RegisteredCharacters.get`関数を使用します。
 
 ```typescript
 import { RegisteredCharacters } from "@drincs/pixi-vn";
@@ -67,9 +67,9 @@ import { RegisteredCharacters } from "@drincs/pixi-vn";
 const liam = RegisteredCharacters.get('liam');
 ```
 
-## Get all
+## すべて取得
 
-To get all characters, use the `RegisteredCharacters.values` function.
+すべてのキャラクターを取得するには、`RegisteredCharacters.values`関数を使用します。
 
 ```typescript
 import { RegisteredCharacters } from "@drincs/pixi-vn";
@@ -77,27 +77,27 @@ import { RegisteredCharacters } from "@drincs/pixi-vn";
 const characters = RegisteredCharacters.values();
 ```
 
-## Edit
+## 編集
 
-`CharacterBaseModel` is a <DynamicLink href="/start/stored-classes">stored class</DynamicLink>, which means its properties are saved in <DynamicLink href="/start/storage">game storage</DynamicLink>.
+`CharacterBaseModel`は<DynamicLink href="/start/stored-classes">ストレージクラス</DynamicLink>であり、そのプロパティは<DynamicLink href="/start/storage">ゲームストレージ</DynamicLink>に保存されます。
 
-If the character's name is changed during the game, the new name will be saved in the game storage and linked to its `id`.
+キャラクターの名前がゲーム中に変更された場合、新しい名前はゲームストレージに保存され、その`id`にリンクされます。
 
-If the **character's `id` is changed** from one version to another, the system will **not** move the data linked from the previous `id` to the new `id`.
+もし**キャラクターの`id`が**バージョン間で変更された場合、システムは以前の`id`から新しい`id`にリンクされたデータを**移動しません**。
 
-The properties of the `CharacterBaseModel` that are stored in the game storage are:
+ゲームストレージに保存されている`CharacterBaseModel`のプロパティは次のとおりです：
 
-- `name`: The character's name.
-- `surname`: The character's surname.
-- `age`: The character's age.
+- `name`: キャラクターの名前。
+- `surname`: キャラクターの姓。
+- `age`: キャラクターの年齢。
 
-To get the properties used when instantiating the class, you can use:
+クラスをインスタンス化する際に使用されるプロパティを取得するには、次のようにします：
 
-- `defaultName`: The character's name.
-- `defaultSurname`: The character's surname.
-- `defaultAge`: The character's age.
+- `defaultName`: キャラクターの名前。
+- `defaultSurname`: キャラクターの姓。
+- `defaultAge`: キャラクターの年齢。
 
-Here's a simplified implementation of the `CharacterBaseModel` class for better understanding of the properties that are stored in the game storage:
+ゲームストレージに保存されるプロパティをよりよく理解するための`CharacterBaseModel`クラスの簡略化された実装は以下の通りです：
 
 ```typescript title="CharacterBaseModel.ts"
 export default class CharacterBaseModel extends StoredClassModel implements CharacterBaseModelProps {
@@ -126,9 +126,9 @@ export default class CharacterBaseModel extends StoredClassModel implements Char
 }
 ```
 
-## Use
+## 使用
 
-You can use a game character, for example, to <DynamicLink href="/start/dialogue#set-the-current-dialogue">link it to the current dialogue</DynamicLink>. You can use the character's `id` or the character's instance, but it is recommended to use the instance.
+たとえば、ゲームキャラクターを使用して、<DynamicLink href="/start/dialogue#set-the-current-dialogue">それを現在の対話にリンク</DynamicLink>することができます。 キャラクターの`id`またはキャラクターのインスタンスを使用できますが、インスタンスを使用することをお勧めします。
 
 ```ts title="values/characters.ts"
 export const liam = new CharacterBaseModel('liam_id', {
@@ -147,14 +147,14 @@ narration.dialogue = { character: liam, text: "Hello" }
 narration.dialogue = { character: "liam_id", text: "Hello" }
 ```
 
-## Character emotions
+## キャラクターの感情
 
-It is often useful to have multiple types of the same character. For example, a character "Alice" and a subtype related to her emotional state, like "Angry Alice". The character and the subtype have the same characteristics, except for one or more properties, such as the icon.
+同じキャラクターの異なるタイプを持つことがしばしば便利です。 例えば、キャラクターの「Alice」と彼女の感情状態に関連するサブタイプ、例えば「怒っているAlice」のようなものです。 キャラクターとそのサブタイプは、アイコンなどの1つ以上のプロパティを除いて、同じ特性を持っています。
 
-With Pixi’VN, you can create a "character with an emotion" by passing an object instead of the id, with the following properties:
+Pixi’VNを使用すると、idの代わりにオブジェクトを渡すことで「感情を持つキャラクター」を作成できます。以下のプロパティを持っています：
 
-- `id`: The id of an existing character.
-- `emotion`: The character's subcategory (e.g. the character's emotion).
+- `id`: 既存のキャラクターのid。
+- `emotion`: キャラクターのサブカテゴリー（例：キャラクターの感情）。
 
 ```ts title="values/characters.ts"
 import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
@@ -184,21 +184,21 @@ console.log(alice.name); // Eleonora
 console.log(angryAlice.name); // Angry Eleonora
 ```
 
-## Custom class
+## カスタムクラス
 
 <Callout title="Templates" type="info">
 
-In all templates, the `Character` class is already defined in the file `models/Character.ts`. You can use it directly or modify it to suit your needs.
+すべてのテンプレートで、`Character`クラスはすでに`models/Character.ts`ファイルに定義されています。 直接使用するか、それを修正して自分のニーズに合わせることができます。
 
 </Callout>
 
-It is recommended to create your own class `Character` that extends `CharacterStoredClass` and "override" the interface `CharacterInterface` to add, edit, or remove properties or methods.
+独自のクラス`Character`を作成し、`CharacterStoredClass`を拡張して、プロパティやメソッドを追加、編集、または削除するためにインターフェイス`CharacterInterface`を"オーバーライド"することをお勧めします。
 
-For example, if you want to create a class `Character`, you must "override" the interface `CharacterInterface` to use your properties or methods. (See the file `pixi-vn.d.ts`)
+例えば、クラス`Character`を作成したい場合、プロパティやメソッドを使用するためにインターフェイス`CharacterInterface`を"オーバーライド"する必要があります。 （`pixi-vn.d.ts`ファイルを参照してください）
 
-Now you can create a class `Character` that extends `CharacterStoredClass` and implements the `CharacterInterface`. (For more information on how to create a class in TypeScript, read [the official documentation](https://www.typescriptlang.org/docs/handbook/2/classes.html))
+これで、`CharacterStoredClass`を拡張し、`CharacterInterface`を実装するクラス`Character`を作成できるようになります。 （TypeScriptでクラスを作成する方法の詳細については、[公式ドキュメント](https://www.typescriptlang.org/docs/handbook/2/classes.html)を読んでください）
 
-To create a property that stores its value in the game storage, you can create [Getters/Setters](https://www.typescriptlang.org/docs/handbook/2/classes.html#getters--setters) and use the `this.getStorageProperty()`/`this.setStorageProperty()` methods. (See the file `Character.ts`)
+ゲームストレージに値を保存するプロパティを作成するには、[ゲッター/セッター](https://www.typescriptlang.org/docs/handbook/2/classes.html#getters--setters)を作成し、`this.getStorageProperty()`/`this.setStorageProperty()`メソッドを使用できます。 （`Character.ts`ファイルを参照してください）
 
 ```ts tab="models/Character.ts"
 import { CharacterInterface, CharacterStoredClass } from "@drincs/pixi-vn";
