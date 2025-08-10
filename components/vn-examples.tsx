@@ -1692,7 +1692,7 @@ export const sly = new CharacterBaseModel("sly", {
 });
 
 RegisteredCharacters.add([mc, james, steph, sly]);`,
-                "values/animations-labels.ts": `import { canvas, ImageContainer, moveIn, newLabel } from "@drincs/pixi-vn";
+                "labels/animations-labels.ts": `import { canvas, ImageContainer, moveIn, newLabel } from "@drincs/pixi-vn";
 
 export const animation01 = newLabel("animation_01", [
   async () => {
