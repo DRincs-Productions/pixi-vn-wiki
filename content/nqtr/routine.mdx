@@ -85,6 +85,72 @@ import "./values/routine";
 
 You can also create a function to load `commitments`. The important thing is that it is called at least once before the `commitments` are used in the game, otherwise they will not be available.
 
+## Add to routines
+
+### During game initialization
+
+### During the game
+
+```ts tab="Example"
+import { aliceSmokes } from "../routine";
+import { routine } from "@drincs/nqtr";
+
+routine.add(aliceSmokes);
+```
+
+```ts tab="values/routine.ts"
+import { CommitmentBaseModel, RegisteredCommitments } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { NARRATION_ROUTE } from "../constans";
+import { aliceTalkMenuLabel } from "../labels/variousActionsLabels";
+import { alice } from "./characters";
+import { terrace } from "./rooms";
+
+const aliceSmokes = new CommitmentBaseModel("alice_smokes", alice, terrace, {
+    timeSlot: {
+        from: 10,
+        to: 20,
+    },
+    onRun: (_, event) => {
+        event.navigate(NARRATION_ROUTE);
+        narration.jumpLabel(aliceTalkMenuLabel, event);
+    },
+});
+
+RegisteredCommitments.add([aliceSmokes]);
+```
+
+## Unlink
+
+```ts tab="Example"
+import { aliceSmokes } from "../routine";
+import { routine } from "@drincs/nqtr";
+
+routine.remove(aliceSmokes);
+```
+
+```ts tab="values/routine.ts"
+import { CommitmentBaseModel, RegisteredCommitments } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { NARRATION_ROUTE } from "../constans";
+import { aliceTalkMenuLabel } from "../labels/variousActionsLabels";
+import { alice } from "./characters";
+import { terrace } from "./rooms";
+
+const aliceSmokes = new CommitmentBaseModel("alice_smokes", alice, terrace, {
+    timeSlot: {
+        from: 10,
+        to: 20,
+    },
+    onRun: (_, event) => {
+        event.navigate(NARRATION_ROUTE);
+        narration.jumpLabel(aliceTalkMenuLabel, event);
+    },
+});
+
+RegisteredCommitments.add([aliceSmokes]);
+```
+
 ## Get
 
 To get a `commitment` by its `id`, use the `RegisteredCommitments.get` function.
