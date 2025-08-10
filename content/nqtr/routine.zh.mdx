@@ -16,6 +16,23 @@ It is recommended to import the instances at project startup, see the `src/main.
 
 To create a new instance of `CommitmentBaseModel`, you need the following parameters:
 
+- `id`: A unique identifier (string). Used to reference the `commitment` in the game (must be unique).
+- `character`: The character or characters that are in the commitment and so in the room. It can be a single character or an array of characters.
+- `room`: The room where the commitment is. It must be an instance of `RoomInterface`.
+- `props`: An object with the commitment's properties:
+  - `name`: The name of the commitment (optional).
+  - `image`: The image of the commitment (optional). It can be a string with the path to the image or a function that returns a `ContainerChild` (optional).
+  - `icon`: The React icon of the commitment (optional). It can be a React element or a function that returns a React element (optional).
+  - `onRun`: A function that is called when the commitment is run. It receives two parameters:
+    - The `commitment` instance itself.
+    - `event`: The event that triggered the run. It is an instance of `OnRunEvent<CommitmentInterface>`, which contains methods to navigate to other routes, jump to labels, and more.
+  - `disabled`: Whether the commitment is disabled. It can be a boolean or a function that returns a boolean (optional, default is `false`). If it is disabled, this commitment will not be taken into consideration, so the characters will not be in the room, but will be busy with other commitments.
+  - `hidden`: Whether the commitment is hidden. It can be a boolean or a function that returns a boolean (optional, default is `false`). If it is hidden, the commitment will not be displayed in the UI.
+  - `priority`: The priority of the commitment. The higher the number, the higher the priority (optional, default is `0`).
+  - `executionType`: The execution type of the commitment. It can be "automatic" or "interaction". If it is "automatic", the `onRun` function will be called automatically when the player is in the room. If it is "interaction", the player must interact with the character to run the `onRun` function (optional, default is "interaction").
+  - `dateScheduling`: Used to schedule what date it will be added and removed. It is an instance of `DateSchedulingInterface` (optional).
+  - `timeSlot`: The time slot in which the commitment will be active. It is an instance of `TimeSchedulingInterface` (optional).
+
 ```ts tab="values/routine.ts"
 import { CommitmentBaseModel, RegisteredCommitments } from "@drincs/nqtr";
 import { narration } from "@drincs/pixi-vn";
@@ -68,6 +85,94 @@ import "./values/routine";
 `RegisteredCommitments.add` is **required** to save the `commitments` in the game.
 
 You can also create a function to load `commitments`. The important thing is that it is called at least once before the `commitments` are used in the game, otherwise they will not be available.
+
+## Add
+
+Initializing a commitment will not add it to the game. To do this, you'll need to use one of the following methods:
+
+### During game initialization
+
+### During the game
+
+```ts tab="Example"
+import { aliceSmokes } from "../routine";
+import { routine } from "@drincs/nqtr";
+
+routine.add(aliceSmokes);
+```
+
+```ts tab="values/routine.ts"
+import { CommitmentBaseModel, RegisteredCommitments } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { NARRATION_ROUTE } from "../constans";
+import { aliceTalkMenuLabel } from "../labels/variousActionsLabels";
+import { alice } from "./characters";
+import { terrace } from "./rooms";
+
+const aliceSmokes = new CommitmentBaseModel("alice_smokes", alice, terrace, {
+    timeSlot: {
+        from: 10,
+        to: 20,
+    },
+    onRun: (_, event) => {
+        event.navigate(NARRATION_ROUTE);
+        narration.jumpLabel(aliceTalkMenuLabel, event);
+    },
+});
+
+RegisteredCommitments.add([aliceSmokes]);
+```
+
+## Remove
+
+```ts tab="Example"
+import { aliceSmokes } from "../routine";
+import { routine } from "@drincs/nqtr";
+
+routine.remove(aliceSmokes);
+```
+
+```ts tab="values/routine.ts"
+import { CommitmentBaseModel, RegisteredCommitments } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { NARRATION_ROUTE } from "../constans";
+import { aliceTalkMenuLabel } from "../labels/variousActionsLabels";
+import { alice } from "./characters";
+import { terrace } from "./rooms";
+
+const aliceSmokes = new CommitmentBaseModel("alice_smokes", alice, terrace, {
+    timeSlot: {
+        from: 10,
+        to: 20,
+    },
+    onRun: (_, event) => {
+        event.navigate(NARRATION_ROUTE);
+        narration.jumpLabel(aliceTalkMenuLabel, event);
+    },
+});
+
+RegisteredCommitments.add([aliceSmokes]);
+```
+
+## Get
+
+To get a `commitment` by its `id`, use the `RegisteredCommitments.get` function.
+
+```ts
+import { RegisteredCommitments } from "@drincs/nqtr";
+
+const aliceWorks = RegisteredCommitments.get('alice_works');
+```
+
+## 获取所有
+
+To get all `commitments`, use the `RegisteredCommitments.values` function.
+
+```ts
+import { RegisteredCommitments } from "@drincs/nqtr";
+
+const commitments = RegisteredCommitments.values();
+```
 
 ## 自定义类
 
