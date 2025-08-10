@@ -743,7 +743,7 @@ This is the example:
 
 ```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
 === start ===
-# lazyload bundle m01 fm01 fm02
+# lazyload bundle m01 fm01 fm02 // [!code focus]
 
 # show image bg bg01-hallway
 # show imagecontainer james [m01-body m01-eyes-smile m01-mouth-neutral01] xAlign 0.5 yAlign 1 with movein direction right speed 300
@@ -761,9 +761,9 @@ mc: ...
 const startLabel = newLabel("start", [
     // ...
 ], {
-    onLoadingLabel: () => {
-        Assets.backgroundLoadBundle(["fm01", "fm02", "m01"]);
-    }
+    onLoadingLabel: () => { // [!code focus]
+        Assets.backgroundLoadBundle(["fm01", "fm02", "m01"]); // [!code focus]
+    } // [!code focus]
 });
 export default startLabel;
 ```
@@ -834,6 +834,8 @@ So, in my case, I will use before the `moveIn` function the `canvas.animate` fun
 
 Then I will use the `moveIn` function to move `steph` into the scene, and I will pass the `tickerId` of the animation to the `moveIn` function so that it can be resumed after the transition is complete.
 
+Forwarding I used the `forceCompleteBeforeNext: true` option to ensure that the animation completes before the next step in the label is executed. While for `move In`, being a transaction, `force Complete Before Next` is true by default.
+
 Also since I will use Typescript for this animation, I created a `label` for this animation. So that it can be called also from other languages ​​that are not JS/TS.
 
 ```ts title="labels/animation01.ts"
@@ -846,7 +848,7 @@ export const animation01 = newLabel("animation_01", [
             {
                 scaleX: 1,
             },
-            { autoplay: false }
+            { autoplay: false, forceCompleteBeforeNext: true }
         );
 
         await moveIn(
