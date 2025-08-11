@@ -7,12 +7,14 @@ import {
     BookOpenText,
     Boxes,
     Database,
+    Gamepad2,
     Globe,
     Hammer,
     History,
     MessageCircleQuestion,
     Music,
     Rocket,
+    Save,
     Sparkles,
     User,
 } from "lucide-react";
@@ -379,7 +381,14 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
             },
             {
                 type: "page",
+                name: "Minigames",
+                icon: <Gamepad2 />,
+                url: `${preUrl}/start/minigames`,
+            },
+            {
+                type: "page",
                 name: "Save and Load",
+                icon: <Save />,
                 url: `${preUrl}/start/save`,
             },
             {
