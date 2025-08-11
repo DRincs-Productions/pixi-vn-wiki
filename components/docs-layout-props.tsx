@@ -611,6 +611,11 @@ export async function nqtrTree(lang?: string): Promise<DocsLayoutProps["tree"]> 
                 name: "Routine",
                 url: `${preUrl}/nqtr/routine`,
             },
+            {
+                type: "page",
+                name: "Quests",
+                url: `${preUrl}/nqtr/quest`,
+            },
         ],
     };
 }
