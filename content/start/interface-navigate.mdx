@@ -1,6 +1,7 @@
 ---
 title: Navigate/switch between UI screens
 ---
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
 To switch between UI screens (without interrupting the canvas), you can use popups and modals, or navigate between different **URL paths/routes**.
 
@@ -157,3 +158,59 @@ export const startLabel = newLabel("start_label",
     ]
 )
 ```
+
+<Accordions>
+
+<Accordion title="Block the browser's back and forward buttons" id="block-back-forward">
+
+Using the back and forward buttons can cause the game to be in an inconsistent state.
+
+The best solution would be to be able to use the navigation keys to navigate the game as well.
+
+The first thing to do is to prevent the path change, when the back button is pressed. There are many ways to do this, but what I suggest is the following:
+
+Intercept the event `popstate`, which is started after that the back button is pressed, and go forward one. This means that when the back button is pressed it returns to the previous path for a short time and immediately afterwards returns to the current path. To ensure that the path is not changed, even for a short time, you can add 2 nodes to the history every time you navigate to a new path, instead of 1 node (the default).
+
+Example:
+
+```ts title="EventInterceptor.ts"
+import { useEffect } from 'react';
+
+export default function EventInterceptor() {
+    useEffect(() => {
+        window.addEventListener("popstate", onpopstate);
+        return () => {
+            window.removeEventListener("popstate", onpopstate);
+        };
+    }, []);
+
+    function onpopstate() {
+        window.history.forward();
+    }
+
+    return null
+}
+```
+
+```tsx title="React example"
+import { Assets } from "@drincs/pixi-vn";
+import { NavigateFunction, NavigateOptions, To, useNavigate } from "react-router-dom";
+
+export default function useMyNavigate(): NavigateFunction {
+    const navigate = useNavigate();
+
+    return async (to: To | number, options?: NavigateOptions) => {
+        if (typeof to === "number") {
+            await navigate(to);
+        } else {
+            Assets.backgroundLoadBundle(to as string);
+            await navigate(to, options);
+        }
+        window.history.pushState(null, window.location.href, window.location.href);
+    };
+}
+```
+
+</Accordion>
+
+</Accordions>
