@@ -24,7 +24,7 @@ To create a new instance of `QuestBaseModel`, you need the following parameters:
 
 ```ts tab="values/aliceQuest.ts"
 import { QuestBaseModel, RegisteredQuests, StageBaseModel } from "@drincs/nqtr";
-import { orderProduct, takeProduct } from "../activities";
+import { orderProduct, takeProduct } from "../quests";
 import { mcRoom, terrace } from "../rooms";
 
 export const aliceQuest = new QuestBaseModel(
@@ -84,6 +84,92 @@ import "./values/aliceQuest";
 `RegisteredQuests.add` is **required** to save the `quests` in the game.
 
 You can also create a function to load `quests`. The important thing is that it is called at least once before the `quests` are used in the game, otherwise they will not be available.
+
+## Get
+
+To get a `quest` by its `id`, use the `RegisteredQuests.get` function.
+
+```ts
+import { RegisteredQuests } from "@drincs/nqtr";
+
+const orderProduct = RegisteredQuests.get('order_product');
+```
+
+## Get all
+
+To get all `quests`, use the `RegisteredQuests.values` function.
+
+```ts
+import { RegisteredQuests } from "@drincs/nqtr";
+
+const quests = RegisteredQuests.values();
+```
+
+## Custom class
+
+<Callout title="Templates" type="info">
+
+In all templates, the `Quest` class is already defined in the file `models/nqtr/Quest.ts`. You can use it directly or modify it to suit your needs.
+
+</Callout>
+
+It is recommended to create your own class `Quest` that extends `QuestStoredClass` and "override" the interface `QuestInterface` to add, edit, or remove properties or methods.
+
+For example, if you want to create a class `Quest`, you must "override" the interface `QuestInterface` to use your properties or methods. (See the file `nqtr.d.ts`)
+
+Now you can create a class `Quest` that extends `QuestStoredClass` and implements the `QuestInterface`. (For more information on how to create a class in TypeScript, read [the official documentation](https://www.typescriptlang.org/docs/handbook/2/classes.html))
+
+To create a property that stores its value in the game storage, you can create [Getters/Setters](https://www.typescriptlang.org/docs/handbook/2/classes.html#getters--setters) and use the `this.getStorageProperty()` / `this.setStorageProperty()` methods. (See the file `Quest.ts`)
+
+```ts tab="models/nqtr/Quest.ts"
+import { QuestInterface, QuestStoredClass, QuestStoredClassProps, StageInterface } from "@drincs/nqtr";
+
+export default class Quest extends QuestStoredClass implements QuestInterface {
+    constructor(
+        id: string,
+        _stages: StageInterface[],
+        props: {
+            name?: string;
+            description?: string;
+            image?: string;
+            inDevelopment?: boolean;
+        } & QuestStoredClassProps
+    ) {
+        super(id, _stages, props);
+        this.name = props.name || "";
+        this.description = props.description || "";
+        this.image = props.image;
+        this.inDevelopment = props.inDevelopment || false;
+    }
+    readonly name: string;
+    readonly description: string;
+    readonly image?: string;
+    readonly inDevelopment: boolean;
+}
+```
+
+```ts tab="nqtr.d.ts"
+declare module "@drincs/nqtr" {
+    interface QuestInterface {
+        /**
+         * The name of the quest.
+         */
+        readonly name: string;
+        /**
+         * The description of the quest.
+         */
+        readonly description: string;
+        /**
+         * The image of the quest.
+         */
+        readonly image?: string;
+        /**
+         * If the quest is in development.
+         */
+        readonly inDevelopment: boolean;
+    }
+}
+```
 
 ## Quest
 
