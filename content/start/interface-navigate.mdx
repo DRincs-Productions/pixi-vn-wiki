@@ -96,3 +96,64 @@ const router = new Router({
 
 export default router
 ```
+
+## How to navigate between routes?
+
+To navigate between the wheels you can use the navigation function provided by the router system you are using.
+
+<Callout title="Templates" type="info">
+
+In all templates, the `StepLabelProps` interface is already overridden to include a `navigate` function. You can find it in the `pixi-vn.d.ts` file.
+
+</Callout>
+
+In pixi-vn projects, it's very common to need to navigate between routes while narrating. To enable this, the navigation function must be introduced in the `StepLabelProps` interface.
+
+```ts tab="pixi-vn.d.ts"
+import { narration } from '@drincs/pixi-vn'
+
+declare module '@drincs/pixi-vn' {
+    interface StepLabelProps {
+        navigate: (route: string) => void,
+    }
+}
+```
+
+```ts tab="hooks/useGameProps.ts"
+import { StepLabelProps } from "@drincs/pixi-vn";
+import useMyNavigate from "./useMyNavigate";
+
+export default function useGameProps(): StepLabelProps {
+    const navigate = useMyNavigate();
+
+    return {
+        navigate,
+    };
+}
+```
+
+<Callout title="ink" type="info">
+
+In all ink templates, a <DynamicLink href="/ink/ink-hashtag">custom hashtag script</DynamicLink> has been introduced to navigate between routes.
+
+The syntax is as follows:
+
+```ink
+# navigate [route]
+```
+
+* route: The route/path to navigate to. For example, `# navigate /new-route`.
+
+</Callout>
+
+So, when you create a new label, you can use the `navigate` function to switch between routes:
+
+```ts tab="labels/startLabel.ts"
+export const startLabel = newLabel("start_label",
+    [
+        ({ navigate }) => { // [!code focus]
+            navigate("/new-route") // [!code focus]
+        }, // [!code focus]
+    ]
+)
+```
