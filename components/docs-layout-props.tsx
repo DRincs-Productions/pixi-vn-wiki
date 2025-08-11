@@ -224,52 +224,52 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                             { type: "page", name: t("canvas-spine2d"), url: `${preUrl}/start/canvas-spine2d` },
                             {
                                 type: "page",
-                                name: "Three.js",
+                                name: t("canvas-threejs"),
                                 url: `${preUrl}/start/canvas-threejs`,
                                 icon: <Image width={16} height={16} src='/threejs.svg' alt='Three.js' />,
                             },
                         ],
                     },
-                    { type: "page", name: "Components functions", url: `${preUrl}/start/canvas-functions` },
-                    { type: "page", name: "Position properties", url: `${preUrl}/start/canvas-position` },
+                    { type: "page", name: t("canvas-functions"), url: `${preUrl}/start/canvas-functions` },
+                    { type: "page", name: t("canvas-position"), url: `${preUrl}/start/canvas-position` },
                     {
                         type: "folder",
-                        name: "Animations and Effects",
+                        name: t("canvas-animations-effects"),
                         index: {
                             type: "page",
-                            name: "Animations and Effects",
+                            name: t("canvas-animations-effects"),
                             url: `${preUrl}/start/canvas-animations-effects`,
                         },
                         children: [
                             {
                                 type: "folder",
-                                name: "Animate (motion)",
+                                name: t("canvas-motion"),
                                 index: {
                                     type: "page",
-                                    name: "Animate (motion)",
+                                    name: t("canvas-motion"),
                                     url: `${preUrl}/start/canvas-motion`,
                                 },
                                 children: [
                                     {
                                         type: "page",
-                                        name: "Articulated",
+                                        name: t("canvas-articulated-animations-effects"),
                                         url: `${preUrl}/start/canvas-articulated-animations-effects`,
                                     },
                                 ],
                             },
-                            { type: "page", name: "Transitions", url: `${preUrl}/start/canvas-transition` },
+                            { type: "page", name: t("canvas-transition"), url: `${preUrl}/start/canvas-transition` },
                             {
                                 type: "folder",
-                                name: "Ticker",
+                                name: t("canvas-tickers"),
                                 index: {
                                     type: "page",
-                                    name: "Ticker",
+                                    name: t("canvas-tickers"),
                                     url: `${preUrl}/start/canvas-tickers`,
                                 },
                                 children: [
                                     {
                                         type: "page",
-                                        name: "Tickers methods",
+                                        name: t("canvas-tickers-functions"),
                                         url: `${preUrl}/start/canvas-tickers-functions`,
                                     },
                                 ],
