@@ -2,15 +2,97 @@
 title: Navigate/switch between UI screens
 ---
 
-To switch between UI screens (without interrupting the canvas), you can use popups and modals, or navigate between different [paths/routes](#what-is-the-url-path-and-routes).
+To switch between UI screens (without interrupting the canvas), you can use popups and modals, or navigate between different **URL paths/routes**.
 
 ## What is the URL Path and Routes?
 
-The URL Path is the part of the URL that comes after the domain. For example, in the URL `https://example.com/path/to/page`, the path is `/path/to/page`.
+The **URL paths/routes** is the part of the URL that comes after the domain. For example, in the URL `https://example.com/path/to/page`, the path is `/path/to/page`. Typically, in all front-end (client) web projects, each route is linked to a web page (UI screen).
 
-A routering system can be used to manage navigation between URL Paths. For example you can use:
+A routering system can be used to manage navigation between **URL paths/routes**. For example you can use:
 
 * [React Router](https://reactrouter.com/)
 * [Vue Router](https://router.vuejs.org/)
 * [Angular Router](https://angular.io/guide/router)
 * [TanStack Router](https://tanstack.com/router/latest)
+
+```tsx tab="React Router"
+import { Route, Routes } from "react-router-dom";
+import LoadingScreen from "./screens/LoadingScreen";
+import MainMenu from "./screens/MainMenu";
+import NarrationElement from "./screens/NarrationElement";
+
+export default function AppRoutes() {
+    return (
+        <Routes>
+            <Route key={"main_menu"} path={"/"} element={<MainMenu />} />
+            <Route key={"loading"} path={"/loading"} element={<LoadingScreen />} />
+            <Route key={"narration"} path={"/narration"} element={<NarrationElement />} />
+            <Route path='*' element={<MainMenu />} />
+        </Routes>
+    );
+}
+```
+
+```vue tab="Vue Router"
+<script setup>
+import { createRouter, createWebHistory } from 'vue-router'
+import MainMenu from './screens/MainMenu.vue'
+import LoadingScreen from './screens/LoadingScreen.vue'
+import NarrationElement from './screens/NarrationElement.vue'
+
+const routes = [
+  { path: '/', component: MainMenu },
+  { path: '/loading', component: LoadingScreen },
+  { path: '/narration', component: NarrationElement },
+  { path: '/:pathMatch(.*)*', component: MainMenu }
+]
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes
+})
+
+export default router
+</script>
+```
+
+```typescript tab="Angular Router"
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { MainMenuComponent } from './screens/main-menu.component';
+import { LoadingScreenComponent } from './screens/loading-screen.component';
+import { NarrationElementComponent } from './screens/narration-element.component';
+
+const routes: Routes = [
+  { path: '', component: MainMenuComponent },
+  { path: 'loading', component: LoadingScreenComponent },
+  { path: 'narration', component: NarrationElementComponent },
+  { path: '**', component: MainMenuComponent }
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
+```
+
+```tsx tab="TanStack Router"
+import { Router, Route } from '@tanstack/router'
+import MainMenu from './screens/MainMenu'
+import LoadingScreen from './screens/LoadingScreen'
+import NarrationElement from './screens/NarrationElement'
+
+const router = new Router({
+  routeTree: (
+    <>
+      <Route path="/" element={<MainMenu />} />
+      <Route path="/loading" element={<LoadingScreen />} />
+      <Route path="/narration" element={<NarrationElement />} />
+      <Route path="*" element={<MainMenu />} />
+    </>
+  )
+})
+
+export default router
+```
