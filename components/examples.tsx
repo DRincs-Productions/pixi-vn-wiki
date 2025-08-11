@@ -1456,20 +1456,17 @@ export function AlignExample() {
     return (
         <ReactTemplate
             files={{
-                "labels/startLabel.ts": `import { newLabel, zoomIn, zoomOut } from "@drincs/pixi-vn";
+                "labels/startLabel.ts": `import { newLabel, showImage } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start_label", [
-    async () => {
-        await zoomIn("alien", "egg_head"); // [!code focus]
-        await zoomIn("human", { // [!code focus]
-            value: ["m01-body", "m01-eyes", "m01-mouth"], // [!code focus]
-            options: { scale: 0.5, xAlign: 0.7 }, // [!code focus]
-        }); // [!code focus]
-    },
-    async () => {
-        await zoomIn("alien", "flower_top"); // [!code focus]
-        zoomOut("human"); // [!code focus]
-    },
+  async () => {
+    await showImage("egg_head", "egg_head", { align: 0.5 });
+    await showImage("flower_top", "flower_top", { align: 0 });
+    await showImage("panda", "panda", { xAlign: 1, yAlign: 0 });
+    await showImage("skully", "skully", { xAlign: 0, yAlign: 1 });
+    await showImage("helmlok", "helmlok", { align: 1 });
+    await showImage("bunny", "bunny", { xAlign: 0.5, yAlign: 1 });
+  },
 ]);`,
                 "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
 
@@ -1478,33 +1475,19 @@ export const startLabel = newLabel("start_label", [
  * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
  */
 const manifest: AssetsManifest = {
-    bundles: [
-        {
-            name: "start",
-            assets: [
-                {
-                    alias: "egg_head",
-                    src: "https://pixijs.com/assets/eggHead.png",
-                },
-                {
-                    alias: "flower_top",
-                    src: "https://pixijs.com/assets/flowerTop.png",
-                },
-                {
-                    alias: "m01-body",
-                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media",
-                },
-                {
-                    alias: "m01-eyes",
-                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media",
-                },
-                {
-                    alias: "m01-mouth",
-                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media",
-                },
-            ],
-        },
-    ],
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        { alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" },
+        { alias: "flower_top", src: "https://pixijs.com/assets/flowerTop.png" },
+        { alias: "panda", src: "https://pixijs.com/assets/panda.png" },
+        { alias: "skully", src: "https://pixijs.com/assets/skully.png" },
+        { alias: "helmlok", src: "https://pixijs.com/assets/helmlok.png" },
+        { alias: "bunny", src: "https://pixijs.com/assets/bunny.png" },
+      ],
+    },
+  ],
 };
 export default manifest;`,
             }}
