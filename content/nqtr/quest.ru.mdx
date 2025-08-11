@@ -8,6 +8,169 @@ In the process of writing
 
 </Callout>
 
+The quest system is a way to create and manage quests in your game. Quests can have multiple stages, and players can complete them to earn rewards or progress in the story.
+
+## Инициализация
+
+To initialize a `quest`, create a new instance of the `QuestBaseModel` class (or your [custom class](#custom-class)) and add it to the game quest dictionary when the game is initialized.
+
+<Callout type="info">
+
+It is recommended to import the instances at project startup, see the `src/main.ts` file.
+
+</Callout>
+
+To create a new instance of `QuestBaseModel`, you need the following parameters:
+
+```ts tab="values/aliceQuest.ts"
+import { QuestBaseModel, RegisteredQuests, StageBaseModel } from "@drincs/nqtr";
+import { orderProduct, takeProduct } from "../quests";
+import { mcRoom, terrace } from "../rooms";
+
+export const aliceQuest = new QuestBaseModel(
+    "aliceQuest",
+    [
+        // stages
+        new StageBaseModel("talk_alice1", {
+            name: "Talk to Alice",
+            description: "Talk to Alice on the terrace",
+        }),
+        new StageBaseModel("order_products", {
+            onStart: () => {
+                mcRoom.addActivity(orderProduct);
+            },
+            name: "Order products",
+            description: "Order the products with your PC",
+        }),
+        new StageBaseModel("take_products", {
+            onStart: (_, { notify }) => {
+                terrace.addActivity(takeProduct);
+                notify("You can take the products on the Terrace");
+            },
+            name: "Take products",
+            description: "Take products on the Terrace",
+            requestDescriptionToStart: "Wait for the products you ordered to arrive (2 day)",
+            deltaDateRequired: 2,
+        }),
+        new StageBaseModel("talk_alice2", {
+            name: "Talk to Alice",
+            description: "Talk to Alice on the terrace",
+        }),
+    ],
+    {
+        // props
+        name: "Help Alice",
+        description:
+            'To learn more about how the repo works, Talk to Alice. \nGoing when she is there will automatically start an "Event" (see aliceQuest.tsx to learn more). \nAfter that an action will be added to open the pc, in MC room. \n\n(during the quest you can talk to Alice and you will see her talking during the quests of the same Quest)',
+        image: "alice_terrace0A",
+        onStart: (quest, { notify, uiTransition }) => {
+            notify(uiTransition("notify_quest_is_started", { quest: quest.name }));
+        },
+        onNextStage: (stage, { notify, uiTransition }) => {
+            notify(uiTransition("notify_quest_is_updated", { quest: stage.name }));
+        },
+    }
+);
+
+RegisteredQuests.add(aliceQuest);
+```
+
+```ts tab="src/main.ts"
+import "./values/aliceQuest";
+
+// ...
+```
+
+`RegisteredQuests.add` is **required** to save the `quests` in the game.
+
+You can also create a function to load `quests`. The important thing is that it is called at least once before the `quests` are used in the game, otherwise they will not be available.
+
+## Get
+
+To get a `quest` by its `id`, use the `RegisteredQuests.get` function.
+
+```ts
+import { RegisteredQuests } from "@drincs/nqtr";
+
+const orderProduct = RegisteredQuests.get('order_product');
+```
+
+## Получить все
+
+To get all `quests`, use the `RegisteredQuests.values` function.
+
+```ts
+import { RegisteredQuests } from "@drincs/nqtr";
+
+const quests = RegisteredQuests.values();
+```
+
+## Пользовательский класс
+
+<Callout title="Templates" type="info">
+
+In all templates, the `Quest` class is already defined in the file `models/nqtr/Quest.ts`. Вы можете использовать это напрямую или изменить его в соответствии с вашими потребностями.
+
+</Callout>
+
+It is recommended to create your own class `Quest` that extends `QuestStoredClass` and "override" the interface `QuestInterface` to add, edit, or remove properties or methods.
+
+For example, if you want to create a class `Quest`, you must "override" the interface `QuestInterface` to use your properties or methods. (See the file `nqtr.d.ts`)
+
+Now you can create a class `Quest` that extends `QuestStoredClass` and implements the `QuestInterface`. (Для получения дополнительной информации о том, как создать класс в TypeScript, прочитайте [официальную документацию](https://www.typescriptlang.org/docs/handbook/2/classes.html))
+
+To create a property that stores its value in the game storage, you can create [Getters/Setters](https://www.typescriptlang.org/docs/handbook/2/classes.html#getters--setters) and use the `this.getStorageProperty()` / `this.setStorageProperty()` methods. (See the file `Quest.ts`)
+
+```ts tab="models/nqtr/Quest.ts"
+import { QuestInterface, QuestStoredClass, QuestStoredClassProps, StageInterface } from "@drincs/nqtr";
+
+export default class Quest extends QuestStoredClass implements QuestInterface {
+    constructor(
+        id: string,
+        _stages: StageInterface[],
+        props: {
+            name?: string;
+            description?: string;
+            image?: string;
+            inDevelopment?: boolean;
+        } & QuestStoredClassProps
+    ) {
+        super(id, _stages, props);
+        this.name = props.name || "";
+        this.description = props.description || "";
+        this.image = props.image;
+        this.inDevelopment = props.inDevelopment || false;
+    }
+    readonly name: string;
+    readonly description: string;
+    readonly image?: string;
+    readonly inDevelopment: boolean;
+}
+```
+
+```ts tab="nqtr.d.ts"
+declare module "@drincs/nqtr" {
+    interface QuestInterface {
+        /**
+         * The name of the quest.
+         */
+        readonly name: string;
+        /**
+         * The description of the quest.
+         */
+        readonly description: string;
+        /**
+         * The image of the quest.
+         */
+        readonly image?: string;
+        /**
+         * If the quest is in development.
+         */
+        readonly inDevelopment: boolean;
+    }
+}
+```
+
 ## Quest
 
 ### Add a Quest
