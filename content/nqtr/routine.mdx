@@ -91,11 +91,55 @@ Initializing a commitment will not add it to the game. To do this, you'll need t
 
 ### During game initialization
 
+You can add a commitment to your routine during game initialization. This is useful for tasks that should always be present in the game, such as daily routines of characters.
+
+```ts tab="utils/nqtr-utility.ts"
+import { routine } from "@drincs/nqtr";
+import { aliceGoSchool, aliceSleep } from "../values/routine";
+
+export function initializeNQTR() {
+    // ...
+
+    routine.fixedRoutine = [aliceSleep, aliceGoSchool]; // [!code focus]
+}
+```
+
+```ts tab="values/routine.ts"
+import { CommitmentBaseModel, RegisteredCommitments } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { NARRATION_ROUTE } from "../constans";
+import { TALK_SLEEP_LABEL_KEY } from "../labels/variousActionsLabelKeys";
+import { alice } from "./characters";
+import { aliceRoom, classRoom } from "./rooms";
+
+export const aliceSleep = new CommitmentBaseModel("alice_sleep", alice, aliceRoom, {
+    priority: 1,
+    timeSlot: {
+        from: 20,
+        to: 10,
+    },
+    onRun: (_, event) => {
+        event.navigate(NARRATION_ROUTE);
+        narration.jumpLabel(TALK_SLEEP_LABEL_KEY, event);
+    },
+});
+
+export const aliceGoSchool = new CommitmentBaseModel("alice_go_school", alice, classRoom, {
+    timeSlot: {
+        from: 8,
+        to: 14,
+    },
+    priority: 2,
+});
+
+RegisteredCommitments.add([aliceSleep, aliceGoSchool]);
+```
+
 ### During the game
 
-You can also add a task to your routine during gameplay. This feature is useful if you want to temporarily add a task. The list of tasks added this way will be included in your game saves.
+You can also add a commitment to your routine during gameplay. This feature is useful if you want to temporarily add a commitment. The list of tasks added this way will be included in your game saves.
 
-To add a task to your routine during gameplay, you can use the `routine.add` method.
+To add a commitment to your routine during gameplay, you can use the `routine.add` method.
 
 ```ts tab="Example"
 import { aliceSmokes } from "../routine";
@@ -127,6 +171,8 @@ RegisteredCommitments.add([aliceSmokes]);
 ```
 
 ## Remove
+
+To remove a commitment from your routine, you can use the `routine.remove` method. This will remove the commitment from the game and it will not be saved in the game saves.
 
 ```ts tab="Example"
 import { aliceSmokes } from "../routine";
