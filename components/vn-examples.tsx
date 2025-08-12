@@ -22,7 +22,7 @@ import { animation01 } from "./animations-labels";
 
 const steph_fullname = "Stephanie";
 
-const startLabel = newLabel(
+export const startLabel = newLabel(
   "start",
   [
     async () => {
