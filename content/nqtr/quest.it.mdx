@@ -2,11 +2,7 @@
 title: Quests
 ---
 
-<Callout type="warn">
-
-In the process of writing
-
-</Callout>
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
 The quest system is a way to create and manage quests in your game. Quests can have multiple stages, and players can complete them to earn rewards or progress in the story.
 
@@ -84,6 +80,66 @@ import "./values/aliceQuest";
 `RegisteredQuests.add` is **required** to save the `quests` in the game.
 
 You can also create a function to load `quests`. The important thing is that it is called at least once before the `quests` are used in the game, otherwise they will not be available.
+
+## Start
+
+To start a `quest`, you can use the `start` method of the Quest class. This method will set the current stage to the first stage of the quest and trigger the `onStart` action defined in the quest. Questa funzione ha i seguenti parametri:
+
+- `props`: the properties that will be passed to `onStart`. Its interface corresponds to <DynamicLink href="/nqtr#onrunprops">`OnRunProps`</DynamicLink>.
+
+```ts tab="labels/startLabel.ts"
+import { newLabel } from "@drincs/pixi-vn";
+import { aliceQuest } from "../values/quests";
+
+const startLabel = newLabel("start", [
+    async (props) => {
+        await aliceQuest.start(props); // [!code focus]
+    },
+]);
+export default startLabel;
+```
+
+## Go next
+
+To go to the next stage of a `quest`, you can use the `goNext` method of the Quest class. This method will set the current stage to the next stage of the quest and trigger the `onNextStage` action defined in the quest. Questa funzione ha i seguenti parametri:
+
+- `props`: the properties that will be passed to `onNextStage`. Its interface corresponds to <DynamicLink href="/nqtr#onrunprops">`OnRunProps`</DynamicLink>.
+
+```ts tab="labels/startLabel.ts"
+import { newLabel } from "@drincs/pixi-vn";
+import { aliceQuest } from "../values/quests";
+
+const startLabel = newLabel("start", [
+    async (props) => {
+        await aliceQuest.goNext(props); // [!code focus]
+    },
+]);
+export default startLabel;
+```
+
+<Accordions>
+
+<Accordion title="Go next only if is completed" id="go-next-only-if-is-completed">
+
+To go to the next stage of a `quest` only if the current stage is completed, you can use the `goNextIfCompleted` method of the Quest class. This method will check if the current stage is completed and then set the current stage to the next stage of the quest and trigger the `onNextStage` action defined in the quest. Questa funzione ha i seguenti parametri:
+
+- `props`: the properties that will be passed to `onNextStage`. Its interface corresponds to <DynamicLink href="/nqtr#onrunprops">`OnRunProps`</DynamicLink>.
+
+```ts tab="labels/startLabel.ts"
+import { newLabel } from "@drincs/pixi-vn";
+import { aliceQuest } from "../values/quests";
+
+const startLabel = newLabel("start", [
+    async (props) => {
+        await aliceQuest.goNextIfCompleted(props); // [!code focus]
+    },
+]);
+export default startLabel;
+```
+
+</Accordion>
+
+</Accordions>
 
 ## Ottieni
 
@@ -171,36 +227,26 @@ declare module "@drincs/nqtr" {
 }
 ```
 
-## Start
+## FAQ
 
-To start a `quest`, you can use the `start` method of the Quest class. This method will set the current stage to the first stage of the quest and trigger the `onStart` action defined in the quest. Questa funzione ha i seguenti parametri:
+<Accordions>
 
-- `props`: the properties that will be passed to `onStart`. Its interface corresponds to <DynamicLink href="/nqtr#onrunprops">`OnRunProps`</DynamicLink>.
+<Accordion title="Fail a quest" id="fail-quest">
 
-```ts tab="start-quest.ts"
+To fail a quest, you can use the `failed` property of the `QuestBaseModel` class. This property is a boolean that indicates whether the quest has been failed or not. You can set it to `true` to fail the quest.
+
+```ts tab="labels/startLabel.ts"
 import { newLabel } from "@drincs/pixi-vn";
 import { aliceQuest } from "../values/quests";
 
 const startLabel = newLabel("start", [
     async (props) => {
-        await aliceQuest.start(props);
+        aliceQuest.failed = true; // [!code focus]
     },
 ]);
 export default startLabel;
 ```
 
-### Next Stage
+</Accordion>
 
-### Next Stage Only if is completed
-
-### If Number of Stages completed in Quest
-
-### Set Days required to start
-
-### Quest description
-
-### Completing a quest
-
-#### Force completion of a quest
-
-#### Quest in development
+</Accordions>
