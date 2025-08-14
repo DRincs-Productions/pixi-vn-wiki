@@ -8,8 +8,11 @@ export function ReactTemplate({ files, previewHeight = 400 }: { files?: Sandpack
             template='react-ts'
             customSetup={{
                 dependencies: {
-                    "@drincs/pixi-vn": "^1.3.0",
-                    "@tanstack/react-query": "^5.62.2",
+                    "@drincs/pixi-vn": "^1.3.4",
+                    "@tanstack/react-query": "^5.85.2",
+                    "react-markdown": "^10.1.0",
+                    "rehype-raw": "^7.0.0",
+                    "remark-gfm": "^4.0.1",
                 },
             }}
             files={{
@@ -184,7 +187,10 @@ export default function TextInput() {
   );
 }`;
 
-const NarrationScreen = `import { useQueryCanGoBack, useQueryCanGoNext, useQueryDialogue } from "../hooks/useQueryInterface";
+const NarrationScreen = `import Markdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
+import { useQueryCanGoBack, useQueryCanGoNext, useQueryDialogue } from "../hooks/useQueryInterface";
 import ChoiceMenu from "./ChoiceMenu";
 
 export default function NarrationScreen() {
@@ -243,7 +249,11 @@ export default function NarrationScreen() {
                 }}
               />
             )}
-            <div style={{ flex: 1, minHeight: 0, overflow: "auto", height: "100%" }}>{text}</div>
+            <div style={{ flex: 1, minHeight: 0, overflow: "auto", height: "100%" }}>
+              <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                {text}
+              </Markdown>
+            </div>
           </div>
         </div>
       )}
