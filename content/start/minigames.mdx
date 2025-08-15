@@ -18,6 +18,7 @@ const { Graphics, Ticker } = PIXI;
 export default function MiniGame() {
     const ticker = useMemo(() => new Ticker(), []);
     const [displayScore, setDisplayScore] = useState(0);
+    const [gameOver, setGameOver] = useState(false);
 
     const onKeyDown = useCallback((e: KeyboardEvent) => {
         // Handle key down events for game controls
@@ -25,6 +26,11 @@ export default function MiniGame() {
 
     const game = useCallback(
         (layer: Layer) => {
+            const endGame = () => {
+                ticker.stop();
+                setGameOver(true);
+            };
+
             window.addEventListener("keydown", onKeyDown);
 
             ticker.add(({ deltaMS }) => {
@@ -50,7 +56,6 @@ export default function MiniGame() {
 
     return (
         <>
-            {/* Score display */}
             <div
                 style={{
                     position: "absolute",
@@ -65,6 +70,24 @@ export default function MiniGame() {
             >
                 Score: {displayScore}
             </div>
+
+            {gameOver && (
+                <div
+                    style={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        color: "red",
+                        fontSize: "48px",
+                        background: "rgba(0,0,0,0.7)",
+                        padding: "20px 40px",
+                        borderRadius: "10px",
+                    }}
+                >
+                    GAME OVER
+                </div>
+            )}
         </>
     );
 }
