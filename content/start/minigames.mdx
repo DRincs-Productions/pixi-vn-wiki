@@ -9,21 +9,22 @@ In the process of writing
 </Callout>
 
 ```tsx tab="React"
-import { PIXI } from "@drincs/pixi-vn";
-import { useCallback, useMemo, useRef } from "react";
+import { Layer, PIXI } from "@drincs/pixi-vn";
+import { useCallback, useMemo, useRef, useState } from "react";
 import useMinigame from "../hooks/useMinigame";
 
 const { Graphics, Ticker } = PIXI;
 
 export default function MiniGame() {
     const ticker = useMemo(() => new Ticker(), []);
+    const [displayScore, setDisplayScore] = useState(0);
+
     const onKeyDown = useCallback((e: KeyboardEvent) => {
         // Handle key down events for game controls
     }, []);
-    const gameScoreRef = useRef({ x: 1, y: 0 });
 
-    const { loading } = useMinigame(
-        (layer) => {
+    const game = useCallback(
+        (layer: Layer) => {
             window.addEventListener("keydown", onKeyDown);
 
             ticker.add(({ deltaMS }) => {
@@ -31,44 +32,40 @@ export default function MiniGame() {
             });
             ticker.start();
         },
-        {
+        [ticker]
+    );
+
+    const options = useMemo(
+        () => ({
             onExit() {
                 ticker.stop();
                 ticker.destroy();
                 window.removeEventListener("keydown", onKeyDown);
             },
-        }
+        }),
+        [ticker, onKeyDown]
     );
 
+    const { loading } = useMinigame(game, options);
+
     return (
-        <div
-            style={{
-                position: "absolute",
-                bottom: 0,
-                right: 0,
-                textAlign: "center",
-                pointerEvents: "auto",
-            }}
-        >
-            <div style={{ marginTop: "10px" }}>
-                <button style={{ fontSize: "30px" }} onClick={() => setDirection(0, -1)}>
-                    ⬆️
-                </button>
+        <>
+            {/* Score display */}
+            <div
+                style={{
+                    position: "absolute",
+                    top: 10,
+                    left: 10,
+                    color: "white",
+                    fontSize: "24px",
+                    background: "rgba(0,0,0,0.5)",
+                    padding: "5px 10px",
+                    borderRadius: "5px",
+                }}
+            >
+                Score: {displayScore}
             </div>
-            <div>
-                <button style={{ fontSize: "30px", marginRight: "50px" }} onClick={() => setDirection(-1, 0)}>
-                    ⬅️
-                </button>
-                <button style={{ fontSize: "30px" }} onClick={() => setDirection(1, 0)}>
-                    ➡️
-                </button>
-            </div>
-            <div>
-                <button style={{ fontSize: "30px" }} onClick={() => setDirection(0, 1)}>
-                    ⬇️
-                </button>
-            </div>
-        </div>
+        </>
     );
 }
 ```
