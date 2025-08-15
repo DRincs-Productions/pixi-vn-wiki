@@ -7,3 +7,122 @@ title: Minigames
 In the process of writing
 
 </Callout>
+
+```tsx tab="React"
+import { Layer, PIXI } from "@drincs/pixi-vn";
+import { useCallback, useMemo, useRef, useState } from "react";
+import useMinigame from "../hooks/useMinigame";
+
+const { Graphics, Ticker } = PIXI;
+
+export default function MiniGame() {
+    const ticker = useMemo(() => new Ticker(), []);
+    const [displayScore, setDisplayScore] = useState(0);
+
+    const onKeyDown = useCallback((e: KeyboardEvent) => {
+        // Handle key down events for game controls
+    }, []);
+
+    const game = useCallback(
+        (layer: Layer) => {
+            window.addEventListener("keydown", onKeyDown);
+
+            ticker.add(({ deltaMS }) => {
+                // Update game logic here
+            });
+            ticker.start();
+        },
+        [ticker]
+    );
+
+    const options = useMemo(
+        () => ({
+            onExit() {
+                ticker.stop();
+                ticker.destroy();
+                window.removeEventListener("keydown", onKeyDown);
+            },
+        }),
+        [ticker, onKeyDown]
+    );
+
+    const { loading } = useMinigame(game, options);
+
+    return (
+        <>
+            {/* Score display */}
+            <div
+                style={{
+                    position: "absolute",
+                    top: 10,
+                    left: 10,
+                    color: "white",
+                    fontSize: "24px",
+                    background: "rgba(0,0,0,0.5)",
+                    padding: "5px 10px",
+                    borderRadius: "5px",
+                }}
+            >
+                Score: {displayScore}
+            </div>
+        </>
+    );
+}
+```
+
+```ts tab="hooks/useMinigame.ts"
+import { canvas, Layer, PIXI } from "@drincs/pixi-vn";
+import { useEffect, useRef } from "react";
+import { CANVAS_MINIGAME_LAYER_NAME } from "../constans";
+
+export default function useMinigame(
+    game: (layer: Layer) => void,
+    props?: {
+        onStart?: () => Promise<void>;
+        onExit?: (layer: Layer) => void;
+    }
+) {
+    const loading = useRef(false);
+
+    // Keep latest callbacks in refs to avoid effect restarts
+    const startRef = useRef<() => Promise<void>>(props?.onStart ?? (async () => {}));
+    const exitRef = useRef<(layer: Layer) => void>(props?.onExit);
+
+    // Update refs when props change, without changing effect identity
+    useEffect(() => {
+        startRef.current = props?.onStart ?? (async () => {});
+    }, [props?.onStart]);
+
+    useEffect(() => {
+        exitRef.current = props?.onExit;
+    }, [props?.onExit]);
+
+    useEffect(() => {
+        // Create the layer and start the game once
+        loading.current = true;
+        const layer = canvas.addLayer(CANVAS_MINIGAME_LAYER_NAME, new PIXI.Container());
+        if (!layer) {
+            console.error("Failed to create UI layer for minigame");
+            return;
+        }
+
+        let cancelled = false;
+
+        startRef.current().then(() => {
+            if (cancelled) return;
+            loading.current = false;
+            game(layer);
+        });
+
+        return () => {
+            cancelled = true;
+            canvas.removeLayer(CANVAS_MINIGAME_LAYER_NAME);
+            if (exitRef.current) {
+                exitRef.current(layer);
+            }
+        };
+    }, [game]);
+
+    return { loading };
+}
+```
