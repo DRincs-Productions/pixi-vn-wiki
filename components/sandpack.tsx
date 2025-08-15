@@ -10,7 +10,7 @@ export function ReactTemplate({ files, previewHeight = 400 }: { files?: Sandpack
                 dependencies: {
                     "@drincs/pixi-vn": "^1.3.4",
                     "@tanstack/react-query": "^5.85.2",
-                    "react-markdown": "^10.1.0",
+                    "react-markdown": "^8.0.0",
                     "rehype-raw": "^7.0.0",
                     "remark-gfm": "^4.0.1",
                 },
