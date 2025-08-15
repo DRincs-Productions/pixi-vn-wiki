@@ -8,7 +8,7 @@ export function ReactTemplate({ files, previewHeight = 400 }: { files?: Sandpack
             template='react-ts'
             customSetup={{
                 dependencies: {
-                    "@drincs/pixi-vn": "^1.3.4",
+                    "@drincs/pixi-vn": "^1.3.12",
                     "@tanstack/react-query": "^5.85.2",
                     "react-markdown": "^8.0.0",
                     "rehype-raw": "^7.0.0",
