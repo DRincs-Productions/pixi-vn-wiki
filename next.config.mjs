@@ -12,14 +12,6 @@ const config = {
         domains: ["pixijs.io", "github.com", "filters.pixijs.download", "firebasestorage.googleapis.com"],
         unoptimized: true,
     },
-    async rewrites() {
-        return [
-            {
-                source: "/docs/:path*.mdx",
-                destination: "/llms.mdx/:path*",
-            },
-        ];
-    },
 };
 
 export default withMDX(withNextIntl(config));
