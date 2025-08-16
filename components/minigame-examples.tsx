@@ -1,11 +1,13 @@
 "use client";
 
+import { SandpackFiles } from "@codesandbox/sandpack-react";
 import { ReactTemplate } from "./sandpack";
 
-export function MiniGameExample() {
+export function MiniGameExample({ files, previewHeight = 400 }: { files?: SandpackFiles; previewHeight?: number }) {
     return (
         <ReactTemplate
             files={{
+                ...files,
                 "labels/startLabel.ts": `import { newLabel } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start_label", [() => {}]);`,
@@ -75,13 +77,14 @@ export default function useMinigame(
   return { loading };
 }`,
             }}
+            previewHeight={previewHeight}
         />
     );
 }
 
 export function SnakeExample() {
     return (
-        <ReactTemplate
+        <MiniGameExample
             files={{
                 "screens/MiniGame.tsx": `import { canvas, Layer, PIXI } from "@drincs/pixi-vn";
 import { useCallback, useMemo, useRef, useState } from "react";
