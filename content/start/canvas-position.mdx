@@ -2,6 +2,7 @@
 title: Properties for positioning
 description: Overview of positioning properties in Pixi’VN, including pixel, percentage, anchor, pivot, and align.
 ---
+import { PositionwithpercentageExample, AlignExample } from "@/components/examples";
 
 <Callout title="References and citations" type="info">
 
@@ -29,14 +30,12 @@ You can modify it with these properties:
 
 The pivot is an offset, expressed in pixels, from the top-left corner of the component. If you have a component whose texture is 100px x 50px, and want to set the pivot point to the center of the image, you'd set your pivot to (50, 25) - half the width, and half the height.
 
-Anchors are specified in percentages, from 0.0 to 1.0, in each dimension. It has the same utility as the pivot, but to deduce the point where it is located it calculates the percentage of the height and width of the texture. For example, to rotate around the center point of a texture using anchors, you'd set your component's anchor to (0.5, 0.5) - 50% in width and height.
+Anchors are specified in percentages, from 0.0 to 1.0, in each dimension. It has the same utility as the pivot, but to deduce the point where it is located it calculates the percentage of the height and width of the texture. For example, to rotate around the center point of a texture using anchors, you'd set your component's anchor to (0.5, 0.5) - 50% in width and height. Anchors compared to Pivot are easier to use.
 
-Anchors compared to Pivot are easier to use. You can learn more about their differences [here](https://pixijs.com/8.x/guides/components/sprites#pivot-vs-anchor).
+You can modify it with these properties:
 
-You can modify it with 2 properties:
-
-- `anchor`, is an object that corresponds to `{ x: number, y: number }`. Then you can also use it to set x and y to the same value, `conponent.anchor = 0.5`.
-- `pivot`, is an object that corresponds to `{ x: number, y: number }`.
+- `anchor`: an object `{ x: number, y: number }`. You can also set both x and y to the same value, e.g. `conponent.anchor = 0.5`.
+- `pivot`: is an object that corresponds to `{ x: number, y: number }`.
 
 ---
 
@@ -71,64 +70,73 @@ Pixi’VN introduces the ability to position a component by percentage. Its oper
 
 In practice, the percentage will be multiplied by the height or width of the parent component to calculate the position in pixels.
 
-You can modify it with a property:
+You can modify it with these properties:
 
-- `percentageX`, for moving things left-to-right (along the x-axis)
-- `percentageY`, for moving things top-to-bottom (along the y-axis).
-- `percentagePosition`, is an object that corresponds to `{ x: number, y: number }`. Then you can also use it to set x and y to the same value, `conponent.align = 0.5`.
+- `percentageX`: for moving things left-to-right (along the x-axis)
+- `percentageY`: for moving things top-to-bottom (along the y-axis).
+- `percentagePosition`: an object `{ x: number, y: number }`. You can also set both x and y to the same value, e.g. `conponent.align = 0.5`.
 
 ```ts tab="labels/startLabel.ts"
 import { newLabel, showImage } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start_label", [
-  async () => {
-    await showImage("egg_head", "egg_head", {
-        percentagePosition: 0.5,
-        anchor: 0.5,
-    });
-    await showImage("flower_top", "flower_top", {
-        percentagePosition: 0
-    });
-    await showImage("panda", "panda", {
-        percentageX: 1,
-        percentageY: 0,
-        anchor: { x: 1, y: 0 },
-    });
-    await showImage("skully", "skully", {
-        percentageX: 0,
-        percentageY: 1,
-        anchor: { x: 0, y: 1 },
-    });
-    await showImage("helmlok", "helmlok", {
-        percentagePosition: 1,
-        anchor: 1
-    });
-    await showImage("bunny", "bunny", {
-        percentageX: 0.5,
-        percentageY: 1,
-        anchor: { x: 0.5, y: 1 },
-    });
-  },
+    async () => {
+        await showImage("egg_head", "egg_head", {
+            percentagePosition: 0.5,
+            anchor: 0.5,
+        });
+        await showImage("flower_top", "flower_top", {
+            percentagePosition: 0,
+        });
+        await showImage("panda", "panda", {
+            percentageX: 1,
+            percentageY: 0,
+            anchor: { x: 1, y: 0 },
+        });
+        await showImage("skully", "skully", {
+            percentageX: 0,
+            percentageY: 1,
+            anchor: { x: 0, y: 1 },
+        });
+        await showImage("helmlok", "helmlok", {
+            percentagePosition: 1,
+            anchor: 1,
+        });
+        await showImage("bunny", "bunny", {
+            percentageX: 0.5,
+            percentageY: 1,
+            anchor: { x: 0.5, y: 1 },
+        });
+    },
 ]);
 ```
 
-```ts tab="utils/defineAssets.ts"
-import { Assets } from "@drincs/pixi-vn";
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
 
-export async function defineAssets() {
-    Assets.add({ alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" });
-    Assets.add({ alias: "flower_top", src: "https://pixijs.com/assets/flowerTop.png" });
-    Assets.add({ alias: "panda", src: "https://pixijs.com/assets/panda.png" });
-    Assets.add({ alias: "skully", src: "https://pixijs.com/assets/skully.png" });
-    Assets.add({ alias: "helmlok", src: "https://pixijs.com/assets/helmlok.png" });
-    Assets.add({ alias: "bunny", src: "https://pixijs.com/assets/bunny.png" });
-}
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                { alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" },
+                { alias: "flower_top", src: "https://pixijs.com/assets/flowerTop.png" },
+                { alias: "panda", src: "https://pixijs.com/assets/panda.png" },
+                { alias: "skully", src: "https://pixijs.com/assets/skully.png" },
+                { alias: "helmlok", src: "https://pixijs.com/assets/helmlok.png" },
+                { alias: "bunny", src: "https://pixijs.com/assets/bunny.png" },
+            ],
+        },
+    ],
+};
+export default manifest;
 ```
 
-<Sandbox
-  template="8sd94f"
-  entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
-/>
+<PositionwithpercentageExample />
 
 ## Align
 
@@ -145,11 +153,11 @@ myComponent.x = (align * (fatherComponent.width - myComponent.width)) + myCompon
 myComponent.y = (align * (fatherComponent.height - myComponent.height)) + myComponent.pivot + (myComponent.anchor * myComponent.height)
 ```
 
-You can modify it with a property:
+You can modify it with these properties:
 
-- `xAlign`, for moving things left-to-right (along the x-axis)
-- `yAlign`, for moving things top-to-bottom (along the y-axis).
-- `align`, is an object that corresponds to `{ x: number, y: number }`. Then you can also use it to set x and y to the same value, `conponent.align = 0.5`.
+- `xAlign`: for moving things left-to-right (along the x-axis)
+- `yAlign`: for moving things top-to-bottom (along the y-axis).
+- `align`: an object `{ x: number, y: number }`. You can also set both x and y to the same value, e.g. `conponent.align = 0.5`.
 
 ```ts tab="labels/startLabel.ts"
 import { newLabel, showImage } from "@drincs/pixi-vn";
@@ -166,20 +174,29 @@ export const startLabel = newLabel("start_label", [
 ]);
 ```
 
-```ts tab="utils/defineAssets.ts"
-import { Assets } from "@drincs/pixi-vn";
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
 
-export async function defineAssets() {
-    Assets.add({ alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" });
-    Assets.add({ alias: "flower_top", src: "https://pixijs.com/assets/flowerTop.png" });
-    Assets.add({ alias: "panda", src: "https://pixijs.com/assets/panda.png" });
-    Assets.add({ alias: "skully", src: "https://pixijs.com/assets/skully.png" });
-    Assets.add({ alias: "helmlok", src: "https://pixijs.com/assets/helmlok.png" });
-    Assets.add({ alias: "bunny", src: "https://pixijs.com/assets/bunny.png" });
-}
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                { alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" },
+                { alias: "flower_top", src: "https://pixijs.com/assets/flowerTop.png" },
+                { alias: "panda", src: "https://pixijs.com/assets/panda.png" },
+                { alias: "skully", src: "https://pixijs.com/assets/skully.png" },
+                { alias: "helmlok", src: "https://pixijs.com/assets/helmlok.png" },
+                { alias: "bunny", src: "https://pixijs.com/assets/bunny.png" },
+            ],
+        },
+    ],
+};
+export default manifest;
 ```
 
-<Sandbox
-  template="yrwkf5"
-  entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
-/>
+<AlignExample />

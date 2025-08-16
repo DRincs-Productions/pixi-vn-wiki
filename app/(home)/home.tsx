@@ -13,7 +13,7 @@ import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { CreateAppAnimation } from "./home.client";
+import { CreateAppAnimation, PreviewImages } from "./home.client";
 import { ItchLogo } from "./icons";
 
 const badgeVariants = cva(
@@ -127,80 +127,83 @@ async function Hero() {
     const t = await getTranslations("HomePage");
 
     return (
-        <div
-            className='relative z-[2] flex flex-col border-x border-t bg-fd-background/80 px-4 pt-12 max-md:text-center md:px-12 md:pt-16 [.uwu_&]:hidden overflow-hidden
-            md:flex-row md:items-center'
-        >
-            {/* logo div */}
-            <div className='order-1 md:order-2 flex justify-center items-center mt-8 md:mt-0 md:w-[30%] h-full relative'>
-                <div
-                    className='flex justify-center items-center w-full h-full
+        <div className='relative z-2 flex flex-col border-x border-t bg-fd-background/80 px-4 pt-12 max-md:text-center md:px-12 md:pt-16 [.uwu_&]:hidden overflow-hidden'>
+            <div className='flex flex-col md:flex-row md:items-center'>
+                {/* logo div */}
+                <div className='order-1 md:order-2 flex justify-center items-center mt-8 md:mt-0 md:w-[30%] h-full relative'>
+                    <div
+                        className='flex justify-center items-center w-full h-full
                         md:absolute md:top-[-2.5rem] md:left-[-2.5rem] md:right-0'
-                >
-                    <div className='w-[300px] h-[300px] md:w-auto md:h-auto flex justify-center items-center'>
-                        <Image src={LogoImg} alt='preview' priority className='w-full h-full object-contain' />
+                    >
+                        <div className='w-[300px] h-[300px] md:w-auto md:h-auto flex justify-center items-center'>
+                            <Image src={LogoImg} alt='preview' priority className='w-full h-full object-contain' />
+                        </div>
+                    </div>
+                </div>
+                {/* info div */}
+                <div className='order-2 md:order-1 md:w-[70%] md:pr-8 flex-1'>
+                    <div
+                        className='absolute inset-0 z-[-1] blur-2xl hidden dark:block'
+                        style={{
+                            maskImage: "linear-gradient(to bottom, transparent, white, transparent)",
+                            background:
+                                "repeating-linear-gradient(65deg, var(--color-blue-500), var(--color-blue-500) 12px, color-mix(in oklab, var(--color-blue-600) 30%, transparent) 20px, transparent 200px)",
+                        }}
+                    />
+                    <div
+                        className='absolute inset-0 z-[-1] blur-2xl dark:hidden'
+                        style={{
+                            maskImage: "linear-gradient(to bottom, transparent, white, transparent)",
+                            background:
+                                "repeating-linear-gradient(65deg, var(--color-purple-300), var(--color-purple-300) 12px, color-mix(in oklab, var(--color-blue-600) 30%, transparent) 20px, transparent 200px)",
+                        }}
+                    />
+                    <h1 className='mb-8 text-4xl font-medium md:hidden'>{t("mobile_title")}</h1>
+                    <h1 className='mb-8 max-w-[600px] text-4xl font-medium max-md:hidden'>{t("title")}</h1>
+                    <p className='mb-8 text-fd-muted-foreground md:max-w-[80%] md:text-xl'>{t("subtitle")}</p>
+
+                    <div className='inline-flex items-center gap-3 max-md:mx-auto'>
+                        <Link href='/start' className={cn(buttonVariants({ size: "lg", className: "rounded-full" }))}>
+                            {t("getting_started")}
+                        </Link>
+                        <Link
+                            href='/start/why'
+                            className={cn(buttonVariants({ size: "lg", className: "rounded-full" }))}
+                        >
+                            {t("why_pixivn")}
+                        </Link>
+                        <a
+                            href='https://discord.gg/E95FZWakzp'
+                            target='_blank'
+                            rel='noreferrer noopener'
+                            className={cn(
+                                buttonVariants({
+                                    size: "lg",
+                                    variant: "outline",
+                                    className: "rounded-full bg-fd-background",
+                                })
+                            )}
+                        >
+                            {t("discord")}
+                        </a>
+                        <a
+                            href='https://drincs-productions.itch.io/pixi-vn'
+                            target='_blank'
+                            rel='noreferrer noopener'
+                            className={cn(
+                                buttonVariants({
+                                    size: "lg",
+                                    variant: "outline",
+                                    className: "rounded-full bg-fd-background",
+                                })
+                            )}
+                        >
+                            {t("open_demo")}
+                        </a>
                     </div>
                 </div>
             </div>
-            {/* info div */}
-            <div className='order-2 md:order-1 md:w-[70%] md:pr-8 flex-1'>
-                <div
-                    className='absolute inset-0 z-[-1] blur-2xl hidden dark:block'
-                    style={{
-                        maskImage: "linear-gradient(to bottom, transparent, white, transparent)",
-                        background:
-                            "repeating-linear-gradient(65deg, var(--color-blue-500), var(--color-blue-500) 12px, color-mix(in oklab, var(--color-blue-600) 30%, transparent) 20px, transparent 200px)",
-                    }}
-                />
-                <div
-                    className='absolute inset-0 z-[-1] blur-2xl dark:hidden'
-                    style={{
-                        maskImage: "linear-gradient(to bottom, transparent, white, transparent)",
-                        background:
-                            "repeating-linear-gradient(65deg, var(--color-purple-300), var(--color-purple-300) 12px, color-mix(in oklab, var(--color-blue-600) 30%, transparent) 20px, transparent 200px)",
-                    }}
-                />
-                <h1 className='mb-8 text-4xl font-medium md:hidden'>{t("mobile_title")}</h1>
-                <h1 className='mb-8 max-w-[600px] text-4xl font-medium max-md:hidden'>{t("title")}</h1>
-                <p className='mb-8 text-fd-muted-foreground md:max-w-[80%] md:text-xl'>{t("subtitle")}</p>
-
-                <div className='inline-flex items-center gap-3 max-md:mx-auto'>
-                    <Link href='/start' className={cn(buttonVariants({ size: "lg", className: "rounded-full" }))}>
-                        {t("getting_started")}
-                    </Link>
-                    <Link href='/start/why' className={cn(buttonVariants({ size: "lg", className: "rounded-full" }))}>
-                        {t("why_pixivn")}
-                    </Link>
-                    <a
-                        href='https://discord.gg/E95FZWakzp'
-                        target='_blank'
-                        rel='noreferrer noopener'
-                        className={cn(
-                            buttonVariants({
-                                size: "lg",
-                                variant: "outline",
-                                className: "rounded-full bg-fd-background",
-                            })
-                        )}
-                    >
-                        {t("discord")}
-                    </a>
-                    <a
-                        href='https://drincs-productions.itch.io/pixi-vn'
-                        target='_blank'
-                        rel='noreferrer noopener'
-                        className={cn(
-                            buttonVariants({
-                                size: "lg",
-                                variant: "outline",
-                                className: "rounded-full bg-fd-background",
-                            })
-                        )}
-                    >
-                        {t("open_demo")}
-                    </a>
-                </div>
-            </div>
+            <PreviewImages />
         </div>
     );
 }

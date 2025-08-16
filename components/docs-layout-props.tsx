@@ -7,57 +7,61 @@ import {
     BookOpenText,
     Boxes,
     Database,
+    Gamepad2,
     Globe,
     Hammer,
     History,
     MessageCircleQuestion,
     Music,
     Rocket,
+    Save,
     Sparkles,
     User,
 } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { ReactNode } from "react";
 
-export function startTree(lang?: string): DocsLayoutProps["tree"] {
+export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
     const preUrl = lang ? `/${lang}` : "";
+    const t = await getTranslations("layout");
     return {
         ...source.pageTree,
         name: "Pixi’VN",
         children: [
             {
                 type: "separator",
-                name: "Introduction",
+                name: t("introduction"),
             },
             {
                 type: "folder",
-                name: "Quick Start",
+                name: t("start"),
                 icon: <Album />,
                 index: {
                     type: "page",
-                    name: "Quick Start",
+                    name: t("start"),
                     url: `${preUrl}/start`,
                 },
                 children: [
                     {
                         type: "page",
-                        name: "Templates",
+                        name: t("templates"),
                         url: `${preUrl}/start/templates`,
                     },
                 ],
             },
             {
                 type: "folder",
-                name: "Why Pixi’VN?",
+                name: t("why"),
                 icon: <MessageCircleQuestion />,
                 index: {
                     type: "page",
-                    name: "Why Pixi’VN?",
+                    name: t("why"),
                     url: `${preUrl}/start/why`,
                 },
                 children: [
                     {
                         type: "page",
-                        name: "Ren'Py vs Pixi’VN",
+                        name: t("versus-renpy"),
                         url: `${preUrl}/start/versus-renpy`,
                         icon: <Image width={16} height={16} src='/renpy.svg' alt="Ren'Py" />,
                     },
@@ -65,96 +69,104 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
             },
             {
                 type: "folder",
-                name: "Make your first",
+                name: t("make-your-first"),
                 defaultOpen: true,
                 icon: <Hammer />,
                 children: [
                     {
                         type: "page",
-                        name: "Visual Novel",
+                        name: t("make-visual-novel"),
                         url: `${preUrl}/start/make-visual-novel`,
                     },
                     {
                         type: "page",
-                        name: "Point & Click Adventure",
+                        name: t("make-point-and-click"),
                         url: `${preUrl}/start/make-point-and-click`,
                     },
                     {
                         type: "page",
-                        name: "RPG game",
+                        name: t("make-rpg"),
                         url: `${preUrl}/start/make-rpg`,
                     },
                     {
                         type: "page",
-                        name: "Game Engine",
+                        name: t("make-game-engine"),
                         url: `${preUrl}/start/make-game-engine`,
                     },
                 ],
             },
             {
                 type: "separator",
-                name: "First steps",
+                name: t("first-steps"),
             },
-            { type: "page", name: "Characters", url: `${preUrl}/start/character`, icon: <User /> },
+            { type: "page", name: t("character"), url: `${preUrl}/start/character`, icon: <User /> },
             {
                 type: "folder",
-                name: "Narration",
+                name: t("narration"),
                 icon: <BookOpenText />,
                 index: {
                     type: "page",
-                    name: "Narration",
+                    name: t("narration"),
                     url: `${preUrl}/start/narration`,
                 },
                 children: [
                     {
                         type: "page",
-                        name: "Narration with ink",
+                        name: t("ink"),
                         url: `${preUrl}/ink`,
                         icon: <Image width={16} height={16} src='/ink.svg' alt='ink' />,
                     },
                     {
                         type: "page",
-                        name: "Narration with Ren’Py",
+                        name: t("renpy"),
                         url: `${preUrl}/renpy`,
                         icon: <Image width={16} height={16} src='/renpy.svg' alt="Ren'Py" />,
                     },
                     {
                         type: "folder",
-                        name: "Narration with JS/TS",
+                        name: t("js-ts"),
                         icon: <Image width={16} height={16} src='/typescript.svg' alt='TypeScript' />,
                         children: [
-                            { type: "page", name: "Dialogue", url: `${preUrl}/start/dialogue` },
+                            { type: "page", name: t("dialogue"), url: `${preUrl}/start/dialogue` },
                             {
                                 type: "folder",
-                                name: "Labels and steps",
+                                name: t("labels"),
                                 index: {
                                     type: "page",
-                                    name: "Labels and steps",
+                                    name: t("labels"),
                                     url: `${preUrl}/start/labels`,
                                 },
                                 children: [
-                                    { type: "page", name: "Game flow with labels", url: `${preUrl}/start/labels-flow` },
-                                    { type: "page", name: "Label features", url: `${preUrl}/start/labels-advanced` },
+                                    { type: "page", name: t("labels-flow"), url: `${preUrl}/start/labels-flow` },
+                                    {
+                                        type: "page",
+                                        name: t("labels-advanced"),
+                                        url: `${preUrl}/start/labels-advanced`,
+                                    },
                                 ],
                             },
-                            { type: "page", name: "Choice menus", url: `${preUrl}/start/choices` },
-                            { type: "page", name: "Input prompt", url: `${preUrl}/start/input` },
-                            { type: "page", name: "Other features", url: `${preUrl}/start/other-narrative-features` },
+                            { type: "page", name: t("choices"), url: `${preUrl}/start/choices` },
+                            { type: "page", name: t("input"), url: `${preUrl}/start/input` },
+                            {
+                                type: "page",
+                                name: t("other-narrative-features"),
+                                url: `${preUrl}/start/other-narrative-features`,
+                            },
                         ],
                     },
                     {
                         type: "folder",
-                        name: "Markup language (to add text style)",
+                        name: t("markup"),
                         icon: <Sparkles />,
                         index: {
                             type: "page",
-                            name: "Markup language (to add text style)",
+                            name: t("markup"),
                             url: `${preUrl}/start/markup`,
                         },
                         children: [
                             {
                                 type: "page",
-                                name: "Markdown",
+                                name: t("markup-markdown"),
                                 url: `${preUrl}/start/markup-markdown`,
                                 icon: (
                                     <Image
@@ -171,81 +183,96 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
                             },
                             {
                                 type: "page",
-                                name: "Tailwind CSS",
+                                name: t("markup-tailwindcss"),
                                 url: `${preUrl}/start/markup-tailwindcss`,
                                 icon: <Image width={16} height={16} src='/tailwindcss.svg' alt='Tailwind CSS' />,
                             },
                         ],
                     },
-                    { type: "page", name: "History", icon: <History />, url: `${preUrl}/start/history` },
-                    { type: "page", name: "Translating", icon: <Globe />, url: `${preUrl}/start/translate` },
+                    { type: "page", name: t("history"), icon: <History />, url: `${preUrl}/start/history` },
+                    { type: "page", name: t("translate"), icon: <Globe />, url: `${preUrl}/start/translate` },
                 ],
             },
             {
                 type: "folder",
-                name: "Canvas (WebGL)",
+                name: t("canvas"),
                 index: {
                     type: "page",
-                    name: "Canvas (WebGL)",
+                    name: t("canvas"),
                     url: `${preUrl}/start/canvas`,
                 },
                 children: [
-                    { type: "page", name: "Canvas alias", url: `${preUrl}/start/canvas-alias` },
+                    { type: "page", name: t("canvas-alias"), url: `${preUrl}/start/canvas-alias` },
                     {
                         type: "folder",
-                        name: "Canvas Components",
+                        name: t("canvas-components"),
                         index: {
                             type: "page",
-                            name: "Canvas Components",
+                            name: t("canvas-components"),
                             url: `${preUrl}/start/canvas-components`,
                         },
                         children: [
-                            { type: "page", name: "ImageSprite", url: `${preUrl}/start/canvas-images` },
-                            { type: "page", name: "ImageContainer", url: `${preUrl}/start/canvas-image-container` },
-                            { type: "page", name: "VideoSprite", url: `${preUrl}/start/canvas-videos` },
-                            { type: "page", name: "Filters", url: `${preUrl}/start/canvas-filters` },
-                            { type: "page", name: "Lights", url: `${preUrl}/start/canvas-lights` },
-                            { type: "page", name: "Spine 2D", url: `${preUrl}/start/canvas-spine2d` },
+                            { type: "page", name: t("canvas-images"), url: `${preUrl}/start/canvas-images` },
                             {
                                 type: "page",
-                                name: "Three.js",
+                                name: t("canvas-image-container"),
+                                url: `${preUrl}/start/canvas-image-container`,
+                            },
+                            { type: "page", name: t("canvas-videos"), url: `${preUrl}/start/canvas-videos` },
+                            { type: "page", name: t("canvas-filters"), url: `${preUrl}/start/canvas-filters` },
+                            { type: "page", name: t("canvas-lights"), url: `${preUrl}/start/canvas-lights` },
+                            { type: "page", name: t("canvas-spine2d"), url: `${preUrl}/start/canvas-spine2d` },
+                            {
+                                type: "page",
+                                name: t("canvas-threejs"),
                                 url: `${preUrl}/start/canvas-threejs`,
                                 icon: <Image width={16} height={16} src='/threejs.svg' alt='Three.js' />,
                             },
                         ],
                     },
-                    { type: "page", name: "Components functions", url: `${preUrl}/start/canvas-functions` },
-                    { type: "page", name: "Position properties", url: `${preUrl}/start/canvas-position` },
-                    { type: "page", name: "Transitions", url: `${preUrl}/start/canvas-transition` },
+                    { type: "page", name: t("canvas-functions"), url: `${preUrl}/start/canvas-functions` },
+                    { type: "page", name: t("canvas-position"), url: `${preUrl}/start/canvas-position` },
                     {
                         type: "folder",
-                        name: "Animations and Effects",
+                        name: t("canvas-animations-effects"),
                         index: {
                             type: "page",
-                            name: "Animations and Effects",
+                            name: t("canvas-animations-effects"),
                             url: `${preUrl}/start/canvas-animations-effects`,
                         },
                         children: [
                             {
                                 type: "folder",
-                                name: "Primitives (ticker)",
+                                name: t("canvas-motion"),
                                 index: {
                                     type: "page",
-                                    name: "Primitives (ticker)",
+                                    name: t("canvas-motion"),
+                                    url: `${preUrl}/start/canvas-motion`,
+                                },
+                                children: [
+                                    {
+                                        type: "page",
+                                        name: t("canvas-articulated-animations-effects"),
+                                        url: `${preUrl}/start/canvas-articulated-animations-effects`,
+                                    },
+                                ],
+                            },
+                            { type: "page", name: t("canvas-transition"), url: `${preUrl}/start/canvas-transition` },
+                            {
+                                type: "folder",
+                                name: t("canvas-tickers"),
+                                index: {
+                                    type: "page",
+                                    name: t("canvas-tickers"),
                                     url: `${preUrl}/start/canvas-tickers`,
                                 },
                                 children: [
                                     {
                                         type: "page",
-                                        name: "Tickers methods",
+                                        name: t("canvas-tickers-functions"),
                                         url: `${preUrl}/start/canvas-tickers-functions`,
                                     },
                                 ],
-                            },
-                            {
-                                type: "page",
-                                name: "Articulated",
-                                url: `${preUrl}/start/canvas-articulated-animations-effects`,
                             },
                         ],
                     },
@@ -354,7 +381,14 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
             },
             {
                 type: "page",
+                name: "Minigames",
+                icon: <Gamepad2 />,
+                url: `${preUrl}/start/minigames`,
+            },
+            {
+                type: "page",
                 name: "Save and Load",
+                icon: <Save />,
                 url: `${preUrl}/start/save`,
             },
             {
@@ -388,8 +422,9 @@ export function startTree(lang?: string): DocsLayoutProps["tree"] {
     };
 }
 
-export function renpyTree(lang?: string): DocsLayoutProps["tree"] {
+export async function renpyTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
     const preUrl = lang ? `/${lang}` : "";
+    const t = await getTranslations("layout");
     return {
         ...renpySource.pageTree,
         name: "Ren’Py",
@@ -400,7 +435,7 @@ export function renpyTree(lang?: string): DocsLayoutProps["tree"] {
             },
             {
                 type: "page",
-                name: "Quick Start",
+                name: t("start"),
                 icon: <Album />,
                 url: `${preUrl}/renpy`,
             },
@@ -408,8 +443,9 @@ export function renpyTree(lang?: string): DocsLayoutProps["tree"] {
     };
 }
 
-export function inkTree(lang?: string): DocsLayoutProps["tree"] {
+export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
     const preUrl = lang ? `/${lang}` : "";
+    const t = await getTranslations("layout");
     return {
         ...inkSource.pageTree,
         name: "ink",
@@ -420,7 +456,7 @@ export function inkTree(lang?: string): DocsLayoutProps["tree"] {
             },
             {
                 type: "page",
-                name: "Quick Start",
+                name: t("start"),
                 icon: <Album />,
                 url: `${preUrl}/ink`,
             },
@@ -444,8 +480,9 @@ export function inkTree(lang?: string): DocsLayoutProps["tree"] {
     };
 }
 
-export function otherTopicsTree(lang?: string): DocsLayoutProps["tree"] {
+export async function otherTopicsTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
     const preUrl = lang ? `/${lang}` : "";
+    // const t = await getTranslations("layout");
     return {
         ...otherTopicsSource.pageTree,
         name: "Other Topics",
@@ -478,8 +515,9 @@ export function otherTopicsTree(lang?: string): DocsLayoutProps["tree"] {
     };
 }
 
-export function homeLinks(lang?: string): LinkItemType[] {
+export async function homeLinks(lang?: string): Promise<LinkItemType[]> {
     const preUrl = lang ? `/${lang}` : "";
+    // const t = await getTranslations("layout");
     return [
         {
             type: "menu",
@@ -532,8 +570,9 @@ export function homeLinks(lang?: string): LinkItemType[] {
     ];
 }
 
-export function nqtrTree(lang?: string): DocsLayoutProps["tree"] {
+export async function nqtrTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
     const preUrl = lang ? `/${lang}` : "";
+    const t = await getTranslations("layout");
     return {
         ...nqtrSource.pageTree,
         name: "Navigation Quest Time Routine (NQTR)",
@@ -544,7 +583,7 @@ export function nqtrTree(lang?: string): DocsLayoutProps["tree"] {
             },
             {
                 type: "page",
-                name: "Quick Start",
+                name: t("start"),
                 icon: <Album />,
                 url: `${preUrl}/nqtr`,
             },
@@ -572,15 +611,23 @@ export function nqtrTree(lang?: string): DocsLayoutProps["tree"] {
                 name: "Routine",
                 url: `${preUrl}/nqtr/routine`,
             },
+            {
+                type: "page",
+                name: "Quests",
+                url: `${preUrl}/nqtr/quest`,
+            },
         ],
     };
 }
 
-export function sidebar(lang?: string): Partial<SidebarOptions> & {
-    enabled?: boolean;
-    component?: ReactNode;
-} {
+export async function sidebar(lang?: string): Promise<
+    Partial<SidebarOptions> & {
+        enabled?: boolean;
+        component?: ReactNode;
+    }
+> {
     const preUrl = lang ? `/${lang}` : "";
+    // const t = await getTranslations("layout");
     return {
         tabs: [
             {

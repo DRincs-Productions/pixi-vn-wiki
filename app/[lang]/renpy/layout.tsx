@@ -5,8 +5,10 @@ import { type ReactNode } from "react";
 
 export default async function Layout({ children, params }: { children: ReactNode; params: Promise<{ lang: string }> }) {
     const { lang } = await params;
+    const sidebarVar = await sidebar(lang);
+    const treeVar = await renpyTree(lang);
     return (
-        <DocsLayout sidebar={sidebar(lang)} tree={renpyTree(lang)} {...baseOptions()}>
+        <DocsLayout sidebar={sidebarVar} tree={treeVar} {...baseOptions()}>
             {children}
         </DocsLayout>
     );
