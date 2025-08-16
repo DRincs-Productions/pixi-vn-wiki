@@ -195,6 +195,23 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
             },
             {
                 type: "folder",
+                name: "Assets",
+                icon: <Boxes />,
+                index: {
+                    type: "page",
+                    name: "Assets",
+                    url: `${preUrl}/start/assets`,
+                },
+                children: [
+                    {
+                        type: "page",
+                        name: "Assets management",
+                        url: `${preUrl}/start/assets-management`,
+                    },
+                ],
+            },
+            {
+                type: "folder",
                 name: t("canvas"),
                 index: {
                     type: "page",
@@ -283,23 +300,6 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                 name: "Sounds and Music",
                 url: `${preUrl}/start/sound`,
                 icon: <Music />,
-            },
-            {
-                type: "folder",
-                name: "Assets",
-                icon: <Boxes />,
-                index: {
-                    type: "page",
-                    name: "Assets",
-                    url: `${preUrl}/start/assets`,
-                },
-                children: [
-                    {
-                        type: "page",
-                        name: "Assets management",
-                        url: `${preUrl}/start/assets-management`,
-                    },
-                ],
             },
             {
                 type: "folder",
