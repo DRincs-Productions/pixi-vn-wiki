@@ -637,7 +637,8 @@ export async function sidebar(lang?: string): Promise<
                 url: `${preUrl}/start`,
             },
             {
-                title: "NQTR (Beta)",
+                title: "NQTR",
+                icon: <Image width={16} height={16} src='/nqtr.png' alt='NQTR' />,
                 description: "Navigation Quest Time Routine",
                 url: `${preUrl}/nqtr`,
             },
