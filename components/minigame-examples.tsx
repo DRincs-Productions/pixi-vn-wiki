@@ -7,7 +7,6 @@ export function MiniGameExample({ files, previewHeight = 400 }: { files?: Sandpa
     return (
         <ReactTemplate
             files={{
-                ...files,
                 "labels/startLabel.ts": `import { newLabel } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start_label", [() => {}]);`,
@@ -76,6 +75,7 @@ export default function useMinigame(
 
   return { loading };
 }`,
+                ...files,
             }}
             previewHeight={previewHeight}
         />
