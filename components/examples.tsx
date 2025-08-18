@@ -200,56 +200,37 @@ export function HeredityFactorExample() {
     return (
         <ReactTemplate
             files={{
-                "labels/startLabel.ts": `import {
-  canvas,
-  moveIn,
-  MoveTicker,
-  newLabel,
-  pushIn,
-  Repeat,
-  RotateTicker,
-  showImage,
-  showWithDissolve,
-  showWithFade,
-  zoomIn,
-} from "@drincs/pixi-vn";
+                "labels/startLabel.ts": `import { canvas, moveIn, newLabel, pushIn, showImage, showWithDissolve, showWithFade, zoomIn } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start_label", [
   async () => {
-    await showImage("alien", "eggHead", { anchor: 0.5, align: 0 });
+    const alien = await showImage("alien", "eggHead", { anchor: 0.5, align: 0.5 });
 
-    canvas.addTicker(
-      "alien",
-      new RotateTicker({
-        speed: 6,
-      })
+    canvas.animate(
+      alien,
+      {
+        angle: 360,
+      },
+      {
+        duration: 5,
+        repeat: Infinity,
+      }
     );
-    canvas.addTickersSequence("alien", [
-      new MoveTicker({
-        destination: { x: 0, y: 0, type: "align" },
-        speed: 30,
-      }),
-      new MoveTicker({
-        destination: { x: 0, y: 1, type: "align" },
-        speed: 30,
-      }),
-      new MoveTicker({
-        destination: { x: 1, y: 1, type: "align" },
-        speed: 30,
-      }),
-      new MoveTicker({
-        destination: { x: 1, y: 0, type: "align" },
-        speed: 30,
-      }),
-      Repeat,
-    ]);
+    canvas.animate(
+      alien,
+      { xAlign: [0, 1, 1, 0, 0], yAlign: [0, 0, 1, 1, 0] },
+      {
+        repeat: Infinity,
+        duration: 10,
+      }
+    );
   },
   async () => await showImage("alien", "flowerTop"),
   async () => await showWithDissolve("alien", "helmlok"),
   async () => await showWithFade("alien", "skully"),
-  async () => await moveIn("alien", "eggHead", { speed: 100 }),
-  async () => await zoomIn("alien", "flowerTop"),
-  async () => await pushIn("alien", "helmlok", { speed: 100 }),
+  async () => await moveIn("alien", "eggHead", { removeOldComponentWithMoveOut: true }),
+  async () => await zoomIn("alien", "flowerTop", { removeOldComponentWithZoomOut: true }),
+  async () => await pushIn("alien", "helmlok"),
 ]);`,
                 "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
 
@@ -278,6 +259,1232 @@ const manifest: AssetsManifest = {
           alias: "skully",
           src: "https://pixijs.com/assets/skully.png",
         },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function MoveExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { canvas, ImageSprite, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    const alien = await showImage("alien");
+    canvas.animate(alien, { xAlign: 1, yAlign: 0 }, { ease: "easeOut" });
+  },
+  () => canvas.animate<ImageSprite>("alien", { xAlign: 1, yAlign: 1 }, { ease: "backOut" }),
+  () => canvas.animate<ImageSprite>("alien", { xAlign: 0, yAlign: 1 }, { ease: "circIn" }),
+  () => canvas.animate<ImageSprite>("alien", { xAlign: 0, yAlign: 0 }, { ease: "linear" }),
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "alien",
+          src: "https://pixijs.com/assets/eggHead.png",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function RotateExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { canvas, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    const alien = await showImage("alien", "alien", { align: 0.5, anchor: 0.5 });
+    canvas.animate(alien, { angle: 360 }, { duration: 1, type: "spring", repeat: Infinity, repeatDelay: 0.2 });
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "alien",
+          src: "https://pixijs.com/assets/eggHead.png",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function FadeExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { canvas, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        const alien = await showImage("alien", "alien", { align: 0.5, anchor: 0.5, alpha: 0 });
+        canvas.animate(alien, { alpha: 1 }, { ease: "linear", duration: 1 });
+    },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "alien",
+          src: "https://pixijs.com/assets/eggHead.png",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function ZoomExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { canvas, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    const alien = await showImage("alien", "alien", { align: 0.5, anchor: 0.5, scale: 0 });
+    canvas.animate(alien, { scaleX: 1, scaleY: 1 }, { ease: "circInOut", duration: 1 });
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "alien",
+          src: "https://pixijs.com/assets/eggHead.png",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function MirrorExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { canvas, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    const alien = await showImage("alien", "alien", { align: 0.5, anchor: 0.5 });
+    canvas.animate(alien, { scaleX: -1 });
+  },
+  () => canvas.animate("alien", { scaleX: 1 }),
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "alien",
+          src: "https://pixijs.com/assets/eggHead.png",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function SpecialPropertiesExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { canvas, MoveTicker, newLabel, Repeat, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    await showImage("alien");
+    canvas.addTickersSequence("alien", [
+      new MoveTicker({
+        destination: { x: 1, y: 0, type: "align" },
+        speedProgression: { type: "linear", amt: -1, limit: 20 },
+      }),
+      new MoveTicker({
+        destination: { x: 0, y: 0, type: "align" },
+        speedProgression: { type: "exponential", percentage: 0.05 },
+      }),
+      Repeat,
+    ]);
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "alien",
+          src: "https://pixijs.com/assets/eggHead.png",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function ShakeExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { CANVAS_APP_GAME_LAYER_ALIAS, newLabel, shakeEffect, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    await showImage("bg", "bg", { scale: 1.3 });
+    await showImage("alien", "alien", { align: 0.5 });
+    shakeEffect("alien");
+  },
+  async () => {
+    shakeEffect(CANVAS_APP_GAME_LAYER_ALIAS);
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "alien",
+          src: "https://pixijs.com/assets/eggHead.png",
+        },
+        {
+          alias: "bg",
+          src: "https://pixijs.com/assets/bg_grass.jpg",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function ShowImageContainerExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { canvas, MoveTicker, newLabel, showImageContainer } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    let james = await showImageContainer("james", ["m01-body", "m01-eyes", "m01-mouth"], {
+      xAlign: 0.5,
+      yAlign: 1,
+    });
+  },
+  () => {
+    canvas.removeAllTickers();
+    let tickerId = canvas.addTicker("james", new MoveTicker({ destination: { x: 0, y: 1, type: "align" } }));
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "m01-body",
+          src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media",
+        },
+        {
+          alias: "m01-eyes",
+          src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media",
+        },
+        {
+          alias: "m01-mouth",
+          src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+                "constants.ts": `export const HEIGHT = 1080;
+export const WIDTH = 1920;`,
+            }}
+        />
+    );
+}
+
+export function AddImageContainerExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { addImageCointainer, canvas, ImageContainer, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  () => {
+    let james = addImageCointainer("james", ["m01-body", "m01-eyes", "m01-mouth"], {
+      xAlign: 0.5,
+      yAlign: 1,
+    });
+  },
+  async () => {
+    let james = canvas.find<ImageContainer>("james");
+    james && (await james.load());
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "m01-body",
+          src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media",
+        },
+        {
+          alias: "m01-eyes",
+          src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media",
+        },
+        {
+          alias: "m01-mouth",
+          src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+                "constants.ts": `export const HEIGHT = 1080;
+export const WIDTH = 1920;`,
+            }}
+        />
+    );
+}
+
+export function AddCanvasComponents() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    const sprite = new Sprite();
+    const texture = await Assets.load("egg_head");
+    sprite.texture = texture;
+    canvas.add("sprite", sprite);
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "egg_head",
+          src: "https://pixijs.com/assets/eggHead.png",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function GetCanvasComponents() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    const sprite = new Sprite();
+    const texture = await Assets.load("egg_head");
+    sprite.texture = texture;
+    canvas.add("sprite", sprite);
+  },
+  () => {
+    const sprite = canvas.find("sprite");
+    if (sprite) {
+      sprite.x = 100;
+      sprite.y = 100;
+    }
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "egg_head",
+          src: "https://pixijs.com/assets/eggHead.png",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function RemoveCanvasComponents() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    const sprite = new Sprite();
+    const texture = await Assets.load("egg_head");
+    sprite.texture = texture;
+    canvas.add("sprite", sprite);
+  },
+  () => {
+    canvas.remove("sprite");
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "egg_head",
+          src: "https://pixijs.com/assets/eggHead.png",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function RemoveAllCanvasComponents() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    const texture = await Assets.load("egg_head");
+    for (let i = 0; i < 3; i++) {
+      const sprite = new Sprite();
+      sprite.texture = texture;
+      sprite.x = i * 150;
+      canvas.add(\`sprite\${i}\`, sprite);
+    }
+  },
+  () => {
+    canvas.removeAll();
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "egg_head",
+          src: "https://pixijs.com/assets/eggHead.png",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function AddListenerGivenEvent() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { newLabel, showImage } from "@drincs/pixi-vn";
+import ButtonEvent from "../canvas/events/ButtonEvent";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    const bunny = await showImage("bunny", "bunny", {
+      align: 0.5,
+      anchor: 0.5,
+    });
+    // Opt-in to interactivity
+    bunny.eventMode = "static";
+    // Shows hand cursor
+    bunny.cursor = "pointer";
+    // Pointers normalize touch and mouse (good for mobile and desktop)
+    bunny.onEvent("pointerdown", ButtonEvent);
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [{ alias: "bunny", src: "https://pixijs.com/assets/bunny.png" }],
+    },
+  ],
+};
+export default manifest;`,
+                "canvas/events/ButtonEvent.ts": `import { CanvasEvent, CanvasEventNamesType, eventDecorator, Sprite } from "@drincs/pixi-vn";
+
+@eventDecorator()
+export default class ButtonEvent extends CanvasEvent<Sprite> {
+  override fn(event: CanvasEventNamesType, sprite: Sprite): void {
+    switch (event) {
+      case "pointerdown":
+        sprite.scale.x *= 1.25;
+        sprite.scale.y *= 1.25;
+        break;
+    }
+  }
+}`,
+            }}
+        />
+    );
+}
+
+export function ReturningDifferentStepLists() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { narration, newLabel, storage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", () => {
+  let condition = storage.getFlag("condition");
+  if (condition) {
+    return [
+      () => {
+        narration.dialogue = "Step 2";
+      },
+      () => {
+        narration.dialogue = "Restart";
+      },
+    ];
+  } else {
+    return [
+      () => {
+        narration.dialogue = "Step 1";
+      },
+      async (props, { labelId }) => {
+        storage.setFlag("condition", true);
+        return await narration.jumpLabel(labelId, props);
+      },
+    ];
+  }
+});`,
+            }}
+        />
+    );
+}
+
+export function ChoiceMenus() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { narration, newChoiceOption, newCloseChoiceOption, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    narration.dialogue = "Choose a fruit:";
+    narration.choiceMenuOptions = [
+      newChoiceOption("Orange", orangeLabel, {}), // by default, the label will be called by call
+      newChoiceOption("Banana", bananaLabel, {}, { type: "jump" }),
+      newChoiceOption("Apple", appleLabel, { quantity: 5 }, { type: "call" }),
+      newCloseChoiceOption("Cancel"),
+    ];
+  },
+  () => {
+    narration.dialogue = "Restart";
+  },
+  async (props) => await narration.jumpLabel("start_label", props),
+]);
+
+const appleLabel = newLabel<{ quantity: number }>("AppleLabel", [
+  (props) => {
+    narration.dialogue = \`You have \${props?.quantity ?? 0} apples\`;
+  },
+]);
+const orangeLabel = newLabel("OrangeLabel", [
+  () => {
+    narration.dialogue = "You have an orange";
+  },
+]);
+const bananaLabel = newLabel("BananaLabel", [
+  () => {
+    narration.dialogue = "You have a banana";
+  },
+]);`,
+            }}
+        />
+    );
+}
+
+export function InputPrompt() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { narration, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  () => {
+    narration.dialogue = "Hello";
+  },
+  () => {
+    narration.dialogue = "What is your name?";
+    narration.requestInput({ type: "string" });
+  },
+  () => {
+    narration.dialogue = \`My name is \${narration.inputValue}\`;
+  },
+  () => {
+    narration.dialogue = "How old are you?";
+    narration.requestInput({ type: "number" }, 18);
+  },
+  () => {
+    narration.dialogue = \`I am \${narration.inputValue} years old\`;
+  },
+  () => {
+    narration.dialogue = "Describe who you are:";
+    narration.requestInput({ type: "html textarea" });
+  },
+  () => {
+    narration.dialogue = \`\${narration.inputValue}\`;
+  },
+  () => {
+    narration.dialogue = "Restart";
+  },
+]);`,
+            }}
+        />
+    );
+}
+
+export function SequenceExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { canvas, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    const alien = await showImage("alien");
+    canvas.animate(
+      alien,
+      {
+        xAlign: [0, 1, 1, 0, 0],
+        yAlign: [0, 0, 1, 1, 0],
+      },
+      { repeat: Infinity, duration: 10 }
+    );
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "alien",
+          src: "https://pixijs.com/assets/eggHead.png",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function MotionSequenceExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { canvas, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    const alien = await showImage("alien");
+    canvas.animate(
+      alien,
+      [
+        [{ xAlign: 0, yAlign: 0 }, { ease: "circInOut" }],
+        [{ xAlign: 1, yAlign: 0 }, { ease: "backInOut" }],
+        [{ xAlign: 1, yAlign: 1 }, { ease: "linear" }],
+        [{ xAlign: 0, yAlign: 1 }, { ease: "anticipate" }],
+        [{ xAlign: 0, yAlign: 0 }, { ease: "easeOut" }],
+      ],
+      { repeat: 10, duration: 10 }
+    );
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "alien",
+          src: "https://pixijs.com/assets/eggHead.png",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function DissolveTransitionExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { newLabel, removeWithDissolve, showWithDissolve } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    await showWithDissolve("alien", "egg_head");
+    await showWithDissolve("human", {
+      value: ["m01-body", "m01-eyes", "m01-mouth"],
+      options: { scale: 0.5, xAlign: 0.7 },
+    });
+  },
+  async () => {
+    await showWithDissolve("alien", "flower_top");
+    removeWithDissolve("human");
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "egg_head",
+          src: "https://pixijs.com/assets/eggHead.png",
+        },
+        {
+          alias: "flower_top",
+          src: "https://pixijs.com/assets/flowerTop.png",
+        },
+        {
+          alias: "m01-body",
+          src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media",
+        },
+        {
+          alias: "m01-eyes",
+          src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media",
+        },
+        {
+          alias: "m01-mouth",
+          src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function FadeTransitionExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { newLabel, removeWithFade, showWithFade } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await showWithFade("alien", "egg_head", { duration: 5 }); // [!code focus]
+        await showWithFade("human", { // [!code focus]
+            value: ["m01-body", "m01-eyes", "m01-mouth"], // [!code focus]
+            options: { scale: 0.5, xAlign: 0.7 }, // [!code focus]
+        }); // [!code focus]
+    },
+    async () => {
+        await showWithFade("alien", "flower_top"); // [!code focus]
+        removeWithFade("human"); // [!code focus]
+    },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                {
+                    alias: "m01-body",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function MoveinTransitionExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { moveIn, moveOut, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await moveIn("alien", "egg_head", { direction: "up" }); // [!code focus]
+        await moveIn("human", { // [!code focus]
+            value: ["m01-body", "m01-eyes", "m01-mouth"], // [!code focus]
+            options: { scale: 0.5, xAlign: 0.7 }, // [!code focus]
+        }); // [!code focus]
+    },
+    async () => {
+        await moveIn("alien", "flower_top", { direction: "up" }); // [!code focus]
+        moveOut("human"); // [!code focus]
+    },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                {
+                    alias: "m01-body",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function PushinTransitionExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { newLabel, pushIn, pushOut } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await pushIn("alien", "egg_head"); // [!code focus]
+        await pushIn("human", { // [!code focus]
+            value: ["m01-body", "m01-eyes", "m01-mouth"], // [!code focus]
+            options: { scale: 0.5, xAlign: 0.7 }, // [!code focus]
+        }); // [!code focus]
+    },
+    async () => {
+        await pushIn("alien", "flower_top", { direction: "up" }); // [!code focus]
+        pushOut("human"); // [!code focus]
+    },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                {
+                    alias: "m01-body",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function ZoominTransitionExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { newLabel, zoomIn, zoomOut } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await zoomIn("alien", "egg_head"); // [!code focus]
+        await zoomIn("human", { // [!code focus]
+            value: ["m01-body", "m01-eyes", "m01-mouth"], // [!code focus]
+            options: { scale: 0.5, xAlign: 0.7 }, // [!code focus]
+        }); // [!code focus]
+    },
+    async () => {
+        await zoomIn("alien", "flower_top"); // [!code focus]
+        zoomOut("human"); // [!code focus]
+    },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                {
+                    alias: "m01-body",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function PositionwithpercentageExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    await showImage("egg_head", "egg_head", {
+      percentagePosition: 0.5,
+      anchor: 0.5,
+    });
+    await showImage("flower_top", "flower_top", {
+      percentagePosition: 0,
+    });
+    await showImage("panda", "panda", {
+      percentageX: 1,
+      percentageY: 0,
+      anchor: { x: 1, y: 0 },
+    });
+    await showImage("skully", "skully", {
+      percentageX: 0,
+      percentageY: 1,
+      anchor: { x: 0, y: 1 },
+    });
+    await showImage("helmlok", "helmlok", {
+      percentagePosition: 1,
+      anchor: 1,
+    });
+    await showImage("bunny", "bunny", {
+      percentageX: 0.5,
+      percentageY: 1,
+      anchor: { x: 0.5, y: 1 },
+    });
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        { alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" },
+        { alias: "flower_top", src: "https://pixijs.com/assets/flowerTop.png" },
+        { alias: "panda", src: "https://pixijs.com/assets/panda.png" },
+        { alias: "skully", src: "https://pixijs.com/assets/skully.png" },
+        { alias: "helmlok", src: "https://pixijs.com/assets/helmlok.png" },
+        { alias: "bunny", src: "https://pixijs.com/assets/bunny.png" },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function AlignExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    await showImage("egg_head", "egg_head", { align: 0.5 });
+    await showImage("flower_top", "flower_top", { align: 0 });
+    await showImage("panda", "panda", { xAlign: 1, yAlign: 0 });
+    await showImage("skully", "skully", { xAlign: 0, yAlign: 1 });
+    await showImage("helmlok", "helmlok", { align: 1 });
+    await showImage("bunny", "bunny", { xAlign: 0.5, yAlign: 1 });
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        { alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" },
+        { alias: "flower_top", src: "https://pixijs.com/assets/flowerTop.png" },
+        { alias: "panda", src: "https://pixijs.com/assets/panda.png" },
+        { alias: "skully", src: "https://pixijs.com/assets/skully.png" },
+        { alias: "helmlok", src: "https://pixijs.com/assets/helmlok.png" },
+        { alias: "bunny", src: "https://pixijs.com/assets/bunny.png" },
       ],
     },
   ],

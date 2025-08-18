@@ -12,6 +12,7 @@ import Image from "next/image";
  * Ink Layout: app/ink/layout.tsx
  * Ren'Py Layout: app/renpy/layout.tsx
  * Other Topics Layout: app/other-topics/layout.tsx
+ * Navigation Quest Time Routine Layout: app/nqtr/layout.tsx
  */
 export function baseOptions(): BaseLayoutProps {
     return {

@@ -1,51 +1,69 @@
 ---
-title: Label and Game Step
+title: Labels and steps
+description: Explains the core concepts of labels and steps in Pixi'VN, detailing how narrative flow is structured and managed within the engine.
 ---
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
-Visual Novels are usually a succession of screenshots with images and text.
+Visual novels are typically a sequence of scenes with images and text.
 
-In Pixi’VN, you can manage this succession of screens with the "**steps**". The steps they are functions that are executed every time the <DynamicLink href="/start/labels#next-step">Next Step</DynamicLink> function is called. In these steps you can add images, set who and what is saying etc...
+<Callout title="Nomenclature" type="info">
 
-The **labels** are containers of steps, they are used to organize the steps in a more readable way.
+The term `label` is borrowed from Ren'Py, where it acts as a "bookmark" or "landmark" in the story. In the ink language, the equivalent term is `knot`.
 
-Basically the idea of the life cycle of the game is:
+The term `step` is introduced by Pixi'VN to represent the individual actions or events that occur within a `label`.
 
-* The game starts by <DynamicLink href="/start/labels#call-a-label">calling a label</DynamicLink>. The first step of the label will be executed automatically.
-* After that, connecting the function <DynamicLink href="/start/labels#next-step">Next Step</DynamicLink> to a event (like a button click), every time the function is called, the next step of the label is executed.
-Some steps could start other labels.
-* The game will end only when all the steps are completed. The <DynamicLink href="/start/other-narrative-features#how-manage-the-end-of-the-game">Game.onEnd</DynamicLink> function will be started.
+</Callout>
 
-## Label
+In Pixi’VN, the entire narrative flow is based on the concepts of `labels` and `steps`.
 
-The label is a container of steps. It is used to organize the steps in a more readable way.
+A `label` is used to organize the narrative; it works as a "bookmark" or section of the story. Technically, a `label` is a class that acts as a container for `steps`.
 
-For create a label you must use the `newLabel()` function and pass:
+A `step` is an individual action or event that occurs within a `label`. Steps are used to display images, text, and other narrative elements.
 
-* The `id` of the label, must be unique
-* The `steps` of the label, an array of functions that will be executed in order. Or a function that returns the array of functions.
-* The `options` of the label, an object with the following properties:
-  * `onStepStart`: A function that will be executed before each step of the label. You can read more about it <DynamicLink href="/start/labels-advanced#onstepstart">here</DynamicLink>.
-  * `onStepEnd`: A function that will be executed after each step of the label. You can read more about it <DynamicLink href="/start/labels-advanced#onstepend">here</DynamicLink>.
-  * `onLoadingLabel`: A function that will be executed in `onStepStart` if the index of the step is 0 and when the user loads a save file. You can read more about it <DynamicLink href="/start/labels-advanced#onloadinglabel">here</DynamicLink>.
+The basic lifecycle of the game is as follows:
+
+* The game starts by <DynamicLink href="/start/labels-flow#run-a-label">calling a `label`</DynamicLink>. The first `step` of the `label` is executed automatically.
+* After that, by connecting the <DynamicLink href="/start/labels-flow#next-step">Next Step</DynamicLink> function to an event (such as a button click), each time the function is called, the next `step` of the `label` is executed. Some `steps` can also start other `labels`.
+* The game ends only when all `steps` are completed. At that point, the <DynamicLink href="/start/other-narrative-features#how-manage-the-end-of-the-game">Game.onEnd</DynamicLink> function is triggered.
+
+## Add
+
+To create a `label`, use the `newLabel()` function.
+This function has the following parameters:
+
+* `id`: A unique identifier (string). Used to reference the `label` in the game (must be unique).
+* `steps`: An array of functions to be executed in order. To create a dynamic array, you can find more information <DynamicLink href="/start/labels-advanced#dynamic-step-list">here</DynamicLink>.
+* `options` (Optional): An object with the `label`'s options:
+  * `onStepStart` (Optional): A function executed before each `step`. See more <DynamicLink href="/start/labels-advanced#onstepstart">here</DynamicLink>.
+  * `onStepEnd` (Optional): A function executed after each `step`. See more <DynamicLink href="/start/labels-advanced#onstepend">here</DynamicLink>.
+  * `onLoadingLabel` (Optional): A function executed in `onStepStart` if the `step` index is 0, or when loading a save file. See more <DynamicLink href="/start/labels-advanced#onloadinglabel">here</DynamicLink>.
 
 ```ts title="labels/startLabel.ts"
-import { narration } from '@drincs/pixi-vn'
+import { narration, StepLabelProps } from '@drincs/pixi-vn'
 
 export const startLabel = newLabel("start_label",
     [
         () => {
             narration.dialogue = { character: liam, text: "Example of dialogue" }
         },
-        (props, { labelId }) => narration.jumpLabel(labelId, props),
+        (props: StepLabelProps, { labelId }) => narration.jumpLabel(labelId, props),
     ]
 )
 ```
 
-### Override `StepLabelProps`
+<Accordions>
 
-All the <DynamicLink href="/start/labels-flow">functionality to control the flow of labels</DynamicLink> requires an object that corresponds to the `StepLabelProps` interface. The object will be passed as a parameter to the step that will be executed.
+<Accordion title="Overriding StepLabelProps" id="steplabelprops">
 
-By default `StepLabelProps` corresponds to `{ [key: string]: any }`. You can "override" the `StepLabelProps` interface in the `.d.ts` file to set required parameters.
+<Callout title="Templates" type="info">
+
+In all templates, the `StepLabelProps` interface is already overridden. You can find it in the `pixi-vn.d.ts` file.
+
+</Callout>
+
+All <DynamicLink href="/start/labels-flow">narration flow control functions</DynamicLink> require an object matching the `StepLabelProps` interface.
+
+By default, `StepLabelProps` is `{ [key: string]: any }`. You can "override" the `StepLabelProps` interface in your `.d.ts` file to specify required parameters.
 
 ```ts tab="pixi-vn.d.ts"
 import { narration } from '@drincs/pixi-vn'
@@ -60,20 +78,18 @@ declare module '@drincs/pixi-vn' {
 ```ts tab="labels/startLabel.ts"
 export const startLabel = newLabel("start_label",
     [
-        () => {
-            return narration.callLabel(testLabel, { // [!code focus]
-                navigate: (route) => { // [!code focus]
-                    // navigate to route // [!code focus]
-                } // [!code focus]
-            }) // [!code focus]
-        },
+        ({ navigate }) => { // [!code focus]
+            navigate("/new-route") // [!code focus]
+        }, // [!code focus]
     ]
 )
 ```
 
-### Parameters of the label steps
+</Accordion>
 
-You can pass a type to `newLabel` function for add other parameters in addition to [`StepLabelProps`](#override-steplabelprops), for that label.
+<Accordion title="Step pros" id="step-pros">
+
+You can pass a type to the `newLabel` function to add custom parameters for that `label`, in addition to [`StepLabelProps`](#steplabelprops).
 
 ```ts title="labels/startLabel.ts"
 import { narration } from '@drincs/pixi-vn'
@@ -87,18 +103,20 @@ export const startLabel = newLabel<{name: string}>("start_label",
 )
 
 narration.callLabel(startLabel, {
-    // add StepLabelProps here
+    // Add StepLabelProps here
     navigate: navigate, // example
-    // and the props that will be passed to the label
+    // And the custom props for the label
     name: "John"
 })
 ```
 
-### All Steps Result
+</Accordion>
 
-The steps can return a `StepLabelResult` object, by default the `StepLabelResult` object is a `{ [key: string]: any }`.
+<Accordion title="Step results" id="step-results">
 
-You can "override" the `StepLabelResult` interface in the `.d.ts` file to set your custom properties in the result of the steps.
+Steps can return a `StepLabelResult` object. By default, `StepLabelResult` is `{ [key: string]: any }`.
+
+You can "override" the `StepLabelResult` interface in your `.d.ts` file to define custom properties for `step` results.
 
 ```ts tab="pixi-vn.d.ts"
 declare module '@drincs/pixi-vn' {
@@ -122,25 +140,6 @@ export const startLabel = newLabel("start_label",
 )
 ```
 
-## Step limit saved
+</Accordion>
 
-At each step all the information of the current state of the game is <DynamicLink href="/start/save">saved</DynamicLink>.
-
-To avoid the size of the save file growing too much, there is a limit of 100 steps saved, by default is 20 steps. When the limit is reached, only essential information from old steps will be kept.
-This basic information allows you to show the entire <DynamicLink href="/start/history">history of the narrative</DynamicLink>, but without the possibility of <DynamicLink href="/start/labels-flow#go-back">returning</DynamicLink> to a specific step.
-
-You can edit the limit of steps saved by changing the `stepLimitSaved` property in the `narration` object.
-
-```typescript
-import { stepHistory } from '@drincs/pixi-vn'
-
-stepHistory.stepLimitSaved = 100
-```
-
-If you want to disable the limit of steps saved, you can set the `stepLimitSaved` property to `Infinity`.
-
-```typescript
-import { stepHistory } from '@drincs/pixi-vn'
-
-stepHistory.stepLimitSaved = Infinity
-```
+</Accordions>

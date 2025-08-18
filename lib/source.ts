@@ -1,4 +1,4 @@
-import { docs } from "@/.source";
+import { docs, inkDocs, nqtrDocs, otherTopicsDocs, renpyDocs } from "@/.source";
 import { loader } from "fumadocs-core/source";
 import { icons } from "lucide-react";
 import { createElement } from "react";
@@ -55,17 +55,6 @@ export const source = loader({
                         borderRadius: "5px",
                     },
                 });
-            case "/angular.svg":
-                return createElement("img", {
-                    src: icon,
-                    alt: "icon",
-                    style: {
-                        width: "1em",
-                        height: "1em",
-                        verticalAlign: "middle",
-                        borderRadius: "5px",
-                    },
-                });
             case "/react.svg":
                 return createElement("img", {
                     src: icon,
@@ -101,6 +90,50 @@ export const source = loader({
                     },
                 });
         }
+        if (icon && icon in icons) return createElement(icons[icon as keyof typeof icons]);
+    },
+    pageTree: {},
+    i18n,
+});
+
+export const inkSource = loader({
+    // it assigns a URL to your pages
+    baseUrl: "/ink",
+    source: inkDocs.toFumadocsSource(),
+    icon(icon) {
+        if (icon && icon in icons) return createElement(icons[icon as keyof typeof icons]);
+    },
+    pageTree: {},
+    i18n,
+});
+
+export const otherTopicsSource = loader({
+    // it assigns a URL to your pages
+    baseUrl: "/other-topics",
+    source: otherTopicsDocs.toFumadocsSource(),
+    icon(icon) {
+        if (icon && icon in icons) return createElement(icons[icon as keyof typeof icons]);
+    },
+    pageTree: {},
+    i18n,
+});
+
+export const renpySource = loader({
+    // it assigns a URL to your pages
+    baseUrl: "/renpy",
+    source: renpyDocs.toFumadocsSource(),
+    icon(icon) {
+        if (icon && icon in icons) return createElement(icons[icon as keyof typeof icons]);
+    },
+    pageTree: {},
+    i18n,
+});
+
+export const nqtrSource = loader({
+    // it assigns a URL to your pages
+    baseUrl: "/nqtr",
+    source: nqtrDocs.toFumadocsSource(),
+    icon(icon) {
         if (icon && icon in icons) return createElement(icons[icon as keyof typeof icons]);
     },
     pageTree: {},

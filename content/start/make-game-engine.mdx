@@ -1,35 +1,40 @@
 ---
 title: Make your game engine
+description: Guide for advanced users on customizing and replacing Pixi’VN engine modules to build a custom game engine.
 ---
 
 <Callout type="info">
-This guide is designed only for developers with a good experience with JavaScript. If you are not a developer, you can skip this page and use the default engine.
+
+This guide is designed only for developers with good experience in JavaScript. If you are not a developer, you can skip this page and use the default engine.
+
 </Callout>
 
 One of the main goals of Pixi’VN is to provide basic utilities for developing video games. The engine is designed to be modular and flexible, allowing developers to use only the parts they need for their specific projects. This modularity also makes it easier to maintain and update the engine over time.
 
-This is exactly what makes the possibility of creating your own game engine using the `pixi-vn` package.
+This is exactly what enables you to create your own game engine using the `pixi-vn` package.
 
-The first step is to create a new project. You can find more information on how to create a new project starting from a template <DynamicLink href="/start/getting-started#project-initialization">here</DynamicLink>. The "Game Engine" template is a simple project that contains the basic structure of a game engine. By default, it exports the basic functionality of pixi-vn while removing anything unused from the package.
+The first `step` is to create a new project. You can find more information on how to create a new project starting from a template <DynamicLink href="/start#project-initialization">here</DynamicLink>. The "Game Engine" template is a simple project that contains the basic structure of a game engine. By default, it exports the basic functionality of pixi-vn while removing anything unused from the package.
 
 <Callout type="info">
-A special thread was created to share your idea or ask for help during the development of your Game Engine: [Creating a game engine from pixi-vn](https://github.com/DRincs-Productions/pixi-vn/discussions/389)
+
+A special thread was created to share your idea or ask for help during the development of your game engine: [discussions#389](https://github.com/DRincs-Productions/pixi-vn/discussions/389)
+
 </Callout>
 
-The second step is to understand that Pixi’VN is divided into the following independent "modules". This means that you can replace one "module" without having to worry about modifying the others. To do this, you just need to modify `GameUnifier` which has the function of connecting the modile headlights to each other, as explained below.
+The second `step` is to understand that Pixi’VN is divided into independent "modules". This means you can replace one "module" without having to worry about modifying the others. To do this, you just need to modify `GameUnifier`, which connects the modules together, as explained below.
 
-It is also important to understand that by default the engine saves the current state of the game at each step, to give the player the possibility to go back. To do this the following functions are defined:
+It is also important to understand that by default the engine saves the current state of the game at each `step`, to give the player the possibility to go back. To do this, the following functions are defined:
 
-* `GameUnifier.getCurrentGameStepState`: This function returns the current state of the game step.
-* `GameUnifier.restoreGameStepState`: This function restores the state of the game step.
+* `GameUnifier.getCurrentGameStepState`: This function returns the current state of the game `step`.
+* `GameUnifier.restoreGameStepState`: This function restores the state of the game `step`.
 * `Game.exportGameState`: This function returns the current state of the game. (Optional)
 * `Game.restoreGameState`: This function restores the state of the game. (Optional)
 
 ## Storage
 
-Replacing the base storage of Pixi’VN is a really easy operation.
+Replacing the base storage of Pixi’VN is straightforward.
 
-For example in our case we will replace it with [`cacheable`](https://www.npmjs.com/package/cacheable), here is what we should change:
+For example, here is how you could replace it with [`cacheable`](https://www.npmjs.com/package/cacheable):
 
 ```ts tab="index.ts"
 import { CacheableMemory } from "cacheable"; // [!code ++]
@@ -126,11 +131,11 @@ export default interface GameState {
 
 ## Renderer
 
-Even the canvas is a module that can be replaced. The default canvas is a simple canvas that uses the `pixi.js` library. You can replace it with any other canvas library you want.
+The canvas is also a module that can be replaced. The default canvas uses the `pixi.js` library, but you can use any other canvas library you want.
 
-You are not forced to use a WebGL-based 2D renderer. You can use any other renderer you want. For example, you can use a 3D renderer or a React-based renderer. You can also use a combination of different renderers. The only requirement is that the renderer state must be saved and restored at each step.
+You are not forced to use a WebGL-based 2D renderer. You can use any renderer you want, including 3D or React-based renderers. The only requirement is that the renderer state must be saved and restored at each `step`.
 
-Since I have no experience on rendering libraries other than `pixi.js`, my example will be based on a semi-realistic class.
+Example:
 
 ```ts tab="index.ts"
 const canvas = new Canvas(); // [!code ++]
@@ -193,11 +198,9 @@ export default interface GameState {
 
 ## Sound
 
-The sound module is a module that can be replaced. The default sound module is a simple sound module that uses the [`PixiJS Sound`](https://pixijs.io/sound/examples/index.html) library. You can replace it with any other sound library you want.
+The sound module can also be replaced. The default uses [`PixiJS Sound`](https://pixijs.io/sound/examples/index.html), but you can use any sound library.
 
-For example in our case we will replace it with [`howler.js`](https://howlerjs.com/), here is what we should change:
-
-( The implementation of howler was done by AI, so it may not be perfect. )
+For example, to use [`howler.js`](https://howlerjs.com/):
 
 ```ts tab="index.ts"
 import { Howl, Howler } from "howler"; // [!code ++]
@@ -292,13 +295,11 @@ export default interface GameState {
 
 ## Narration
 
-Replacing the entire narration module is possible but not recommended as it is the strong point of Pixi’VN.
+Replacing the entire narration module is possible but not recommended, as it is a strong point of Pixi’VN.
 
-Since it has been handled in a generic way, you can implement your own <DynamicLink href="/start/labels#label">`Label`</DynamicLink> (the key element of narration) by extending `LabelAbstract`.
+Since it is handled generically, you can implement your own <DynamicLink href="/start/labels#label">`Label`</DynamicLink> (the key element of narration) by extending `LabelAbstract`.
 
-The `LabelAbstract` class is a generic class that can be used to create your own labels. It is a simple class that contains the basic functionality of a label. You can extend this class and add your own functionality to it.
-
-Here's an example:
+Example:
 
 ```ts tab="classes/Label.ts"
 import { LabelAbstract, LabelProps, StepLabelType } from "@drincs/pixi-vn";
@@ -377,9 +378,9 @@ export function newLabel<T extends {} = {}>(
 
 ## History
 
-The history module is a module that can be replaced. The default history module is a simple history module that uses the [`deep-diff`](https://www.npmjs.com/package/deep-diff) library. You can replace it with any other history library you want.
+The history module can be replaced. The default uses the [`deep-diff`](https://www.npmjs.com/package/deep-diff) library, but you can use any history library.
 
-Here's an example:
+Example:
 
 ```ts tab="index.ts"
 import HistoryManager, { HistoryManagerStatic } from "./classes/HistoryManager"; // [!code ++]

@@ -1,0 +1,284 @@
+"use client";
+
+import { SandpackFiles } from "@codesandbox/sandpack-react";
+import { ReactTemplate } from "./sandpack";
+
+export function MiniGameExample({ files, previewHeight = 400 }: { files?: SandpackFiles; previewHeight?: number }) {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [() => {}]);`,
+                "App.tsx": `import MiniGame from "./screens/MiniGame";
+
+export default function App() {
+  return (
+    <div>
+      <MiniGame />
+    </div>
+  );
+}`,
+                "screens/MiniGame.tsx": `export default function MiniGame() {
+  return null;
+}`,
+                "hooks/useMinigame.ts": `import { canvas, Layer, PIXI } from "@drincs/pixi-vn";
+import { useEffect, useRef } from "react";
+
+export default function useMinigame(
+  game: (layer: Layer) => void,
+  props?: {
+    onStart?: () => Promise<void>;
+    onExit?: (layer: Layer) => void;
+  }
+) {
+  const loading = useRef(false);
+
+  // Keep latest callbacks in refs to avoid effect restarts
+  const startRef = useRef<() => Promise<void>>(props?.onStart ?? (async () => {}));
+  const exitRef = useRef<(layer: Layer) => void>(props?.onExit);
+
+  // Update refs when props change, without changing effect identity
+  useEffect(() => {
+    startRef.current = props?.onStart ?? (async () => {});
+  }, [props?.onStart]);
+
+  useEffect(() => {
+    exitRef.current = props?.onExit;
+  }, [props?.onExit]);
+
+  useEffect(() => {
+    // Create the layer and start the game once
+    loading.current = true;
+    const layer = canvas.addLayer("minigame", new PIXI.Container());
+    if (!layer) {
+      console.error("Failed to create UI layer for minigame");
+      return;
+    }
+
+    let cancelled = false;
+
+    startRef.current().then(() => {
+      if (cancelled) return;
+      loading.current = false;
+      game(layer);
+    });
+
+    return () => {
+      cancelled = true;
+      canvas.removeLayer("minigame");
+      if (exitRef.current) {
+        exitRef.current(layer);
+      }
+    };
+  }, [game]);
+
+  return { loading };
+}`,
+                ...files,
+            }}
+            previewHeight={previewHeight}
+        />
+    );
+}
+
+export function SnakeExample() {
+    return (
+        <MiniGameExample
+            files={{
+                "screens/MiniGame.tsx": `import { canvas, Layer, PIXI } from "@drincs/pixi-vn";
+import { useCallback, useMemo, useRef, useState } from "react";
+import useMinigame from "../hooks/useMinigame";
+
+const { Graphics, Ticker } = PIXI;
+
+export default function MiniGame() {
+  const ticker = useMemo(() => new Ticker(), []);
+  const [displayScore, setDisplayScore] = useState(0);
+  const [gameOver, setGameOver] = useState(false);
+
+  const directionRef = useRef({ x: 1, y: 0 });
+  const setDirection = (x: number, y: number) => {
+    if ((x !== 0 && directionRef.current.x === 0) || (y !== 0 && directionRef.current.y === 0)) {
+      directionRef.current = { x, y };
+    }
+  };
+
+  const onKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === "ArrowUp" && directionRef.current.y === 0) setDirection(0, -1);
+    else if (e.key === "ArrowDown" && directionRef.current.y === 0) setDirection(0, 1);
+    else if (e.key === "ArrowLeft" && directionRef.current.x === 0) setDirection(-1, 0);
+    else if (e.key === "ArrowRight" && directionRef.current.x === 0) setDirection(1, 0);
+  }, []);
+
+  const game = useCallback(
+    (layer: Layer) => {
+      const gridSize = 20;
+      const snake: PIXI.Graphics[] = [];
+      const moveInterval = 150;
+      let elapsed = 0;
+
+      const head = new Graphics();
+      head.rect(0, 0, gridSize, gridSize).fill({ color: 0x00ff00 });
+      head.x = 200;
+      head.y = 200;
+      layer.addChild(head);
+      snake.push(head);
+
+      const apple = new Graphics();
+      apple.rect(0, 0, gridSize, gridSize).fill({ color: 0xff0000 });
+      layer.addChild(apple);
+
+      const placeApple = () => {
+        const cols = Math.floor(canvas.width / gridSize);
+        const rows = Math.floor(canvas.height / gridSize);
+        apple.x = Math.floor(Math.random() * cols) * gridSize;
+        apple.y = Math.floor(Math.random() * rows) * gridSize;
+
+        // Avoid placing the apple on top of the snake
+        for (let segment of snake) {
+          if (segment.x === apple.x && segment.y === apple.y) {
+            placeApple();
+            return;
+          }
+        }
+      };
+      placeApple();
+
+      const endGame = () => {
+        ticker.stop();
+        setGameOver(true);
+      };
+
+      window.addEventListener("keydown", onKeyDown);
+
+      ticker.add(({ deltaMS }) => {
+        elapsed += deltaMS;
+        if (elapsed < moveInterval) return;
+        elapsed = 0;
+
+        // Move the body
+        for (let i = snake.length - 1; i > 0; i--) {
+          snake[i].position.set(snake[i - 1].x, snake[i - 1].y);
+        }
+
+        // Move the head
+        head.x += directionRef.current.x * gridSize;
+        head.y += directionRef.current.y * gridSize;
+
+        // Collision with the wall
+        if (head.x < 0 || head.y < 0 || head.x >= canvas.width || head.y >= canvas.height) {
+          endGame();
+          return;
+        }
+
+        // Collision with the body
+        for (let i = 1; i < snake.length; i++) {
+          if (head.x === snake[i].x && head.y === snake[i].y) {
+            endGame();
+            return;
+          }
+        }
+
+        // Eat the apple
+        if (head.x === apple.x && head.y === apple.y) {
+          const newSegment = new Graphics();
+          newSegment.rect(0, 0, gridSize, gridSize).fill({ color: 0x00ff00 });
+          newSegment.position.set(head.x, head.y);
+          layer.addChild(newSegment);
+          snake.push(newSegment);
+
+          setDisplayScore((prev) => prev + 1);
+          placeApple();
+        }
+      });
+
+      ticker.start();
+    },
+    [ticker]
+  );
+
+  const options = useMemo(
+    () => ({
+      onExit() {
+        ticker.stop();
+        ticker.destroy();
+        window.removeEventListener("keydown", onKeyDown);
+      },
+    }),
+    [ticker, onKeyDown]
+  );
+
+  useMinigame(game, options);
+
+  return (
+    <>
+      <div
+        style={{
+          position: "absolute",
+          top: 10,
+          left: 10,
+          color: "white",
+          fontSize: "24px",
+          background: "rgba(0,0,0,0.5)",
+          padding: "5px 10px",
+          borderRadius: "5px",
+        }}
+      >
+        Score: {displayScore}
+      </div>
+
+      {gameOver && (
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            color: "red",
+            fontSize: "48px",
+            background: "rgba(0,0,0,0.7)",
+            padding: "20px 40px",
+            borderRadius: "10px",
+          }}
+        >
+          GAME OVER
+        </div>
+      )}
+
+      {/* Direction buttons */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          right: 0,
+          textAlign: "center",
+          pointerEvents: "auto",
+        }}
+      >
+        <div style={{ marginTop: "10px" }}>
+          <button style={{ fontSize: "30px" }} onClick={() => setDirection(0, -1)}>
+            ⬆️
+          </button>
+        </div>
+        <div>
+          <button style={{ fontSize: "30px", marginRight: "50px" }} onClick={() => setDirection(-1, 0)}>
+            ⬅️
+          </button>
+          <button style={{ fontSize: "30px" }} onClick={() => setDirection(1, 0)}>
+            ➡️
+          </button>
+        </div>
+        <div>
+          <button style={{ fontSize: "30px" }} onClick={() => setDirection(0, 1)}>
+            ⬇️
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}`,
+            }}
+        />
+    );
+}

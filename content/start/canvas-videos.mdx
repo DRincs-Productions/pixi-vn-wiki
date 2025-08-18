@@ -4,10 +4,10 @@ title: VideoSprite
 
 The `VideoSprite` component extends the <DynamicLink href="/start/canvas-images">`ImageSprite`</DynamicLink> component, so you can use all the methods and properties of `ImageSprite`. It is used to display a single video on the canvas.
 
-To initialize the `VideoSprite` component, you must pass the following parameters:
+To initialize this component, you must pass the following parameters:
 
-* `options` (Optional): It corresponds to the `VideoSpriteOptions` interface.
-* `videoUrl` (Optional): The URL or path of the video. If you have initialized the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink>, you can use the alias of the texture.
+* `options` (Optional): The options for the component.
+* `videoUrl` (Optional): The URL or path. If you have initialized the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink>, you can use the alias of the texture.
 
 ```ts
 import { canvas, VideoSprite } from "@drincs/pixi-vn"
@@ -22,7 +22,7 @@ await video.load()
 canvas.add("my_video", video)
 ```
 
-Compared to the `ImageSprite` component, `VideoSprite` adds the following features:
+Compared to the `Sprite` component, `ImageSprite` adds the following features:
 
 * `loop`: Indicates if the video should loop after it finishes.
 * `paused`: Indicates if the video is paused.
@@ -31,15 +31,15 @@ Compared to the `ImageSprite` component, `VideoSprite` adds the following featur
 * `currentTime`: The current time of the video.
 * `restart()`: Restart the video.
 
-## Show a video
+## Show
 
-The simplest and fastest method to show an video on the canvas is to use the `showVideo` function. This function is a combination of the `load` and <DynamicLink href="/start/canvas-functions#add-a-canvas-component">`canvas.add`</DynamicLink> functions.
+The simplest way to show a video on the canvas is to use the `showVideo` function. This function combines `load` and <DynamicLink href="/start/canvas-functions#add-a-canvas-component">`canvas.add`</DynamicLink>.
 
-This function will return a `VideoSprite`, that you can use to manipulate the video, and it has the following parameters:
+This function returns a `VideoSprite` that you can use to manipulate the component. This function has the following parameters:
 
-* `alias`: Is a <DynamicLink href="/start/canvas-alias">alias</DynamicLink> for the video.
-* `videoUrl` (Optional): The URL or path of the video. If you have initialized the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink>, you can use the alias of the texture. If you don't provide the URL, then the alias is used as the URL.
-* `options` (Optional): It corresponds to the `VideoSpriteOptions` interface.
+* `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> to identify the component.
+* `videoUrl` (Optional): The URL or path. If you have initialized the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink>, you can use the alias of the texture. If you don't provide the URL, then the alias is used as the URL.
+* `options` (Optional): The options for the component.
 
 ```ts tab="labels/startLabel.ts"
 import { newLabel, showVideo } from "@drincs/pixi-vn";
@@ -57,12 +57,27 @@ export const startLabel = newLabel("start_label", [
 ]);
 ```
 
-```ts tab="utils/defineAssets.ts"
-import { Assets } from "@drincs/pixi-vn";
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
 
-export async function defineAssets() {
-    Assets.add({ alias: "video", src: "https://pixijs.com/assets/video.mp4" });
-}
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "video",
+                    src: "https://pixijs.com/assets/video.mp4",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
 ```
 
 <Sandbox
@@ -70,15 +85,15 @@ export async function defineAssets() {
   entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
 />
 
-## Add a video
+## Add
 
-To add an video to the canvas, you can use the `addVideo` function. It is important to take into account that this function only adds the component to the canvas but does **not show it and does not load its texture**. This function use <DynamicLink href="/start/canvas-functions#add-a-canvas-component">`canvas.add`</DynamicLink> to add the video to the canvas.
+To add an video to the canvas, use the `addVideo` function. This function only adds the component to the canvas; it does **not** show it or load its texture. It uses <DynamicLink href="/start/canvas-functions#add-a-canvas-component">`canvas.add`</DynamicLink> to add the component to the canvas.
 
-This function will return a `VideoSprite`, that you can use to manipulate the video, and it has the following parameters:
+This function returns a `VideoSprite` that you can use to manipulate the component. This function has the following parameters:
 
-* `alias`: Is a <DynamicLink href="/start/canvas-alias">alias</DynamicLink> for the video.
-* `videoUrl` (Optional): The URL or path of the video. If you have initialized the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink>, you can use the alias of the texture. If you don't provide the URL, then the alias is used as the URL.
-* `options` (Optional): It corresponds to the `VideoSpriteOptions` interface.
+* `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> to identify the component.
+* `videoUrl` (Optional): The URL or path. If you have initialized the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink>, you can use the alias of the texture. If you don't provide the URL, then the alias is used as the URL.
+* `options` (Optional): The options for the component.
 
 ```ts tab="labels/startLabel.ts"
 import { addVideo, canvas, VideoSprite, newLabel } from "@drincs/pixi-vn";
@@ -105,12 +120,27 @@ export const startLabel = newLabel("start_label", [
 ]);
 ```
 
-```ts tab="utils/defineAssets.ts"
-import { Assets } from "@drincs/pixi-vn";
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
 
-export async function defineAssets() {
-    Assets.add({ alias: "video", src: "https://pixijs.com/assets/video.mp4" });
-}
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "video",
+                    src: "https://pixijs.com/assets/video.mp4",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
 ```
 
 <Sandbox
@@ -118,13 +148,13 @@ export async function defineAssets() {
   entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
 />
 
-## Remove a video
+## Remove
 
-As for the rest of the canvas components, you can remove an video from the canvas using the <DynamicLink href="/start/canvas-functions#remove-a-canvas-component">`canvas.remove`</DynamicLink> function.
+As with other canvas components, you can remove this component using the <DynamicLink href="/start/canvas-functions#remove-a-canvas-component">`canvas.remove`</DynamicLink> function.
 
-## Play and pause a video
+## Play and pause
 
-You can use the `play()` and `pause()` methods to play and pause the video, or set the `paused` property to `true` or `false`.
+Use `play()` and `pause()` methods, or set the `paused` property.
 
 ```ts tab="labels/startLabel.ts"
 import { canvas, narration, newLabel, showVideo, VideoSprite } from "@drincs/pixi-vn";
@@ -139,7 +169,7 @@ export const startLabel = newLabel("start_label", [
         let video = canvas.find<VideoSprite>("video");
         if (video) {
             video.pause(); // [!code focus]
-            // or video.paused = true // [!code focus]
+            // or: video.paused = true // [!code focus]
         }
     },
     async () => {
@@ -147,18 +177,33 @@ export const startLabel = newLabel("start_label", [
         let video = canvas.find<VideoSprite>("video");
         if (video) {
             video.play(); // [!code focus]
-            // or video.paused = false // [!code focus]
+            // or: video.paused = false // [!code focus]
         }
     },
 ]);
 ```
 
-```ts tab="utils/defineAssets.ts"
-import { Assets } from "@drincs/pixi-vn";
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
 
-export async function defineAssets() {
-    Assets.add({ alias: "video", src: "https://pixijs.com/assets/video.mp4" });
-}
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "video",
+                    src: "https://pixijs.com/assets/video.mp4",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
 ```
 
 <Sandbox
@@ -166,9 +211,9 @@ export async function defineAssets() {
   entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
 />
 
-## Looping video
+## Looping
 
-You can use the `loop` property to set the video to loop.
+Set the `loop` property to make the video repeat.
 
 ```ts tab="labels/startLabel.ts"
 import { newLabel, showVideo } from "@drincs/pixi-vn";
@@ -181,12 +226,27 @@ export const startLabel = newLabel("start_label", [
 ]);
 ```
 
-```ts tab="utils/defineAssets.ts"
-import { Assets } from "@drincs/pixi-vn";
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
 
-export async function defineAssets() {
-    Assets.add({ alias: "video", src: "https://pixijs.com/assets/video.mp4" });
-}
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "video",
+                    src: "https://pixijs.com/assets/video.mp4",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
 ```
 
 <Sandbox
@@ -194,9 +254,9 @@ export async function defineAssets() {
   entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
 />
 
-## Restart a video
+## Restart
 
-You can use the `restart` method to restart the video.
+Use the `restart()` method to restart playback.
 
 ```ts tab="labels/startLabel.ts"
 import { canvas, narration, newLabel, showVideo, VideoSprite } from "@drincs/pixi-vn";
@@ -216,12 +276,27 @@ export const startLabel = newLabel("start_label", [
 ]);
 ```
 
-```ts tab="utils/defineAssets.ts"
-import { Assets } from "@drincs/pixi-vn";
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
 
-export async function defineAssets() {
-    Assets.add({ alias: "video", src: "https://pixijs.com/assets/video.mp4" });
-}
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "video",
+                    src: "https://pixijs.com/assets/video.mp4",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
 ```
 
 <Sandbox

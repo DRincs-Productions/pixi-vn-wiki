@@ -8,11 +8,11 @@ export function ReactTemplate({ files, previewHeight = 400 }: { files?: Sandpack
             template='react-ts'
             customSetup={{
                 dependencies: {
-                    "@drincs/pixi-vn": "^1.2.16",
-                    "@emotion/styled": "^11.13.5",
-                    "@emotion/react": "^11.13.5",
-                    "@mui/system": "^6.1.10",
-                    "@tanstack/react-query": "^5.62.2",
+                    "@drincs/pixi-vn": "^1.3.13",
+                    "@tanstack/react-query": "^5.85.2",
+                    "react-markdown": "^8.0.0",
+                    "rehype-raw": "^7.0.0",
+                    "remark-gfm": "^4.0.1",
                 },
             }}
             files={{
@@ -187,7 +187,10 @@ export default function TextInput() {
   );
 }`;
 
-const NarrationScreen = `import { useQueryCanGoBack, useQueryCanGoNext, useQueryDialogue } from "../hooks/useQueryInterface";
+const NarrationScreen = `import Markdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
+import { useQueryCanGoBack, useQueryCanGoNext, useQueryDialogue } from "../hooks/useQueryInterface";
 import ChoiceMenu from "./ChoiceMenu";
 
 export default function NarrationScreen() {
@@ -246,7 +249,11 @@ export default function NarrationScreen() {
                 }}
               />
             )}
-            <div style={{ flex: 1, minHeight: 0, overflow: "auto", height: "100%" }}>{text}</div>
+            <div style={{ flex: 1, minHeight: 0, overflow: "auto", height: "100%" }}>
+              <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                {text}
+              </Markdown>
+            </div>
           </div>
         </div>
       )}
@@ -384,8 +391,7 @@ export function useQueryNarrativeHistory() {
   });
 }`;
 
-const ChoiceMenu = `import { Grid } from "@mui/system";
-import useNarrationFunctions from "../hooks/useNarrationFunctions";
+const ChoiceMenu = `import useNarrationFunctions from "../hooks/useNarrationFunctions";
 import { useQueryChoiceMenuOptions } from "../hooks/useQueryInterface";
 
 export default function ChoiceMenu() {
@@ -393,29 +399,34 @@ export default function ChoiceMenu() {
   const { selectChoice } = useNarrationFunctions();
 
   return (
-    <Grid
-      container
-      direction='column'
-      justifyContent='center'
-      alignItems='center'
-      spacing={2}
-      sx={{
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
         width: "100%",
         height: "100%",
         overflow: "auto",
-        gap: 1,
-        pointerEvents: "auto",
+        gap: "8px",
         maxHeight: "100%",
+        margin: 0,
+        pointerEvents: menu?.length > 0 ? "auto" : "none",
       }}
     >
-      {menu?.map((item, index) => {
-        return (
-          <Grid key={"choice-" + index} justifyContent='center' alignItems='center'>
-            <button onClick={() => selectChoice(item)}>{item.text}</button>
-          </Grid>
-        );
-      })}
-    </Grid>
+      {menu?.map((item, index) => (
+        <button
+          key={"choice-" + index}
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          onClick={() => selectChoice(item)}
+        >
+          {item.text}
+        </button>
+      ))}
+    </div>
   );
 }`;
 
@@ -438,7 +449,7 @@ export async function defineAssets() {
   Assets.init({ manifest });
 }`;
 
-const index = `import { Container, Game, canvas, narration } from "@drincs/pixi-vn";
+const index = `import { Assets, Container, Game, canvas, narration } from "@drincs/pixi-vn";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
 import App from "./App";
@@ -479,6 +490,7 @@ Game.init(body, {
     Game.clear();
     await narration.jumpLabel(startLabel, {});
   });
+  Game.onLoadingLabel(async (_stepId, { id }) => await Assets.backgroundLoadBundle(id));
 
   reactRoot.render(
     <div

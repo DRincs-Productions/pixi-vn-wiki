@@ -1,32 +1,28 @@
 ---
-title: Manage game flow with labels
+title: Manage narration flow with labels
+description: Describes how to control the narrative flow in Pixi'VN using labels, including call, jump, and close labels function.
 ---
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
-The game flow is managed by functions that `call labels`, `jump labels`, `go back`, `close labels`... These functions are in the `narration` object.
-
-* [Run a label](#run-a-label)
-* [Next Step and Go back](#next-step-and-go-back)
-* [Close labels](#close-labels)
+The narration flow is managed by functions such as `callLabel`, `jumpLabel`, `goNext`, `goBack`, and `closeLabel`, all available in the `narration` object.
 
 ## Run a label
 
-There are two ways to run a label:
+<Accordions>
 
-* [Call a label](#call-a-label)
-* [Jump to a label](#jump-to-a-label)
+<Accordion title="Call a label" id="call-a-label">
 
-### Call a label
+To call a `label`, use the `narration.callLabel` function.
+This function has the following parameters:
 
-To call a label you must use the `narration.callLabel` function. This function have 2 parameters:
+* `label`: the `label` to be called
+* `props`: the properties to pass to the `label`. The interface corresponds to <DynamicLink href="/start/labels#steplabelprops">`StepLabelProps`</DynamicLink>.
 
-* `label`: the label that will be called
-* `props`: the properties that will be passed to the label. Its interface corresponds to <DynamicLink href="/start/labels#override-steplabelprops">`StepLabelProps`</DynamicLink>.
+When you call a `label`, the first `step` of that `label` is executed. If another `label` was running before the call, the remaining `steps` of that previous `label` will resume after the called `label` finishes.
 
-When you call a label, the first step of that label will be started. If before the call was running another label, the remaining steps of the another label will be executed after the steps of the called label.
+For example, if the game is running `step` 5 of `label` A and you **call** `label` B, after all `steps` of `label` B are executed, the game continues with `step` 6 of `label` A.
 
-For example if currently the game is running the step 5 of the label A and you **call** the label B, when all the steps of the label B are executed, the game will continue with the step 6 of the label A.
-
-`narration.callLabel` returns a <DynamicLink href="/start/labels#all-steps-result">result of first step of the called label</DynamicLink>.
+`narration.callLabel` returns the <DynamicLink href="/start/labels#all-steps-result">result of the first `step` of the called `label`</DynamicLink>.
 
 ```ts
 import { narration } from '@drincs/pixi-vn'
@@ -34,7 +30,7 @@ import { narration } from '@drincs/pixi-vn'
 narration.callLabel(startLabel, {})
 ```
 
-Remember that if you execute the `narration.callLabel` inside a step, you should return the <DynamicLink href="/start/labels#all-steps-result">result of first step of the called label</DynamicLink> and use `await`. The reason is that it might generate a wrong history.
+If you execute `narration.callLabel` inside a `step`, you should return the result of `narration.callLabel` and use `await`. This ensures the history is managed correctly.
 
 ```ts title="labels/startLabel.ts"
 import { narration, newLabel } from '@drincs/pixi-vn'
@@ -49,18 +45,21 @@ export const startLabel = newLabel("start_label",
 )
 ```
 
-### Jump to a label
+</Accordion>
 
-To jump to a label you must use the `narration.jumpLabel` function and pass the label. This function have 2 parameters:
+<Accordion title="Jump to a label" id="jump-to-a-label">
 
-* `label`: the label that will be called
-* `props`: the properties that will be passed to the label. Its interface corresponds to <DynamicLink href="/start/labels#override-steplabelprops">`StepLabelProps`</DynamicLink>.
+To jump to a `label`, use the `narration.jumpLabel` function.
+This function has the following parameters:
 
-When you jump to a label, the steps of the current label will be stopped and the steps of the label passed as parameter will be started.
+* `label`: the `label` to jump to
+* `props`: the properties to pass to the `label`. The interface corresponds to <DynamicLink href="/start/labels#steplabelprops">`StepLabelProps`</DynamicLink>.
 
-For example if currently the game is running the step 5 of the label A, and **call** the label B, and you **jump** to the label C, when all the steps of the label C are executed, the game will continue with the step 6 of the label A. Because when you jump to the label C, the label B is closed.
+When you jump to a `label`, the current `label`'s `steps` are stopped and the new `label`'s `steps` begin.
 
-`narration.jumpLabel` returns a <DynamicLink href="/start/labels#all-steps-result">result of first step of the called label</DynamicLink>.
+For example, if the game is running `step` 5 of `label` A, and you **call** `label` B, but then **jump** to `label` C, after `label` C finishes, the game continues with `step` 6 of `label` A. When you jump to `label` C, `label` B is closed.
+
+`narration.jumpLabel` returns the <DynamicLink href="/start/labels#all-steps-result">result of the first `step` of the called `label`</DynamicLink>.
 
 ```ts
 import { narration } from '@drincs/pixi-vn'
@@ -68,7 +67,7 @@ import { narration } from '@drincs/pixi-vn'
 narration.jumpLabel(startLabel, {})
 ```
 
-Remember that if you execute the `narration.jumpLabel` inside a step, you should return the <DynamicLink href="/start/labels#all-steps-result">result of first step of the called label</DynamicLink> and use `await`. The reason is that it might not await the first step of the new label.
+If you execute `narration.jumpLabel` inside a `step`, you should return the result of `narration.jumpLabel` and use `await`. This ensures the first `step` of the new `label` is awaited.
 
 ```ts title="labels/startLabel.ts"
 import { narration } from '@drincs/pixi-vn'
@@ -83,13 +82,24 @@ export const startLabel = newLabel("start_label",
 )
 ```
 
-## Next step and go back
+</Accordion>
 
-### Next step
+</Accordions>
 
-To execute the next step you must execute the `narration.goNext()` function. This function have a parameter:
+## Go next step and go back
 
-* `props`: the properties that will be passed to the label. Its interface corresponds to <DynamicLink href="/start/labels#override-steplabelprops">`StepLabelProps`</DynamicLink>.
+### Go next
+
+<Callout title="UI screen" type="info">
+
+You can find the example of the go next button in the <DynamicLink href="/start/interface-examples#go-next">interface examples</DynamicLink> section.
+
+</Callout>
+
+To execute the next `step`, use the `narration.goNext()` function.
+This function has the following parameters:
+
+* `props`: the properties to pass to the `label`. The interface corresponds to <DynamicLink href="/start/labels#steplabelprops">`StepLabelProps`</DynamicLink>.
 
 ```ts
 import { narration } from '@drincs/pixi-vn'
@@ -97,7 +107,7 @@ import { narration } from '@drincs/pixi-vn'
 await narration.goNext({})
 ```
 
-`narration.goNext()` is asynchronous, so, for example, you can use `then` for disabled a next button until the next step is executed.
+`narration.goNext()` is asynchronous, so you can use `.then` to, for example, disable a "Next" button until the `step` is complete.
 
 ```ts
 import { narration } from '@drincs/pixi-vn'
@@ -109,7 +119,11 @@ narration.goNext({})
     })
 ```
 
-If you execute the `narration.goNext()` inside a step, the "go next request" will be queued and executed when steps queue is empty.
+<Accordions>
+
+<Accordion title="Call goNext inside a step" id="call-gonext-inside-a-step">
+
+If you call `narration.goNext()` inside a `step`, the "go next" request will be queued and executed when the queue is empty.
 
 ```ts title="labels/startLabel.ts"
 import { narration, newLabel } from '@drincs/pixi-vn'
@@ -121,7 +135,7 @@ export const startLabel = newLabel("start_label", [
 ])
 ```
 
-This is a example to understand how the queue works:
+Here is an example to illustrate how the queue works:
 
 ```ts title="labels/startLabel.ts"
 import { narration, newLabel } from '@drincs/pixi-vn'
@@ -144,22 +158,24 @@ const label2 = newLabel("label_02", [
 ])
 ```
 
-In this example, the output will be `2`, `1`, `3`. Because:
+In this example, the output will be `2`, `1`, `3`. The steps are:
 
-1. `await narration.callLabel(label2, props)` will call the label `label2` and await the first step of the label. (There are 1 item in the step queue)
-2. The first step of the label `label2` will execute the `await narration.goNext(props)`, but the `goNext` request will be queued because the step queue is not empty. (There are 2 items in the step queue)
-3. `console.log(2)` will be executed and the first step of the label `label2` will be finished. (There are 1 item in the step queue)
-4. The `console.log(1)` will be executed and the first step of the label `startLabel` will be finished. (There are 0 items in the step queue)
-5. Since the step queue is empty, the `goNext` request will be executed and the second step of the label `startLabel` will be executed. (There are 1 items in the step queue)
-6. The `console.log(3)` will be executed and the second step of the label `startLabel` will be finished. (There are 0 items in the step queue)
+1. `await narration.callLabel(label2, props)` calls label2 and awaits its first `step`. (1 item in the queue)
+2. The first `step` of label2 executes `await narration.goNext(props)`, but the goNext request is queued because the queue is not empty. (2 items in the queue)
+3. `console.log(2)` runs, finishing the first `step` of label2. (1 item in the queue)
+4. `console.log(1)` runs, finishing the first `step` of startLabel. (0 items in the queue)
+5. Now the goNext request is executed, and the second `step` of startLabel runs. (1 item in the queue)
+6. `console.log(3)` runs, finishing the second `step` of startLabel. (0 items in the queue)
 
-#### Check if the player can go to the next step
+</Accordion>
 
-You can use the `narration.canGoNext` property to check if you can go to the next step.
+<Accordion title="Check if can go to the next step" id="can-go-next">
 
-The `narration.canGoNext` is false when:
+You can use the `narration.canGoNext` property to check if the next `step` can be executed.
 
-* A step is running
+`narration.canGoNext` is `false` when:
+
+* A `step` is running
 * The player must <DynamicLink href="/start/choices">make a choice</DynamicLink>
 * The player must <DynamicLink href="/start/input">enter a value</DynamicLink>
 
@@ -177,13 +193,23 @@ function NextButton() {
 }
 ```
 
+</Accordion>
+
+</Accordions>
+
 ### Go back
 
-Every step the system saves the current state of the game. To go back to the previous step you must execute the `stepHistory.goBack()` function.
+<Callout title="UI screen" type="info">
 
-In parameters you must pass a function `navigate: (path: string) => void` that will be called with the <DynamicLink href="/start/interface#what-is-the-url-path-and-routes">URL Path or Route</DynamicLink> of the previous step, so you can to <DynamicLink href="/start/interface-navigate">navigate to the previous UI screen</DynamicLink>.
+You can find the example of the go back button in the <DynamicLink href="/start/interface-examples#go-back">interface examples</DynamicLink> section.
 
-For exemple if you use a [React Router Dom](https://reactrouter.com):
+</Callout>
+
+At every `step`, the system saves the current state of the game. To go back to the previous `step`, use the `stepHistory.goBack()` function.
+
+You must pass a function `navigate: (path: string) => void` as a parameter. This function will be called with the <DynamicLink href="/start/start/interface-navigate">URL Path or Route</DynamicLink> of the previous `step`, so you can <DynamicLink href="/start/interface-navigate">navigate to the previous UI screen</DynamicLink>.
+
+For example, if you use [React Router Dom](https://reactrouter.com):
 
 ```typescript
 import { stepHistory } from '@drincs/pixi-vn'
@@ -198,11 +224,13 @@ if (stepHistory.canGoBack) {
 }
 ```
 
-#### Check if the player can go back
+<Accordions>
 
-You can use the `stepHistory.canGoBack` property to check if you can go back.
+<Accordion title="Check if can go back" id="can-go-back">
 
-The `stepHistory.canGoBack` is false when there are no steps in the history to restore.
+You can use the `stepHistory.canGoBack` property to check if going back is possible.
+
+`stepHistory.canGoBack` is `false` when there are no `steps` in the history to restore.
 
 ```tsx title="components/BackButton.tsx"
 import { stepHistory } from '@drincs/pixi-vn'
@@ -218,9 +246,11 @@ function BackButton() {
 }
 ```
 
-#### Block the possibility of going back
+</Accordion>
 
-You can block the possibility of going back by setting the `stepHistory.canGoBack` property to `false`.
+<Accordion title="Block the possibility of going back" id="block-the-possibility-of-going-back">
+
+You can block the "go back" by calling `stepHistory.blockGoBack()`.
 
 ```typescript
 import { stepHistory } from '@drincs/pixi-vn'
@@ -228,11 +258,17 @@ import { stepHistory } from '@drincs/pixi-vn'
 stepHistory.blockGoBack()
 ```
 
+</Accordion>
+
+</Accordions>
+
 ## Close labels
 
-### Close current label
+<Accordions>
 
-To close the current label you must execute the `narration.closeCurrentLabel()` function.
+<Accordion title="Close current label" id="close-current-label">
+
+To close the current `label`, use the `narration.closeCurrentLabel()` function.
 
 ```typescript
 import { narration } from '@drincs/pixi-vn'
@@ -240,10 +276,12 @@ import { narration } from '@drincs/pixi-vn'
 narration.closeCurrentLabel()
 ```
 
-### Close all labels
+</Accordion>
 
-To close all labels you must execute the `narration.closeAllLabels()` function.
-**If you call this function and after that you don't call any label, the <DynamicLink href="/start/other-narrative-features#how-manage-the-end-of-the-game">game will end</DynamicLink>.**
+<Accordion title="Close all labels" id="close-all-labels">
+
+To close all `labels`, use the `narration.closeAllLabels()` function.  
+**If you call this function and do not call any `label` afterwards, the <DynamicLink href="/start/other-narrative-features#how-manage-the-end-of-the-game">game will end</DynamicLink>.**
 
 ```typescript
 import { narration } from '@drincs/pixi-vn'
@@ -251,13 +289,6 @@ import { narration } from '@drincs/pixi-vn'
 narration.closeAllLabels()
 ```
 
-## How to create the go back and go next buttons
+</Accordion>
 
-For example:
-
-( **It's in basic html**, you will need to replace the basic html elements with UI components from your favorite library to improve the graphics. )
-
-<Sandbox
-  template="5r7m9z"
-  entry="/src/components/NextButton.tsx,/src/components/BackButton.tsx"
-/>
+</Accordions>

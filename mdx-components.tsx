@@ -100,6 +100,20 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
                     />
                 );
             }
+            if (props.alt === "Architecture") {
+                return (
+                    <ImageZoom
+                        {...props}
+                        className='mx-auto -my-16 w-full max-w-[400px] invert dark:invert-0 lg:mx-0'
+                        style={{
+                            maxHeight: "300px",
+                            width: "auto",
+                            height: "auto",
+                            ...props.style,
+                        }}
+                    />
+                );
+            }
             return <ImageZoom {...props} />;
         },
         Sandbox: ({

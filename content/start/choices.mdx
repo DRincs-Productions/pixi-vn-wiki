@@ -1,17 +1,57 @@
 ---
 title: Choice menus
+description: Explains how to implement and customize interactive choice menus in Pixi'VN, allowing players to make decisions that affect the story.
 ---
+import { ChoiceMenus } from "@/components/examples";
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
-In the visual novel, usually, there are choice menus that allow the player to make decisions that will affect the story.
+<Callout title="UI screen" type="info">
 
-In Pixi’VN, there is the option to prompt the player to make a choice. Each choice can either start a label or close the choice menu.
+You can find an example of the choice menu UI screen in the <DynamicLink href="/start/interface-examples#choice-menu">interface examples</DynamicLink> section.
+
+</Callout>
+
+In visual novels, choice menus allow the player to make decisions that affect the story.
+
+In Pixi’VN, you can prompt the player to make a choice. Each choice can either start a `label` or close the choice menu.
 
 ## Require the player to make a choice
 
-To require the player to make a choice, you can set `narration.choiceMenuOptions` with an array of `StoredChoiceInterface`. For create a `StoredChoiceInterface` object, you can use:
+To require the player to make a choice, set `narration.choiceMenuOptions` to an array of `StoredChoiceInterface`. To create a `StoredChoiceInterface` object, use:
 
-* [`newChoiceOption`](#create-a-choice-menu-option)
-* [`newCloseChoiceOption`](#create-a-close-choice-menu-option)
+<Accordions>
+
+<Accordion title="newChoiceOption" id="newchoiceoption">
+
+In Pixi’VN, you can create a choice menu option using the `newChoiceOption` function.
+This function has the following parameters:
+
+* `text`: The text displayed in the choice menu.
+* `label`: The <DynamicLink href="/start/labels#label">`label`</DynamicLink> to call when the player selects the option.
+* `props`: The properties passed to the `label`. If the `label` does not require parameters, pass an empty object `{}`.
+* `options` (Optional): An object with the `choice`'s options:
+  * `type`: How the <DynamicLink href="/start/labels-flow#run-a-label">label will be performed</DynamicLink>. Can be `call` or `jump`. Default is `call`.
+  * `oneTime`: If `true`, the choice can only be made once.
+  * `onlyHaveNoChoice`: If `true`, the choice is shown only if there are no other choices.
+  * `autoSelect`: If `true` and it is the only choice, it will be selected automatically.
+
+</Accordion>
+
+<Accordion title="newCloseChoiceOption" id="newclosechoiceoption">
+
+In addition to `newChoiceOption`, you can use `newCloseChoiceOption` to create a closing option. This closes the choice menu and continues with the <DynamicLink href="/start/labels">steps</DynamicLink>, without calling any <DynamicLink href="/start/labels#label">label</DynamicLink>.
+This function has the following parameters:
+
+* `text`: The text displayed in the choice menu.
+* `options` (Optional): An object with the `choice`'s options:
+  * `closeCurrentLabel`: If `true`, the current `label` will be closed. Default is `false`.
+  * `oneTime`: If `true`, the choice can only be made once.
+  * `onlyHaveNoChoice`: If `true`, the choice is shown only if there are no other choices.
+  * `autoSelect`: If `true` and it is the only choice, it will be selected automatically.
+
+</Accordion>
+
+</Accordions>
 
 ```ts title="labels/startLabel.ts"
 import { newChoiceOption, newCloseChoiceOption, narration, newLabel } from "@drincs/pixi-vn"
@@ -21,7 +61,7 @@ export const startLabel = newLabel("start_label",
         async () => {
             narration.dialogue = "Choose a fruit:"
             narration.choiceMenuOptions = [ // [!code focus]
-                newChoiceOption("Orange", orangeLabel, {}), // by default, the label will be called by call // [!code focus]
+                newChoiceOption("Orange", orangeLabel, {}), // by default, the label will be called with "call" // [!code focus]
                 newChoiceOption("Banana", bananaLabel, {}, { type: "jump" }), // [!code focus]
                 newChoiceOption("Apple", appleLabel, { quantity: 5 }, { type: "call" }), // [!code focus]
                 newCloseChoiceOption("Cancel"), // [!code focus]
@@ -33,58 +73,27 @@ export const startLabel = newLabel("start_label",
 )
 ```
 
-<Sandbox
-  template="wv63yr"
-  entry="/src/labels/startLabel.ts"
-/>
+<ChoiceMenus />
 
-### Create a choice menu option
+## Get
 
-In Pixi’VN you can create choice menu option using `newChoiceOption` function.
-
-`newChoiceOption` is a function which has as parameters:
-
-* `text`: The text that will be displayed in the choice menu.
-* `label`: The <DynamicLink href="/start/labels#label">label</DynamicLink> which will be called when the player chooses the option.
-* `props`: The properties that will be passed to the label, if the label not need any parameter you can pass an empty object `{}`.
-* `options`:
-  * `type`: The way the <DynamicLink href="/start/labels-flow#run-a-label">label will be called</DynamicLink>. It can be `call` or `jump`. Default is `call`.
-  * `oneTime`: If `true`, the choice can only be made once.
-  * `onlyHaveNoChoice`: If `true`, the choice can see only if there are no other choices.
-  * `autoSelect`: If `true` and if is the only choice, it will be selected automatically.
-
-### Create a close choice menu option
-
-In addition to `newChoiceOption` there is also another function `newCloseChoiceOption` that allows you to create a closing option. Its operation consists in closing the menu of choices and continuing with the <DynamicLink href="/start/labels">steps</DynamicLink>, without having to call any <DynamicLink href="/start/labels#label">label</DynamicLink>.
-
-`newCloseChoiceOption` is a function which has as parameters:
-
-* `text`: The text that will be displayed in the choice menu.
-* `options`:
-  * `closeCurrentLabel`: If `true`, the current label will be closed. Default is `false`.
-  * `oneTime`: If `true`, the choice can only be made once.
-  * `onlyHaveNoChoice`: If `true`, the choice can see only if there are no other choices.
-  * `autoSelect`: If `true` and if is the only choice, it will be selected automatically.
-
-## Get the user requested choice options
-
-To get the choice menu, you can use `narration.choiceMenuOptions`. The result is an array of `newChoiceOption` and/or `newCloseChoiceOption`.
+To get the current choice menu, use `narration.choiceMenuOptions`. This returns an array of `StoredChoiceInterface`.
 
 ```typescript
 const menuOptions: StoredChoiceInterface[] = narration.choiceMenuOptions;
 ```
 
-## Select a choice
+## Request
 
-To select a choice, you can use `narration.selectChoice`.
+To select a choice, use `narration.selectChoice`.
 
 ```typescript
-const item = narration.choiceMenuOptions![0]; // get the first item of the menu
+const item = narration.choiceMenuOptions![0]; // get the first item
 
 narration.selectChoice(item, {
-    // add StepLabelProps here
+    // Add StepLabelProps here
     navigate: navigate, // example
-    // and the props that will be passed to the label
+    // And the props to pass to the label
     ...item.props
 })
     .then(() => {
@@ -95,19 +104,19 @@ narration.selectChoice(item, {
     })
 ```
 
-## Clear the choice menu
+## Remove
 
-To clear the choice options, you can use `narration.choiceMenuOptions = undefined`.
+To clear the choice options, set `narration.choiceMenuOptions = undefined`.
 
 ```typescript
 narration.choiceMenuOptions = undefined;
 ```
 
-## Custom the choice menu option
+## Custom class
 
-You can customize the choice menu option by adding additional properties to the `ChoiceInterface` interface. For example, you can add a `icon` property to add an icon to the choice menu option.
+You can customize a choice menu option by adding properties to the `ChoiceInterface` interface. For example, add an `icon` property to display an icon.
 
-To do this, you need "override" the `ChoiceInterface` interface in the `.d.ts` file.
+Override the `ChoiceInterface` interface in your `.d.ts` file:
 
 ```ts tab="pixi-vn.d.ts"
 declare module '@drincs/pixi-vn' {
@@ -139,14 +148,3 @@ function ChoiceMenu({ choices }: { choices: StoredIndexedChoiceInterface[] }) {
     )
 }
 ```
-
-## How to create the choice menu UI screen
-
-For example:
-
-( **It's in basic html**, you will need to replace the basic html elements with UI components from your favorite library to improve the graphics. )
-
-<Sandbox
-  template="k8r2xf"
-  entry="/src/screens/ChoiceMenu.tsx"
-/>
