@@ -396,4 +396,81 @@ export async function getListFromIndexDB<T extends {}>(
 
 </Accordion>
 
+<Accordion title="Save to prevent accidental closure" id="prevent-accidental-closure">
+
+Since it is possible to create browser games, the problem of losing the last state of the game after accidentally closing the browser is common.
+
+To prevent this, you can generate a timely save when closing the game and automatically load it when you reopen it.
+
+For example:
+
+```ts tab="hooks/useClosePageDetector.ts"
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { LOADING_ROUTE, MAIN_MENU_ROUTE } from "../constans";
+import { addRefreshSave, loadRefreshSave } from "../utils/save-utility";
+import useEventListener from "./useKeyDetector";
+import useMyNavigate from "./useMyNavigate";
+import { INTERFACE_DATA_USE_QUEY_KEY } from "./useQueryInterface";
+
+export default function useClosePageDetector() {
+    const navigate = useMyNavigate();
+    const queryClient = useQueryClient();
+    const location = useLocation();
+
+    useEventListener({
+        type: "beforeunload",
+        listener: async () => {
+            if (location.pathname === MAIN_MENU_ROUTE || location.pathname === LOADING_ROUTE) {
+                return;
+            }
+            await addRefreshSave();
+        },
+    });
+
+    useEffect(() => {
+        loadRefreshSave(navigate).then(() =>
+            queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] })
+        );
+    }, []);
+
+    return null;
+}
+```
+
+```ts tab="utils/save-utility.ts"
+import { NavigateFunction } from "react-router-dom";
+import { LOADING_ROUTE, MAIN_MENU_ROUTE, REFRESH_SAVE_LOCAL_STORAGE_KEY } from "../constans";
+import GameSaveData from "../models/GameSaveData";
+
+export async function addRefreshSave() {
+    const data = createGameSave();
+    let jsonString = JSON.stringify(data);
+    if (jsonString) {
+        localStorage.setItem(REFRESH_SAVE_LOCAL_STORAGE_KEY, jsonString);
+    }
+}
+
+export async function loadRefreshSave(navigate: NavigateFunction) {
+    const jsonString = localStorage.getItem(REFRESH_SAVE_LOCAL_STORAGE_KEY);
+    if (jsonString) {
+        navigate(LOADING_ROUTE);
+        let data: GameSaveData = JSON.parse(jsonString);
+
+        return loadSave(data, navigate)
+            .then(() => {
+                localStorage.removeItem(REFRESH_SAVE_LOCAL_STORAGE_KEY);
+            })
+            .catch(() => {
+                navigate(MAIN_MENU_ROUTE);
+            });
+    } else {
+        navigate(MAIN_MENU_ROUTE);
+    }
+}
+```
+
+</Accordion>
+
 </Accordions>
