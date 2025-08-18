@@ -387,7 +387,7 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
             },
             {
                 type: "page",
-                name: "Save and Load",
+                name: "Save and load",
                 icon: <Save />,
                 url: `${preUrl}/start/save`,
             },
