@@ -2,6 +2,8 @@
 title: How translate the visual novel?
 ---
 
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
+
 In visual novels, or other types of games, it is common to have the ability to select the game language.
 
 In your Pixi’VN project you need to use external libraries to handle translations. So you are free to choose the implementation that suits you best.
@@ -14,10 +16,7 @@ The most used library and compatible with many frameworks is i18next.
 
 **What is i18next?** i18next is an internationalization-framework written in and for JavaScript. In order to use i18n you need to install and initialize it. You can learn more about i18next on the [i18next website](https://www.i18next.com/).
 
-The translations will be inserted into multiple json files (one json file for each language) with the key value correspondence. Where the key is a unique key of the text (or the text to be translated) and the value is the text that will be displayed. It is recommended to split the translations into two parts (see `strings_es.json` file):
-
-- The <DynamicLink href="/start/interface">UI</DynamicLink> texts, that is, the texts that are contained in screens, settings, quick buttons, etc... that is, everything that is not part of the narration.
-- The <DynamicLink href="/start/narration">narration</DynamicLink> texts, i.e. the texts contained in the dialogues, in the choice menu, etc...
+The translations will be inserted into multiple json files (one json file for each language) with the key value correspondence. Where the key is a unique key of the text (or the text to be translated) and the value is the text that will be displayed.
 
 ```ts tab="i18n.ts"
 import i18n from 'i18next';
@@ -59,7 +58,9 @@ import { useI18n } from './i18n';
 useI18n()
 ```
 
-## Translate the UI
+<Accordions>
+
+<Accordion title="Translate the UI" id="translate-ui">
 
 To translate the UI, you need to use the `t` function that is provided by i18next. The `t` function is a function that will be called by passing the key as input to get the corresponding text in the player's language.
 
@@ -103,11 +104,23 @@ export default function MyComponent() {
 </div>
 ```
 
-## Translate the narration (TypeScript/JavaScript)
+</Accordion>
 
-To translate the UI, you need "override" the `StepLabelProps` interface in the `.d.ts` file to add the `t` function. The `t` function is a function that will be called by passing the key as input to get the corresponding text in the player's language.
+<Accordion title="Translate the narration" id="Translate the narration (TypeScript/JavaScript)">
 
-This way you can use the `t` function in <DynamicLink href="/start/labels">labels</DynamicLink> to translate the text. It is recommended to use `t` inside the <DynamicLink href="/start/labels">label</DynamicLink> and not when the UI is displayed, because this way you can use the [i18n Interpolation](https://i18next.com/translation-function/interpolation).
+<Callout title="Templates" type="info">
+
+In all templates, the `StepLabelProps` interface is already extended to include a `t` function. You can find it in the `pixi-vn.d.ts` file.
+
+</Callout>
+
+<Callout type="info">
+
+It is recommended to use `t` inside the <DynamicLink href="/start/labels">label</DynamicLink> and not when the UI is displayed, because this way you can use the [i18n Interpolation](https://i18next.com/translation-function/interpolation).
+
+</Callout>
+
+In pixi-vn projects, it's very common to need to translate the narration text into the TypeScript/JavaScript <DynamicLink href="/start/labels">`labels`</DynamicLink>. To enable this, the translate function must be included in the <DynamicLink href="/start/labels#steplabelprops">`StepLabelProps` interface</DynamicLink>.
 
 Is recommended to use as translation key the native string from which the translation is made.
 
@@ -138,7 +151,22 @@ declare module '@drincs/pixi-vn' {
 }
 ```
 
+</Accordion>
+
+</Accordions>
+
 ## Create the json file to translate
+
+<Callout title="ink" type="info">
+
+If you are using ink, you can automatically introduce the strings used in the text encoded with ink into the json file to be translated. You can read more about this <DynamicLink href="/ink/ink-translate">here</DynamicLink>.
+
+</Callout>
+
+The translation of the json file to be translated must be created manually. It is recommended to split the translations into two parts (see `strings_es.json` file):
+
+- The <DynamicLink href="/start/interface">UI</DynamicLink> texts, that is, the texts that are contained in screens, settings, quick buttons, etc... that is, everything that is not part of the narration.
+- The <DynamicLink href="/start/narration">narration</DynamicLink> texts, i.e. the texts contained in the dialogues, in the choice menu, etc...
 
 ```json tab="locales/strings_es.json"
 {
