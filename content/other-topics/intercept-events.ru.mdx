@@ -4,54 +4,6 @@ title: Intecept Events
 
 Intercepting events can be very useful to allow hotkeys or to block/prevent browser actions that can create errors.
 
-## Refresh page
-
-Using the browser's refresh button without managing it causes you to lose all temporary game data.
-
-The solution is to create a save, in local storage, before refreshing the page. Then, when the page is refreshed, check if the save exists, load it, and then delete it.
-
-Example ( This solution also prevents the loss of data when the page is closed ):
-
-```ts title="ActionsUtility.ts"
-import { narration, Game } from "@drincs/pixi-vn";
-
-export function addRefreshSave() {
-    const jsonString = JSON.stringify(Game.exportGameState())
-    if (jsonString) {
-        localStorage.setItem("refreshSave", jsonString)
-    }
-}
-
-export async function loadRefreshSave(navigate: (path: string) => void) {
-    const jsonString = localStorage.getItem("refreshSave")
-    if (jsonString) {
-        await Game.restoreGameState(jsonString, navigate);
-        localStorage.removeItem("refreshSave")
-    }
-}
-```
-
-```ts title="EventInterceptor.ts"
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
-import { addRefreshSave, loadRefreshSave } from './utility/ActionsUtility';
-
-export default function EventInterceptor() {
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        loadRefreshSave(navigate)
-        window.addEventListener("beforeunload", addRefreshSave);
-        return () => {
-            window.removeEventListener("beforeunload", addRefreshSave);
-        };
-    }, []);
-
-    return null
-}
-```
-
 ## Attaching events to keymaps to allow hotkeys
 
 To attach events to keymaps is useful to allow hotkeys.
