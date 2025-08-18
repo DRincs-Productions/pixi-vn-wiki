@@ -1,26 +1,27 @@
 ---
 title: Save and load
+description: This page explains how to implement saving and loading game progress in Pixi’VN, including file export, IndexedDB usage, and auto-save strategies for browser games.
 ---
 
 import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
 <Callout type="info" title="Templates">
 
-In all templates, the `createGameSave` and `loadSave` functions are already implemented. You can find them in the `utils/save-utility.ts` file.
+The `createGameSave` and `loadSave` functions are already implemented in all templates. See `utils/save-utility.ts`.
 
 </Callout>
 
-The save and load system is a feature that allows the player to save the game progress and load it later. This feature is essential for visual novels, as it allows the player to continue the story from where they left off.
+Saving and loading is a core feature that lets players save their progress and continue later. This is essential for visual novels, allowing players to resume the story from where they left off.
 
 ## Create
 
-To create a save, you can use the `Game.exportGameState` function. This function returns an object with the game data, which you can then save to a file or a database.
+To create a save, use `Game.exportGameState()`. This returns an object with the game data, which you can store in a file or database.
 
-My advice is to insert the generated file in question with other information created by the user, such as the name of the save, the date of creation, and an image of the current game state.
+Tip: Add extra info to your save file, such as the save name, creation date, and a screenshot of the current game state.
 
 <Callout type="info">
 
-For generate the image, you can use the `canvas.extractImage()` function, which returns a base64 string of the current game state. You can then use this string to create an image file.
+To generate an image, use `canvas.extractImage()`. This returns a base64 string of the current canvas, which you can use as a screenshot.
 
 </Callout>
 
@@ -56,7 +57,10 @@ export default interface GameSaveData {
 
 ## Load
 
-To load a save, you can use the `Game.restoreGameState` function. This function takes the save data object as a parameter and restores the game state to the saved state.
+To load a save, use `Game.restoreGameState`. This function has the following parameters:
+
+- `saveData`: The save data object to restore the game state.
+- `navigate`: <DynamicLink href="/start/interface-navigate">A function to navigate to a specific route</DynamicLink> after loading the save.
 
 For example:
 
@@ -77,7 +81,7 @@ export async function loadSave(saveData: GameSaveData, navigate: NavigateFunctio
 
 <Accordion title="Export the save to a file" id="generate-file">
 
-A typical case in video games is to export the save to a file.
+You can export the save data to a file for backup or sharing.
 
 For example:
 
@@ -133,9 +137,7 @@ export function loadGameSaveFromFile(navigate: NavigateFunction, afterLoad?: () 
 
 <Accordion title="IndexedDB" id="indexeddb">
 
-**What is IndexedDB?** IndexedDB is a low-level API for client-side storage of significant amounts of structured data, including files/blobs. It allows you to store data in a transactional database system.
-
-You can use IndexedDB to store game saves, allowing you to save and load game states efficiently.
+**What is IndexedDB?** IndexedDB is a browser API for storing large amounts of structured data, including files/blobs. It lets you save and load game states efficiently.
 
 For example:
 
@@ -392,6 +394,83 @@ export async function getListFromIndexDB<T extends {}>(
             reject();
         };
     });
+}
+```
+
+</Accordion>
+
+<Accordion title="Save to prevent accidental closure" id="prevent-accidental-closure">
+
+Since it is possible to create browser games, the problem of losing the last state of the game after accidentally closing the browser is common.
+
+To prevent this, you can generate a timely save when closing the game and automatically load it when you reopen it.
+
+For example:
+
+```ts tab="hooks/useClosePageDetector.ts"
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { LOADING_ROUTE, MAIN_MENU_ROUTE } from "../constans";
+import { addRefreshSave, loadRefreshSave } from "../utils/save-utility";
+import useEventListener from "./useKeyDetector";
+import useMyNavigate from "./useMyNavigate";
+import { INTERFACE_DATA_USE_QUEY_KEY } from "./useQueryInterface";
+
+export default function useClosePageDetector() {
+    const navigate = useMyNavigate();
+    const queryClient = useQueryClient();
+    const location = useLocation();
+
+    useEventListener({
+        type: "beforeunload",
+        listener: async () => {
+            if (location.pathname === MAIN_MENU_ROUTE || location.pathname === LOADING_ROUTE) {
+                return;
+            }
+            await addRefreshSave();
+        },
+    });
+
+    useEffect(() => {
+        loadRefreshSave(navigate).then(() =>
+            queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] })
+        );
+    }, []);
+
+    return null;
+}
+```
+
+```ts tab="utils/save-utility.ts"
+import { NavigateFunction } from "react-router-dom";
+import { LOADING_ROUTE, MAIN_MENU_ROUTE, REFRESH_SAVE_LOCAL_STORAGE_KEY } from "../constans";
+import GameSaveData from "../models/GameSaveData";
+
+export async function addRefreshSave() {
+    const data = createGameSave();
+    let jsonString = JSON.stringify(data);
+    if (jsonString) {
+        localStorage.setItem(REFRESH_SAVE_LOCAL_STORAGE_KEY, jsonString);
+    }
+}
+
+export async function loadRefreshSave(navigate: NavigateFunction) {
+    const jsonString = localStorage.getItem(REFRESH_SAVE_LOCAL_STORAGE_KEY);
+    if (jsonString) {
+        navigate(LOADING_ROUTE);
+        let data: GameSaveData = JSON.parse(jsonString);
+
+        return loadSave(data, navigate)
+            .then(() => {
+                localStorage.removeItem(REFRESH_SAVE_LOCAL_STORAGE_KEY);
+            })
+            .catch(() => {
+                navigate(MAIN_MENU_ROUTE);
+            });
+    } else {
+        navigate(MAIN_MENU_ROUTE);
+    }
 }
 ```
 
