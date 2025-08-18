@@ -1,6 +1,13 @@
 ---
 title: Save and load
 ---
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
+
+<Callout type="info" title="Templates">
+
+In all templates, the `createGameSave` and `loadSave` functions are already implemented. You can find them in the `utils/save-utility.ts` file.
+
+</Callout>
 
 The save and load system is a feature that allows the player to save the game progress and load it later. This feature is essential for visual novels, as it allows the player to continue the story from where they left off.
 
@@ -52,7 +59,7 @@ To load a save, you can use the `Game.restoreGameState` function. This function 
 
 For example:
 
-```ts tab="utils/load-utility.ts"
+```ts tab="utils/save-utility.ts"
 import { Game } from "@drincs/pixi-vn";
 import { LOADING_ROUTE } from "../constans";
 import GameSaveData from "../models/GameSaveData";
@@ -62,3 +69,278 @@ export async function loadSave(saveData: GameSaveData, navigate: NavigateFunctio
     await Game.restoreGameState(saveData.saveData, navigate);
 }
 ```
+
+## FAQ
+
+<Accordions>
+
+<Accordion title="IndexedDB" id="indexeddb">
+
+**What is IndexedDB?** IndexedDB is a low-level API for client-side storage of significant amounts of structured data, including files/blobs. It allows you to store data in a transactional database system.
+
+You can use IndexedDB to store game saves, allowing you to save and load game states efficiently.
+
+For example:
+
+```ts tab="utils/save-utility.ts"
+import { canvas } from "@drincs/pixi-vn";
+import GameSaveData from "../models/GameSaveData";
+import {
+    deleteRowFromIndexDB,
+    getLastRowFromIndexDB,
+    getListFromIndexDB,
+    getRowFromIndexDB,
+    INDEXED_DB_SAVE_TABLE,
+    putRowIntoIndexDB,
+} from "./indexedDB-utility";
+
+export async function saveGameToIndexDB(
+    info: Partial<GameSaveData> & { id?: number } = {},
+    data = createGameSave()
+): Promise<GameSaveData & { id: number }> {
+    const { image = await canvas.extractImage(), ...rest } = info;
+    let item = {
+        ...data,
+        ...rest,
+    };
+    if (item.id === undefined) {
+        let lastSave = await getLastRowFromIndexDB<GameSaveData & { id: number }>(INDEXED_DB_SAVE_TABLE);
+        if (lastSave) {
+            item.id = lastSave.id + 1;
+        } else {
+            item.id = 0;
+        }
+    }
+    await putRowIntoIndexDB(INDEXED_DB_SAVE_TABLE, item);
+    if (item.id) {
+        return item as GameSaveData & { id: number };
+    }
+    return (await getLastSaveFromIndexDB()) as GameSaveData & { id: number };
+}
+
+export async function getSaveFromIndexDB(id: number): Promise<(GameSaveData & { id: number }) | null> {
+    return await getRowFromIndexDB(INDEXED_DB_SAVE_TABLE, id);
+}
+
+export async function getLastSaveFromIndexDB(): Promise<(GameSaveData & { id: number }) | null> {
+    let list = await getListFromIndexDB<GameSaveData & { id: number }>(INDEXED_DB_SAVE_TABLE, {
+        pagination: { limit: 1, offset: 0 },
+        order: { field: "date", direction: "prev" },
+    });
+    if (list.length > 0) {
+        return list[0];
+    }
+    return null;
+}
+
+export async function deleteSaveFromIndexDB(id: number): Promise<void> {
+    return await deleteRowFromIndexDB(INDEXED_DB_SAVE_TABLE, id);
+}
+```
+
+```ts tab="utils/indexedDB-utility.ts"
+const INDEXED_DB_VERSION = 2; // Increment this version number when you change the database schema
+const INDEXED_DB_NAME = "game_db";
+export const INDEXED_DB_SAVE_TABLE = "saves";
+
+export function initializeIndexedDB(): Promise<void> {
+    return new Promise((resolve, reject) => {
+        let request = indexedDB.open(INDEXED_DB_NAME, INDEXED_DB_VERSION);
+        // check if the object store exists
+        request.onupgradeneeded = function (_event) {
+            let db = request.result;
+            if (!db.objectStoreNames.contains(INDEXED_DB_SAVE_TABLE)) {
+                // create the object store
+                let objectStore = db.createObjectStore(INDEXED_DB_SAVE_TABLE, { keyPath: "id", autoIncrement: true });
+                objectStore.createIndex("id", "id", { unique: true });
+                objectStore.createIndex("date", "date", { unique: false });
+                objectStore.createIndex("name", "name", { unique: false });
+                objectStore.createIndex("gameVersion", "gameVersion", { unique: false });
+            }
+        };
+
+        request.onsuccess = function (_event) {
+            resolve();
+        };
+        request.onerror = function (event) {
+            console.error("Error opening indexDB", event);
+            reject();
+        };
+    });
+}
+
+export async function putRowIntoIndexDB<T extends {}>(tableName: string, data: T): Promise<T> {
+    return new Promise((resolve, reject) => {
+        let request = indexedDB.open(INDEXED_DB_NAME);
+
+        request.onsuccess = function (_event) {
+            let db = request.result;
+            // run onupgradeneeded before onsuccess
+            if (!db.objectStoreNames.contains(tableName)) {
+                console.error("Object store rescues does not exist");
+                reject();
+            }
+            let transaction = db.transaction([tableName], "readwrite");
+            let objectStore = transaction.objectStore(tableName);
+            let setRequest = objectStore.put(data);
+            setRequest.onsuccess = function (_event) {
+                resolve(data);
+            };
+            setRequest.onerror = function (event) {
+                console.error("Error adding save data to indexDB", event);
+                reject();
+            };
+        };
+        request.onerror = function (event) {
+            console.error("Error adding save data to indexDB", event);
+        };
+    });
+}
+
+export async function getRowFromIndexDB<T extends {}>(tableName: string, id: any): Promise<T | null> {
+    return new Promise((resolve, reject) => {
+        let request = indexedDB.open(INDEXED_DB_NAME);
+        request.onsuccess = function (_event) {
+            let db = request.result;
+            // check if the object store exists
+            if (!db.objectStoreNames.contains(tableName)) {
+                resolve(null);
+                return;
+            }
+            let transaction = db.transaction([tableName], "readwrite");
+            let objectStore = transaction.objectStore(tableName);
+            let getRequest = objectStore.get(id);
+            getRequest.onsuccess = function (_event) {
+                resolve(getRequest.result);
+            };
+            getRequest.onerror = function (event) {
+                console.error("Error getting save data from indexDB", event);
+                reject();
+            };
+        };
+        request.onerror = function (event) {
+            console.error("Error opening indexDB", event);
+            reject();
+        };
+    });
+}
+
+export async function getLastRowFromIndexDB<T extends {}>(tableName: string): Promise<T | null> {
+    return new Promise((resolve, reject) => {
+        let request = indexedDB.open(INDEXED_DB_NAME);
+        request.onsuccess = function (_event) {
+            let db = request.result;
+            // check if the object store exists
+            if (!db.objectStoreNames.contains(tableName)) {
+                resolve(null);
+                return;
+            }
+            let transaction = db.transaction([tableName], "readwrite");
+            let objectStore = transaction.objectStore(tableName);
+            let getRequest = objectStore.openCursor(null, "prev");
+            getRequest.onsuccess = function (_event) {
+                let cursor = getRequest.result;
+                if (cursor) {
+                    resolve(cursor.value);
+                } else {
+                    resolve(null);
+                }
+            };
+            getRequest.onerror = function (event) {
+                console.error("Error getting save data from indexDB", event);
+                reject();
+            };
+        };
+        request.onerror = function (event) {
+            console.error("Error opening indexDB", event);
+            reject();
+        };
+    });
+}
+
+export async function deleteRowFromIndexDB(tableName: string, id: any): Promise<void> {
+    return new Promise((resolve, reject) => {
+        let request = indexedDB.open(INDEXED_DB_NAME);
+        request.onsuccess = function (_event) {
+            let db = request.result;
+            let transaction = db.transaction([tableName], "readwrite");
+            let objectStore = transaction.objectStore(tableName);
+            let deleteRequest = objectStore.delete(id);
+            deleteRequest.onsuccess = function (_event) {
+                resolve();
+            };
+            deleteRequest.onerror = function (event) {
+                console.error("Error deleting save data from indexDB", event);
+                reject();
+            };
+        };
+        request.onerror = function (event) {
+            console.error("Error deleting save data from indexDB", event);
+        };
+    });
+}
+
+export async function getListFromIndexDB<T extends {}>(
+    tableName: string,
+    options: {
+        order?: { field: keyof T; direction: IDBCursorDirection };
+        pagination?: { offset: number; limit: number };
+    } = {}
+): Promise<T[]> {
+    return new Promise((resolve, reject) => {
+        let request = indexedDB.open(INDEXED_DB_NAME);
+        request.onsuccess = function (_event) {
+            let db = request.result;
+            // check if the object store exists
+            if (!db.objectStoreNames.contains(tableName)) {
+                resolve([]);
+                return;
+            }
+            let transaction = db.transaction([tableName], "readwrite");
+            let objectStore = transaction.objectStore(tableName);
+            let getRequest = options.order
+                ? objectStore.index(options.order.field as string).openCursor(null, options.order.direction)
+                : objectStore.openCursor();
+            let results: T[] = [];
+            let counter = 0;
+            let limit = options.pagination?.limit ?? Infinity;
+            let offset = options.pagination?.offset ?? 0;
+            let advanced = false;
+            getRequest.onsuccess = (_event) => {
+                let cursor = getRequest.result;
+                if (cursor) {
+                    if (counter >= offset) {
+                        results.push(cursor.value);
+                        if (results.length >= limit) {
+                            resolve(results);
+                            advanced = true;
+                        }
+                    }
+                    counter++;
+                    cursor.continue();
+                } else {
+                    if (!advanced) {
+                        resolve(results);
+                    }
+                }
+            };
+            getRequest.onerror = function (event) {
+                console.error("Error getting save data from indexDB", event);
+                reject();
+            };
+        };
+        request.onerror = function (event) {
+            console.error("Error opening indexDB", event);
+            reject();
+        };
+    });
+}
+```
+
+</Accordion>
+
+<Accordion title="Translate the narration" id="Translate the narration (TypeScript/JavaScript)">
+
+</Accordion>
+
+</Accordions>
