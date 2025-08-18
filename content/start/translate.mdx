@@ -10,16 +10,27 @@ The most used library and compatible with many frameworks is i18next.
 
 ![i18next-h2](/i18next.svg)
 
-## What is i18next?
+## i18next
 
-i18next is an internationalization-framework written in and for JavaScript. In order to use i18n you need to install and initialize it.
-
-You can learn more about i18next on the [i18next website](https://www.i18next.com/).
+**What is i18next?** i18next is an internationalization-framework written in and for JavaScript. In order to use i18n you need to install and initialize it. You can learn more about i18next on the [i18next website](https://www.i18next.com/).
 
 The translations will be inserted into multiple json files (one json file for each language) with the key value correspondence. Where the key is a unique key of the text (or the text to be translated) and the value is the text that will be displayed. It is recommended to split the translations into two parts (see `strings_es.json` file):
 
 - The <DynamicLink href="/start/interface">UI</DynamicLink> texts, that is, the texts that are contained in screens, settings, quick buttons, etc... that is, everything that is not part of the narration.
 - The <DynamicLink href="/start/narration">narration</DynamicLink> texts, i.e. the texts contained in the dialogues, in the choice menu, etc...
+
+```json tab="locales/strings_es.json"
+{
+    "ui": {
+        "text_speed": "Velocidad del texto",
+        // ...
+    },
+    "narration": {
+        "Hello, my name is {{name}}": "Hola, mi nombre es {{name}}"
+        // ...
+    }
+}
+```
 
 ```ts tab="i18n.ts"
 import i18n from 'i18next';
@@ -59,19 +70,6 @@ export const useI18n = () => {
 import { useI18n } from './i18n';
 
 useI18n()
-```
-
-```json tab="locales/strings_es.json"
-{
-    "ui": {
-        "text_speed": "Velocidad del texto",
-        // ...
-    },
-    "narration": {
-        "Hello, my name is {{name}}": "Hola, mi nombre es {{name}}"
-        // ...
-    }
-}
 ```
 
 Depending on what you want to translate, it is recommended to use the following guides:
@@ -133,6 +131,19 @@ This way you can use the `t` function in <DynamicLink href="/start/labels">label
 
 Is recommended to use as translation key the native string from which the translation is made.
 
+```ts tab="labels/startLabel.ts"
+export const startLabel = newLabel("start_label",
+    [
+        ({ t }) => { // [!code focus]
+            narration.dialogue = {
+                character: liam,
+                text: t("Hello, my name is {{name}}", { name: "Liam" }) // [!code focus]
+            }
+        },
+    ]
+)
+```
+
 ```ts tab="pixi-vn.d.ts"
 declare module '@drincs/pixi-vn' {
     interface StepLabelProps {
@@ -145,17 +156,4 @@ declare module '@drincs/pixi-vn' {
         // ...
     }
 }
-```
-
-```ts tab="labels/startLabel.ts"
-export const startLabel = newLabel("start_label",
-    [
-        ({ t }) => { // [!code focus]
-            narration.dialogue = {
-                character: liam,
-                text: t("Hello, my name is {{name}}", { name: "Liam" }) // [!code focus]
-            }
-        },
-    ]
-)
 ```
