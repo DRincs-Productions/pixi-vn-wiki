@@ -6,6 +6,7 @@ import {
     Album,
     BookOpenText,
     Boxes,
+    Crop,
     Database,
     Gamepad2,
     Globe,
@@ -333,6 +334,7 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
             {
                 type: "folder",
                 name: "User Interface (UI)",
+                icon: <Crop />,
                 index: {
                     type: "page",
                     name: "User Interface (UI)",
