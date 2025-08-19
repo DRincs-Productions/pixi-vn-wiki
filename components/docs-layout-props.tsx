@@ -11,6 +11,7 @@ import {
     Globe,
     Hammer,
     History,
+    ImageIcon,
     MessageCircleQuestion,
     Music,
     Rocket,
@@ -213,6 +214,7 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
             {
                 type: "folder",
                 name: t("canvas"),
+                icon: <ImageIcon />,
                 index: {
                     type: "page",
                     name: t("canvas"),
