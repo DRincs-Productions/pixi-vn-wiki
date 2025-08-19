@@ -2,7 +2,15 @@
 
 import { SandpackFiles, SandpackLayout, SandpackPreview, SandpackProvider } from "@codesandbox/sandpack-react";
 
-export function ReactTemplate({ files, previewHeight = 400 }: { files?: SandpackFiles; previewHeight?: number }) {
+export function ReactTemplate({
+    files,
+    previewHeight = 400,
+    dependencies = {},
+}: {
+    files?: SandpackFiles;
+    previewHeight?: number;
+    dependencies?: Record<string, string>;
+}) {
     return (
         <SandpackProvider
             template='react-ts'
@@ -13,6 +21,7 @@ export function ReactTemplate({ files, previewHeight = 400 }: { files?: Sandpack
                     "react-markdown": "^8.0.0",
                     "rehype-raw": "^7.0.0",
                     "remark-gfm": "^4.0.1",
+                    ...dependencies,
                 },
             }}
             files={{
