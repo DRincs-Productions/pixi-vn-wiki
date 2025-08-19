@@ -1587,3 +1587,96 @@ export default manifest;`,
         />
     );
 }
+
+export function VideoSpriteShow() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { newLabel, showVideo } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    let video1 = await showVideo("video");
+    let video2 = await showVideo("video2", "video", {
+      xAlign: 0.5,
+    });
+    let video3 = await showVideo("video3", "https://pixijs.com/assets/video.mp4", {
+      xAlign: 1,
+    });
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "video",
+          src: "https://pixijs.com/assets/video.mp4",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function VideoSpriteAdd() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { addVideo, canvas, newLabel, VideoSprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  () => {
+    let video1 = addVideo("video");
+    let video2 = addVideo("video2", "video", {
+      xAlign: 0.5,
+    });
+    let video3 = addVideo("video3", "https://pixijs.com/assets/video.mp4", {
+      xAlign: 1,
+    });
+  },
+  async () => {
+    let video1 = canvas.find<VideoSprite>("video");
+    let video2 = canvas.find<VideoSprite>("video2");
+    let video3 = canvas.find<VideoSprite>("video3");
+    // Load the textures
+    video1 && (await video1.load());
+    video2 && (await video2.load());
+    video3 && (await video3.load());
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "video",
+          src: "https://pixijs.com/assets/video.mp4",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
