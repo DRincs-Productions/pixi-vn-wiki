@@ -1494,3 +1494,96 @@ export default manifest;`,
         />
     );
 }
+
+export function ImageSpriteShow() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    let alien1 = await showImage("alien");
+    let alien2 = await showImage("alien2", "alien", {
+      xAlign: 0.5,
+    });
+    let alien3 = await showImage("alien3", "https://pixijs.com/assets/eggHead.png", {
+      xAlign: 1,
+    });
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "alien",
+          src: "https://pixijs.com/assets/eggHead.png",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function ImageSpriteAdd() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { addImage, canvas, ImageSprite, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  () => {
+    let alien1 = addImage("alien");
+    let alien2 = addImage("alien2", "alien", {
+      xAlign: 0.5,
+    });
+    let alien3 = addImage("alien3", "https://pixijs.com/assets/eggHead.png", {
+      xAlign: 1,
+    });
+  },
+  async () => {
+    let alien1 = canvas.find<ImageSprite>("alien");
+    let alien2 = canvas.find<ImageSprite>("alien2");
+    let alien3 = canvas.find<ImageSprite>("alien3");
+    // Load the textures
+    alien1 && (await alien1.load());
+    alien2 && (await alien2.load());
+    alien3 && (await alien3.load());
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "alien",
+          src: "https://pixijs.com/assets/eggHead.png",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
