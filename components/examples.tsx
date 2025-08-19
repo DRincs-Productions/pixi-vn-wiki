@@ -1680,3 +1680,137 @@ export default manifest;`,
         />
     );
 }
+
+export function VideoSpritePlayPause() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { canvas, narration, newLabel, showVideo, VideoSprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    narration.dialogue = "add video";
+    await showVideo("video");
+  },
+  async () => {
+    narration.dialogue = "pause video";
+    let video = canvas.find<VideoSprite>("video");
+    if (video) {
+      video.pause();
+      // or: video.paused = true
+    }
+  },
+  async () => {
+    narration.dialogue = "resume video";
+    let video = canvas.find<VideoSprite>("video");
+    if (video) {
+      video.play();
+      // or: video.paused = false
+    }
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "video",
+          src: "https://pixijs.com/assets/video.mp4",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function VideoSpriteLooping() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { newLabel, showVideo } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    let video = await showVideo("video");
+    video.loop = true;
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "video",
+          src: "https://pixijs.com/assets/video.mp4",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function VideoSpriteRestart() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { canvas, narration, newLabel, showVideo, VideoSprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        narration.dialogue = "add video";
+        await showVideo("video");
+    },
+    async () => {
+        narration.dialogue = "restart video";
+        let video = canvas.find<VideoSprite>("video");
+        if (video) {
+            video.restart(); 
+        }
+    },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "video",
+          src: "https://pixijs.com/assets/video.mp4",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
