@@ -7,7 +7,7 @@ export function InkExample({ files, previewHeight = 400 }: { files?: SandpackFil
     return (
         <ReactTemplate
             files={{
-                "ink/start.ink": `=== start ===
+                "ink/start.ink": `export const startLabel = \`=== start ===
 We arrived into London at 9.45pm exactly.
 
 *	"There is not a moment to lose!"[] I declared.
@@ -28,7 +28,7 @@ He insisted that we hurried home to Savile Row
 
 === as_fast_as_we_could ===
 <> as fast as we could.
--> start`,
+-> start\`;`,
                 "index.tsx": `import { Assets, Container, Game, canvas, narration } from "@drincs/pixi-vn";
 import { importInkText } from "@drincs/pixi-vn-ink";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -36,7 +36,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import { HEIGHT, WIDTH } from "./constants";
 import { INTERFACE_DATA_USE_QUEY_KEY } from "./hooks/useQueryInterface";
-import startLabel from "./ink/start.ink";
+import { startLabel } from "./ink/start";
 import "./styles.css";
 import { defineAssets } from "./utils/assets-utility";
 
