@@ -7,7 +7,7 @@ export function InkExample({ files, previewHeight = 400 }: { files?: SandpackFil
     return (
         <ReactTemplate
             files={{
-                "ink/start.ink": `export const startLabel = \`=== start ===
+                "ink/start.ts": `export const startLabel = \`=== start ===
 We arrived into London at 9.45pm exactly.
 
 *	"There is not a moment to lose!"[] I declared.
