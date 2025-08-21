@@ -87,11 +87,10 @@ export function SnakeExample() {
     return (
         <MiniGameExample
             files={{
-                "screens/MiniGame.tsx": `import { canvas, Layer, PIXI } from "@drincs/pixi-vn";
+                "screens/MiniGame.tsx": `import { canvas, Layer } from "@drincs/pixi-vn";
+import { Graphics, Ticker } from "@drincs/pixi-vn/pixi.js";
 import { useCallback, useMemo, useRef, useState } from "react";
 import useMinigame from "../hooks/useMinigame";
-
-const { Graphics, Ticker } = PIXI;
 
 export default function MiniGame() {
   const ticker = useMemo(() => new Ticker(), []);
@@ -115,7 +114,7 @@ export default function MiniGame() {
   const game = useCallback(
     (layer: Layer) => {
       const gridSize = 20;
-      const snake: PIXI.Graphics[] = [];
+      const snake: Graphics[] = [];
       const moveInterval = 150;
       let elapsed = 0;
 
