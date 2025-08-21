@@ -661,7 +661,7 @@ export async function sidebar(lang?: string): Promise<
             {
                 title: "Other Topics",
                 description: "Other topics",
-                url: `${preUrl}/other-topics`,
+                url: `${preUrl}/other-topics/faq`,
             },
         ],
     };
