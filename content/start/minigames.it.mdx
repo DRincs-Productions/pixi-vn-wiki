@@ -16,9 +16,9 @@ I minigiochi nelle visual novel vengono solitamente avviati durante la narrazion
 
 Ecco alcuni consigli:
 
-- Utilizza i componenti forniti dall'oggetto `PIXI`, come `Graphics`, `Sprite` e `Text`, per creare il tuo minigioco. `PIXI` è l'oggetto PixiJS, quindi puoi utilizza tutte le sue funzionalità.
+- Use components provided by the `@drincs/pixi-vn/pixi.js` submodule, such as `Graphics`, `Sprite`, and `Text`, to create your minigame. `@drincs/pixi-vn/pixi.js` is the PixiJS import, so you can use all its features.
 - Utilizza <DynamicLink href="/start/interface#adding-pixijs-ui-layers">PixiJS Layers</DynamicLink> per creare un livello separato per il tuo minigioco. Ciò consente di gestire il minigioco in modo indipendente dall'interfaccia principale della visual novel.
-- Utilizzare la classe `PIXI.Ticker` per gestire il ciclo del gioco e aggiornarne lo stato.
+- Use the `Ticker` class to manage the game loop and update the game state.
 - Utilizzare `window.addEventListener` per gestire l'input dell'utente, ad esempio gli eventi della tastiera o del mouse.
 - Utilizza elementi HTML per creare l'interfaccia utente, come pulsanti, visualizzazioni dei punteggi e messaggi di fine partita.
 - Se utilizzi i layer PixiJS, ricorda che Pixi'VN non salva lo stato dei layer, quindi dovrai gestire tu stesso lo stato del minigioco. Salva lo stato in una variabile e ripristinalo quando il minigioco ricomincia.
@@ -32,12 +32,10 @@ Ecco alcuni consigli:
 Ad esempio:
 
 ```tsx tab="React"
-import { Layer, PIXI } from "@drincs/pixi-vn";
+import { Layer } from "@drincs/pixi-vn";
+import { Graphics, Ticker } from "@drincs/pixi-vn/pixi.js";
 import { useCallback, useMemo, useRef, useState } from "react";
 import useMinigame from "../hooks/useMinigame";
-
-// PIXI is pixi.js, so you can use all its features
-const { Graphics, Ticker } = PIXI;
 
 export default function MiniGame() {
     const ticker = useMemo(() => new Ticker(), []);
@@ -118,7 +116,8 @@ export default function MiniGame() {
 ```
 
 ```ts tab="hooks/useMinigame.ts"
-import { canvas, Layer, PIXI } from "@drincs/pixi-vn";
+import { canvas, Layer } from "@drincs/pixi-vn";
+import { Container } from "@drincs/pixi-vn/pixi.js";
 import { useEffect, useRef } from "react";
 import { CANVAS_MINIGAME_LAYER_NAME } from "../constans";
 
@@ -147,7 +146,7 @@ export default function useMinigame(
     useEffect(() => {
         // Create the layer and start the game once
         loading.current = true;
-        const layer = canvas.addLayer(CANVAS_MINIGAME_LAYER_NAME, new PIXI.Container());
+        const layer = canvas.addLayer(CANVAS_MINIGAME_LAYER_NAME, new Container());
         if (!layer) {
             console.error("Failed to create UI layer for minigame");
             return;
@@ -187,11 +186,10 @@ Il team di Pixi’VN accoglie con favore nuove proposte e contributi per rendere
 <Accordion title="Snake" id="snake">
 
 ```tsx tab="React"
-import { canvas, Layer, PIXI } from "@drincs/pixi-vn";
+import { canvas, Layer } from "@drincs/pixi-vn";
+import { Graphics, Ticker } from "@drincs/pixi-vn/pixi.js";
 import { useCallback, useMemo, useRef, useState } from "react";
 import useMinigame from "../hooks/useMinigame";
-
-const { Graphics, Ticker } = PIXI;
 
 export default function SnakeGame() {
     const ticker = useMemo(() => new Ticker(), []);
@@ -215,7 +213,7 @@ export default function SnakeGame() {
     const game = useCallback(
         (layer: Layer) => {
             const gridSize = 20;
-            const snake: PIXI.Graphics[] = [];
+            const snake: Graphics[] = [];
             const moveInterval = 150;
             let elapsed = 0;
 
