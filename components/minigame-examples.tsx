@@ -75,7 +75,7 @@ export default function useMinigame(
   }, [game]);
 
   return { loading };
-}}`,
+}`,
                 ...files,
             }}
             previewHeight={previewHeight}
