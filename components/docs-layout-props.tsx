@@ -454,20 +454,10 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
         ...inkSource.pageTree,
         name: "ink",
         children: [
-            {
-                type: "separator",
-                name: t("introduction"),
-            },
-            {
-                type: "page",
-                name: t("start"),
-                icon: <Album />,
-                url: `${preUrl}/ink`,
-            },
-            {
-                type: "separator",
-                name: "First steps",
-            },
+            { type: "separator", name: t("introduction") },
+            { type: "page", name: "Inky", url: `${preUrl}/inky` },
+            { type: "page", name: t("start"), icon: <Album />, url: `${preUrl}/ink` },
+            { type: "separator", name: "First steps" },
             { type: "page", name: t("character"), url: `${preUrl}/ink/character`, icon: <User /> },
             { type: "page", name: "Open a knot", url: `${preUrl}/ink/label` },
             { type: "page", name: "Variables", url: `${preUrl}/ink/variables` },
