@@ -136,7 +136,7 @@ export function initializeInk() {
             }}
             previewHeight={previewHeight}
             dependencies={{
-                "@drincs/pixi-vn-ink": "^0.8.3",
+                "@drincs/pixi-vn-ink": "^0.9.6",
             }}
         />
     );
