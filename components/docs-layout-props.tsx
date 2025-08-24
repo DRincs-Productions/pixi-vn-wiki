@@ -435,7 +435,7 @@ export async function renpyTree(lang?: string): Promise<DocsLayoutProps["tree"]>
         children: [
             {
                 type: "separator",
-                name: "Introduction",
+                name: t("introduction"),
             },
             {
                 type: "page",
@@ -456,7 +456,7 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
         children: [
             {
                 type: "separator",
-                name: "Introduction",
+                name: t("introduction"),
             },
             {
                 type: "page",
@@ -583,7 +583,7 @@ export async function nqtrTree(lang?: string): Promise<DocsLayoutProps["tree"]> 
         children: [
             {
                 type: "separator",
-                name: "Introduction",
+                name: t("introduction"),
             },
             {
                 type: "page",
