@@ -116,3 +116,26 @@ Game.init(body, {
         />
     );
 }
+
+export function CharacterDialogueExample() {
+    return (
+        <InkExample
+            files={{
+                "ink/start.ts": `export const startLabel = \`=== start ===
+egg-head: Hello, I'm Egg.
+-> DONE\`;`,
+                "values/characters.ts": `import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
+
+export const eggHead = new CharacterBaseModel("egg-head", {
+  name: "Egg",
+  surname: "Head",
+  age: 25,
+  icon: "https://pixijs.com/assets/eggHead.png",
+  color: "#9e2e12",
+});
+
+RegisteredCharacters.add(eggHead);`,
+            }}
+        />
+    );
+}
