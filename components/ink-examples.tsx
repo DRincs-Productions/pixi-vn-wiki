@@ -87,6 +87,7 @@ Game.init(body, {
     </div>
   );
 
+  initializeInk();
   defineAssets().then(() =>
     importInkText([startLabel]).then(() => {
       Game.clear();
@@ -146,19 +147,15 @@ export function CharacterDialogueExample() {
         <InkExample
             files={{
                 "ink/start.ts": `export const startLabel = \`=== start ===
-egg-head: Hello, I'm Egg.
+mc: Hello, I'm Liam.
 -> DONE\`;`,
                 "values/characters.ts": `import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
 
-export const eggHead = new CharacterBaseModel("egg-head", {
-  name: "Egg",
-  surname: "Head",
-  age: 25,
-  icon: "https://pixijs.com/assets/eggHead.png",
-  color: "#9e2e12",
+export const mc = new CharacterBaseModel("mc", {
+  name: "Liam",
 });
 
-RegisteredCharacters.add(eggHead);`,
+RegisteredCharacters.add(mc);`,
             }}
         />
     );
