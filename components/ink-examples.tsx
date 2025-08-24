@@ -204,3 +204,28 @@ RegisteredCharacters.add(mc);`,
         />
     );
 }
+
+export function CharacterEmotionsExample() {
+    return (
+        <InkExample
+            files={{
+                "ink/start.ts": `export const startLabel = \`VAR _input_value_ = ""
+
+=== start ===
+mc: Hello, I'm [mc].
+# request input string
+mc: My name is:
+# rename mc {_input_value_}
+mc: My name is [mc]
+-> DONE\`;`,
+                "values/characters.ts": `import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
+
+export const mc = new CharacterBaseModel("mc", {
+  name: "Liam",
+});
+
+RegisteredCharacters.add(mc);`,
+            }}
+        />
+    );
+}
