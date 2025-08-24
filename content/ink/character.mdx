@@ -2,6 +2,7 @@
 title: Characters
 ---
 import { CharacterDialogueExample } from "@/components/ink-examples";
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
 Before to read this section, it is recommended to read <DynamicLink href="/start/character#initialize">How to create and use characters in Pixi’VN</DynamicLink>.
 
@@ -48,104 +49,114 @@ import "./values/characters";
 
 ### Use character name in dialogues text
 
+You can use the character name in dialogues. To do this, you need to use the following syntax:
+
+`[` + `character_id` + `]`
+
+* `[` and `]`: are the delimiters to identify the character.
+* `character_id`: is the character `id` defined in **JavaScript/TypeScript**.
+
+```ink tab="ink/start.ink"
+=== start ===
+Hello, [egg-head].
+-> DONE
+```
+
+```ts tab="values/characters.ts"
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
+
+export const eggHead = new CharacterBaseModel("egg-head", {
+  name: "Egg",
+  surname: "Head",
+  age: 25,
+  icon: "https://pixijs.com/assets/eggHead.png",
+  color: "#9e2e12",
+});
+
+RegisteredCharacters.add(eggHead);
+```
+
+To do this, you'll first need to implement the functionality to replace the id with the character's name. To do this, you can use one of the following methods:
+
+<Callout title="Templates" type="info">
+
+In all templates, this implementation is already included.
+
+</Callout>
+
+</Accordion>
+
+<Accordion title="i18next implementation" id="i18next-implementation">
+
+If you are using [i18next](https://www.i18next.com/) for translation, you can use the following method:
+
+```ts tab="utils/ink-utility.ts"
+import { onReplaceTextBeforeTranslation } from "@drincs/pixi-vn-ink";
+
+export function initializeInk() {
+    onReplaceTextBeforeTranslation((key) => { // [!code focus]
+        return `{{${key}}}`; // [!code focus]
+    }); // [!code focus]
+}
+```
+
+```ts tab="i18n.ts"
+import { RegisteredCharacters } from "@drincs/pixi-vn";
+import i18n from "i18next";
+import Backend from "i18next-chained-backend";
+import { initReactI18next } from "react-i18next";
+
+export const useI18n = () => {
+    if (!i18n.isInitialized) {
+        i18n.use(Backend)
+            .use(initReactI18next)
+            .init({
+                debug: false,
+                fallbackLng: "en",
+                lng: "en",
+                interpolation: {
+                    escapeValue: false,
+                },
+                load: "currentOnly",
+                missingInterpolationHandler(_text, value, _options) { // [!code focus]
+                    let key = value[1]; // [!code focus]
+                    let character = RegisteredCharacters.get(key); // [!code focus]
+                    if (character) { // [!code focus]
+                        return character.name; // [!code focus]
+                    } // [!code focus]
+                    return `[${key}]`; // [!code focus]
+                }, // [!code focus]
+            });
+    }
+};
+```
+
+</Accordion>
+
+<Accordion title="Replacement implementation" id="replacement-implementation">
+
 To use the character name in dialogues, you can take advantage of the <DynamicLink href="/ink/replacement">possibility of replacing portions of text</DynamicLink>. For example, you can use the following method:
 
-```ts tab="main.ts"
-import { onReplaceTextAfterTranslation } from '@drincs/pixi-vn-ink'
-import { getCharacterById } from "@drincs/pixi-vn";
+```ts name="utils/ink-utility.ts"
+import { RegisteredCharacters } from "@drincs/pixi-vn";
+import { onReplaceTextAfterTranslation } from "@drincs/pixi-vn-ink";
 
-onReplaceTextAfterTranslation((key) => {
-    let character = getCharacterById(key)
-    if (character) {
-        return character.name
-    }
-
-    // if return undefined, the system will not replace the character id
-    return undefined
-})
+export function initializeInk() {
+    onReplaceTextAfterTranslation((key) => { // [!code focus]
+        let character = RegisteredCharacters.get(key); // [!code focus]
+        if (character) { // [!code focus]
+            return character.name; // [!code focus]
+        } // [!code focus]
+ // [!code focus]
+        // if return undefined, the system will not replace the character id // [!code focus]
+        return undefined; // [!code focus]
+    }); // [!code focus]
+}
 ```
 
-```ink tab="ink/start.ink"
-=== start ===
-Hello, [liam_id].
--> DONE
-```
+</Accordion>
 
-```ts tab="values/characters.ts"
-import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
-
-export const liam = new CharacterBaseModel('liam_id', {
-    name: 'Liam',
-    surname: 'Smith',
-    age: 25,
-    icon: "https://example.com/liam.png",
-    color: "#9e2e12"
-});
-
-RegisteredCharacters.add([liam]);
-```
-
-Or if you are using [i18next](https://www.i18next.com/) for translation, you can use the following method:
-
-```ts tab="main.ts"
-import { onInkTranslate, onReplaceTextBeforeTranslation } from '@drincs/pixi-vn-ink'
-import { getCharacterById } from "@drincs/pixi-vn";
-import i18n from 'i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
-import { initReactI18next } from 'react-i18next';
-import strings_en from '../src/locales/strings_en.json';
-
-i18n
-    .use(LanguageDetector)
-    .use(initReactI18next)
-    .init({
-        debug: false,
-        fallbackLng: 'en',
-        lng: getUserLang(),
-        interpolation: {
-            escapeValue: false,
-        },
-        resources: {
-            en: strings_en,
-            // Add more languages here
-        },
-        missingInterpolationHandler(_text, value, _options) {
-            let key = value[1]
-            let character = getCharacterById(key)
-            if (character) {
-                return character.name
-            }
-            return `[${key}]`
-        },
-    });
-
-onReplaceTextBeforeTranslation((key) => {
-    return `{{${key}}}`
-})
-onInkTranslate((text) => {
-    return i18n.t(text)
-})
-```
-
-```ink tab="ink/start.ink"
-=== start ===
-Hello, [liam_id].
--> DONE
-```
-
-```ts tab="values/characters.ts"
-import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
-
-export const liam = new CharacterBaseModel('liam_id', {
-    name: 'Liam',
-    surname: 'Smith',
-    age: 25,
-    icon: "https://example.com/liam.png",
-    color: "#9e2e12"
-});
-
-RegisteredCharacters.add([liam]);
-```
+</Accordions>
 
 ## Edit
 
