@@ -11,7 +11,7 @@ Pixi’VN ti consente di scrivere narrazioni interattive utilizzando **_ink_**, 
 
 **Cos'è _ink_?** **_ink_** è un semplice linguaggio di scripting per storie interattive, utilizzato in giochi come 80 Days, Heaven's Vault e Sorcery! Per saperne di più, visita il [sito web di _ink_](https://www.inklestudios.com/ink/).
 
-L'integrazione **_ink_ + Pixi’VN** utilizza [inkjs](https://github.com/inkle/inkjs) e <DynamicLink href="/other-topics/pixi-vn-json">PixiVNJson</DynamicLink> per analizzare il codice **_ink_** e generare JSON che Pixi’VN può interpretare. This means JavaScript/TypeScript and **_ink_** share the same storage and canvas, and you can launch **_ink_** labels (or steps) from JavaScript/TypeScript and vice versa. Ottieni il meglio da entrambi i mondi: scrivi la narrazione in **_ink_** e usa JavaScript/TypeScript per i minigiochi o le animazioni avanzate.
+L'integrazione **_ink_ + Pixi’VN** utilizza [inkjs](https://github.com/inkle/inkjs) e <DynamicLink href="/other-topics/pixi-vn-json">PixiVNJson</DynamicLink> per analizzare il codice **_ink_** e generare JSON che Pixi’VN può interpretare. This means JavaScript/TypeScript and **_ink_** share the same storage and canvas, and you can launch **_ink_** `knots` (or `labels`) from JavaScript/TypeScript and vice versa. Ottieni il meglio da entrambi i mondi: scrivi la narrazione in **_ink_** e usa JavaScript/TypeScript per i minigiochi o le animazioni avanzate.
 
 ```ink title="ink/start.ink"
 === start ===
@@ -54,7 +54,7 @@ Stai iniziando un nuovo progetto Pixi'VN? Utilizza un <DynamicLink href="/start#
 
 </Callout>
 
-To install the _ink_ package in an existing JavaScript project, use one of the following commands:
+Per installare il pacchetto _ink_ in un progetto JavaScript esistente, utilizzare uno dei seguenti comandi:
 
 ```sh tab="npm"
 npm install @drincs/pixi-vn @drincs/pixi-vn-ink
@@ -92,7 +92,7 @@ Hello
 importInkText([inkText, ...])
 ```
 
-Ora puoi eseguire un nodo **_ink_** (o `label`) utilizzando le <DynamicLink href="/start/labels#run-a-label">funzioni Pixi'VN</DynamicLink>:
+Now you can run an **_ink_ `knot`** (or `label`) using <DynamicLink href="/start/labels#run-a-label">Pixi’VN functions</DynamicLink>:
 
 ```typescript title="main.ts"
 import { narration } from '@drincs/pixi-vn'
@@ -104,7 +104,11 @@ narration.callLabel(`start`, {})
 
 <Accordion title="Import text from .ink files" id="import-ink-files">
 
-This guide uses [Vite](https://vitejs.dev/), but the logic applies elsewhere.
+<Callout type="info">
+
+This guide uses [Vite](https://vitejs.dev/), but the same logic applies elsewhere.
+
+</Callout>
 
 Declare the `*.ink` module in `ink.d.ts`, then add `.ink` to `assetsInclude` in `vite.config.ts`. Import the file with `?raw` to get its text content.
 
@@ -133,7 +137,13 @@ declare module '*.ink' {
 
 <Accordion title="Import all .ink files from a folder" id="import-ink-folder">
 
-To import multiple `.ink` files, use `import.meta.glob`:
+<Callout type="info">
+
+This guide uses [Vite](https://vitejs.dev/), but the same logic applies elsewhere.
+
+</Callout>
+
+Per importare più file `.ink`, utilizzare `import.meta.glob`:
 
 ```ts tab="utils/ink-utility.ts"
 import { convertInkText, importInkText } from "@drincs/pixi-vn-ink";
@@ -169,7 +179,7 @@ export default defineConfig({
 
 <Accordion title="Vite.js plugin" id="vite-plugin">
 
-For a better developer experience, use the Vite plugin:
+Per una migliore esperienza di sviluppo, utilizza il plugin Vite:
 
 ```ts tab="vite.config.ts"
 import { defineConfig } from 'vite'
@@ -192,9 +202,9 @@ setupInkHmrListener()
 
 </Accordions>
 
-## Upcoming features
+## Prossime funzionalità
 
-These features are in development. Show your interest by liking or commenting on the issues.
+Queste funzionalità sono in fase di sviluppo. Show your interest by liking or commenting on the issues.
 
 - [Functions and Game Queries](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk#9-game-queries-and-functions) ([#11](https://github.com/DRincs-Productions/pixi-vn-ink/issues/11)):
   - [User-created functions](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk#5-functions) ([#32](https://github.com/DRincs-Productions/pixi-vn-ink/issues/32))
@@ -206,18 +216,18 @@ These features are in development. Show your interest by liking or commenting on
 - [`Tunnels`](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk#1-tunnels) ([#38](https://github.com/DRincs-Productions/pixi-vn-ink/issues/38))
 - [`Threads`](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk#2-threads) ([#39](https://github.com/DRincs-Productions/pixi-vn-ink/issues/39))
 
-## Syntax ignored by Pixi’VN
+## Sintassi ignorata da Pixi'VN
 
-Some _ink_ syntax is ignored by Pixi’VN. You can use these in your **_ink_ script** (e.g., for testing in Inky editor), but Pixi’VN will skip them.
+Pixi'VN ignora parte della sintassi _ink_. You can use these in your **_ink_ script** (e.g., for testing in Inky editor), but Pixi’VN will skip them.
 
 ### INCLUDE
 
-`INCLUDE` imports other **_ink_ files** in native _ink_.\
+`INCLUDE` imports **_ink_ files**.\
 In Pixi’VN, use `importInkText()` instead. `INCLUDE` is not handled.
 
-### Narration outside the knots
+### Narration outside the `knots`
 
-Narration outside the knots (or `labels`) is ignored, except for variables.
+Narration outside the `knots` (or `labels`) is ignored, except for variables.
 
 Ad esempio:
 
@@ -230,9 +240,9 @@ My name is John // ✅ This will be handled
 -> DONE // ✅ This will be handled
 ```
 
-## Differences between native _ink_ and Pixi’VN _ink_
+## Differenze tra _ink_ nativo e _ink_ Pixi’VN
 
-- in this case:
+- in questo caso:
 
   ```ink title="ink"
   { shuffle:
@@ -241,16 +251,16 @@ My name is John // ✅ This will be handled
   }
   ```
 
-    **In native _ink_**, you will see 2 different dialogues, the first one will be `2 of Diamonds.` and the second one will be `'You lose this time!' crowed the croupier.`.
+    **In native _ink_**, you will see two different dialogues, the first one will be `2 of Diamonds.` and the second one will be `'You lose this time!' crowed the croupier.`.
 
-    **In Pixi’VN _ink_**, you will not see 2 different dialogues, but the following dialogue: `2 of Diamonds.\n\n'You lose this time!' crowed the croupier.`. In <DynamicLink href="/ink/markup#markdown-on-ink">Markdown</DynamicLink> it will be displayed as:
+    **In Pixi’VN _ink_**, you will not see two different dialogues, but the following dialogue: `2 of Diamonds.\n\n'You lose this time!' crowed the croupier.`. In <DynamicLink href="/ink/markup#markdown-on-ink">Markdown</DynamicLink> it will be displayed like this:
 
   ```txt
   2 of Diamonds.
   'You lose this time!' crowed the croupier.
   ```
 
-- if a `weave` (In following example `shove`) is attached to a one time choice, and it is opened with `-> shove` it will not invalidate the one time choice. To invalidate it you will have to select the choice as usual.
+- if a `weave` (in following example `shove`) is attached to a one time choice, and it is opened with `-> shove` it will not invalidate the one time choice. Per invalidarlo dovrai selezionare la scelta come di consueto.
 
     Here is an example:
 
@@ -264,12 +274,12 @@ My name is John // ✅ This will be handled
   -> DONE
   ```
 
-    In case you take choice 1, the second time it will be opened `start`:
+    Nel caso in cui si scelga la scelta 1, la seconda volta verrà aperto `start`:
 
   - if you use **native _ink_**, you will only be able to choose choice `3`. The choice `2` is hidden because being "one time" **native _ink_** will know that you have already made this decision with `-> shove`.
   - if you use **Pixi’VN _ink_**, you will be able to choose choice `2` or `3`. The choice `2` is not hidden because **Pixi’VN _ink_** doesn't know that `shove` is paired with a choice.
 
-  To get the same logic as `start` both in **native _ink_** and **Pixi’VN _ink_** you will have to write the following code:
+  Per ottenere la stessa logica di `start` sia in **native _ink_** che in **Pixi’VN _ink_** dovrai scrivere il seguente codice:
 
   ```ink title="ink"
   -> start
