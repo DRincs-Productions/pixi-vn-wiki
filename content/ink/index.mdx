@@ -3,16 +3,13 @@ ink: "/ink.svg"
 title: "ink Language Integration"
 ---
 import { InkExample } from "@/components/ink-examples";
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
 Pixi’VN gives you the ability to write your own narrative using ***ink***, a scripting language for writing interactive narrative.
 
 The ***ink* + Pixi’VN integration**, exploits the [inkjs](https://github.com/inkle/inkjs) and <DynamicLink href="/other-topics/pixi-vn-json">PixiVNJson</DynamicLink> libraries, to parse ***ink* code** and generate a Json that can be interpreted by Pixi’VN. So Javascript/Typescript and ***ink*** share the same storage and canvas, and it is also possible to launch ***ink*** labels (or knots) from Javascript/Typescript and vice versa. This allows you to use the best of both languages. You can use ***ink*** to write the narration, while using Javascript/Typescript to create minigames or complex animations.
 
-**What is *ink*?**
-
-***ink*** is a scripting language for writing interactive narrative. It is used in games like 80 Days, Heaven's Vault, and Sorcery! to create branching stories. This language is very simple to learn.
-
-You can learn more about *ink* on the [*ink* website](https://www.inklestudios.com/ink/).
+**What is *ink*?** ***ink*** is a scripting language for writing interactive narrative. It is used in games like 80 Days, Heaven's Vault, and Sorcery! to create branching stories. This language is very simple to learn. You can learn more about *ink* on the [*ink* website](https://www.inklestudios.com/ink/).
 
 ```ink title="ink/start.ink"
 === start ===
@@ -41,37 +38,43 @@ He insisted that we hurried home to Savile Row
 
 <InkExample />
 
-## Why use *ink* integration?
+## Why?
 
 Write a narrative in **Javascript/Typescript** slows you down a lot, because you have to write a lot of code, and is also not suitable for novice developers. So ***ink*** is a good alternative to write the narrative, because it is very simple to learn and write.
 
 The novice developers can use a <DynamicLink href="/start#project-initialization">*ink* template</DynamicLink> to start developing just with ***ink***, and then gradually learn Javascript/Typescript to create more complex features.
 
-## Start using *ink* in Pixi’VN
+## Installation
 
-If you have not created a project yet then it is recommended to use a <DynamicLink href="/start#project-initialization">Pixi’VN + *ink* template</DynamicLink> to start developing with ***ink***.
+<Callout title="Templates" type="info">
 
-Otherwise to add ***ink*** to your Pixi’VN project you need to install the `@drincs/pixi-vn-ink` package.
+If you are starting a new Pixi'VN project, it is recommended to use one of the <DynamicLink href="/start#project-initialization">templates</DynamicLink> that already include *ink*.
+
+</Callout>
+
+To install the *ink* package in an existing JavaScript project, use one of the following commands:
 
 ```sh tab="npm"
-npm install @drincs/pixi-vn-ink
+npm install @drincs/pixi-vn @drincs/pixi-vn-ink
 ```
 
 ```sh tab="yarn"
-yarn add @drincs/pixi-vn-ink
+yarn add @drincs/pixi-vn @drincs/pixi-vn-ink
 ```
 
 ```sh tab="pnpm"
-pnpm add @drincs/pixi-vn-ink
+pnpm add @drincs/pixi-vn @drincs/pixi-vn-ink
 ```
 
 ```sh tab="bun"
-bun add @drincs/pixi-vn-ink
+bun add @drincs/pixi-vn @drincs/pixi-vn-ink
 ```
 
 ```sh tab="deno"
-deno install npm:@drincs/pixi-vn-ink
+deno install npm:@drincs/pixi-vn npm:@drincs/pixi-vn-ink
 ```
+
+### Initialize
 
 After installing the package you need to use the `importInkText()` function to import the ***ink* script** into your project.
 
@@ -95,7 +98,9 @@ import { narration } from '@drincs/pixi-vn'
 narration.callLabel(`start`, {})
 ```
 
-### Import text contained in .ink files
+<Accordions>
+
+<Accordion title="Import text contained in .ink files" id="import-ink-files">
 
 For this guide we will use the [Vite](https://vitejs.dev/) project, but you can use the same logic in other projects.
 
@@ -125,6 +130,44 @@ declare module '*.ink' {
     export default value
 }
 ```
+
+</Accordion>
+
+<Accordion title="Import .ink files from a folder" id="import-ink-folder">
+
+If you have many `.ink` files in a folder, you can use `import.meta.glob` to import all the files in the folder.
+
+```ts tab="utils/ink-utility.ts"
+import { convertInkText, importInkText } from "@drincs/pixi-vn-ink";
+
+async function getInkText() {
+    const files = import.meta.glob<string>("../ink/*.{ink,txt}", { query: "?raw", import: "default" });
+    return await Promise.all(
+        Object.values(files).map(async (importFile) => {
+            return await importFile();
+        })
+    );
+}
+
+export async function importAllInkLabels() {
+    let fileEntries = await getInkText();
+    await importInkText(fileEntries);
+}
+
+export async function convertInkToJson() {
+    let fileEntries = await getInkText();
+    return await Promise.all(fileEntries.map((data) => convertInkText(data)));
+}
+```
+
+```ts tab="vite.config.ts"
+export default defineConfig({
+  // ...
+  assetsInclude: ['**/*.ink'],
+})
+```
+
+</Accordions>
 
 ## *ink* features in development
 
