@@ -237,7 +237,7 @@ export function NativeJumpExample() {
             files={{
                 "ink/start.ts": `export const startLabel = \`=== start ===
 Start
--> after // [!code focus]
+-> after
 
 === after ===
 After
@@ -254,7 +254,7 @@ export function JumpExample() {
             files={{
                 "ink/start.ts": `export const startLabel = \`=== start ===
 Start
-# jump javascript_label_id // [!code focus]
+# jump javascript_label_id
 Start End
 -> DONE\`;`,
             }}
@@ -268,7 +268,7 @@ export function CallExample() {
             files={{
                 "ink/start.ts": `export const startLabel = \`=== start ===
 Start
-# call after // [!code focus]
+# call after
 Start End
 -> DONE
 
