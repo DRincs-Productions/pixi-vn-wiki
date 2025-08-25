@@ -110,7 +110,13 @@ Questa guida utilizza [Vite](https://vitejs.dev/), ma la stessa logica si applic
 
 </Callout>
 
-Declare the `*.ink` module in `ink.d.ts`, then add `.ink` to `assetsInclude` in `vite.config.ts`. Import the file with `?raw` to get its text content.
+To import `.ink` files, you need to configure your project to handle them as text files.
+
+Below are the steps to do this:
+
+- Declare the `*.ink` module in `ink.d.ts`.
+- Add `.ink` to `assetsInclude` in `vite.config.ts`.
+- Import the file with `?raw` to get its text content.
 
 ```ts tab="main.ts"
 import { importInkText } from '@drincs/pixi-vn-ink'
@@ -204,7 +210,13 @@ setupInkHmrListener()
 
 ## Prossime funzionalità
 
-Queste funzionalità sono in fase di sviluppo. Show your interest by liking or commenting on the issues.
+Queste funzionalità sono in fase di sviluppo.
+
+<Callout type="info">
+
+Mostra il tuo interesse mettendo "Mi piace" o commentando gli argomenti.
+
+</Callout>
 
 - [Functions and Game Queries](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk#9-game-queries-and-functions) ([#11](https://github.com/DRincs-Productions/pixi-vn-ink/issues/11)):
   - [User-created functions](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk#5-functions) ([#32](https://github.com/DRincs-Productions/pixi-vn-ink/issues/32))
@@ -218,16 +230,15 @@ Queste funzionalità sono in fase di sviluppo. Show your interest by liking or c
 
 ## Sintassi ignorata da Pixi'VN
 
-Pixi'VN ignora parte della sintassi _ink_. You can use these in your **_ink_ script** (e.g., for testing in Inky editor), but Pixi’VN will skip them.
+Pixi'VN ignora parte della sintassi _ink_. You can use these in your **_ink_ script** (e.g., for testing in Inky editor), but Pixi’VN will ignore them.
 
 ### INCLUDE
 
-`INCLUDE` imports **_ink_ files**.\
-In Pixi’VN, use `importInkText()` instead. `INCLUDE` is not handled.
+`INCLUDE` is an _ink_ directive to include another _ink_ file. In Pixi’VN, you should use `importInkText()` to load multiple _ink_ files instead, so `INCLUDE` is ignored.
 
-### Narration outside the `knots`
+### Narrazione fuori dai `knots`
 
-Narration outside the `knots` (or `labels`) is ignored, except for variables.
+La narrazione al di fuori dei `knots` (o `labels`) viene ignorata, fatta eccezione per le variabili.
 
 Ad esempio:
 
@@ -251,18 +262,18 @@ My name is John // ✅ This will be handled
   }
   ```
 
-    **In native _ink_**, you will see two different dialogues, the first one will be `2 of Diamonds.` and the second one will be `'You lose this time!' crowed the croupier.`.
+    **Nella versione nativa di _ink_**, vedrai due dialoghi diversi, il primo sarà `2 of Diamonds.` e il secondo sarà `'You lose this time!' crowed the croupier.`.
 
-    **In Pixi’VN _ink_**, you will not see two different dialogues, but the following dialogue: `2 of Diamonds.\n\n'You lose this time!' crowed the croupier.`. In <DynamicLink href="/ink/markup#markdown-on-ink">Markdown</DynamicLink> it will be displayed like this:
+    **In Pixi’VN _ink_**, non vedrai due dialoghi diversi, ma il seguente dialogo: `2 of Diamonds.\n\n'You lose this time!' crowed the croupier.`. In <DynamicLink href="/ink/markup#markdown-on-ink">Markdown</DynamicLink> verrà visualizzato in questo modo:
 
   ```txt
   2 of Diamonds.
   'You lose this time!' crowed the croupier.
   ```
 
-- if a `weave` (in following example `shove`) is attached to a one time choice, and it is opened with `-> shove` it will not invalidate the one time choice. Per invalidarlo dovrai selezionare la scelta come di consueto.
+- se un `weave` (nell'esempio seguente `shove`) è associato a una scelta una tantum e viene aperto con `-> shove`, ciò non invaliderà la scelta una tantum. Per invalidarlo dovrai selezionare la scelta come di consueto.
 
-    Here is an example:
+    Ecco un esempio:
 
   ```ink title="ink"
   -> start
@@ -274,7 +285,7 @@ My name is John // ✅ This will be handled
   -> DONE
   ```
 
-    Nel caso in cui si scelga la scelta 1, la seconda volta verrà aperto `start`:
+    In case you take choice `1`, the second time it will be opened `start`:
 
   - if you use **native _ink_**, you will only be able to choose choice `3`. The choice `2` is hidden because being "one time" **native _ink_** will know that you have already made this decision with `-> shove`.
   - if you use **Pixi’VN _ink_**, you will be able to choose choice `2` or `3`. The choice `2` is not hidden because **Pixi’VN _ink_** doesn't know that `shove` is paired with a choice.
