@@ -1,7 +1,6 @@
 import { inkSource, nqtrSource, otherTopicsSource, renpySource, source } from "@/lib/source";
 import { Image } from "fumadocs-core/framework";
 import { DocsLayoutProps, LinkItemType } from "fumadocs-ui/layouts/docs";
-import { SidebarOptions } from "fumadocs-ui/layouts/docs/shared";
 import {
     Album,
     BookOpenText,
@@ -455,8 +454,8 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
         name: "ink",
         children: [
             { type: "separator", name: t("introduction") },
-            { type: "page", name: "Inky", url: `${preUrl}/inky` },
             { type: "page", name: t("start"), icon: <Album />, url: `${preUrl}/ink` },
+            { type: "page", name: "Inky", url: `${preUrl}/ink/inky` },
             { type: "separator", name: "First steps" },
             { type: "page", name: t("character"), url: `${preUrl}/ink/character`, icon: <User /> },
             { type: "page", name: "Open a knot", url: `${preUrl}/ink/label` },
@@ -615,7 +614,7 @@ export async function nqtrTree(lang?: string): Promise<DocsLayoutProps["tree"]> 
 }
 
 export async function sidebar(lang?: string): Promise<
-    Partial<SidebarOptions> & {
+    Partial<DocsLayoutProps["sidebar"]> & {
         enabled?: boolean;
         component?: ReactNode;
     }
