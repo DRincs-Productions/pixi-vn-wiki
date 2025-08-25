@@ -299,7 +299,7 @@ export function PauseExample() {
         <InkExample
             files={{
                 "ink/start.ts": `export const startLabel = \`=== start ===
-# image add alien eggHead
+# show image alien eggHead
 # pause
 Hello, world!
 -> DONE\`;`,
