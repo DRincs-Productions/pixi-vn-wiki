@@ -230,3 +230,53 @@ RegisteredCharacters.add(mc);`,
         />
     );
 }
+
+export function NativeJumpExample() {
+    return (
+        <InkExample
+            files={{
+                "ink/start.ts": `export const startLabel = \`=== start ===
+Start
+-> after // [!code focus]
+
+=== after ===
+After
+End
+-> DONE\`;`,
+            }}
+        />
+    );
+}
+
+export function JumpExample() {
+    return (
+        <InkExample
+            files={{
+                "ink/start.ts": `export const startLabel = \`=== start ===
+Start
+# jump javascript_label_id // [!code focus]
+Start End
+-> DONE\`;`,
+            }}
+        />
+    );
+}
+
+export function CallExample() {
+    return (
+        <InkExample
+            files={{
+                "ink/start.ts": `export const startLabel = \`=== start ===
+Start
+# call after // [!code focus]
+Start End
+-> DONE
+
+=== after ===
+After
+End
+-> DONE\`;`,
+            }}
+        />
+    );
+}
