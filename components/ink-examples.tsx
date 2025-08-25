@@ -40,6 +40,7 @@ import { startLabel } from "./ink/start";
 import "./styles.css";
 import { defineAssets } from "./utils/assets-utility";
 import "./values/characters";
+import { initializeInk } from "./utils/ink-utility";
 
 // Canvas setup with PIXI
 const body = document.body;
