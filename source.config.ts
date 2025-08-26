@@ -4,7 +4,7 @@ import { defineConfig, defineDocs, frontmatterSchema, metaSchema } from "fumadoc
 // see https://fumadocs.vercel.app/docs/mdx/collections#define-docs
 export const docs = defineDocs({
     // Specifies the directory where your docs are located
-    dir: ["content/start"],
+    dir: "content/start",
     docs: {
         schema: frontmatterSchema,
     },
@@ -72,7 +72,7 @@ export default defineConfig({
 
 export const inkDocs = defineDocs({
     // Specifies the directory where your docs are located
-    dir: ["content/ink"],
+    dir: "content/ink",
     docs: {
         schema: frontmatterSchema,
     },
@@ -83,7 +83,7 @@ export const inkDocs = defineDocs({
 
 export const otherTopicsDocs = defineDocs({
     // Specifies the directory where your docs are located
-    dir: ["content/other-topics"],
+    dir: "content/other-topics",
     docs: {
         schema: frontmatterSchema,
     },
@@ -94,7 +94,7 @@ export const otherTopicsDocs = defineDocs({
 
 export const renpyDocs = defineDocs({
     // Specifies the directory where your docs are located
-    dir: ["content/renpy"],
+    dir: "content/renpy",
     docs: {
         schema: frontmatterSchema,
     },
@@ -105,7 +105,7 @@ export const renpyDocs = defineDocs({
 
 export const nqtrDocs = defineDocs({
     // Specifies the directory where your docs are located
-    dir: ["content/nqtr"],
+    dir: "content/nqtr",
     docs: {
         schema: frontmatterSchema,
     },
