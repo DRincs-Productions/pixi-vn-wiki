@@ -139,7 +139,7 @@ export function initializeInk() {
             }}
             previewHeight={previewHeight}
             dependencies={{
-                "@drincs/pixi-vn-ink": "^0.9.7",
+                "@drincs/pixi-vn-ink": "^0.9.9",
             }}
         />
     );
@@ -187,9 +187,7 @@ export function CharacterEditExample() {
     return (
         <InkExample
             files={{
-                "ink/start.ts": `export const startLabel = \`VAR _input_value_ = ""
-
-=== start ===
+                "ink/start.ts": `export const startLabel = \`=== start ===
 mc: Hello, I'm [mc].
 # request input string
 mc: My name is:
@@ -212,9 +210,7 @@ export function CharacterEmotionsExample() {
     return (
         <InkExample
             files={{
-                "ink/start.ts": `export const startLabel = \`VAR _input_value_ = ""
-
-=== start ===
+                "ink/start.ts": `export const startLabel = \`=== start ===
 mc: Hello, I'm [mc].
 # request input string
 mc: My name is:
