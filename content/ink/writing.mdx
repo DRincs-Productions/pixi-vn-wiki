@@ -337,28 +337,34 @@ You open the gate, and step out onto the path.
 
 Using diverts, the writer can branch the flow, and join it back up again, without showing the player that the flow has rejoined.
 
- === back_in_london ===
+```ink
+=== back_in_london ===
 
- We arrived into London at 9.45pm exactly.
+We arrived into London at 9.45pm exactly.
 
-* "There is not a moment to lose!"[] I declared.
+*	"There is not a moment to lose!"[] I declared.
   -> hurry_outside
 
-* "Monsieur, let us savour this moment!"[] I declared.
+*	"Monsieur, let us savour this moment!"[] I declared.
   My master clouted me firmly around the head and dragged me out of the door.
   -> dragged_outside
 
-* [We hurried home] -> hurry_outside
+*	[We hurried home] -> hurry_outside
 
- === hurry_outside ===
- We hurried home to Savile Row -> as_fast_as_we_could
 
- === dragged_outside ===
- He insisted that we hurried home to Savile Row
- -> as_fast_as_we_could
+=== hurry_outside ===
+We hurried home to Savile Row -> as_fast_as_we_could
 
- === as_fast_as_we_could ===
- <> as fast as we could.
+
+=== dragged_outside ===
+He insisted that we hurried home to Savile Row
+-> as_fast_as_we_could
+
+
+=== as_fast_as_we_could ===
+<> as fast as we could.
+```
+
 
 ### The story flow
 
@@ -376,9 +382,11 @@ See the sections on [Varying Text](#8-variable-text) and [Conditional Choices](#
 
 Oh, and the following is legal and not a great idea:
 
- === round ===
- and
- -> round
+```ink
+=== round ===
+and
+-> round
+```
 
 ## 6) Includes and Stitches
 
@@ -388,15 +396,17 @@ As stories get longer, they become more confusing to keep organised without some
 
 Knots can include sub-sections called "stitches". These are marked using a single equals sign.
 
- === the_orient_express ===
- = in_first_class
+```ink
+=== the_orient_express ===
+= in_first_class
   ...
- = in_third_class
+= in_third_class
   ...
- = in_the_guards_van
+= in_the_guards_van
   ...
- = missed_the_train
+= missed_the_train
   ...
+```
 
 One could use a knot for a scene, for instance, and stitches for the events within the scene.
 
@@ -404,57 +414,66 @@ One could use a knot for a scene, for instance, and stitches for the events with
 
 A stitch can be diverted to using its "address".
 
-* [Travel in third class]
+```ink
+*	[Travel in third class]
   -> the_orient_express.in_third_class
 
-* [Travel in the guard's van]
+*	[Travel in the guard's van]
   -> the_orient_express.in_the_guards_van
+```
 
 ### The first stitch is the default
 
 Diverting to a knot which contains stitches will divert to the first stitch in the knot. So:
 
-* [Travel in first class]
+```ink
+*	[Travel in first class]
   "First class, Monsieur. Where else?"
   -> the_orient_express
+```
 
 is the same as:
 
-* [Travel in first class]
+```ink
+*	[Travel in first class]
   "First class, Monsieur. Where else?"
   -> the_orient_express.in_first_class
+```
 
 (...unless we move the order of the stitches around inside the knot!)
 
 You can also include content at the top of a knot outside of any stitch. However, you need to remember to divert out of it - the engine *won't* automatically enter the first stitch once it's worked its way through the header content.
 
- === the_orient_express ===
+```ink
+=== the_orient_express ===
 
- We boarded the train, but where?
+We boarded the train, but where?
+*	[First class] -> in_first_class
+*	[Second class] -> in_second_class
 
-* [First class] -> in_first_class
-* [Second class] -> in_second_class
-
- = in_first_class
+= in_first_class
   ...
- = in_second_class
+= in_second_class
   ...
+```
+
 
 ### Local diverts
 
 From inside a knot, you don't need to use the full address for a stitch.
 
- -> the_orient_express
+```ink
+-> the_orient_express
 
- === the_orient_express ===
- = in_first_class
+=== the_orient_express ===
+= in_first_class
   I settled my master.
+  *	[Move to third class]
+    -> in_third_class
 
-* [Move to third class]
-   -> in_third_class
-
- = in_third_class
+= in_third_class
   I put myself in third.
+```
 
 This means stitches and knots can't share names, but several knots can contain the same stitch name. (So both the Orient Express and the SS Mongolia can have first class.)
 
@@ -464,13 +483,16 @@ The compiler will warn you if ambiguous names are used.
 
 You can also split your content across multiple files, using an include statement.
 
- INCLUDE newspaper.ink
- INCLUDE cities/vienna.ink
- INCLUDE journeys/orient_express.ink
+```ink
+INCLUDE newspaper.ink
+INCLUDE cities/vienna.ink
+INCLUDE journeys/orient_express.ink
+```
 
 Include statements should always go at the top of a file, and not inside knots.
 
 There are no rules about what file a knot must be in to be diverted to. (In other words, separating files has no effect on the game's namespacing).
+
 
 ## 7) Varying Choices
 
@@ -478,27 +500,30 @@ There are no rules about what file a knot must be in to be diverted to. (In othe
 
 By default, every choice in the game can only be chosen once. If you don't have loops in your story, you'll never notice this behaviour. But if you do use loops, you'll quickly notice your options disappearing...
 
- === find_help ===
+```ink
+=== find_help ===
 
   You search desperately for a friendly face in the crowd.
-
-* The woman in the hat[?] pushes you roughly aside. -> find_help
-* The man with the briefcase[?] looks disgusted as you stumble past him. -> find_help
+  *	The woman in the hat[?] pushes you roughly aside. -> find_help
+  *	The man with the briefcase[?] looks disgusted as you stumble past him. -> find_help
+```
 
 produces:
 
- You search desperately for a friendly face in the crowd.
+```
+	You search desperately for a friendly face in the crowd.
 
- 1: The woman in the hat?
- 2: The man with the briefcase?
+	1: The woman in the hat?
+	2: The man with the briefcase?
 
- > 1
- The woman in the hat pushes you roughly aside.
- You search desperately for a friendly face in the crowd.
+	> 1
+	The woman in the hat pushes you roughly aside.
+	You search desperately for a friendly face in the crowd.
 
- 1: The man with the briefcase?
+	1: The man with the briefcase?
 
- >
+	>
+```
 
 ... and on the next loop you'll have no options left.
 
@@ -506,76 +531,86 @@ produces:
 
 The above example stops where it does, because the next choice ends up in an "out of content" run-time error.
 
- > 1
- The man with the briefcase looks disgusted as you stumble past him.
- You search desperately for a friendly face in the crowd.
+```
+	> 1
+	The man with the briefcase looks disgusted as you stumble past him.
+	You search desperately for a friendly face in the crowd.
 
- Runtime error in tests/test.ink line 6: ran out of content. Do you need a '-> DONE' or '-> END'?
+	Runtime error in tests/test.ink line 6: ran out of content. Do you need a '-> DONE' or '-> END'?
+```
 
 We can resolve this with a 'fallback choice'. Fallback choices are never displayed to the player, but are 'chosen' by the game if no other options exist.
 
 A fallback choice is simply a "choice without choice text":
 
-* -> out_of_options
+```ink
+*	-> out_of_options
+```
 
 And, in a slight abuse of syntax, we can make a default choice with content in it, using an "choice then arrow":
 
-* ->
+```ink
+* 	->
   Mulder never could explain how he got out of that burning box car. -> season_2
+```
 
 #### Example of a fallback choice
 
 Adding this into the previous example gives us:
 
- === find_help ===
+```ink
+=== find_help ===
 
   You search desperately for a friendly face in the crowd.
-
-* The woman in the hat[?] pushes you roughly aside. -> find_help
-* The man with the briefcase[?] looks disgusted as you stumble past him. -> find_help
-* ->
-   But it is too late: you collapse onto the station platform. This is the end.
-   -> END
+  *	The woman in the hat[?] pushes you roughly aside. -> find_help
+  *	The man with the briefcase[?] looks disgusted as you stumble past him. -> find_help
+  *	->
+    But it is too late: you collapse onto the station platform. This is the end.
+    -> END
+```
 
 and produces:
 
- You search desperately for a friendly face in the crowd.
+```
+	You search desperately for a friendly face in the crowd.
 
- 1: The woman in the hat?
- 2: The man with the briefcase?
+	1: The woman in the hat?
+	2: The man with the briefcase?
 
- > 1
- The woman in the hat pushes you roughly aside.
- You search desperately for a friendly face in the crowd.
+	> 1
+	The woman in the hat pushes you roughly aside.
+	You search desperately for a friendly face in the crowd.
 
- 1: The man with the briefcase?
+	1: The man with the briefcase?
 
- > 1
- The man with the briefcase looks disgusted as you stumble past him.
- You search desperately for a friendly face in the crowd.
- But it is too late: you collapse onto the station platform. This is the end.
+	> 1
+	The man with the briefcase looks disgusted as you stumble past him.
+	You search desperately for a friendly face in the crowd.
+	But it is too late: you collapse onto the station platform. This is the end.
+```
+
 
 ### Sticky choices
 
 The 'once-only' behaviour is not always what we want, of course, so we have a second kind of choice: the "sticky" choice. A sticky choice is simply one that doesn't get used up, and is marked by a `+` bullet.
 
- === homers_couch ===
-
-* [Eat another donut]
-   You eat another donut. -> homers_couch
-
-* [Get off the couch]
-   You struggle up off the couch to go and compose epic poetry.
-   -> END
+```ink
+=== homers_couch ===
+  +	[Eat another donut]
+    You eat another donut. -> homers_couch
+  *	[Get off the couch]
+    You struggle up off the couch to go and compose epic poetry.
+    -> END
+```
 
 Fallback choices can be sticky too.
 
- === conversation_loop
-
-* [Talk about the weather] -> chat_weather
-* [Talk about the children] -> chat_children
-
-* -> sit_in_silence_again
+```ink
+=== conversation_loop
+  *	[Talk about the weather] -> chat_weather
+  *	[Talk about the children] -> chat_children
+  +	-> sit_in_silence_again
+```
 
 ### Conditional Choices
 
@@ -583,11 +618,12 @@ You can also turn choices on and off by hand. **ink** has quite a lot of logic a
 
 Every knot/stitch in the game has a unique address (so it can be diverted to), and we use the same address to test if that piece of content has been seen.
 
-* { not visit_paris }  [Go to Paris] -> visit_paris
+```ink
+*	{ not visit_paris } 	[Go to Paris] -> visit_paris
++ 	{ visit_paris 	 } 		[Return to Paris] -> visit_paris
 
-* { visit_paris   }   [Return to Paris] -> visit_paris
-
-* { visit_paris.met_estelle } [ Telephone Mme Estelle ] -> phone_estelle
+*	{ visit_paris.met_estelle } [ Telephone Mme Estelle ] -> phone_estelle
+```
 
 Note that the test `knot_name` is true if *any* stitch inside that knot has been seen.
 
@@ -597,16 +633,19 @@ Note also that conditionals don't override the once-only behaviour of options, s
 
 You can use several logical tests on an option; if you do, *all* the tests must all be passed for the option to appear.
 
-* { not visit_paris }  [Go to Paris] -> visit_paris
-
-* { visit_paris } { not bored_of_paris }
+```ink
+*	{ not visit_paris } 	[Go to Paris] -> visit_paris
++ 	{ visit_paris } { not bored_of_paris }
   [Return to Paris] -> visit_paris
+```
 
 #### Logical operators: AND and OR
 
 The above "multiple conditions" are really just conditions with an the usual programming AND operator. Ink supports `and` (also written as `&&`) and `or` (also written as `||`) in the usual way, as well as brackets.
 
-* { not (visit_paris or visit_rome) && (visit_london || visit_new_york) } [ Wait. Go where? I'm confused. ] -> visit_someplace
+```ink
+*	{ not (visit_paris or visit_rome) && (visit_london || visit_new_york) } [ Wait. Go where? I'm confused. ] -> visit_someplace
+```
 
 For non-programmers `X and Y` means both X and Y must be true. `X or Y` means either or both. We don't have a `xor`.
 
@@ -616,17 +655,23 @@ You can also use the standard `!` for `not`, though it'll sometimes confuse the 
 
 The test:
 
-* {seen_clue} [Accuse Mr Jefferson]
+```ink
+*	{seen_clue} [Accuse Mr Jefferson]
+```
 
 is actually testing an *integer* and not a true/false flag. A knot or stitch used this way is actually an integer variable containing the number of times the content at the address has been seen by the player.
 
 If it's non-zero, it'll return true in a test like the one above, but you can also be more specific as well:
 
+```ink
 * {seen_clue > 3} [Flat-out arrest Mr Jefferson]
+```
+
 
 #### Advanced: more logic
 
 **ink** supports a lot more logic and conditionality than covered here - see the section on [variables and logic](#part-3-variables-and-logic).
+
 
 ## 8) Variable Text
 
