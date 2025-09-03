@@ -1700,9 +1700,7 @@ There's one other class of multiline block, which expands on the alternatives sy
 	-  I entered the casino again.
 	-  Once more, I went inside.
 }
-```
 
-```ink
 // Shuffle: show one at random
 At the table, I drew a card. <>
 { shuffle:
@@ -1711,18 +1709,14 @@ At the table, I drew a card. <>
 	- 	2 of Diamonds.
 		'You lose this time!' crowed the croupier.
 }
-```
 
-```ink
 // Cycle: show each in turn, and then cycle
 { cycle:
 	- I held my breath.
 	- I waited impatiently.
 	- I paused.
 }
-```
 
-```ink
 // Once: show each, once, in turn, until all have been shown
 { once:
 	- Would my luck hold?
@@ -1762,23 +1756,24 @@ There are two other versions of shuffle:
 
 Sometimes, a global variable is unwieldy. **ink** provides temporary variables for quick calculations of things.
 
- === near_north_pole ===
-  ~ temp number_of_warm_things = 0
-  { blanket:
-   ~ number_of_warm_things++
-  }
-  { ear_muffs:
-   ~ number_of_warm_things++
-  }
-  { gloves:
-   ~ number_of_warm_things++
-  }
-  { number_of_warm_things > 2:
-   Despite the snow, I felt incorrigibly snug.
-
-* else:
-   That night I was colder than I have ever been.
-  }
+```ink
+=== near_north_pole ===
+	~ temp number_of_warm_things = 0
+	{ blanket:
+		~ number_of_warm_things++
+	}
+	{ ear_muffs:
+		~ number_of_warm_things++
+	}
+	{ gloves:
+		~ number_of_warm_things++
+	}
+	{ number_of_warm_things > 2:
+		Despite the snow, I felt incorrigibly snug.
+	- else:
+		That night I was colder than I have ever been.
+	}
+```
 
 The value in a temporary variable is thrown away after the story leaves the stitch in which it was defined.
 
@@ -1786,17 +1781,20 @@ The value in a temporary variable is thrown away after the story leaves the stit
 
 A particularly useful form of temporary variable is a parameter. Any knot or stitch can be given a value as a parameter.
 
-* [Accuse Hasting]
-   -> accuse("Hastings")
-* [Accuse Mrs Black]
-   -> accuse("Claudia")
-* [Accuse myself]
-   -> accuse("myself")
+```ink
+*	[Accuse Hasting]
+		-> accuse("Hastings")
+*	[Accuse Mrs Black]
+		-> accuse("Claudia")
+*	[Accuse myself]
+		-> accuse("myself")
 
- === accuse(who) ===
-  "I accuse {who}!" Poirot declared.
-  "Really?" Japp replied. "{who == "myself":You did it?|{who}?}"
-  "And why not?" Poirot shot back.
+=== accuse(who) ===
+	"I accuse {who}!" Poirot declared.
+	"Really?" Japp replied. "{who == "myself":You did it?|{who}?}"
+	"And why not?" Poirot shot back.
+```
+
 
 ... and you'll need to use parameters if you want to pass a temporary value from one stitch to another!
 
@@ -1804,46 +1802,57 @@ A particularly useful form of temporary variable is a parameter. Any knot or sti
 
 Temporary variables are safe to use in recursion (unlike globals), so the following will work.
 
- -> add_one_to_one_hundred(0, 1)
+```ink
+-> add_one_to_one_hundred(0, 1)
 
- === add_one_to_one_hundred(total, x) ===
-  ~ total = total + x
-  { x == 100:
-   -> finished(total)
+=== add_one_to_one_hundred(total, x) ===
+	~ total = total + x
+	{ x == 100:
+		-> finished(total)
+	- else:
+		-> add_one_to_one_hundred(total, x + 1)
+	}
 
-* else:
-   -> add_one_to_one_hundred(total, x + 1)
-  }
+=== finished(total) ===
+	"The result is {total}!" you announce.
+	Gauss stares at you in horror.
+	-> END
+```
 
- === finished(total) ===
-  "The result is {total}!" you announce.
-  Gauss stares at you in horror.
-  -> END
 
 (In fact, this kind of definition is useful enough that **ink** provides a special kind of knot, called, imaginatively enough, a `function`, which comes with certain restrictions and can return a value. See the section below.)
+
 
 #### Advanced: sending divert targets as parameters
 
 Knot/stitch addresses are a type of value, indicated by a `->` character, and can be stored and passed around. The following is therefore legal, and often useful:
 
- === sleeping_in_hut ===
-  You lie down and close your eyes.
-  -> generic_sleep (-> waking_in_the_hut)
+```ink
+=== sleeping_in_hut ===
+	You lie down and close your eyes.
+	-> generic_sleep (-> waking_in_the_hut)
 
- ===  generic_sleep (-> waking)
-  You sleep perchance to dream etc. etc.
-  -> waking
+===	 generic_sleep (-> waking)
+	You sleep perchance to dream etc. etc.
+	-> waking
 
- === waking_in_the_hut
-  You get back to your feet, ready to continue your journey.
+=== waking_in_the_hut
+	You get back to your feet, ready to continue your journey.
+```
 
 ...but note the `->` in the `generic_sleep` definition: that's the one case in **ink** where a parameter needs to be typed: because it's too easy to otherwise accidentally do the following:
 
- === sleeping_in_hut ===
-  You lie down and close your eyes.
-  -> generic_sleep (waking_in_the_hut)
+```ink
+=== sleeping_in_hut ===
+	You lie down and close your eyes.
+	-> generic_sleep (waking_in_the_hut)
+```
 
 ... which sends the read count of `waking_in_the_hut` into the sleeping knot, and then attempts to divert to it.
+
+
+
+
 
 ## 5) Functions
 
@@ -1852,13 +1861,12 @@ The use of parameters on knots means they are almost functions in the usual sens
 **ink** includes functions: they are knots, with the following limitations and features:
 
 A function:
-
-* cannot contain stitches
-* cannot use diverts or offer choices
-* can call other functions
-* can include printed content
-* can return a value of any type
-* can recurse safely
+- cannot contain stitches
+- cannot use diverts or offer choices
+- can call other functions
+- can include printed content
+- can return a value of any type
+- can recurse safely
 
 (Some of these may seem quite limiting, but for more story-oriented call-stack-style features, see the section on [Tunnels](#1-tunnels).)
 
@@ -1868,34 +1876,41 @@ Return values are provided via the `~ return` statement.
 
 To define a function, simply declare a knot to be one:
 
- === function say_yes_to_everything ===
-  ~ return true
+```ink
+=== function say_yes_to_everything ===
+	~ return true
 
- === function lerp(a, b, k) ===
-  ~ return ((b - a) * k) + a
+=== function lerp(a, b, k) ===
+	~ return ((b - a) * k) + a
+```
 
 Functions are called by name, and with brackets, even if they have no parameters:
 
- ~ x = lerp(2, 8, 0.3)
+```ink
+~ x = lerp(2, 8, 0.3)
 
-* {say_yes_to_everything()} 'Yes.'
+*	{say_yes_to_everything()} 'Yes.'
+```
 
 As in any other language, a function, once done, returns the flow to wherever it was called from - and despite not being allowed to divert the flow, functions can still call other functions.
 
- === function say_no_to_nothing ===
-  ~ return say_yes_to_everything()
+```ink
+=== function say_no_to_nothing ===
+	~ return say_yes_to_everything()
+```
 
 ### Functions don't have to return anything
 
 A function does not need to have a return value, and can simply do something that is worth packaging up:
 
- === function harm(x) ===
-  { stamina < x:
-   ~ stamina = 0
-
-* else:
-   ~ stamina = stamina - x
-  }
+```ink
+=== function harm(x) ===
+	{ stamina < x:
+		~ stamina = 0
+	- else:
+		~ stamina = stamina - x
+	}
+```
 
 ...though remember a function cannot divert, so while the above prevents a negative Stamina value, it won't kill a player who hits zero.
 
@@ -1905,114 +1920,128 @@ Functions can be called on `~` content lines, but can also be called during a pi
 
 Content is, by default, 'glued in', so the following:
 
- Monsieur Fogg was looking {describe_health(health)}.
+```ink
+Monsieur Fogg was looking {describe_health(health)}.
 
- === function describe_health(x) ===
- {
-
-* x == 100:
-  ~ return "spritely"
-* x > 75:
-  ~ return "chipper"
-* x > 45:
-  ~ return "somewhat flagging"
-* else:
-  ~ return "despondent"
- }
+=== function describe_health(x) ===
+{
+- x == 100:
+	~ return "spritely"
+- x > 75:
+	~ return "chipper"
+- x > 45:
+	~ return "somewhat flagging"
+- else:
+	~ return "despondent"
+}
+```
 
 produces:
 
- Monsieur Fogg was looking despondent.
+```ink
+	Monsieur Fogg was looking despondent.
+```
 
 #### Examples
 
 For instance, you might include:
 
- === function max(a,b) ===
-  { a < b:
-   ~ return b
+```ink
+=== function max(a,b) ===
+	{ a < b:
+		~ return b
+	- else:
+		~ return a
+	}
 
-* else:
-   ~ return a
-  }
-
- === function exp(x, e) ===
-  // returns x to the power e where e is an integer
-  { e <= 0:
-   ~ return 1
-
-* else:
-   ~ return x * exp(x, e - 1)
-  }
+=== function exp(x, e) ===
+	// returns x to the power e where e is an integer
+	{ e <= 0:
+		~ return 1
+	- else:
+		~ return x * exp(x, e - 1)
+	}
+```
 
 Then:
 
- The maximum of 2^5 and 3^3 is {max(exp(2,5), exp(3,3))}.
+```ink
+The maximum of 2^5 and 3^3 is {max(exp(2,5), exp(3,3))}.
+```
 
 produces:
 
- The maximum of 2^5 and 3^3 is 32.
+```
+	The maximum of 2^5 and 3^3 is 32.
+```
+
 
 #### Example: turning numbers into words
 
 The following example is long, but appears in pretty much every inkle game to date. (Recall that a hyphenated line inside multiline curly braces indicates either "a condition to test" or, if the curly brace began with a variable, "a value to compare against".)
 
-    === function print_num(x) ===
-    {
-        - x >= 1000:
-            {print_num(x / 1000)} thousand { x mod 1000 > 0:{print_num(x mod 1000)}}
-        - x >= 100:
-            {print_num(x / 100)} hundred { x mod 100 > 0:and {print_num(x mod 100)}}
-        - x == 0:
-            zero
-        - else:
-            { x >= 20:
-                { x / 10:
-                    - 2: twenty
-                    - 3: thirty
-                    - 4: forty
-                    - 5: fifty
-                    - 6: sixty
-                    - 7: seventy
-                    - 8: eighty
-                    - 9: ninety
-                }
-                { x mod 10 > 0:<>-<>}
-            }
-            { x < 10 || x > 20:
-                { x mod 10:
-                    - 1: one
-                    - 2: two
-                    - 3: three
-                    - 4: four
-                    - 5: five
-                    - 6: six
-                    - 7: seven
-                    - 8: eight
-                    - 9: nine
-                }
-            - else:
-                { x:
-                    - 10: ten
-                    - 11: eleven
-                    - 12: twelve
-                    - 13: thirteen
-                    - 14: fourteen
-                    - 15: fifteen
-                    - 16: sixteen
-                    - 17: seventeen
-                    - 18: eighteen
-                    - 19: nineteen
-                }
-            }
-    }
+```ink
+=== function print_num(x) ===
+{
+	- x >= 1000:
+		{print_num(x / 1000)} thousand { x mod 1000 > 0:{print_num(x mod 1000)}}
+	- x >= 100:
+		{print_num(x / 100)} hundred { x mod 100 > 0:and {print_num(x mod 100)}}
+	- x == 0:
+		zero
+	- else:
+		{ x >= 20:
+			{ x / 10:
+				- 2: twenty
+				- 3: thirty
+				- 4: forty
+				- 5: fifty
+				- 6: sixty
+				- 7: seventy
+				- 8: eighty
+				- 9: ninety
+			}
+			{ x mod 10 > 0:<>-<>}
+		}
+		{ x < 10 || x > 20:
+			{ x mod 10:
+				- 1: one
+				- 2: two
+				- 3: three
+				- 4: four
+				- 5: five
+				- 6: six
+				- 7: seven
+				- 8: eight
+				- 9: nine
+			}
+		- else:
+			{ x:
+				- 10: ten
+				- 11: eleven
+				- 12: twelve
+				- 13: thirteen
+				- 14: fourteen
+				- 15: fifteen
+				- 16: sixteen
+				- 17: seventeen
+				- 18: eighteen
+				- 19: nineteen
+			}
+		}
+}
+```
 
 which enables us to write things like:
 
- ~ price = 15
+```ink
+~ price = 15
 
- I pulled out {print_num(price)} coins from my pocket and slowly counted them.
- "Oh, never mind," the trader replied. "I'll take half." And she took {print_num(price / 2)}, and pushed the rest back over to me.
+I pulled out {print_num(price)} coins from my pocket and slowly counted them.
+"Oh, never mind," the trader replied. "I'll take half." And she took {print_num(price / 2)}, and pushed the rest back over to me.
+```
+
+
 
 ### Parameters can be passed by reference
 
@@ -2020,29 +2049,40 @@ Function parameters can also be passed 'by reference', meaning that the function
 
 For instance, most **inkle** stories include the following:
 
- === function alter(ref x, k) ===
-  ~ x = x + k
+```ink
+=== function alter(ref x, k) ===
+	~ x = x + k
+```
 
 Lines such as:
 
- ~ gold = gold + 7
- ~ health = health - 4
+```ink
+~ gold = gold + 7
+~ health = health - 4
+```
 
 then become:
 
- ~ alter(gold, 7)
- ~ alter(health, -4)
+```ink
+~ alter(gold, 7)
+~ alter(health, -4)
+```
 
 which are slightly easier to read, and (more usefully) can be done inline for maximum compactness.
 
-* I ate a biscuit[] and felt refreshed. {alter(health, 2)}
-* I gave a biscuit to Monsieur Fogg[] and he wolfed it down most undecorously. {alter(foggs_health, 1)}
-
-* <> Then we continued on our way.
+```ink
+*	I ate a biscuit[] and felt refreshed. {alter(health, 2)}
+* 	I gave a biscuit to Monsieur Fogg[] and he wolfed it down most undecorously. {alter(foggs_health, 1)}
+-	<> Then we continued on our way.
+```
 
 Wrapping up simple operations in function can also provide a simple place to put debugging information, if required.
 
-## 6) Constants
+
+
+
+##  6) Constants
+
 
 ### Global Constants
 
@@ -2050,44 +2090,50 @@ Interactive stories often rely on state machines, tracking what stage some highe
 
 Sometimes, it's convenient to define constants to be strings, so you can print them out, for gameplay or debugging purposes.
 
- CONST HASTINGS = "Hastings"
- CONST POIROT = "Poirot"
- CONST JAPP = "Japp"
+```ink
+CONST HASTINGS = "Hastings"
+CONST POIROT = "Poirot"
+CONST JAPP = "Japp"
 
- VAR current_chief_suspect = HASTINGS
+VAR current_chief_suspect = HASTINGS
 
- === review_evidence ===
-  { found_japps_bloodied_glove:
-   ~ current_chief_suspect = POIROT
-  }
-  Current Suspect: {current_chief_suspect}
+=== review_evidence ===
+	{ found_japps_bloodied_glove:
+		~ current_chief_suspect = POIROT
+	}
+	Current Suspect: {current_chief_suspect}
+```
 
 Sometimes giving them values is useful:
 
- CONST PI = 3.14
- CONST VALUE_OF_TEN_POUND_NOTE = 10
+```ink
+CONST PI = 3.14
+CONST VALUE_OF_TEN_POUND_NOTE = 10
+```
 
 And sometimes the numbers are useful in other ways:
 
- CONST LOBBY = 1
- CONST STAIRCASE = 2
- CONST HALLWAY = 3
+```ink
+CONST LOBBY = 1
+CONST STAIRCASE = 2
+CONST HALLWAY = 3
 
- CONST HELD_BY_AGENT = -1
+CONST HELD_BY_AGENT = -1
 
- VAR secret_agent_location = LOBBY
- VAR suitcase_location = HALLWAY
+VAR secret_agent_location = LOBBY
+VAR suitcase_location = HALLWAY
 
- === report_progress ===
- {
-        -  secret_agent_location == suitcase_location:
-  The secret agent grabs the suitcase!
-  ~ suitcase_location = HELD_BY_AGENT
+=== report_progress ===
+{
+	-  secret_agent_location == suitcase_location:
+	The secret agent grabs the suitcase!
+	~ suitcase_location = HELD_BY_AGENT
 
-* secret_agent_location < suitcase_location:
-  The secret agent moves forward.
-  ~ secret_agent_location++
- }
+-  secret_agent_location < suitcase_location:
+	The secret agent moves forward.
+	~ secret_agent_location++
+}
+```
 
 Constants are simply a way to allow you to give story states easy-to-understand names.
 
@@ -2097,48 +2143,47 @@ There are two core ways to provide game hooks in the **ink** engine. External fu
 
 # Part 4: Advanced Flow Control
 
+
 ## 1) Tunnels
 
 The default structure for **ink** stories is a "flat" tree of choices, branching and joining back together, perhaps looping, but with the story always being "at a certain place".
 
 But this flat structure makes certain things difficult: for example, imagine a game in which the following interaction can happen:
 
- === crossing_the_date_line ===
-
-* "Monsieur!"[] I declared with sudden horror. "I have just realised. We have crossed the international date line!"
-
-* Monsieur Fogg barely lifted an eyebrow. "I have adjusted for it."
-
-* I mopped the sweat from my brow[]. A relief!
-* I nodded, becalmed[]. Of course he had!
-* I cursed, under my breath[]. Once again, I had been belittled!
+```ink
+=== crossing_the_date_line ===
+*	"Monsieur!"[] I declared with sudden horror. "I have just realised. We have crossed the international date line!"
+-	Monsieur Fogg barely lifted an eyebrow. "I have adjusted for it."
+*	I mopped the sweat from my brow[]. A relief!
+* 	I nodded, becalmed[]. Of course he had!
+*  I cursed, under my breath[]. Once again, I had been belittled!
+```
 
 ...but it can happen at several different places in the story. We don't want to have to write copies of the content for each different place, but when the content is finished it needs to know where to return to. We can do this using parameters:
 
- === crossing_the_date_line(-> return_to) ===
- ...
+```ink
+=== crossing_the_date_line(-> return_to) ===
+...
+-	-> return_to
 
-* -> return_to
+...
 
- ...
+=== outside_honolulu ===
+We arrived at the large island of Honolulu.
+- (postscript)
+	-> crossing_the_date_line(-> done)
+- (done)
+	-> END
 
- === outside_honolulu ===
- We arrived at the large island of Honolulu.
+...
 
-* (postscript)
-  -> crossing_the_date_line(-> done)
-* (done)
-  -> END
-
- ...
-
- === outside_pitcairn_island ===
- The boat sailed along the water towards the tiny island.
-
-* (postscript)
-  -> crossing_the_date_line(-> done)
-* (done)
-  -> END
+=== outside_pitcairn_island ===
+The boat sailed along the water towards the tiny island.
+- (postscript)
+	-> crossing_the_date_line(-> done)
+- (done)
+	-> END
+```
 
 Both of these locations now call and execute the same segment of storyflow, but once finished they return to where they need to go next.
 
@@ -2150,31 +2195,36 @@ So instead, **ink** integrates this into the language with a new kind of divert,
 
 The tunnel syntax looks like a divert, with another divert on the end:
 
- -> crossing_the_date_line ->
+```ink
+-> crossing_the_date_line ->
+```
 
 This means "do the crossing_the_date_line story, then continue from here".
 
 Inside the tunnel itself, the syntax is simplified from the parameterised example: all we do is end the tunnel using the `->->` statement which means, essentially, "go on".
 
- === crossing_the_date_line ===
- // this is a tunnel!
- ...
-
-* ->->
+```ink
+=== crossing_the_date_line ===
+// this is a tunnel!
+...
+- 	->->
+```
 
 Note that tunnel knots aren't declared as such, so the compiler won't check that tunnels really do end in `->->` statements, except at run-time. So you will need to write carefully to ensure that all the flows into a tunnel really do come out again.
 
 Tunnels can also be chained together, or finish on a normal divert:
 
- ...
- // this runs the tunnel, then diverts to 'done'
- -> crossing_the_date_line -> done
- ...
+```ink
+...
+// this runs the tunnel, then diverts to 'done'
+-> crossing_the_date_line -> done
+...
 
- ...
- //this runs one tunnel, then another, then diverts to 'done'
- -> crossing_the_date_line -> check_foggs_health -> done
- ...
+...
+//this runs one tunnel, then another, then diverts to 'done'
+-> crossing_the_date_line -> check_foggs_health -> done
+...
+```
 
 Tunnels can be nested, so the following is valid:
 
