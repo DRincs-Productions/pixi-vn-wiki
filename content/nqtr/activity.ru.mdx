@@ -2,11 +2,11 @@
 title: Activity
 ---
 
-The `activity` are actions the player can take, and they can be linked to a <DynamicLink href="/nqtr/navigation">navigation element</DynamicLink>. The developer will decide how the player interacts with them.
+`Activity` - действия, которые игрок может предпринять, и они могут быть связаны с элементом <DynamicLink href="/nqtr/navigation">навигации</DynamicLink>. Разработчик решает, как игрок будет с ними взаимодействовать.
 
 ## Инициализация
 
-To initialize a `activity`, create a new instance of the `ActivityBaseModel` class (or your [custom class](#custom-class)) and add it to the game activity dictionary when the game is initialized.
+Чтобы инициализировать персонажа, создайте новый экземпляр класса `CharacterBaseModel` (или вашего [пользовательского класса](#custom-class)) и добавьте его в словарь игровых персонажей, когда игра будет инициализирована.
 
 <Callout type="info">
 
@@ -14,10 +14,10 @@ It is recommended to import the instances at project startup, see the `src/main.
 
 </Callout>
 
-To create a new instance of `ActivityBaseModel`, you need the following parameters:
+Чтобы создать новый экземпляр `CharacterBaseModel`, вам нужны следующие параметры:
 
 - `id`: A unique identifier (string). Used to reference the `activity` in the game (must be unique).
-- `onRun`: A function that is called when the `activity` is run. It receives two parameters:
+- `onRun`: Функция, которая вызывается при запуске `активности`. It receives two parameters:
   - The `activity` instance itself.
   - `props`: the properties that will be passed to the activity. Its interface corresponds to <DynamicLink href="/nqtr#onrunprops">`OnRunProps`</DynamicLink>.
 - `props`: An object with the activity's properties:
@@ -77,13 +77,13 @@ import "./values/activities";
 
 You can also create a function to load `activities`. The important thing is that it is called at least once before the `activities` are used in the game, otherwise they will not be available.
 
-## Link
+## Ссылка
 
-To link an activity to a <DynamicLink href="/nqtr/navigation">navigation element</DynamicLink>, you have two options:
+Чтобы связать действие с <DynamicLink href="/nqtr/navigation">элементом навигации</DynamicLink>, у вас есть два варианта:
 
 ### During game initialization
 
-When the game starts, a list of related activities will be defined. This list will not be saved when the game is saved. Therefore, the developer can modify this list from one version of the game to another without having to worry about migrations for older versions.
+Когда игра начнется, будет определен список связанных с ней действий. Этот список не будет сохранен при сохранении игры. Таким образом, разработчик может изменять этот список от одной версии игры к другой, не беспокоясь о переносе старых версий.
 
 ```ts tab="values/rooms.ts"
 import { RegisteredRooms, RoomBaseModel } from "@drincs/nqtr";
@@ -121,45 +121,25 @@ export const bed = new ActivityBaseModel(
 RegisteredActivities.add([bed]);
 ```
 
-### During the game
+### В ходе игры
 
-You can also link an activity to a navigation element during the game. This feature is useful if you want to temporarily add an activity. The list of activities added this way will be included in your game saves.
+Вы также можете связать действие с элементом навигации во время игры. Эта функция полезна, если вы хотите временно добавить активность. Список действий, добавленных таким образом, будет включен в ваши игровые сохранения.
 
-To link an activity to a navigation element during the game, you can use the `addActivity` method.
+Чтобы привязать активность к элементу навигации во время игры, можно использовать метод `addActivity`.
 
 ```ts tab="Example"
 import { orderProduct } from "../activities";
 import { mcRoom } from "../rooms";
 
-mcRoom.addActivity(orderProduct);
+mcRoom.addActivity(orderProduct); 
 ```
 
 ```ts tab="values/activities.ts"
-import { ActivityBaseModel, RegisteredActivities } from "@drincs/nqtr";
-import { narration } from "@drincs/pixi-vn";
-import { orderProductLabel } from "../labels/variousActionsLabels";
 
-export const orderProduct = new ActivityBaseModel(
-    "order_product",
-    async (_, props) => await narration.jumpLabel(orderProductLabel, props),
-    {
-        name: "order_product",
-    }
-);
-
-RegisteredActivities.add([orderProduct]);
 ```
 
 ```ts tab="values/rooms.ts"
-import { RegisteredRooms, RoomBaseModel } from "@drincs/nqtr";
-import { mcHome } from "./locations";
 
-export const mcRoom = new RoomBaseModel("mc_room", mcHome, {
-    name: "MC room",
-    image: "location_myroom",
-});
-
-RegisteredRooms.add([mcRoom]);
 ```
 
 ## Unlink
@@ -174,31 +154,11 @@ mcRoom.removeActivity(orderProduct);
 ```
 
 ```ts tab="values/activities.ts"
-import { ActivityBaseModel, RegisteredActivities } from "@drincs/nqtr";
-import { narration } from "@drincs/pixi-vn";
-import { orderProductLabel } from "../labels/variousActionsLabels";
 
-export const orderProduct = new ActivityBaseModel(
-    "order_product",
-    async (_, props) => await narration.jumpLabel(orderProductLabel, props),
-    {
-        name: "order_product",
-    }
-);
-
-RegisteredActivities.add([orderProduct]);
 ```
 
 ```ts tab="values/rooms.ts"
-import { RegisteredRooms, RoomBaseModel } from "@drincs/nqtr";
-import { mcHome } from "./locations";
 
-export const mcRoom = new RoomBaseModel("mc_room", mcHome, {
-    name: "MC room",
-    image: "location_myroom",
-});
-
-RegisteredRooms.add([mcRoom]);
 ```
 
 ## Get
