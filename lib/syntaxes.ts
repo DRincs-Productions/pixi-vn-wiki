@@ -8,10 +8,13 @@ export const inkLanguage: LanguageInput = {
             include: "#comments",
         },
         {
+            include: "#tags",
+        },
+        {
             include: "#todo",
         },
         {
-            include: "#choices",
+            include: "#includeStatements",
         },
         {
             include: "#multilineBlocks",
@@ -45,6 +48,12 @@ export const inkLanguage: LanguageInput = {
         },
         {
             include: "#alternatives",
+        },
+        {
+            include: "#labelledGathersChoices",
+        },
+        {
+            include: "#choices",
         },
         {
             include: "#gathers",
@@ -94,6 +103,32 @@ export const inkLanguage: LanguageInput = {
                 },
             ],
         },
+        labelledGathersChoices: {
+            patterns: [
+                {
+                    begin: "^\\s*([-*+])(\\s*[-*+])*\\s*(?=\\()",
+                    beginCaptures: {
+                        "1": {
+                            name: "keyword.other.gather.ink",
+                        },
+                    },
+                    end: "(?=\\s|$)",
+                    patterns: [
+                        {
+                            name: "entity.name.function.ink",
+                            begin: "\\(",
+                            end: "\\)",
+                            patterns: [
+                                {
+                                    name: "entity.name.function.ink",
+                                    match: "[^()]+",
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        },
         knots: {
             patterns: [
                 {
@@ -101,20 +136,37 @@ export const inkLanguage: LanguageInput = {
                     match: "(?<=->\\s*)(END|DONE)",
                 },
                 {
-                    name: "keyword.other.knot.ink",
-                    match: "=+",
-                },
-                {
-                    name: "entity.name.function.ink",
-                    match: "(?<=->\\s*)[a-zA-Z0-9_]+(?:\\.[a-zA-Z0-9_]+)?",
-                },
-                {
                     name: "keyword.other.divert.ink",
                     match: "->",
                 },
                 {
-                    name: "meta.function.call.ink",
+                    name: "entity.name.function.divert.ink",
+                    match: "(?<=->\\s*)[a-zA-Z0-9_]+(?:\\.[a-zA-Z0-9_]+)?",
+                },
+                {
+                    name: "keyword.other.thread.ink",
+                    match: "<-",
+                },
+                {
+                    name: "entity.name.function.thread.ink",
+                    match: "(?<=<-\\s*)[a-zA-Z0-9_]+(?:\\.[a-zA-Z0-9_]+)?",
+                },
+                {
+                    name: "meta.function.divert.call.ink",
                     begin: "(?<=->\\s*[a-zA-Z0-9_]+)\\s*\\(",
+                    end: "\\)",
+                    patterns: [
+                        {
+                            include: "#knots",
+                        },
+                        {
+                            include: "#logic",
+                        },
+                    ],
+                },
+                {
+                    name: "meta.function.thread.call.ink",
+                    begin: "(?<=<-\\s*[a-zA-Z0-9_]+)\\s*\\(",
                     end: "\\)",
                     patterns: [
                         {
@@ -131,7 +183,7 @@ export const inkLanguage: LanguageInput = {
             patterns: [
                 {
                     name: "meta.knot.declaration.ink",
-                    begin: "^(=+)\\s*",
+                    begin: "^(?:\\s*)(=+)\\s*",
                     beginCaptures: {
                         "1": {
                             name: "keyword.other.knot.ink",
@@ -154,6 +206,9 @@ export const inkLanguage: LanguageInput = {
                             end: "\\)",
                             patterns: [
                                 {
+                                    include: "#knots",
+                                },
+                                {
                                     include: "#logic",
                                 },
                             ],
@@ -166,7 +221,7 @@ export const inkLanguage: LanguageInput = {
             patterns: [
                 {
                     name: "meta.function.declaration.ink",
-                    begin: "^(=+)(\\s*)(function)(\\s+)",
+                    begin: "^(?:\\s*)(=+)(\\s*)(function)(\\s+)",
                     beginCaptures: {
                         "1": {
                             name: "keyword.other.knot.ink",
@@ -186,6 +241,9 @@ export const inkLanguage: LanguageInput = {
                             begin: "\\(",
                             end: "\\)",
                             patterns: [
+                                {
+                                    include: "#knots",
+                                },
                                 {
                                     include: "#logic",
                                 },
@@ -459,6 +517,9 @@ export const inkLanguage: LanguageInput = {
         logic: {
             patterns: [
                 {
+                    include: "#comments",
+                },
+                {
                     name: "keyword.control.return.ink",
                     match: "\\breturn\\b",
                 },
@@ -533,13 +594,10 @@ export const inkLanguage: LanguageInput = {
             patterns: [
                 {
                     name: "meta.declaration.ink",
-                    begin: "^\\s*(VAR|CONST)\\b",
+                    begin: "^\\s*(VAR|CONST|LIST)\\b",
                     beginCaptures: {
                         "1": {
-                            name: "storage.type.var.ink",
-                        },
-                        "2": {
-                            name: "storage.type.const.ink",
+                            name: "storage.type.ink",
                         },
                     },
                     end: "$",
@@ -551,6 +609,10 @@ export const inkLanguage: LanguageInput = {
                         {
                             name: "variable.other.constant.ink",
                             match: "(?<=CONST\\s+)[a-zA-Z_][a-zA-Z0-9_]*",
+                        },
+                        {
+                            name: "variable.other.list.ink",
+                            match: "(?<=LIST\\s+)[a-zA-Z_][a-zA-Z0-9_]*",
                         },
                         {
                             name: "keyword.operator.assignment.ink",
@@ -588,6 +650,34 @@ export const inkLanguage: LanguageInput = {
                             include: "#logic",
                         },
                     ],
+                },
+            ],
+        },
+        includeStatements: {
+            patterns: [
+                {
+                    name: "meta.include.line.ink",
+                    begin: "^\\s*(INCLUDE)\\b",
+                    beginCaptures: {
+                        "1": {
+                            name: "keyword.control.include.ink",
+                        },
+                    },
+                    end: "$",
+                    patterns: [
+                        {
+                            name: "string.unquoted.filename.ink",
+                            match: "[a-zA-Z0-9_./\\\\-]+(?:\\.ink)?",
+                        },
+                    ],
+                },
+            ],
+        },
+        tags: {
+            patterns: [
+                {
+                    name: "punctuation.definition.tag.ink",
+                    match: "#.*$",
                 },
             ],
         },

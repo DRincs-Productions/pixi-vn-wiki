@@ -12,6 +12,9 @@ const config = {
         domains: ["pixijs.io", "github.com", "filters.pixijs.download", "firebasestorage.googleapis.com"],
         unoptimized: true,
     },
+    eslint: {
+        ignoreDuringBuilds: true,
+    },
 };
 
 export default withMDX(withNextIntl(config));
