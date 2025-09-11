@@ -33,13 +33,11 @@ jobs:
         git checkout main
         git fetch origin l10n_main
         git merge origin/l10n_main --no-edit --allow-unrelated-histories -X ours
-    - name: Increase Node memory
-      run: export NODE_OPTIONS=--max-old-space-size=4096
     - name: npm install and ci and build
       run: |
         npm install
         npm ci
-        npm run build && npm run export
+        NODE_OPTIONS=--max-old-space-size=4096 npm run build && npm run export
     - name: Sync Orama Search Index
       run: node sync-index.mjs
       env:
