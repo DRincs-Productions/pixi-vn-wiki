@@ -271,7 +271,7 @@ We continued to walk down the dusty road.
 
 == house ==
 Before long, we arrived at his house.
--> END\`;`,
+-> DONE\`;`,
             }}
         />
     );
