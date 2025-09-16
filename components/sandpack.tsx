@@ -16,7 +16,7 @@ export function ReactTemplate({
             template='react-ts'
             customSetup={{
                 dependencies: {
-                    "@drincs/pixi-vn": "^1.3.20",
+                    "@drincs/pixi-vn": "^1.3.21",
                     "@tanstack/react-query": "^5.85.2",
                     "react-markdown": "^8.0.0",
                     "rehype-raw": "^7.0.0",
@@ -117,7 +117,7 @@ import { useQueryCanGoNext } from "../hooks/useQueryInterface";
 export default function NextButton() {
   const { data: canGoNext = false } = useQueryCanGoNext();
   const [loading, setLoading] = useState(false);
-  const { goNext } = useNarrationFunctions();
+  const { continue } = useNarrationFunctions();
 
   if (!canGoNext) {
     return null;
@@ -127,7 +127,7 @@ export default function NextButton() {
     <button
       onClick={() => {
         setLoading(true);
-        goNext()
+        continue()
           .then(() => setLoading(false))
           .catch(() => setLoading(false));
       }}
@@ -277,7 +277,7 @@ import { useQueryCanGoBack } from "../hooks/useQueryInterface";
 export default function BackButton() {
   const { data: canGoBack = false } = useQueryCanGoBack();
   const [loading, setLoading] = useState(false);
-  const { goBack } = useNarrationFunctions();
+  const { back } = useNarrationFunctions();
 
   if (!canGoBack) {
     return null;
@@ -287,7 +287,7 @@ export default function BackButton() {
     <button
       onClick={() => {
         setLoading(true);
-        goBack()
+        back()
           .then(() => setLoading(false))
           .catch(() => setLoading(false));
       }}
@@ -443,7 +443,7 @@ const startLabel = `import { narration, newLabel } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start_label", [
   () => (narration.dialogue = "Hello"),
-  (props, { labelId }) => narration.jumpLabel(labelId, props),
+  (props, { labelId }) => narration.jump(labelId, props),
 ]);`;
 
 const assetsUtility = `import { Assets } from "@drincs/pixi-vn";
@@ -497,7 +497,7 @@ Game.init(body, {
 
   Game.onEnd(async () => {
     Game.clear();
-    await narration.jumpLabel(startLabel, {});
+    await narration.jump(startLabel, {});
   });
   Game.onLoadingLabel(async (_stepId, { id }) => await Assets.backgroundLoadBundle(id));
 
@@ -516,7 +516,7 @@ Game.init(body, {
 
   defineAssets().then(() => {
     Game.clear();
-    narration.callLabel(startLabel, {}).then(() => {
+    narration.call(startLabel, {}).then(() => {
       reactRoot.render(
         <QueryClientProvider client={queryClient}>
           <App />
@@ -549,13 +549,13 @@ export default function useNarrationFunctions() {
   const queryClient = useQueryClient();
   const gameProps = {};
 
-  const goNext = useCallback(async () => {
+  const continue = useCallback(async () => {
     try {
       if (!narration.canGoNext) {
         return;
       }
       return narration
-        .goNext(gameProps)
+        .continue(gameProps)
         .then(() => queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] }))
         .catch((e) => console.error(e));
     } catch (e) {
@@ -564,9 +564,9 @@ export default function useNarrationFunctions() {
     }
   }, [gameProps, queryClient]);
 
-  const goBack = useCallback(async () => {
+  const back = useCallback(async () => {
     return stepHistory
-      .goBack((_path) => {
+      .back((_path) => {
         // TODO: navigate in the url path
         // READ THIS: https://pixi-vn.web.app/start/interface.html#navigate-switch-between-ui-screens
       })
@@ -585,8 +585,8 @@ export default function useNarrationFunctions() {
   );
 
   return {
-    goNext,
-    goBack,
+    continue,
+    back,
     selectChoice,
   };
 }`;

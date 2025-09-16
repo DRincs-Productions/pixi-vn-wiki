@@ -72,7 +72,7 @@ Game.init(body, {
 
   Game.onEnd(async () => {
     Game.clear();
-    await narration.jumpLabel("start", {});
+    await narration.jump("start", {});
   });
   Game.onLoadingLabel(async (_stepId, { id }) => await Assets.backgroundLoadBundle(id));
 
@@ -93,7 +93,7 @@ Game.init(body, {
   defineAssets().then(() =>
     importInkText([startLabel]).then(() => {
       Game.clear();
-      narration.callLabel("start", {}).then(() => {
+      narration.call("start", {}).then(() => {
         reactRoot.render(
           <QueryClientProvider client={queryClient}>
             <App />
@@ -139,7 +139,7 @@ export function initializeInk() {
             }}
             previewHeight={previewHeight}
             dependencies={{
-                "@drincs/pixi-vn-ink": "^0.9.9",
+                "@drincs/pixi-vn-ink": "^0.9.12",
             }}
         />
     );

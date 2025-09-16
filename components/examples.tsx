@@ -906,7 +906,7 @@ export const startLabel = newLabel("start_label", () => {
       },
       async (props, { labelId }) => {
         storage.setFlag("condition", true);
-        return await narration.jumpLabel(labelId, props);
+        return await narration.jump(labelId, props);
       },
     ];
   }
@@ -935,7 +935,7 @@ export const startLabel = newLabel("start_label", [
   () => {
     narration.dialogue = "Restart";
   },
-  async (props) => await narration.jumpLabel("start_label", props),
+  async (props) => await narration.jump("start_label", props),
 ]);
 
 const appleLabel = newLabel<{ quantity: number }>("AppleLabel", [

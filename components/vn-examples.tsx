@@ -351,7 +351,7 @@ export const startLabel = newLabel(
     async (props) => {
       narration.dialogGlue = true;
       narration.dialogue = \`and returns with a HUGE tinfoil-covered platter.\`;
-      await narration.callLabel(animation01, props);
+      await narration.call(animation01, props);
     },
     async () => {
       await showImageContainer("james", ["m01-body", "m01-eyes-concern", "m01-mouth-smile01"]);

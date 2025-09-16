@@ -220,7 +220,7 @@ import { useQueryCanGoNext } from "../hooks/useQueryInterface";
 export default function NextButton() {
     const { data: canGoNext = false } = useQueryCanGoNext();
     const [loading, setLoading] = useState(false);
-    const { goNext } = useNarrationFunctions();
+    const { continue } = useNarrationFunctions();
 
     if (!canGoNext) {
         return null;
@@ -230,7 +230,7 @@ export default function NextButton() {
         <button
             onClick={() => {
                 setLoading(true);
-                goNext()
+                continue()
                     .then(() => setLoading(false))
                     .catch(() => setLoading(false));
             }}
@@ -272,13 +272,13 @@ export default function useNarrationFunctions() {
     const queryClient = useQueryClient();
     const gameProps = {};
 
-    const goNext = useCallback(async () => {
+    const continue = useCallback(async () => {
         try {
             if (!narration.canGoNext) {
                 return;
             }
             return narration
-                .goNext(gameProps)
+                .continue(gameProps)
                 .then(() => queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] }))
                 .catch((e) => console.error(e));
         } catch (e) {
@@ -288,7 +288,7 @@ export default function useNarrationFunctions() {
     }, [gameProps, queryClient]);
 
     return {
-        goNext,
+        continue,
     };
 }
 ```
@@ -305,7 +305,7 @@ import { useQueryCanGoBack } from "../hooks/useQueryInterface";
 export default function BackButton() {
     const { data: canGoBack = false } = useQueryCanGoBack();
     const [loading, setLoading] = useState(false);
-    const { goBack } = useNarrationFunctions();
+    const { back } = useNarrationFunctions();
 
     if (!canGoBack) {
         return null;
@@ -315,7 +315,7 @@ export default function BackButton() {
         <button
             onClick={() => {
                 setLoading(true);
-                goBack()
+                back()
                     .then(() => setLoading(false))
                     .catch(() => setLoading(false));
             }}
@@ -357,9 +357,9 @@ export default function useNarrationFunctions() {
     const queryClient = useQueryClient();
     const gameProps = {};
 
-    const goBack = useCallback(async () => {
+    const back = useCallback(async () => {
         return stepHistory
-            .goBack((_path) => {
+            .back((_path) => {
                 // TODO: navigate in the url path
                 // READ THIS: https://pixi-vn.web.app/start/interface.html#navigate-switch-between-ui-screens
             })
@@ -368,7 +368,7 @@ export default function useNarrationFunctions() {
     }, [gameProps, queryClient]);
 
     return {
-        goBack,
+        back,
     };
 }
 ```
