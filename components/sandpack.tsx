@@ -16,7 +16,7 @@ export function ReactTemplate({
             template='react-ts'
             customSetup={{
                 dependencies: {
-                    "@drincs/pixi-vn": "^1.3.21",
+                    "@drincs/pixi-vn": "^1.3.23",
                     "@tanstack/react-query": "^5.85.2",
                     "react-markdown": "^8.0.0",
                     "rehype-raw": "^7.0.0",
@@ -321,7 +321,7 @@ export function useQueryChoiceMenuOptions() {
   return useQuery({
     queryKey: [INTERFACE_DATA_USE_QUEY_KEY, CHOICE_MENU_OPTIONS_USE_QUEY_KEY],
     queryFn: async () =>
-      narration.choiceMenuOptions?.map((option) => ({
+      narration.choices?.map((option) => ({
         ...option,
         text: typeof option.text === "string" ? option.text : option.text.join(" "),
       })) || [],

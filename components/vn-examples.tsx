@@ -377,7 +377,7 @@ export const startLabel = newLabel(
     },
     async () => {
       narration.dialogue = \`You want continue to the next part?\`;
-      narration.choiceMenuOptions = [
+      narration.choices = [
         newChoiceOption("Yes, I want to continue", secondPart, {}, { type: "jump" }),
         newCloseChoiceOption("No, I want to stop here"),
       ];

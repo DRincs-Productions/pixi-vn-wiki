@@ -925,7 +925,7 @@ export function ChoiceMenus() {
 export const startLabel = newLabel("start_label", [
   async () => {
     narration.dialogue = "Choose a fruit:";
-    narration.choiceMenuOptions = [
+    narration.choices = [
       newChoiceOption("Orange", orangeLabel, {}), // by default, the label will be called by call
       newChoiceOption("Banana", bananaLabel, {}, { type: "jump" }),
       newChoiceOption("Apple", appleLabel, { quantity: 5 }, { type: "call" }),
