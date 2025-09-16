@@ -5,7 +5,7 @@ description: Descrive come controllare il flusso narrativo in Pixi'VN utilizzand
 
 import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
-Il flusso di narrazione è gestito da funzioni quali `callLabel`, `jumpLabel`, `goNext`, `goBack` e `closeLabel`, tutte disponibili nell'oggetto `narration`.
+The narration flow is managed by functions such as `call`, `jump`, `continue`, `back`, and `closeLabel`, all available in the `narration` object.
 
 ## Esegui una label
 
@@ -13,7 +13,7 @@ Il flusso di narrazione è gestito da funzioni quali `callLabel`, `jumpLabel`, `
 
 <Accordion title="Call a label" id="call-a-label">
 
-Per richiamare una `label`, utilizza la funzione `narration.callLabel`.
+To call a `label`, use the `narration.call` function.
 Questa funzione ha i seguenti parametri:
 
 - `label`: la `label` da chiamare
@@ -23,15 +23,15 @@ Quando si chiama una `label`, viene eseguito il primo `step` di quella `label`. 
 
 Ad esempio, se il gioco sta eseguendo lo `step` 5 della `label` A e tu **chiami** la `label` B, dopo che tutti i `passaggi` della `label` B sono stati eseguiti, il gioco continuerà con lo `step` 6 della `label` A.
 
-`narration.callLabel` restituisce il <DynamicLink href="/start/labels#all-steps-result">risultato del primo `step` della `label` chiamata</DynamicLink>.
+`narration.call` returns the <DynamicLink href="/start/labels#all-steps-result">result of the first `step` of the called `label`</DynamicLink>.
 
 ```ts
 import { narration } from '@drincs/pixi-vn'
 
-narration.callLabel(startLabel, {})
+narration.call(startLabel, {})
 ```
 
-Se esegui `narration.callLabel` all'interno di uno `step`, dovresti restituire il risultato di `narration.callLabel` e utilizzare `await`. In questo modo si garantisce una corretta gestione della cronologia.
+If you execute `narration.call` inside a `step`, you should return the result of `narration.call` and use `await`. In questo modo si garantisce una corretta gestione della cronologia.
 
 ```ts title="labels/startLabel.ts"
 import { narration, newLabel } from '@drincs/pixi-vn'
@@ -39,9 +39,9 @@ import { narration, newLabel } from '@drincs/pixi-vn'
 export const startLabel = newLabel("start_label",
     [
         async (props) => {
-            return await narration.callLabel(TestLabel, props)
+            return await narration.call(TestLabel, props)
         },
-        async (props) => await narration.callLabel(TestLabel, props),
+        async (props) => await narration.call(TestLabel, props),
     ]
 )
 ```
@@ -50,7 +50,7 @@ export const startLabel = newLabel("start_label",
 
 <Accordion title="Jump to a label" id="jump-to-a-label">
 
-Per saltare a una `label`, utilizza la funzione `narration.jumpLabel`.
+To jump to a `label`, use the `narration.jump` function.
 Questa funzione ha i seguenti parametri:
 
 - `label`: la `label` a cui saltare
@@ -60,15 +60,15 @@ Quando si salta a una `label`, gli `steps` della `label` corrente vengono interr
 
 Ad esempio, se il gioco sta eseguendo lo `step` 5 della `label` A e tu **chiami** la `label` B, ma poi **salti** alla `label` C, dopo che la `label` C è terminata, il gioco continuerà con lo `step` 6 della `label` A. Quando salti alla `label` C, la `label` B verrà chiusa.
 
-`narration.jumpLabel` restituisce il <DynamicLink href="/start/labels#all-steps-result">risultato del primo `step` della `label` chiamata</DynamicLink>.
+`narration.jump` returns the <DynamicLink href="/start/labels#all-steps-result">result of the first `step` of the called `label`</DynamicLink>.
 
 ```ts
 import { narration } from '@drincs/pixi-vn'
 
-narration.jumpLabel(startLabel, {})
+narration.jump(startLabel, {})
 ```
 
-Se esegui `narration.jumpLabel` all'interno di uno `step`, dovresti restituire il risultato di `narration.jumpLabel` e utilizzare `await`. In questo modo si garantisce che si attenda il primo `step` della nuova `label`.
+If you execute `narration.jump` inside a `step`, you should return the result of `narration.jump` and use `await`. In questo modo si garantisce che si attenda il primo `step` della nuova `label`.
 
 ```ts title="labels/startLabel.ts"
 import { narration } from '@drincs/pixi-vn'
@@ -76,9 +76,9 @@ import { narration } from '@drincs/pixi-vn'
 export const startLabel = newLabel("start_label",
     [
         async (props) => {
-            return await narration.jumpLabel(TestLabel, props)
+            return await narration.jump(TestLabel, props)
         },
-        async (props) => await narration.jumpLabel(TestLabel, props),
+        async (props) => await narration.jump(TestLabel, props),
     ]
 )
 ```
@@ -87,17 +87,17 @@ export const startLabel = newLabel("start_label",
 
 </Accordions>
 
-## Vai allo step successivo e torna indietro
+## Continue and go back in steps
 
-### Go next
+### Continue
 
 <Callout title="UI screen" type="info">
 
-Potete trovare l'esempio del pulsante "Vai avanti" nella sezione <DynamicLink href="/start/interface-examples#go-next">esempi di interfaccia</DynamicLink>.
+You can find the example of the "continue" button in the <DynamicLink href="/start/interface-examples#go-next">interface examples</DynamicLink> section.
 
 </Callout>
 
-Per eseguire lo `step` successivo, utilizza la funzione `narration.goNext()`.
+To execute the next `step`, use the `narration.continue()` function.
 Questa funzione ha i seguenti parametri:
 
 - `props`: le proprietà da passare alla `label`. L'interfaccia corrisponde a <DynamicLink href="/start/labels#steplabelprops">`StepLabelProps`</DynamicLink>.
@@ -105,16 +105,16 @@ Questa funzione ha i seguenti parametri:
 ```ts
 import { narration } from '@drincs/pixi-vn'
 
-await narration.goNext({})
+await narration.continue({})
 ```
 
-`narration.goNext()` è asincrono, quindi puoi usare `.then` per, ad esempio, disabilitare un pulsante "Avanti" finché lo `step` non è completato.
+`narration.continue()` is asynchronous, so you can use `.then` to, for example, disable a "Next" button until the `step` is complete.
 
 ```ts
 import { narration } from '@drincs/pixi-vn'
 
 // disable next button
-narration.goNext({})
+narration.continue({})
     .then((result) => {
         // enable next button
     })
@@ -122,16 +122,16 @@ narration.goNext({})
 
 <Accordions>
 
-<Accordion title="Call goNext inside a step" id="call-gonext-inside-a-step">
+<Accordion title="Call continue inside a step" id="call-gonext-inside-a-step">
 
-Se si chiama `narration.goNext()` all'interno di uno `step`, la richiesta "go next" verrà messa in coda ed eseguita quando la coda sarà vuota.
+If you call `narration.continue()` inside a `step`, the "continue" request will be queued and executed when the queue is empty.
 
 ```ts title="labels/startLabel.ts"
 import { narration, newLabel } from '@drincs/pixi-vn'
 
 export const startLabel = newLabel("start_label", [
     async (props) => {
-        narration.goNext(props)
+        narration.continue(props)
     },
 ])
 ```
@@ -143,7 +143,7 @@ import { narration, newLabel } from '@drincs/pixi-vn'
 
 export const startLabel = newLabel("start_label", [
     async (props) => {
-        await narration.callLabel(label2, props);
+        await narration.call(label2, props);
         console.log(1);
     },
     () => {
@@ -153,7 +153,7 @@ export const startLabel = newLabel("start_label", [
 
 const label2 = newLabel("label_02", [
     async (props) => {
-        await narration.goNext(props);
+        await narration.continue(props);
         console.log(2);
     },
 ])
@@ -161,11 +161,11 @@ const label2 = newLabel("label_02", [
 
 In questo esempio, l'output sarà `2`, `1`, `3`. I passaggi sono:
 
-1. `await narration.callLabel(label2, props)` chiama label2 e attende il suo primo `step`. (1 elemento nella coda)
-2. Il primo `step` di label2 esegue `await narration.goNext(props)`, ma la richiesta goNext viene messa in coda perché la coda non è vuota. (2 elementi in coda)
+1. `await narration.call(label2, props)` calls label2 and awaits its first `step`. (1 elemento nella coda)
+2. The first `step` of label2 executes `await narration.continue(props)`, but the continue request is queued because the queue is not empty. (2 elementi in coda)
 3. `console.log(2)` viene eseguito, completando il primo `step` di label2. (1 elemento nella coda)
 4. `console.log(1)` viene eseguito, completando il primo `step` di startLabel. (0 elementi in coda)
-5. Ora viene eseguita la richiesta goNext e viene eseguito il secondo `step` di startLabel. (1 elemento nella coda)
+5. Now the continue request is executed, and the second `step` of startLabel runs. (1 elemento nella coda)
 6. `console.log(3)` viene eseguito, completando il secondo `step` di startLabel. (0 elementi in coda)
 
 </Accordion>
@@ -186,7 +186,7 @@ import { narration } from '@drincs/pixi-vn'
 function NextButton() {
     return (
         <button disabled={!narration.canGoNext} onClick={() => {
-            narration.goNext({})
+            narration.continue({})
         }}>
             Next
         </button>
@@ -206,7 +206,7 @@ Potete trovare l'esempio del pulsante Indietro nella sezione <DynamicLink href="
 
 </Callout>
 
-Ad ogni `step`, il sistema salva lo stato attuale del gioco. Per tornare allo `step` precedente, utilizza la funzione `stepHistory.goBack()`.
+Ad ogni `step`, il sistema salva lo stato attuale del gioco. To go back to the previous `step`, use the `stepHistory.back()` function.
 
 You must pass a function `navigate: (path: string) => void` as a parameter. This function will be called with the <DynamicLink href="/start/start/interface-navigate">URL Path or Route</DynamicLink> of the previous `step`, so you can <DynamicLink href="/start/interface-navigate">navigate to the previous UI screen</DynamicLink>.
 
@@ -219,7 +219,7 @@ import { useNavigate } from 'react-router-dom';
 const navigate = useNavigate();
 
 if (stepHistory.canGoBack) {
-    stepHistory.goBack(navigate).then(() => {
+    stepHistory.back(navigate).then(() => {
         // ...
     })
 }
@@ -239,7 +239,7 @@ import { stepHistory } from '@drincs/pixi-vn'
 function BackButton() {
     return (
         <button disabled={!stepHistory.canGoBack} onClick={() => {
-            stepHistory.goBack({})
+            stepHistory.back({})
         }}>
             Back
         </button>
