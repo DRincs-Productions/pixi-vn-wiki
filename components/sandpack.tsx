@@ -277,7 +277,7 @@ import { useQueryCanGoBack } from "../hooks/useQueryInterface";
 export default function BackButton() {
   const { data: canGoBack = false } = useQueryCanGoBack();
   const [loading, setLoading] = useState(false);
-  const { back } = useNarrationFunctions();
+  const { goBack } = useNarrationFunctions();
 
   if (!canGoBack) {
     return null;
@@ -287,7 +287,7 @@ export default function BackButton() {
     <button
       onClick={() => {
         setLoading(true);
-        back()
+        goBack()
           .then(() => setLoading(false))
           .catch(() => setLoading(false));
       }}
@@ -564,7 +564,7 @@ export default function useNarrationFunctions() {
     }
   }, [gameProps, queryClient]);
 
-  const back = useCallback(async () => {
+  const goBack = useCallback(async () => {
     return stepHistory
       .back((_path) => {
         // TODO: navigate in the url path
@@ -586,7 +586,7 @@ export default function useNarrationFunctions() {
 
   return {
     goNext,
-    back,
+    goBack,
     selectChoice,
   };
 }`;
