@@ -117,7 +117,7 @@ import { useQueryCanGoNext } from "../hooks/useQueryInterface";
 export default function NextButton() {
   const { data: canGoNext = false } = useQueryCanGoNext();
   const [loading, setLoading] = useState(false);
-  const { continue } = useNarrationFunctions();
+  const { goNext } = useNarrationFunctions();
 
   if (!canGoNext) {
     return null;
@@ -127,7 +127,7 @@ export default function NextButton() {
     <button
       onClick={() => {
         setLoading(true);
-        continue()
+        goNext()
           .then(() => setLoading(false))
           .catch(() => setLoading(false));
       }}
@@ -549,7 +549,7 @@ export default function useNarrationFunctions() {
   const queryClient = useQueryClient();
   const gameProps = {};
 
-  const continue = useCallback(async () => {
+  const goNext = useCallback(async () => {
     try {
       if (!narration.canGoNext) {
         return;
@@ -585,7 +585,7 @@ export default function useNarrationFunctions() {
   );
 
   return {
-    continue,
+    goNext,
     back,
     selectChoice,
   };
