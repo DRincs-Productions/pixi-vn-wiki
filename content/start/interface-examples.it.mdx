@@ -221,7 +221,7 @@ import { useQueryCanGoNext } from "../hooks/useQueryInterface";
 export default function NextButton() {
     const { data: canGoNext = false } = useQueryCanGoNext();
     const [loading, setLoading] = useState(false);
-    const { continue } = useNarrationFunctions();
+    const { goNext } = useNarrationFunctions();
 
     if (!canGoNext) {
         return null;
@@ -231,7 +231,7 @@ export default function NextButton() {
         <button
             onClick={() => {
                 setLoading(true);
-                continue()
+                goNext()
                     .then(() => setLoading(false))
                     .catch(() => setLoading(false));
             }}
@@ -273,7 +273,7 @@ export default function useNarrationFunctions() {
     const queryClient = useQueryClient();
     const gameProps = {};
 
-    const continue = useCallback(async () => {
+    const goNext = useCallback(async () => {
         try {
             if (!narration.canGoNext) {
                 return;
@@ -289,7 +289,7 @@ export default function useNarrationFunctions() {
     }, [gameProps, queryClient]);
 
     return {
-        continue,
+        goNext,
     };
 }
 ```
@@ -306,7 +306,7 @@ import { useQueryCanGoBack } from "../hooks/useQueryInterface";
 export default function BackButton() {
     const { data: canGoBack = false } = useQueryCanGoBack();
     const [loading, setLoading] = useState(false);
-    const { back } = useNarrationFunctions();
+    const { goBack } = useNarrationFunctions();
 
     if (!canGoBack) {
         return null;
@@ -316,7 +316,7 @@ export default function BackButton() {
         <button
             onClick={() => {
                 setLoading(true);
-                back()
+                goBack()
                     .then(() => setLoading(false))
                     .catch(() => setLoading(false));
             }}
@@ -358,7 +358,7 @@ export default function useNarrationFunctions() {
     const queryClient = useQueryClient();
     const gameProps = {};
 
-    const back = useCallback(async () => {
+    const goBack = useCallback(async () => {
         return stepHistory
             .back((_path) => {
                 // TODO: navigate in the url path
@@ -369,7 +369,7 @@ export default function useNarrationFunctions() {
     }, [gameProps, queryClient]);
 
     return {
-        back,
+        goBack,
     };
 }
 ```
