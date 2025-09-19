@@ -211,11 +211,7 @@ export function CharacterEmotionsExample() {
         <InkExample
             files={{
                 "ink/start.ts": `export const startLabel = \`=== start ===
-mc: Hello, I'm [mc].
-# request input string
-mc: My name is:
-# rename mc {_input_value_}
-mc: My name is [mc]
+mc@happy: Hi, I'm Liam. I'm very happy today.
 -> DONE\`;`,
                 "values/characters.ts": `import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
 
@@ -223,7 +219,14 @@ export const mc = new CharacterBaseModel("mc", {
   name: "Liam",
 });
 
-RegisteredCharacters.add(mc);`,
+export const mcHappy = new CharacterBaseModel(
+  { id: "mc", emotion: "happy" },
+  {
+    name: "Liam happy",
+  }
+);
+
+RegisteredCharacters.add([mc, mcHappy]);`,
             }}
         />
     );
