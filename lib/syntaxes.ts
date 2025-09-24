@@ -193,7 +193,7 @@ export const inkLanguage: LanguageInput = {
                             name: "keyword.other.knot.ink",
                         },
                     },
-                    end: "\\s*(=*)$",
+                    end: "\\s*(=+)?(?=\\s*(//|/\\*|$))",
                     endCaptures: {
                         "1": {
                             name: "keyword.other.knot.ink",
@@ -216,6 +216,9 @@ export const inkLanguage: LanguageInput = {
                                     include: "#logic",
                                 },
                             ],
+                        },
+                        {
+                            include: "#comments",
                         },
                     ],
                 },
@@ -311,8 +314,18 @@ export const inkLanguage: LanguageInput = {
             patterns: [
                 {
                     name: "meta.brace.curly.conditionalChoice.ink",
-                    begin: "(?<=^\\s*[\\*\\+]\\s*)\\{(?=[^\\n}]*\\})",
-                    end: "\\}",
+                    begin: "(?<=^\\s*[\\*\\+]\\s*)(\\{)(?=[^\\n}]*\\})",
+                    beginCaptures: {
+                        "1": {
+                            name: "keyword.other.brackets.conditional.ink",
+                        },
+                    },
+                    end: "(?<!\\\\)(\\})",
+                    endCaptures: {
+                        "1": {
+                            name: "keyword.other.brackets.conditional.ink",
+                        },
+                    },
                     patterns: [
                         {
                             include: "#logic",
@@ -325,8 +338,18 @@ export const inkLanguage: LanguageInput = {
             patterns: [
                 {
                     name: "meta.brace.curly.conditionalText.ink",
-                    begin: "(?<!\\\\)\\{(?=[^\\n}]*:)",
-                    end: "(?<!\\\\)\\}",
+                    begin: "(?<!\\\\)(\\{)(?=[^\\n}]*:)",
+                    beginCaptures: {
+                        "1": {
+                            name: "keyword.other.brackets.conditional.ink",
+                        },
+                    },
+                    end: "(?<!\\\\)(\\})",
+                    endCaptures: {
+                        "1": {
+                            name: "keyword.other.brackets.conditional.ink",
+                        },
+                    },
                     patterns: [
                         {
                             name: "keyword.other.conditional.ink",
@@ -379,8 +402,18 @@ export const inkLanguage: LanguageInput = {
             patterns: [
                 {
                     name: "meta.conditional.block.ink",
-                    begin: "(?<!\\\\)\\{(?=[^}]*\\n)",
-                    end: "\\s*\\}",
+                    begin: "(?<!\\\\)(\\{)(?=[^}]*\\n)",
+                    beginCaptures: {
+                        "1": {
+                            name: "keyword.other.brackets.conditional.ink",
+                        },
+                    },
+                    end: "(?<!\\\\)(\\})",
+                    endCaptures: {
+                        "1": {
+                            name: "keyword.other.brackets.conditional.ink",
+                        },
+                    },
                     patterns: [
                         {
                             name: "meta.conditional.firstline.no-dash.ink",
@@ -452,13 +485,21 @@ export const inkLanguage: LanguageInput = {
             patterns: [
                 {
                     name: "meta.multiline.block.ink",
-                    begin: "(?<!\\\\)\\{\\s*(stopping|shuffle(?:\\s+(?:once|stopping))?|cycle|once)\\s*:",
+                    begin: "(?<!\\\\)(\\{)\\s*(stopping|shuffle(?:\\s+(?:once|stopping))?|cycle|once)\\s*:",
                     beginCaptures: {
                         "1": {
+                            name: "keyword.other.brackets.conditional.ink",
+                        },
+                        "2": {
                             name: "keyword.other.multiline-type.ink",
                         },
                     },
-                    end: "\\s*\\}",
+                    end: "(?<!\\\\)(\\})",
+                    endCaptures: {
+                        "1": {
+                            name: "keyword.other.brackets.conditional.ink",
+                        },
+                    },
                     patterns: [
                         {
                             name: "meta.multiline.line.ink",
@@ -516,16 +557,16 @@ export const inkLanguage: LanguageInput = {
             patterns: [
                 {
                     name: "meta.printing.variable.ink",
-                    begin: "(?<!\\\\)\\{",
+                    begin: "(?<!\\\\)(\\{)",
                     beginCaptures: {
-                        "0": {
-                            name: "keyword.other.ink",
+                        "1": {
+                            name: "keyword.other.brackets.conditional.ink",
                         },
                     },
-                    end: "(?<!\\\\)\\}",
+                    end: "(?<!\\\\)(\\})",
                     endCaptures: {
-                        "0": {
-                            name: "keyword.other.ink",
+                        "1": {
+                            name: "keyword.other.brackets.conditional.ink",
                         },
                     },
                     patterns: [
