@@ -357,3 +357,25 @@ export default manifest;`,
         />
     );
 }
+
+export function InputExample() {
+    return (
+        <InkExample
+            files={{
+                "ink/start.ts": `export const startLabel = \`=== start ===
+Hello, 
+# request input type string // [!code focus]
+<>what is your name?
+My name is { _input_value_ } // [!code focus]
+# request input type number default 18 // [!code focus]
+How old are you?
+I am { _input_value_ } years old // [!code focus]
+# request input type "html textarea" // [!code focus]
+Describe who you are:
+{ _input_value_ } // [!code focus]
+Restart
+-> DONE\`;`,
+            }}
+        />
+    );
+}
