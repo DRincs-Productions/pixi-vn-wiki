@@ -93,6 +93,10 @@ export const inkLanguage: LanguageInput = {
                     name: "keyword.other.choice.ink",
                     match: "^\\s*([\\*\\+]\\s*)+",
                 },
+                {
+                    name: "keyword.other.brackets.choice.ink",
+                    match: "(?<!\\\\)[\\[\\]]",
+                },
             ],
         },
         gathers: {
@@ -325,7 +329,7 @@ export const inkLanguage: LanguageInput = {
                     end: "(?<!\\\\)\\}",
                     patterns: [
                         {
-                            name: "meta.conditional.condition.ink",
+                            name: "keyword.other.conditional.ink",
                             begin: "(?<=\\{)\\s*",
                             end: ":",
                             patterns: [
@@ -335,7 +339,7 @@ export const inkLanguage: LanguageInput = {
                             ],
                         },
                         {
-                            name: "keyword.operator.ternary.ink",
+                            name: "keyword.other.conditional.ink",
                             match: ":",
                         },
                         {
@@ -346,6 +350,24 @@ export const inkLanguage: LanguageInput = {
                                 {
                                     name: "keyword.other.alternative.ink",
                                     match: "(?<!\\\\)\\|",
+                                },
+                                {
+                                    include: "#multilineBlocks",
+                                },
+                                {
+                                    include: "#conditionalBlocks",
+                                },
+                                {
+                                    include: "#conditionalChoices",
+                                },
+                                {
+                                    include: "#conditionalText",
+                                },
+                                {
+                                    include: "#variableText",
+                                },
+                                {
+                                    include: "#printingVariables",
                                 },
                             ],
                         },
@@ -520,6 +542,9 @@ export const inkLanguage: LanguageInput = {
                     include: "#comments",
                 },
                 {
+                    include: "#knots",
+                },
+                {
                     name: "keyword.control.return.ink",
                     match: "\\breturn\\b",
                 },
@@ -677,7 +702,33 @@ export const inkLanguage: LanguageInput = {
             patterns: [
                 {
                     name: "punctuation.definition.tag.ink",
-                    match: "#.*$",
+                    begin: "#",
+                    beginCaptures: {
+                        "0": {
+                            name: "punctuation.definition.tag.ink",
+                        },
+                    },
+                    end: "$",
+                    patterns: [
+                        {
+                            include: "#multilineBlocks",
+                        },
+                        {
+                            include: "#conditionalBlocks",
+                        },
+                        {
+                            include: "#conditionalChoices",
+                        },
+                        {
+                            include: "#conditionalText",
+                        },
+                        {
+                            include: "#variableText",
+                        },
+                        {
+                            include: "#printingVariables",
+                        },
+                    ],
                 },
             ],
         },
