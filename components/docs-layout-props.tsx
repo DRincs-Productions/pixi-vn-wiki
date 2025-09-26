@@ -238,6 +238,7 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                                 url: `${preUrl}/start/canvas-image-container`,
                             },
                             { type: "page", name: t("canvas-videos"), url: `${preUrl}/start/canvas-videos` },
+                            { type: "page", name: t("canvas-text"), url: `${preUrl}/start/canvas-text` },
                             { type: "page", name: t("canvas-filters"), url: `${preUrl}/start/canvas-filters` },
                             { type: "page", name: t("canvas-lights"), url: `${preUrl}/start/canvas-lights` },
                             { type: "page", name: t("canvas-spine2d"), url: `${preUrl}/start/canvas-spine2d` },
