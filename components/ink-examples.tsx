@@ -406,7 +406,7 @@ Hello, this is a test. \\\\n\\\\n This is a new line.\`;`,
     );
 }
 
-export function Markdown() {
+export function MarkdownExample() {
     return (
         <InkExample
             files={{
@@ -417,7 +417,7 @@ Hello, this is some *italic* text and this is some **bold** text.\`;`,
     );
 }
 
-export function Markdown2() {
+export function Markdown2Example() {
     return (
         <InkExample
             files={{
@@ -452,6 +452,19 @@ console.log("Hello World") \\\\n<>
 \\#\\# Separator Test \\\\n<>
 \\*\\*\\* \\\\n<>
 Footer\`;`,
+            }}
+        />
+    );
+}
+
+export function CSSExample() {
+    return (
+        <InkExample
+            files={{
+                "ink/start.ts": `export const startLabel = \`=== start ===
+<span style="color:blue">some *blue* text</span>.
+<span style="color:red">some *red* text</span>.
+<span style="color:green">some *green* text</span>.\`;`,
             }}
         />
     );
