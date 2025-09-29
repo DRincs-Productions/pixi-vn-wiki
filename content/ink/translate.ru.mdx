@@ -9,31 +9,18 @@ Pixi’VN gives the developer the ability to intercept the translation event wit
 Функция `onInkTranslate` имеет в качестве параметра функцию обратного вызова, которая принимает в качестве параметра текст для перевода и возвращает переведенный текст.
 
 ```ts tab="index.ts"
-import { onInkTranslate } from '@drincs/pixi-vn-ink'
-import { useTranslation } from "react-i18next";
+import { onInkTranslate } from "@drincs/pixi-vn-ink";
 
-const { t } = useTranslation(["narration"]);
-onInkTranslate((text) => {
-   return t(text)
-})
+export function initializeInk(options: { t: (key: string) => string }) {
+    const { t } = options;
+    onInkTranslate(t);
+}
 ```
 
 ```ink tab="ink/start.ink"
 === start ===
 Привет, меня зовут [joe]
 -> DONE
-```
-
-```tsx tab="App.tsx"
-import { useI18n } from './i18n'; // [!code focus]
-
-export default function App() {
-    useI18n() // [!code focus]
-
-    return (
-        // ...
-    );
-}
 ```
 
 ```json tab="locales/strings_es.json"
@@ -45,11 +32,46 @@ export default function App() {
 }
 ```
 
-<Sandbox
-  template="7pg6dy"
-  entry="/src/ink/start.ink"
-/>
-
 ## Автоматическая генерация файлов перевода
 
-( В разработке )
+```ts
+import { generateJsonInkTranslation } from "@drincs/pixi-vn-ink";
+import i18n from "i18next";
+import { convertInkToJson } from "./utils/ink-utility";
+
+function getLocalesResource(lng: string): Promise<any> {
+    return import(`./locales/strings_${lng}.json`);
+}
+
+async function generateResourceToTranslate(lng: string): Promise<any> {
+    let res = await getLocalesResource(lng);
+    res = { ...res };
+    if (!res) {
+        res = {};
+    }
+    if (!res.narration) {
+        res.narration = {};
+    }
+    if (res.default) {
+        delete res.default;
+    }
+    (await convertInkToJson()).forEach((element) => {
+        element && generateJsonInkTranslation(element, res.narration);
+    });
+    return res;
+}
+
+export async function downloadResourceToTranslate() {
+    const lng = i18n.options.fallbackLng?.toString() || "en";
+    const data = await generateResourceToTranslate(lng);
+    const jsonString = JSON.stringify(data);
+    // download the save data as a JSON file
+    const blob = new Blob([jsonString], { type: "application/json" });
+    // download the file
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `strings_${lng}.json`;
+    a.click();
+}
+```
