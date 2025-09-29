@@ -394,3 +394,14 @@ Who are we going to rescue: the kitten or the wizard?<># continue
         />
     );
 }
+
+export function NewLinesExample() {
+    return (
+        <InkExample
+            files={{
+                "ink/start.ts": `export const startLabel = \`=== start ===
+Hello, this is a test. \\\\n\\\\n This is a new line.\`;`,
+            }}
+        />
+    );
+}
