@@ -405,3 +405,14 @@ Hello, this is a test. \\\\n\\\\n This is a new line.\`;`,
         />
     );
 }
+
+export function Markdown() {
+    return (
+        <InkExample
+            files={{
+                "ink/start.ts": `export const startLabel = \`=== start ===
+Hello, this is some *italic* text and this is some **bold** text.\`;`,
+            }}
+        />
+    );
+}
