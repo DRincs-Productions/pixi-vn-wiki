@@ -219,7 +219,7 @@ export function ViewOptions({
     );
 }
 
-export function TranslateButton({ lang, folther }: { lang?: string; folther: string; path: string }) {
+export function TranslateButton({ lang, folther }: { lang?: string; folther: string }) {
     const t = useTranslations("common");
 
     return (
