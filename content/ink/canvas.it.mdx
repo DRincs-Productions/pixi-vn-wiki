@@ -2,26 +2,31 @@
 title: Use canvas in ink
 ---
 
+import { ShowComponentExample, ShowContainerExample } from "@/components/ink-examples";
+
 The **_ink_ + Pixi’VN integration** introduces a `# script` that allows you to show, edit, remove and etc. a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink>. Per fare ciò, è necessario utilizzare la seguente sintassi:
 
-`#` + `[operation]` + `[type of the canvas component]` + `[alias]` + `[parameters]`
+```ink
+# {operation} {component type} {alias} {parameters}
+```
 
 Where:
 
-- `#`: It is a special character used by **_ink_ syntax** for use a special script.
-- `[operation]`: It is the operation that you want to execute with the canvas component. The available operations are:
+- `#`: è il simbolo hashtag per identificare uno script hashtag.
+- `operation`: It is the operation that you want to execute with the canvas component. The available operations are:
   - `show`: Show a canvas component. (Read more [here](#show-a-canvas-component-in-ink))
   - `edit`: Edit a canvas component. (Read more [here](#edit-a-canvas-component-in-ink))
   - `remove`: Remove a canvas component. (Read more [here](#remove-a-canvas-component-in-ink))
   - `pause` (Only for video): Pause a video canvas component. (Read more [here](#pause-a-video-in-ink))
   - `resume` (Only for video): Resume a video canvas component. (Read more [here](#resume-a-video-in-ink))
-- `[type of the canvas component]` It is the type of the canvas component. The available types are:
+- `component type` It is the component type. The available types are:
   - <DynamicLink href="/start/canvas-image">`image`</DynamicLink>
   - <DynamicLink href="/start/canvas-image-container">`imagecontainer`</DynamicLink>
   - <DynamicLink href="/start/canvas-video">`video`</DynamicLink>
-- `[alias]` It is the <DynamicLink href="/start/canvas-alias">alias of the canvas component</DynamicLink>. The alias is a string that identifies the canvas component.
+  - <DynamicLink href="/start/canvas-text">`text`</DynamicLink>
+- `alias` It is the <DynamicLink href="/start/canvas-alias">alias of the canvas component</DynamicLink>. The alias is a string that identifies the canvas component.
   - If the alias includes spaces, you must use double quotes.
-- `[parameters]` It is the parameters of the operation. The parameters depend on the operation.
+- `parameters` It is the parameters of the operation. The parameters depend on the operation.
   - If the parameters include spaces, you must use double quotes.
   - If the parameters is a object, you must use the JSON format and the first character must be `\{` and the last character must be `\}`. Example: `\{ "color": "red", isVisble: true, position: { x: 100, y: 100 } \}`
 
@@ -34,35 +39,64 @@ Where:
 
 You can use the `show` to show a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink> in **_ink_**.
 
-Is raccomended to <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">initialize the asset matrix at project start</DynamicLink> to use the alias of texture in `[URL/path of the image]`. Per fare ciò, è necessario utilizzare la seguente sintassi:
+Is raccomended to <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">initialize the asset matrix at project start</DynamicLink> to use the alias of texture in `source`. Per fare ciò, è necessario utilizzare la seguente sintassi:
 
-`#` + `show` + `[type of the canvas component]` + `[alias]` + `[URL/path of the image]` + `[parameters]`
+```ink
+# show {component type} {alias} {source} {parameters}
+```
 
-- `[URL/path of the image]` (Optional): It is the URL/path of the image that you want to show. If you have initialized the asset matrix at project start, you can use the alias of the texture. If you don't provide the URL/path of the image, this parameter is equal to `[alias]`. Keep in mind that to write `https://` in **_ink_** you must use `https:\/\/` because the `//` is considered a comment in **_ink_**.
-- `[parameters]` (Optional): Afer the URL/path of the image, you can add the `parameters` of the <DynamicLink href="/start/canvas-components">canvas component</DynamicLink> that you want to set. The `parameters` must be set as follows: `parameterName` + `SPACE` + `value`. If the `value` is a string and includes spaces, you must use double quotes.
+<Callout type="info">
+
+Keep in mind that to write `https://` in **_ink_** you must use `https:\/\/` because the `//` is considered a comment in **_ink_**.
+
+</Callout>
+
+<Callout type="info">
+
+If you have initialized the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink> at project start, you can use the alias of the texture in `source`.
+
+</Callout>
+
+- `source` (Optional), It has different content depending on the component you want to show:
+  - for `image` and `video` components, it is the URL/path of the texture that you want to show.
+  - for `text` component, it is the text that you want to show.
+  - for `imagecontainer` component, it is the list of URL/path of the textures that you want to show. For example: `[url1 url2 url3]`.
+  - if you don't provide the `source`, this parameter is equal to `alias`
+- `parameters` (Optional): Afer the `source`, you can add the `parameters` of the <DynamicLink href="/start/canvas-components">canvas component</DynamicLink> that you want to set. The `parameters` must be set as follows: `parameterName` + `SPACE` + `value`. If the `value` is a string and includes spaces, you must use double quotes.
 
 ```ink tab="ink/start.ink"
+=== start ===
 # show image eggHead
 # show image "eggHead 2" eggHead x 20 y 30
 # show image flowerTop x 20 y 30 visible true cursor "pointer" alpha 0.5
 # show video my_video
+# show text hello "Hello, this is a text" x 20 y 30 style \{ "fill": "red", "fontSize": 30 \}
+# pause
 ```
 
-```ts tab="utils/defineAssets.ts"
-import { Assets } from "@drincs/pixi-vn";
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
 
-export async function defineAssets() {
-    Assets.add({ alias: 'eggHead', src: "https://pixijs.com/assets/eggHead.png" })
-    Assets.add({ alias: 'flowerTop', src: "https://pixijs.com/assets/flowerTop.png" })
-    Assets.add({ alias: "my_video", src: "https://pixijs.com/assets/video.mp4" });
-}
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                { alias: "eggHead", src: "https://pixijs.com/assets/eggHead.png" },
+                { alias: "flowerTop", src: "https://pixijs.com/assets/flowerTop.png" },
+                { alias: "my_video", src: "https://pixijs.com/assets/video.mp4" },
+            ],
+        },
+    ],
+};
+export default manifest;
 ```
 
-### Show a image container in _ink_
-
-Since the container contains a list of images, the command to show a container accepts a list of strings instead of accepting a string:
-
-- `[list of URL/path of the image]`: It is the list of URL/path of the images that you want to show. If you have initialized the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink>, you can use the alias of the texture. Keep in mind that to write `https://` in **_ink_** you must use `https:\/\/` because the `//` is considered a comment in **_ink_**.
+<ShowComponentExample />
 
 ```ink tab="ink/start.ink"
 === start ===
@@ -70,42 +104,74 @@ Since the container contains a list of images, the command to show a container a
 # show imagecontainer sly [fm01-body fm01-eyes fm01-mouth] xAlign 0.2 yAlign 1 with movein
 # show imagecontainer steph [fm02-body fm02-eyes fm02-mouth] xAlign 0.8 yAlign 1 with dissolve
 # pause
--> start
 ```
 
 ```ts tab="utils/defineAssets.ts"
-import { Assets } from "@drincs/pixi-vn"
+import { AssetsManifest } from "@drincs/pixi-vn";
 
-export async function defineAssets() {
-    // female character 01
-    Assets.add({ alias: 'fm01-body', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-body.webp?alt=media" })
-    Assets.add({ alias: 'fm01-eyes', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-eyes-smile.webp?alt=media" })
-    Assets.add({ alias: 'fm01-mouth', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-smile00.webp?alt=media" })
-    // female character 02
-    Assets.add({ alias: 'fm02-body', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-body.webp?alt=media" })
-    Assets.add({ alias: 'fm02-eyes', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-eyes-smile.webp?alt=media" })
-    Assets.add({ alias: 'fm02-mouth', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-mouth-smile00.webp?alt=media" })
-    // male character 01
-    Assets.add({ alias: 'm01-body', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media" })
-    Assets.add({ alias: 'm01-eyes', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media" })
-    Assets.add({ alias: 'm01-mouth', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media" })
-}
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "fm01-body",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-body.webp?alt=media",
+                },
+                {
+                    alias: "fm01-eyes",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-eyes-smile.webp?alt=media",
+                },
+                {
+                    alias: "fm01-mouth",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-smile00.webp?alt=media",
+                },
+                {
+                    alias: "fm02-body",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-body.webp?alt=media",
+                },
+                {
+                    alias: "fm02-eyes",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-eyes-smile.webp?alt=media",
+                },
+                {
+                    alias: "fm02-mouth",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-mouth-smile00.webp?alt=media",
+                },
+                {
+                    alias: "m01-body",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
 ```
 
-<Sandbox
-  template="sndrvv"
-  entry="/src/ink/start.ink,/src/utils/assets-utility.ts"
-/>
+<ShowContainerExample />
 
 ### Show a canvas component with transition in _ink_
 
 If you want to show the canvas component with a <DynamicLink href="/start/canvas-transition">transition</DynamicLink>, you can add into the parameters the `with [transitionType]`.
 
-`#` + `show` + `[type of the canvas component]` + `[alias]` + `[URL/path of the image]` + `[parameters]` + `with` + `[transitionType]`
+`#` + `show` + `[component type]` + `[alias]` + `{source}` + `[parameters]` + `with` + `[transitionType]`
 
 After the `transitionType`, you can add the `transition parameters`. the `transition parameters` must be set as follows: `parameterName` + `SPACE` + `value`. If the `value` is a string and includes spaces, you must use double quotes. Per fare ciò, è necessario utilizzare la seguente sintassi:
 
-`#` + `show` + `[type of the canvas component]` + `[alias]` + `[URL/path of the image]` + `[parameters]` + `with` + `[transitionType]` + `[transition parameters]`
+`#` + `show` + `[component type]` + `[alias]` + `{source}` + `[parameters]` + `with` + `[transitionType]` + `[transition parameters]`
 
 The available transitions are:
 
@@ -139,7 +205,7 @@ export async function defineAssets() {
 
 You can use the `edit` to edit a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink> in **_ink_**. Per fare ciò, è necessario utilizzare la seguente sintassi:
 
-`#` + `edit` + `[type of the canvas component]` + `[alias]` + `[parameters]`
+`#` + `edit` + `[component type]` + `[alias]` + `[parameters]`
 
 - `[parameters]`: In the `parameters` you must include the properties that you want to edit. The `parameters` must be set as follows: `parameterName` + `SPACE` + `value`. If the `value` is a string and includes spaces, you must use double quotes.
 
@@ -151,7 +217,7 @@ You can use the `edit` to edit a <DynamicLink href="/start/canvas-components">ca
 
 You can use the `remove` to remove a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink> in **_ink_**. Per fare ciò, è necessario utilizzare la seguente sintassi:
 
-`#` + `remove` + `[type of the canvas component]` + `[alias]`
+`#` + `remove` + `[component type]` + `[alias]`
 
 ```ink
 # remove image bg
@@ -162,11 +228,11 @@ You can use the `remove` to remove a <DynamicLink href="/start/canvas-components
 
 If you want to remove the canvas component with a <DynamicLink href="/start/canvas-transition">transition</DynamicLink>, you can add after the alias of the canvas component `with [transitionType]`.
 
-`#` + `remove` + `[type of the canvas component]` + `[alias]` + `with` + `[transitionType]`
+`#` + `remove` + `[component type]` + `[alias]` + `with` + `[transitionType]`
 
 After the `transitionType`, you can add the `transition parameters`. the `transition parameters` must be set as follows: `parameterName` + `SPACE` + `value`. If the `value` is a string and includes spaces, you must use double quotes. Per fare ciò, è necessario utilizzare la seguente sintassi:
 
-`#` + `remove` + `[type of the canvas component]` + `[alias]` + `with` + `[transitionType]` + `[transition parameters]`
+`#` + `remove` + `[component type]` + `[alias]` + `with` + `[transitionType]` + `[transition parameters]`
 
 The available transitions are:
 
