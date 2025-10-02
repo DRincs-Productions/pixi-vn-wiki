@@ -5,7 +5,7 @@ import { DocsBody, DocsDescription, DocsPage, DocsTitle, EditOnGitHub } from "fu
 import { Edit } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { TranslateButton } from "./ui/buttons";
+import { TranslateButton } from "./page-actions";
 
 export default async function MDXPage({
     lang,
