@@ -244,3 +244,30 @@ export function TranslateButton({ lang, folther }: { lang?: string; folther: str
         </a>
     );
 }
+
+export function ChatGPTButton({ markdownUrl }: { markdownUrl: string }) {
+    const t = useTranslations("common");
+    const fullMarkdownUrl = typeof window !== "undefined" ? new URL(markdownUrl, window.location.origin) : "loading";
+    const q = t("query_chatgpt", { fullMarkdownUrl: `${fullMarkdownUrl}` });
+
+    return (
+        <a
+            target='_blank'
+            rel='noreferrer noopener'
+            className={cn(
+                buttonVariants({
+                    variant: "secondary",
+                    size: "xs",
+                    className: "gap-1.5 not-prose padding-6 padding-x-2",
+                })
+            )}
+            href={`https://chatgpt.com/?${new URLSearchParams({
+                hints: "search",
+                q,
+            })}`}
+        >
+            <Globe className='size-3.5' />
+            {t("ask_chatgpt")}
+        </a>
+    );
+}
