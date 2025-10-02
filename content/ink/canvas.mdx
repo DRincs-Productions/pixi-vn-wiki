@@ -1,6 +1,7 @@
 ---
 title: Use canvas in ink
 ---
+import { ShowComponentExample, ShowContainerExample } from "@/components/ink-examples";
 
 The ***ink* + Pixi’VN integration** introduces a `# script` that allows you to show, edit, remove and etc. a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink>. To do this, you need to use the following syntax:
 
@@ -63,21 +64,38 @@ If you have initialized the <DynamicLink href="/start/assets-management#initiali
 * `parameters` (Optional): Afer the `source`, you can add the `parameters` of the <DynamicLink href="/start/canvas-components">canvas component</DynamicLink> that you want to set. The `parameters` must be set as follows: `parameterName` + `SPACE` + `value`. If the `value` is a string and includes spaces, you must use double quotes.
 
 ```ink tab="ink/start.ink"
+=== start ===
 # show image eggHead
 # show image "eggHead 2" eggHead x 20 y 30
 # show image flowerTop x 20 y 30 visible true cursor "pointer" alpha 0.5
 # show video my_video
+# show text hello "Hello, this is a text" x 20 y 30 style \{ "fill": "red", "fontSize": 30 \}
+# pause
 ```
 
-```ts tab="utils/defineAssets.ts"
-import { Assets } from "@drincs/pixi-vn";
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
 
-export async function defineAssets() {
-    Assets.add({ alias: 'eggHead', src: "https://pixijs.com/assets/eggHead.png" })
-    Assets.add({ alias: 'flowerTop', src: "https://pixijs.com/assets/flowerTop.png" })
-    Assets.add({ alias: "my_video", src: "https://pixijs.com/assets/video.mp4" });
-}
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                { alias: "eggHead", src: "https://pixijs.com/assets/eggHead.png" },
+                { alias: "flowerTop", src: "https://pixijs.com/assets/flowerTop.png" },
+                { alias: "my_video", src: "https://pixijs.com/assets/video.mp4" },
+            ],
+        },
+    ],
+};
+export default manifest;
 ```
+
+<ShowComponentExample />
 
 ```ink tab="ink/start.ink"
 === start ===
@@ -85,32 +103,64 @@ export async function defineAssets() {
 # show imagecontainer sly [fm01-body fm01-eyes fm01-mouth] xAlign 0.2 yAlign 1 with movein
 # show imagecontainer steph [fm02-body fm02-eyes fm02-mouth] xAlign 0.8 yAlign 1 with dissolve
 # pause
--> start
 ```
 
 ```ts tab="utils/defineAssets.ts"
-import { Assets } from "@drincs/pixi-vn"
+import { AssetsManifest } from "@drincs/pixi-vn";
 
-export async function defineAssets() {
-    // female character 01
-    Assets.add({ alias: 'fm01-body', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-body.webp?alt=media" })
-    Assets.add({ alias: 'fm01-eyes', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-eyes-smile.webp?alt=media" })
-    Assets.add({ alias: 'fm01-mouth', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-smile00.webp?alt=media" })
-    // female character 02
-    Assets.add({ alias: 'fm02-body', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-body.webp?alt=media" })
-    Assets.add({ alias: 'fm02-eyes', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-eyes-smile.webp?alt=media" })
-    Assets.add({ alias: 'fm02-mouth', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-mouth-smile00.webp?alt=media" })
-    // male character 01
-    Assets.add({ alias: 'm01-body', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media" })
-    Assets.add({ alias: 'm01-eyes', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media" })
-    Assets.add({ alias: 'm01-mouth', src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media" })
-}
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "fm01-body",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-body.webp?alt=media",
+                },
+                {
+                    alias: "fm01-eyes",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-eyes-smile.webp?alt=media",
+                },
+                {
+                    alias: "fm01-mouth",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-smile00.webp?alt=media",
+                },
+                {
+                    alias: "fm02-body",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-body.webp?alt=media",
+                },
+                {
+                    alias: "fm02-eyes",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-eyes-smile.webp?alt=media",
+                },
+                {
+                    alias: "fm02-mouth",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-mouth-smile00.webp?alt=media",
+                },
+                {
+                    alias: "m01-body",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
 ```
 
-<Sandbox
-  template="sndrvv"
-  entry="/src/ink/start.ink,/src/utils/assets-utility.ts"
-/>
+<ShowContainerExample />
 
 ### Show a canvas component with transition in *ink*
 

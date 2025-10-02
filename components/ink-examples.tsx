@@ -496,3 +496,103 @@ export function CSSExample() {
         />
     );
 }
+
+export function ShowComponentExample() {
+    return (
+        <InkExample
+            files={{
+                "ink/start.ts": `export const startLabel = \`=== start ===
+# show image eggHead
+# show image "eggHead 2" eggHead x 20 y 30
+# show image flowerTop x 20 y 30 visible true cursor "pointer" alpha 0.5
+# show video my_video
+# pause\`;`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        { alias: "eggHead", src: "https://pixijs.com/assets/eggHead.png" },
+        { alias: "flowerTop", src: "https://pixijs.com/assets/flowerTop.png" },
+        { alias: "my_video", src: "https://pixijs.com/assets/video.mp4" },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function ShowContainerExample() {
+    return (
+        <InkExample
+            files={{
+                "ink/start.ts": `export const startLabel = \`=== start ===
+# show imagecontainer james [m01-body m01-eyes m01-mouth] xAlign 0.5 yAlign 1
+# show imagecontainer sly [fm01-body fm01-eyes fm01-mouth] xAlign 0.2 yAlign 1 with movein
+# show imagecontainer steph [fm02-body fm02-eyes fm02-mouth] xAlign 0.8 yAlign 1 with dissolve
+# pause\`;`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        {
+          alias: "fm01-body",
+          src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-body.webp?alt=media",
+        },
+        {
+          alias: "fm01-eyes",
+          src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-eyes-smile.webp?alt=media",
+        },
+        {
+          alias: "fm01-mouth",
+          src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-smile00.webp?alt=media",
+        },
+        {
+          alias: "fm02-body",
+          src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-body.webp?alt=media",
+        },
+        {
+          alias: "fm02-eyes",
+          src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-eyes-smile.webp?alt=media",
+        },
+        {
+          alias: "fm02-mouth",
+          src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-mouth-smile00.webp?alt=media",
+        },
+        {
+          alias: "m01-body",
+          src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media",
+        },
+        {
+          alias: "m01-eyes",
+          src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media",
+        },
+        {
+          alias: "m01-mouth",
+          src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
