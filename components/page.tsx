@@ -48,12 +48,12 @@ export default async function MDXPage({
             <DocsBody>
                 <div className='flex flex-row gap-2 items-center mb-4'>
                     <EditOnGitHub
-                        href={`https://github.com/DRincs-Productions/pixi-vn-wiki/blob/main/content/${folther}/${page.path}`}
+                        href={`https://github.com/DRincs-Productions/pixi-vn-wiki/blob/main/content/${page.path}`}
                     >
                         <Edit className='size-3.5' />
                         {t("edit_github")}
                     </EditOnGitHub>
-                    <TranslateButton lang={lang} folther={folther} path={page.path} />
+                    <TranslateButton lang={lang} folther={""} path={page.path} />
                 </div>
                 <MDXContent
                     components={getMDXComponents({
