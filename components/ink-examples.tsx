@@ -39,6 +39,7 @@ import { INTERFACE_DATA_USE_QUEY_KEY } from "./hooks/useQueryInterface";
 import { startLabel } from "./ink/start";
 import "./styles.css";
 import { defineAssets } from "./utils/assets-utility";
+import { initializeInk } from "./utils/ink-utility";
 import "./values/characters";
 import "./labels/javascriptLabel";
 
@@ -90,6 +91,7 @@ Game.init(body, {
 
   defineAssets().then(() =>
     importInkText([startLabel]).then(() => {
+      initializeInk();
       Game.clear();
       narration.call("start", {}).then(() => {
         reactRoot.render(
@@ -131,35 +133,6 @@ export function initializeInk() {
     // if return undefined, the system will not replace the character id
     return undefined;
   });
-}`,
-                "App.tsx": `import { useEffect } from "react";
-import BackButton from "./components/BackButton";
-import NextButton from "./components/NextButton";
-import TextInput from "./screens/modals/TextInput";
-import NarrationScreen from "./screens/NarrationScreen";
-import { initializeInk } from "./utils/ink-utility";
-
-export default function App() {
-  useEffect(() => {
-    initializeInk();
-  }, []);
-  return (
-    <div>
-      <NarrationScreen />
-      <TextInput />
-      <div
-        style={{
-          position: "absolute",
-          right: 0,
-          top: "70%",
-          width: 40,
-        }}
-      >
-        <NextButton />
-        <BackButton />
-      </div>
-    </div>
-  );
 }`,
                 "labels/javascriptLabel": ``,
                 ...files,
