@@ -8,6 +8,9 @@ export const docs = defineDocs({
     dir: "content/start",
     docs: {
         schema: frontmatterSchema,
+        postprocess: {
+            includeProcessedMarkdown: true,
+        },
     },
     meta: {
         schema: metaSchema,
@@ -62,6 +65,9 @@ export const inkDocs = defineDocs({
     dir: "content/ink",
     docs: {
         schema: frontmatterSchema,
+        postprocess: {
+            includeProcessedMarkdown: true,
+        },
     },
     meta: {
         schema: metaSchema,
@@ -73,6 +79,9 @@ export const otherTopicsDocs = defineDocs({
     dir: "content/other-topics",
     docs: {
         schema: frontmatterSchema,
+        postprocess: {
+            includeProcessedMarkdown: true,
+        },
     },
     meta: {
         schema: metaSchema,
@@ -84,6 +93,9 @@ export const renpyDocs = defineDocs({
     dir: "content/renpy",
     docs: {
         schema: frontmatterSchema,
+        postprocess: {
+            includeProcessedMarkdown: true,
+        },
     },
     meta: {
         schema: metaSchema,
@@ -95,6 +107,9 @@ export const nqtrDocs = defineDocs({
     dir: "content/nqtr",
     docs: {
         schema: frontmatterSchema,
+        postprocess: {
+            includeProcessedMarkdown: true,
+        },
     },
     meta: {
         schema: metaSchema,
