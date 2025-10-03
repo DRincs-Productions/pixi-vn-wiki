@@ -2,7 +2,7 @@ import { defineConfig, defineDocs, frontmatterSchema, metaSchema } from "fumadoc
 import { inkLanguage } from "./lib/syntaxes";
 
 // You can customise Zod schemas for frontmatter and `meta.json` here
-// see https://fumadocs.vercel.app/docs/mdx/collections#define-docs
+// see https://fumadocs.dev/docs/mdx/collections
 export const docs = defineDocs({
     // Specifies the directory where your docs are located
     dir: "content/start",
