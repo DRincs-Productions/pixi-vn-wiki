@@ -2,12 +2,15 @@ import { defineConfig, defineDocs, frontmatterSchema, metaSchema } from "fumadoc
 import { inkLanguage } from "./lib/syntaxes";
 
 // You can customise Zod schemas for frontmatter and `meta.json` here
-// see https://fumadocs.vercel.app/docs/mdx/collections#define-docs
+// see https://fumadocs.dev/docs/mdx/collections
 export const docs = defineDocs({
     // Specifies the directory where your docs are located
     dir: "content/start",
     docs: {
         schema: frontmatterSchema,
+        postprocess: {
+            includeProcessedMarkdown: true,
+        },
     },
     meta: {
         schema: metaSchema,
@@ -62,6 +65,9 @@ export const inkDocs = defineDocs({
     dir: "content/ink",
     docs: {
         schema: frontmatterSchema,
+        postprocess: {
+            includeProcessedMarkdown: true,
+        },
     },
     meta: {
         schema: metaSchema,
@@ -73,6 +79,9 @@ export const otherTopicsDocs = defineDocs({
     dir: "content/other-topics",
     docs: {
         schema: frontmatterSchema,
+        postprocess: {
+            includeProcessedMarkdown: true,
+        },
     },
     meta: {
         schema: metaSchema,
@@ -84,6 +93,9 @@ export const renpyDocs = defineDocs({
     dir: "content/renpy",
     docs: {
         schema: frontmatterSchema,
+        postprocess: {
+            includeProcessedMarkdown: true,
+        },
     },
     meta: {
         schema: metaSchema,
@@ -95,6 +107,9 @@ export const nqtrDocs = defineDocs({
     dir: "content/nqtr",
     docs: {
         schema: frontmatterSchema,
+        postprocess: {
+            includeProcessedMarkdown: true,
+        },
     },
     meta: {
         schema: metaSchema,
