@@ -248,7 +248,6 @@ export function TranslateButton({ lang, folther }: { lang?: string; folther: str
 export function ChatGPTButton({ markdownUrl }: { markdownUrl: string }) {
     const t = useTranslations("common");
     const fullMarkdownUrl = typeof window !== "undefined" ? new URL(markdownUrl, window.location.origin) : "loading";
-    const q = t("query_chatgpt", { fullMarkdownUrl: `${fullMarkdownUrl}` });
 
     return (
         <a
@@ -263,7 +262,7 @@ export function ChatGPTButton({ markdownUrl }: { markdownUrl: string }) {
             )}
             href={`https://chatgpt.com/?${new URLSearchParams({
                 hints: "search",
-                q,
+                q: t("query_chatgpt", { fullMarkdownUrl: `${fullMarkdownUrl}` }),
             })}`}
         >
             <Globe className='size-3.5' />
