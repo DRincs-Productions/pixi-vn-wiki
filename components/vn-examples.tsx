@@ -1715,7 +1715,8 @@ export const animation01 = newLabel("animation_01", [
   },
 ]);`,
                 "constants.ts": `export const HEIGHT = 1080;
-export const WIDTH = 1920;`,
+export const WIDTH = 1920;
+export const BACKGROUND_COLOR = "#303030";`,
             }}
         />
     );

@@ -118,7 +118,8 @@ const manifest: AssetsManifest = {
 };
 export default manifest;`,
                 "constants.ts": `export const HEIGHT = 1080;
-export const WIDTH = 1920;`,
+export const WIDTH = 1920;
+export const BACKGROUND_COLOR = "#303030";`,
                 "App.tsx": `export default function App() {
   return null;
 }`,
@@ -597,7 +598,8 @@ const manifest: AssetsManifest = {
 };
 export default manifest;`,
                 "constants.ts": `export const HEIGHT = 1080;
-export const WIDTH = 1920;`,
+export const WIDTH = 1920;
+export const BACKGROUND_COLOR = "#303030";`,
             }}
         />
     );
@@ -650,7 +652,8 @@ const manifest: AssetsManifest = {
 };
 export default manifest;`,
                 "constants.ts": `export const HEIGHT = 1080;
-export const WIDTH = 1920;`,
+export const WIDTH = 1920;
+export const BACKGROUND_COLOR = "#303030";`,
             }}
         />
     );
@@ -1810,6 +1813,64 @@ const manifest: AssetsManifest = {
   ],
 };
 export default manifest;`,
+            }}
+        />
+    );
+}
+
+export function TextCanvas() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { newLabel, showText } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    let text = await showText("text", "Hello World!", {
+      xAlign: 0.5,
+      yAlign: 0.5,
+    });
+    text.style.fontSize = 30;
+  },
+]);`,
+            }}
+        />
+    );
+}
+
+export function TextCanvasStyle() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { canvas, newLabel, Text, TextStyle } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  () => {
+    const skewStyle = new TextStyle({
+      fontFamily: "Arial",
+      dropShadow: {
+        alpha: 0.8,
+        angle: 2.1,
+        blur: 4,
+        color: "0x111111",
+        distance: 10,
+      },
+      fill: "#ffffff",
+      stroke: { color: "#004620", width: 12, join: "round" },
+      fontSize: 60,
+      fontWeight: "lighter",
+    });
+
+    const skewText = new Text({
+      text: "SKEW IS COOL",
+      style: skewStyle,
+      align: 0.5,
+      skew: { x: 0.65, y: -0.3 },
+    });
+
+    canvas.add("text", skewText);
+  },
+]);`,
             }}
         />
     );
