@@ -1833,6 +1833,9 @@ export const startLabel = newLabel("start_label", [
     text.style.fontSize = 30;
   },
 ]);`,
+                "constants.ts": `export const HEIGHT = 480;
+export const WIDTH = 720;
+export const BACKGROUND_COLOR = "#b3b3b3b3";`,
             }}
         />
     );
