@@ -60,7 +60,7 @@ export default async function MDXPage({
                         {t("edit_github")}
                     </EditOnGitHub>
                     <TranslateButton lang={lang} folther={folther} />
-                    <ChatGPTButton markdownUrl={page.url} />
+                    <ChatGPTButton markdownUrl={pageBase.url} />
                 </div>
                 <MDXContent
                     components={getMDXComponents({
