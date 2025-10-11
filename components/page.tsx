@@ -17,26 +17,32 @@ export default async function MDXPage({
     folther: "start" | "ink" | "other-topics" | "renpy" | "nqtr";
 }) {
     let page;
+    let pageBase;
     switch (folther) {
         case "start":
             page = source.getPage(slug, lang);
+            pageBase = source.getPage(slug);
             break;
         case "ink":
             page = inkSource.getPage(slug, lang);
+            pageBase = inkSource.getPage(slug);
             break;
         case "other-topics":
             page = otherTopicsSource.getPage(slug, lang);
+            pageBase = otherTopicsSource.getPage(slug);
             break;
         case "renpy":
             page = renpySource.getPage(slug, lang);
+            pageBase = renpySource.getPage(slug);
             break;
         case "nqtr":
             page = nqtrSource.getPage(slug, lang);
+            pageBase = nqtrSource.getPage(slug);
             break;
         default:
             notFound();
     }
-    if (!page) notFound();
+    if (!page || !pageBase) notFound();
     const t = await getTranslations("common");
 
     const MDXContent = page.data.body;
@@ -48,7 +54,7 @@ export default async function MDXPage({
             <DocsBody>
                 <div className='flex flex-row gap-2 items-center mb-4'>
                     <EditOnGitHub
-                        href={`https://github.com/DRincs-Productions/pixi-vn-wiki/blob/main/content/${folther}/${page.path}`}
+                        href={`https://github.com/DRincs-Productions/pixi-vn-wiki/blob/main/content/${folther}/${pageBase.path}`}
                     >
                         <Edit className='size-3.5' />
                         {t("edit_github")}
