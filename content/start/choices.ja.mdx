@@ -3,7 +3,7 @@ title: 選択メニュー
 description: Explains how to implement and customize interactive choice menus in Pixi'VN, allowing players to make decisions that affect the story.
 ---
 
-import { ChoiceMenus } from "@/components/examples";
+import { ChoiceMenus, ChoicesAlreadyMade } from "@/components/examples";
 import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
 <Callout title="UI screen" type="info">
@@ -149,3 +149,79 @@ function ChoiceMenu({ choices }: { choices: StoredIndexedChoiceInterface[] }) {
     )
 }
 ```
+
+## Older features
+
+<Accordion title="Choices already made" id="choices-already-made">
+
+To get the choices already made in the current `step`, use `narration.alreadyCurrentStepMadeChoices`.
+
+```ts tab="hooks/useQueryInterface.ts"
+import { narration } from "@drincs/pixi-vn";
+import { useQuery } from "@tanstack/react-query";
+
+export const INTERFACE_DATA_USE_QUEY_KEY = "interface_data_use_quey_key";
+
+const CHOICE_MENU_OPTIONS_USE_QUEY_KEY = "choice_menu_options_use_quey_key";
+export function useQueryChoiceMenuOptions() {
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, CHOICE_MENU_OPTIONS_USE_QUEY_KEY],
+        queryFn: async () =>
+            narration.choices?.map((option) => ({
+                ...option,
+                text: typeof option.text === "string" ? option.text : option.text.join(" "),
+                alreadyChosen: // [!code ++]
+                    narration.alreadyCurrentStepMadeChoices?.find((index) => index === option.choiceIndex) !== // [!code ++]
+                    undefined, // [!code ++]
+            })) || [],
+    });
+}
+```
+
+```tsx tab="screens/ChoiceMenu.tsx"
+import useNarrationFunctions from "../hooks/useNarrationFunctions";
+import { useQueryChoiceMenuOptions } from "../hooks/useQueryInterface";
+
+export default function ChoiceMenu() {
+    const { data: menu = [] } = useQueryChoiceMenuOptions();
+    const { selectChoice } = useNarrationFunctions();
+
+    return (
+        <div
+            style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                height: "100%",
+                overflow: "auto",
+                gap: "8px",
+                maxHeight: "100%",
+                margin: 0,
+                pointerEvents: menu?.length > 0 ? "auto" : "none",
+            }}
+        >
+            {menu?.map((item, index) => (
+                <button
+                    key={"choice-" + index}
+                    style={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                    }}
+                    onClick={() => selectChoice(item)}
+                >
+                    {item.alreadyChosen ? "✓ " : ""} // [!code ++]
+                    {item.text}
+                </button>
+            ))}
+        </div>
+    );
+}
+```
+
+<ChoicesAlreadyMade />
+
+</Accordion>
+
+</Accordions>
