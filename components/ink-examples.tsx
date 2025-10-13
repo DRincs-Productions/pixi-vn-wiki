@@ -620,3 +620,40 @@ export default manifest;`,
         />
     );
 }
+
+export function TransitionExample() {
+    return (
+        <InkExample
+            files={{
+                "ink/start.ts": `export const startLabel = \`=== start ===
+# show eggHead with dissolve duration 3
+temp durationVar = 3
+# show eggHead eggHead2 with fade duration {durationVar}
+# show flowerTop x 20 y 30 with movein
+# show helmlok x 20 y 30 with zoomin
+# show skully x 20 y 30 with pushin
+-> DONE\`;`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        { alias: "eggHead", src: "https://pixijs.com/assets/eggHead.png" },
+        { alias: "flowerTop", src: "https://pixijs.com/assets/flowerTop.png" },
+        { alias: "helmlok", src: "https://pixijs.com/assets/helmlok.png" },
+        { alias: "skully", src: "https://pixijs.com/assets/skully.png" },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
