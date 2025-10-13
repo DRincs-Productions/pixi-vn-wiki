@@ -574,3 +574,49 @@ export const BACKGROUND_COLOR = "#303030";`,
         />
     );
 }
+
+export function CanvasExample() {
+    return (
+        <InkExample
+            files={{
+                "ink/start.ts": `export const startLabel = \`=== start ===
+# show image eggHead x 20 y 20
+# show image flowerTop x 220 y 20 with dissolve
+# show image helmlok x 20 y 220 with movein
+# show image skully x 220 y 220 with zoomin
+# pause
+# move eggHead x 300 y 0
+# rotate flowerTop
+# edit image helmlok alpha 0.5
+# shake skully
+# pause
+# remove image eggHead
+# remove image flowerTop with dissolve duration 2
+# remove image helmlok with moveout
+# remove image skully with zoomout
+# pause
+-> DONE\`;`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "start",
+      assets: [
+        { alias: "eggHead", src: "https://pixijs.com/assets/eggHead.png" },
+        { alias: "flowerTop", src: "https://pixijs.com/assets/flowerTop.png" },
+        { alias: "helmlok", src: "https://pixijs.com/assets/helmlok.png" },
+        { alias: "skully", src: "https://pixijs.com/assets/skully.png" },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
