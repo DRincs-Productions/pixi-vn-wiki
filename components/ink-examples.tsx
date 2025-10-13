@@ -139,7 +139,7 @@ export function initializeInk() {
             }}
             previewHeight={previewHeight}
             dependencies={{
-                "@drincs/pixi-vn-ink": "^0.10.4",
+                "@drincs/pixi-vn-ink": "^0.10.5",
             }}
         />
     );
@@ -476,10 +476,12 @@ export function ShowComponentExample() {
             files={{
                 "ink/start.ts": `export const startLabel = \`=== start ===
 # show image eggHead
-# show image "eggHead 2" eggHead x 20 y 30
-# show image flowerTop x 20 y 30 visible true cursor "pointer" alpha 0.5
-# show video my_video
-# pause\`;`,
+# show image "eggHead 2" eggHead xAlign 1 yAlign 1
+# show image flowerTop xAlign 0 yAlign 1 visible true cursor "pointer" alpha 0.5
+# show video my_video xAlign 1 yAlign 0
+# show text hello "Hello, this is a text" xAlign 0.5 yAlign 0.5 style \\\{ "fill": "red", "fontSize": 30 \\\}
+# pause
+-> DONE\`;`,
                 "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
 
 /**
