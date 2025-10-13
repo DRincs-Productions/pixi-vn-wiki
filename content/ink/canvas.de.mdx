@@ -2,7 +2,7 @@
 title: Canvas
 ---
 
-import { ShowComponentExample, ShowContainerExample } from "@/components/ink-examples";
+import { ShowComponentExample, ShowContainerExample, CanvasExample } from "@/components/ink-examples";
 import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
 The **_ink_ + Pixi’VN integration** introduces a `# script` that allows you to show, edit, remove and etc. a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink>. To do this, you need to use the following syntax:
@@ -31,10 +31,50 @@ Where:
   - If the parameters include spaces, you must use double quotes.
   - If the parameters is a object, you must use the JSON format and the first character must be `\{` and the last character must be `\}`. Example: `\{ "color": "red", isVisble: true, position: { x: 100, y: 100 } \}`
 
-<Sandbox
-  template="rxzx5z"
-  entry="/src/ink/start.ink,/src/utils/assets-utility.ts"
-/>
+```ink tab="ink/start.ink"
+=== start ===
+# show image eggHead x 20 y 20
+# show image flowerTop x 220 y 20 with dissolve
+# show image helmlok x 20 y 220 with movein
+# show image skully x 220 y 220 with zoomin
+# pause
+# move eggHead x 300 y 0
+# rotate flowerTop
+# edit image helmlok alpha 0.5
+# shake skully
+# pause
+# remove image eggHead
+# remove image flowerTop with dissolve duration 2
+# remove image helmlok with moveout
+# remove image skully with zoomout
+# pause
+-> DONE
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                { alias: "eggHead", src: "https://pixijs.com/assets/eggHead.png" },
+                { alias: "flowerTop", src: "https://pixijs.com/assets/flowerTop.png" },
+                { alias: "helmlok", src: "https://pixijs.com/assets/helmlok.png" },
+                { alias: "skully", src: "https://pixijs.com/assets/skully.png" },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<CanvasExample />
 
 ## Components functions
 
@@ -74,11 +114,12 @@ If you have initialized the <DynamicLink href="/start/assets-management#initiali
 ```ink tab="ink/start.ink"
 === start ===
 # show image eggHead
-# show image "eggHead 2" eggHead x 20 y 30
-# show image flowerTop x 20 y 30 visible true cursor "pointer" alpha 0.5
-# show video my_video
-# show text hello "Hello, this is a text" x 20 y 30 style \{ "fill": "red", "fontSize": 30 \}
+# show image "eggHead 2" eggHead xAlign 1 yAlign 1
+# show image flowerTop xAlign 0 yAlign 1 visible true cursor "pointer" alpha 0.5
+# show video my_video xAlign 1 yAlign 0
+# show text hello "Hello, this is a text" xAlign 0.5 yAlign 0.5 style \\\{ "fill": "red", "fontSize": 30 \\\}
 # pause
+-> DONE
 ```
 
 ```ts tab="assets/manifest.ts"
@@ -115,6 +156,7 @@ export default manifest;
 # show imagecontainer sly [fm01-body fm01-eyes fm01-mouth] xAlign 0.2 yAlign 1 with movein
 # show imagecontainer steph [fm02-body fm02-eyes fm02-mouth] xAlign 0.8 yAlign 1 with dissolve
 # pause
+-> DONE
 ```
 
 ```ts tab="utils/defineAssets.ts"
@@ -195,23 +237,36 @@ The available transitions are:
 - `pushin`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#push-inout-transition">pushin transition</DynamicLink>. You can add all the parameters you would use in JS/TS.
 
 ```ink tab="ink/start.ink"
+=== start ===
 # show eggHead with dissolve duration 3
 temp durationVar = 3
 # show eggHead eggHead2 with fade duration {durationVar}
 # show flowerTop x 20 y 30 with movein
 # show helmlok x 20 y 30 with zoomin
 # show skully x 20 y 30 with pushin
+-> DONE
 ```
 
-```ts tab="utils/defineAssets.ts"
-import { Assets } from "@drincs/pixi-vn";
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
 
-export async function defineAssets() {
-    Assets.add({ alias: 'eggHead', src: "https://pixijs.com/assets/eggHead.png" })
-    Assets.add({ alias: 'flowerTop', src: "https://pixijs.com/assets/flowerTop.png" })
-    Assets.add({ alias: 'helmlok', src: "https://pixijs.com/assets/helmlok.png" })
-    Assets.add({ alias: 'skully', src: "https://pixijs.com/assets/skully.png" })
-}
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                { alias: "eggHead", src: "https://pixijs.com/assets/eggHead.png" },
+                { alias: "flowerTop", src: "https://pixijs.com/assets/flowerTop.png" },
+                { alias: "my_video", src: "https://pixijs.com/assets/video.mp4" },
+            ],
+        },
+    ],
+};
+export default manifest;
 ```
 
 </Accordion>
@@ -287,12 +342,24 @@ Video resumed
 -> DONE
 ```
 
-```ts tab="utils/defineAssets.ts"
-import { Assets } from "@drincs/pixi-vn"
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
 
-export async function defineAssets() {
-    Assets.add({ alias: "my_video", src: "https://pixijs.com/assets/video.mp4" });
-}
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                { alias: "my_video", src: "https://pixijs.com/assets/video.mp4" },
+            ],
+        },
+    ],
+};
+export default manifest;
 ```
 
 <Sandbox
