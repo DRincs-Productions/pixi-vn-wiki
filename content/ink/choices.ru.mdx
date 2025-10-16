@@ -1,0 +1,91 @@
+---
+title: Меню выбора
+---
+
+<Callout>
+  The ***ink* + Pixi’VN integration** provides all the functionality of the choices provided by ink, but does not add any new ones. Therefore, for more detailed documentation on how to use the choices, you can use the [official ink documentation](https://www.inklestudios.com/ink/).
+</Callout>
+
+You can ask the user to make a choice in ink using a list of `*`or `+` characters, followed by the text of the choice. The choice text is displayed to the player, and they can select one of the options to continue the story.
+
+* `*` indicates a choice that can only be made once.
+* `+` indicates a choice that can be made multiple times (sticky choice).
+
+```ink
+=== start ===
+* Go to Paris
+  You decide to visit Paris. -> visit_paris
++ Go to London -> visit_london
+* Stay at home
+  You decide to stay at home. -> DONE
+```
+
+## Suppressing choice text
+
+By default, the text of a choice appears again, in the output (in the dialogue).
+
+If the choice text is given in square brackets, the text of the choice will not be printed into response.
+
+```ink
+=== start ===
+Hello world!
+* [Hello back!]
+ Nice to hear from you!
+```
+
+The square brackets in fact divide up the option content. What's before is printed in both choice and output; what's inside only in choice; and what's after, only in output. Effectively, they provide alternative ways for a line to end.
+
+```ink
+=== start ===
+Hello world!
+* Hello [back!] right back to you!
+ Nice to hear from you!
+```
+
+This is most useful when writing dialogue choices:
+
+```ink
+=== start ===
+"What's that?" my master asked.
+* "I am somewhat tired[."]," I repeated.
+ "Really," he responded. "How deleterious."
+```
+
+## Varying Choices
+
+### Fallback choices
+
+Fallback choices are never displayed to the player, but are 'chosen' by the game if no other options exist.
+
+A fallback choice is simply a "choice without choice text":
+
+```ink
+* -> out_of_options
+```
+
+```ink
+=== start ===
+ You search desperately for a friendly face in the crowd.
+ * The woman in the hat[?] pushes you roughly aside. -> find_help
+ * The man with the briefcase[?] looks disgusted as you stumble past him. -> find_help
+ * -> // [!code focus]
+  But it is too late: you collapse onto the station platform. This is the end. // [!code focus]
+  -> END
+```
+
+### Conditional Choices
+
+You can also turn choices on and off by hand. **ink** has quite a lot of logic available, but the simplest tests is "has the player seen a particular piece of content".
+
+Every knot/stitch in the game has a unique address (so it can be diverted to), and we use the same address to test if that piece of content has been seen.
+
+```ink
+* { not visit_paris }  [Go to Paris] -> visit_paris
++  { visit_paris   }   [Return to Paris] -> visit_paris
+
+* { visit_paris.met_estelle } [ Telephone Mme Estelle ] -> phone_estelle
+```
+
+Note that the test `knot_name` is true if *any* stitch inside that knot has been seen.
+
+Note also that conditionals don't override the once-only behaviour of options, so you'll still need sticky options for repeatable choices.
