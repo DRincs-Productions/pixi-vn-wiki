@@ -262,7 +262,7 @@ export function ChatGPTButton({ markdownUrl }: { markdownUrl: string }) {
             )}
             href={`https://chatgpt.com/?${new URLSearchParams({
                 hints: "search",
-                q: t("query_chatgpt", { fullMarkdownUrl: `${fullMarkdownUrl}` }),
+                q: t("query_chatgpt", { fullMarkdownUrl: `${fullMarkdownUrl}`.replaceAll("/en", "") }),
             })}`}
         >
             <Globe className='size-3.5' />
