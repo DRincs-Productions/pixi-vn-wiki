@@ -74,9 +74,9 @@ export const inkDocs = defineDocs({
     },
 });
 
-export const otherTopicsDocs = defineDocs({
+export const faqDocs = defineDocs({
     // Specifies the directory where your docs are located
-    dir: "content/other-topics",
+    dir: "content/faq",
     docs: {
         schema: frontmatterSchema,
         postprocess: {

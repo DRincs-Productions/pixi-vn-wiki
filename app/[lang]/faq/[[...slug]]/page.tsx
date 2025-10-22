@@ -1,6 +1,6 @@
 import MDXPage from "@/components/page";
 import { createMetadata } from "@/lib/metadata";
-import { otherTopicsSource } from "@/lib/source";
+import { faqSource } from "@/lib/source";
 import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
@@ -8,16 +8,16 @@ export default async function Page({ params }: { params: Promise<{ lang: string;
     const { slug, lang } = await params;
     setRequestLocale(lang);
 
-    return <MDXPage slug={slug} lang={lang} folther='other-topics' />;
+    return <MDXPage slug={slug} lang={lang} folther='faq' />;
 }
 
 export async function generateStaticParams() {
-    return otherTopicsSource.generateParams();
+    return faqSource.generateParams();
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string; slug?: string[] }> }) {
     const { slug, lang } = await params;
-    const page = otherTopicsSource.getPage(slug, lang);
+    const page = faqSource.getPage(slug, lang);
     if (!page) notFound();
 
     return createMetadata({

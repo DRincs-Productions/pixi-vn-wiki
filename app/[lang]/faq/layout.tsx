@@ -1,12 +1,12 @@
 import { baseOptions } from "@/app/layout.config";
-import { otherTopicsTree, sidebar } from "@/components/docs-layout-props";
+import { faqTree, sidebar } from "@/components/docs-layout-props";
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import { type ReactNode } from "react";
 
 export default async function Layout({ children, params }: { children: ReactNode; params: Promise<{ lang: string }> }) {
     const { lang } = await params;
     const sidebarVar = await sidebar(lang);
-    const treeVar = await otherTopicsTree(lang);
+    const treeVar = await faqTree(lang);
     return (
         <DocsLayout sidebar={sidebarVar} tree={treeVar} {...baseOptions()}>
             {children}
