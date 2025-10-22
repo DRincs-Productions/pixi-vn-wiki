@@ -502,22 +502,22 @@ export async function otherTopicsTree(lang?: string): Promise<DocsLayoutProps["t
             {
                 type: "page",
                 name: "FAQ",
-                url: `${preUrl}/other-topics/faq`,
+                url: `${preUrl}/faq`,
             },
             {
                 type: "page",
                 name: "Migration",
-                url: `${preUrl}/other-topics/migration`,
+                url: `${preUrl}/faq/migration`,
             },
             {
                 type: "page",
                 name: "Intecept Events",
-                url: `${preUrl}/other-topics/intercept-events`,
+                url: `${preUrl}/faq`,
             },
             {
                 type: "page",
                 name: "Pixi’VN + Json Integration",
-                url: `${preUrl}/other-topics/pixi-vn-json`,
+                url: `${preUrl}/json`,
             },
         ],
     };
@@ -559,19 +559,19 @@ export async function homeLinks(lang?: string): Promise<LinkItemType[]> {
             items: [
                 {
                     text: "FAQ",
-                    url: `${preUrl}/other-topics/faq`,
+                    url: `${preUrl}/faq`,
                 },
                 {
                     text: "Migration",
-                    url: `${preUrl}/other-topics/migration`,
+                    url: `${preUrl}/faq/migration`,
                 },
                 {
                     text: "Intecept Events",
-                    url: `${preUrl}/other-topics/intercept-events`,
+                    url: `${preUrl}/faq`,
                 },
                 {
                     text: "Pixi’VN + Json Integration",
-                    url: `${preUrl}/other-topics/pixi-vn-json`,
+                    url: `${preUrl}/json`,
                 },
             ],
         },
@@ -665,7 +665,7 @@ export async function sidebar(lang?: string): Promise<
             {
                 title: "Other Topics",
                 description: "Other topics",
-                url: `${preUrl}/other-topics/faq`,
+                url: `${preUrl}/faq`,
             },
         ],
     };
