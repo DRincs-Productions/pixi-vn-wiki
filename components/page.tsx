@@ -31,7 +31,7 @@ export default async function MDXPage({
             page = faqSource.getPage(slug, lang);
             pageBase = faqSource.getPage(slug);
             break;
-        case "faq":
+        case "json":
             page = jsonSource.getPage(slug, lang);
             pageBase = jsonSource.getPage(slug);
             break;
