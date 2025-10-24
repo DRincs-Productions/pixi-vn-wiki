@@ -74,9 +74,9 @@ export const inkDocs = defineDocs({
     },
 });
 
-export const otherTopicsDocs = defineDocs({
+export const faqDocs = defineDocs({
     // Specifies the directory where your docs are located
-    dir: "content/other-topics",
+    dir: "content/faq",
     docs: {
         schema: frontmatterSchema,
         postprocess: {
@@ -105,6 +105,20 @@ export const renpyDocs = defineDocs({
 export const nqtrDocs = defineDocs({
     // Specifies the directory where your docs are located
     dir: "content/nqtr",
+    docs: {
+        schema: frontmatterSchema,
+        postprocess: {
+            includeProcessedMarkdown: true,
+        },
+    },
+    meta: {
+        schema: metaSchema,
+    },
+});
+
+export const jsonDocs = defineDocs({
+    // Specifies the directory where your docs are located
+    dir: "content/json",
     docs: {
         schema: frontmatterSchema,
         postprocess: {

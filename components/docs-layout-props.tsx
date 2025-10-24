@@ -1,4 +1,4 @@
-import { inkSource, nqtrSource, otherTopicsSource, renpySource, source } from "@/lib/source";
+import { faqSource, inkSource, jsonSource, nqtrSource, renpySource, source } from "@/lib/source";
 import { Image } from "fumadocs-core/framework";
 import { DocsLayoutProps, LinkItemType } from "fumadocs-ui/layouts/docs";
 import {
@@ -488,36 +488,23 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
     };
 }
 
-export async function otherTopicsTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
+export async function faqTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
     const preUrl = lang ? `/${lang}` : "";
-    // const t = await getTranslations("layout");
+    const t = await getTranslations("layout");
     return {
-        ...otherTopicsSource.pageTree,
-        name: "Other Topics",
+        ...faqSource.pageTree,
+        name: "FAQ",
         children: [
             {
-                type: "separator",
-                name: "Other Topics",
-            },
-            {
                 type: "page",
-                name: "FAQ",
-                url: `${preUrl}/other-topics/faq`,
+                name: t("start"),
+                icon: <Album />,
+                url: `${preUrl}/faq`,
             },
             {
                 type: "page",
                 name: "Migration",
-                url: `${preUrl}/other-topics/migration`,
-            },
-            {
-                type: "page",
-                name: "Intecept Events",
-                url: `${preUrl}/other-topics/intercept-events`,
-            },
-            {
-                type: "page",
-                name: "Pixi’VN + Json Integration",
-                url: `${preUrl}/other-topics/pixi-vn-json`,
+                url: `${preUrl}/faq/migration`,
             },
         ],
     };
@@ -559,19 +546,11 @@ export async function homeLinks(lang?: string): Promise<LinkItemType[]> {
             items: [
                 {
                     text: "FAQ",
-                    url: `${preUrl}/other-topics/faq`,
+                    url: `${preUrl}/faq`,
                 },
                 {
                     text: "Migration",
-                    url: `${preUrl}/other-topics/migration`,
-                },
-                {
-                    text: "Intecept Events",
-                    url: `${preUrl}/other-topics/intercept-events`,
-                },
-                {
-                    text: "Pixi’VN + Json Integration",
-                    url: `${preUrl}/other-topics/pixi-vn-json`,
+                    url: `${preUrl}/faq/migration`,
                 },
             ],
         },
@@ -628,6 +607,23 @@ export async function nqtrTree(lang?: string): Promise<DocsLayoutProps["tree"]> 
     };
 }
 
+export async function jsonTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
+    const preUrl = lang ? `/${lang}` : "";
+    const t = await getTranslations("layout");
+    return {
+        ...jsonSource.pageTree,
+        name: "Pixi’VN Json",
+        children: [
+            {
+                type: "page",
+                name: t("start"),
+                icon: <Album />,
+                url: `${preUrl}/json`,
+            },
+        ],
+    };
+}
+
 export async function sidebar(lang?: string): Promise<
     Partial<DocsLayoutProps["sidebar"]> & {
         enabled?: boolean;
@@ -663,9 +659,14 @@ export async function sidebar(lang?: string): Promise<
                 url: `${preUrl}/renpy`,
             },
             {
-                title: "Other Topics",
-                description: "Other topics",
-                url: `${preUrl}/other-topics/faq`,
+                title: "Pixi’VN Json",
+                description: "Json Integration",
+                url: `${preUrl}/json`,
+            },
+            {
+                title: "FAQ",
+                description: "Frequently Asked Questions",
+                url: `${preUrl}/faq`,
             },
         ],
     };

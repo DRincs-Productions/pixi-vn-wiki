@@ -1,4 +1,4 @@
-import { inkSource, nqtrSource, otherTopicsSource, renpySource, source } from "@/lib/source";
+import { faqSource, inkSource, nqtrSource, renpySource, source } from "@/lib/source";
 import { type OramaDocument } from "fumadocs-core/search/orama-cloud";
 import { NextResponse } from "next/server";
 
@@ -25,7 +25,7 @@ export function GET() {
             description: page.data.description,
         });
     }
-    for (const page of otherTopicsSource.getPages()) {
+    for (const page of faqSource.getPages()) {
         results.push({
             id: page.url,
             structured: page.data.structuredData,
