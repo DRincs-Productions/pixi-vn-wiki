@@ -115,3 +115,17 @@ export const nqtrDocs = defineDocs({
         schema: metaSchema,
     },
 });
+
+export const jsonDocs = defineDocs({
+    // Specifies the directory where your docs are located
+    dir: "content/json",
+    docs: {
+        schema: frontmatterSchema,
+        postprocess: {
+            includeProcessedMarkdown: true,
+        },
+    },
+    meta: {
+        schema: metaSchema,
+    },
+});

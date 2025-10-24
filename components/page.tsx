@@ -1,4 +1,4 @@
-import { faqSource, inkSource, nqtrSource, renpySource, source } from "@/lib/source";
+import { faqSource, inkSource, jsonSource, nqtrSource, renpySource, source } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle, EditOnGitHub } from "fumadocs-ui/page";
@@ -14,7 +14,7 @@ export default async function MDXPage({
 }: {
     lang?: string;
     slug?: string[];
-    folther: "start" | "ink" | "faq" | "renpy" | "nqtr";
+    folther: "start" | "ink" | "faq" | "renpy" | "nqtr" | "json";
 }) {
     let page;
     let pageBase;
@@ -30,6 +30,10 @@ export default async function MDXPage({
         case "faq":
             page = faqSource.getPage(slug, lang);
             pageBase = faqSource.getPage(slug);
+            break;
+        case "faq":
+            page = jsonSource.getPage(slug, lang);
+            pageBase = jsonSource.getPage(slug);
             break;
         case "renpy":
             page = renpySource.getPage(slug, lang);

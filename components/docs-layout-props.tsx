@@ -1,4 +1,4 @@
-import { faqSource, inkSource, nqtrSource, renpySource, source } from "@/lib/source";
+import { faqSource, inkSource, jsonSource, nqtrSource, renpySource, source } from "@/lib/source";
 import { Image } from "fumadocs-core/framework";
 import { DocsLayoutProps, LinkItemType } from "fumadocs-ui/layouts/docs";
 import {
@@ -490,7 +490,7 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
 
 export async function faqTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
     const preUrl = lang ? `/${lang}` : "";
-    // const t = await getTranslations("layout");
+    const t = await getTranslations("layout");
     return {
         ...faqSource.pageTree,
         name: "FAQ",
@@ -609,7 +609,7 @@ export async function nqtrTree(lang?: string): Promise<DocsLayoutProps["tree"]> 
 
 export async function jsonTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
     const preUrl = lang ? `/${lang}` : "";
-    // const t = await getTranslations("layout");
+    const t = await getTranslations("layout");
     return {
         ...jsonSource.pageTree,
         name: "Pixi’VN Json",

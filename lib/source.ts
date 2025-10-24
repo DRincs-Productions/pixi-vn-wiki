@@ -1,4 +1,4 @@
-import { docs, faqDocs, inkDocs, nqtrDocs, renpyDocs } from "@/.source";
+import { docs, faqDocs, inkDocs, jsonDocs, nqtrDocs, renpyDocs } from "@/.source";
 import { loader } from "fumadocs-core/source";
 import { icons } from "lucide-react";
 import { createElement } from "react";
@@ -133,6 +133,17 @@ export const nqtrSource = loader({
     // it assigns a URL to your pages
     baseUrl: "/nqtr",
     source: nqtrDocs.toFumadocsSource(),
+    icon(icon) {
+        if (icon && icon in icons) return createElement(icons[icon as keyof typeof icons]);
+    },
+    pageTree: {},
+    i18n,
+});
+
+export const jsonSource = loader({
+    // it assigns a URL to your pages
+    baseUrl: "/json",
+    source: jsonDocs.toFumadocsSource(),
     icon(icon) {
         if (icon && icon in icons) return createElement(icons[icon as keyof typeof icons]);
     },
