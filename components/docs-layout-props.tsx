@@ -91,6 +91,11 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                     },
                     {
                         type: "page",
+                        name: t("make-ide"),
+                        url: `${preUrl}/start/make-ide`,
+                    },
+                    {
+                        type: "page",
                         name: t("make-game-engine"),
                         url: `${preUrl}/start/make-game-engine`,
                     },
