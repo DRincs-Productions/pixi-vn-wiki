@@ -3,6 +3,7 @@ import { Image } from "fumadocs-core/framework";
 import { DocsLayoutProps, LinkItemType } from "fumadocs-ui/layouts/docs";
 import {
     Album,
+    ArrowBigUpDash,
     BookOpenText,
     Boxes,
     CircleQuestionMark,
@@ -511,6 +512,7 @@ export async function faqTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
             {
                 type: "page",
                 name: "Migration",
+                icon: <ArrowBigUpDash />,
                 url: `${preUrl}/faq/migration`,
             },
         ],
