@@ -5,6 +5,7 @@ import {
     Album,
     BookOpenText,
     Boxes,
+    CircleQuestionMark,
     Crop,
     Database,
     Gamepad2,
@@ -503,8 +504,8 @@ export async function faqTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
         children: [
             {
                 type: "page",
-                name: t("start"),
-                icon: <Album />,
+                name: t("faq"),
+                icon: <CircleQuestionMark />,
                 url: `${preUrl}/faq`,
             },
             {
