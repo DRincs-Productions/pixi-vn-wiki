@@ -1,0 +1,979 @@
+---
+title: Make your first Visual Novel
+description: Pixi’VNを使って、プロジェクト設定、物語、アセット、およびインタラクティビティを網羅したビジュアルノベルの作成に関するステップバイステップのガイドです。
+---
+
+import { TSVisualNovelExample } from "@/components/vn-examples";
+
+このチュートリアルでは、最初のビジュアルノベルを作成するプロセスを案内します。
+
+**ビジュアルノベルとは何ですか？** ビジュアルノベル（VN）は、デジタルインタラクティブフィクションの一形態です。 ビジュアルノベルはしばしばビデオゲームのメディアと関連付けられますが、必ずしもそのようにラベル付けされるわけではありません。 They combine a textual narrative with static or animated illustrations and a varying degree of interactivity. The format is more rarely referred to as novel game, a retranscription of the wasei-eigo term noberu gēmu (ノベルゲーム), which is more often used in Japanese.
+
+テスト目的のために、このガイドではPixi’VNを使用してビジュアルノベル[Breakdown](https://joshpowlison.itch.io/breakdown)を再現します。 Breakdownは、ビジュアルノベルが持つべきすべての特徴を備えた短編小説です。 BreakdownのクリエイターであるJosh Powlisonは、教育目的で彼のナarrationを使用することを許可してくれました❤️。
+
+Pixi’VNは、1つ以上の<DynamicLink href="/start/narration">利用可能なナarration言語</DynamicLink>を選択することで、自分自身のナarrationを書く能力を提供します。そのため、各開発ステップで現在利用可能な言語ごとに例を作成します。
+
+## 新しいプロジェクトを作成する
+
+最初のステップは、新しいプロジェクトを作成することです。 You can find more information on how to create a new project starting from a template <DynamicLink href="/start#project-initialization">here</DynamicLink>. 「ビジュアルノベル - React」というテンプレートを使用します。
+
+`Visual Novel -> React`
+
+作成が完了したら、プロジェクトのルートにある `README.md` ファイルを読むことが非常に重要です。 このファイルには、プロジェクトに関する重要な情報とその使用方法が含まれています。
+
+私たちの場合、プロジェクトを開始するには、次のコマンドを実行するだけで済みます。
+
+```bash
+npm install
+npm start
+```
+
+## キャラクターの作成
+
+これからこの物語のキャラクターを定義します。 これを行うために、`/values/characters.ts` ファイルで使用するキャラクターを定義します。 キャラクターの作成と使用に関する詳細情報は、<DynamicLink href="/start/character">キャラクター</DynamicLink>を参照してください。
+
+`mc`とは何ですか？ `mc`は「メインキャラクター」の一般的な略語です。 ビジュアルノベルでは、`mc`をメインキャラクターの名前として使用するのが一般的な方法です。
+
+```ts tab="values/characters.ts"
+import { RegisteredCharacters } from "@drincs/pixi-vn";
+import Character from "../models/Character";
+
+export const mc = new Character('mc', {
+    name: 'Me',
+});
+
+export const james = new Character('james', {
+    name: 'James',
+    color: "#0084ac"
+});
+
+export const steph = new Character('steph', {
+    name: 'Steph',
+    color: "#ac5900"
+});
+
+export const sly = new Character('sly', {
+    name: 'Sly',
+    color: "#6d00ac"
+});
+
+RegisteredCharacters.add([mc, james, steph, sly]);
+```
+
+```ts tab="App.tsx"
+// Remember to import the character file at least once into your project. // [!code focus]
+import "./values/characters"; // [!code focus]
+
+export default function App() {
+return // ...
+}
+```
+
+## 物語の初稿
+
+<Callout title="Markup" type="info">
+
+すべてのテンプレートは <DynamicLink href="/start/markup-markdown">Markdown</DynamicLink> と <DynamicLink href="/start/markup-tailwindcss">Tailwind CSS</DynamicLink> をサポートしているため、私たちはナarrationにそれを使用します。
+
+</Callout>
+
+これで、ビジュアルノベルの<DynamicLink href="/start/narration">ナarration</DynamicLink>の「初稿」を書き始めることができます。
+最初の<DynamicLink href="/start/labels">`label`</DynamicLink>を `start` として作成します。これがゲームの始まりになります。 その後、私たちは視覚小説に続く<DynamicLink href="/start/dialogue">対話</DynamicLink>を書くことができます。
+
+これは例です：
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+james: You're my roommate's replacement, huh?
+james: Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you' fine!
+mc: ...
+
+He thrusts out his hand.
+
+james: James!
+mc: ...Peter.
+
+I take his hand and shake.
+
+james: Ooh, Peter! Nice, firm handshake! The last quy always gave me the dead fish. I already think we'r gonna get along fine.
+james: Come on in and... 
+james: ...
+james: I know you're both watching, come on out already!
+
+sly: I just wanted to see what the new guy was like. Hey, you, Peter- be nice to our little brother, or you'll have to deal with *us*.
+mc: ...
+james: Peter, this is Sly. Yes, that is her real name.
+
+I put out my hand.
+
+sly: I'm not shakin' your hand until I decide you're an all-right dude. Sorry, policy.
+mc: Fair enough, I'm a pretty scary guy, or so l've been told.
+james: The redhead behind her is Stephanie.
+// Example of using Tailwind CSS
+steph: <span class="inline-block motion-translate-y-loop-25">Hey</span>! Everyone calls me Steph. I'll shake your hand.
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    () => narration.dialogue = { character: james, text: `You're my roommate's replacement, huh?` },
+    () => narration.dialogue = { character: james, text: `Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you' fine!` },
+    () => narration.dialogue = { character: mc, text: `...` },
+    () => { narration.dialogue = "He thrusts out his hand." },
+    () => narration.dialogue = { character: james, text: `James!` },
+    () => narration.dialogue = { character: mc, text: `...Peter.` },
+    () => { narration.dialogue = "I take his hand and shake." },
+    () => narration.dialogue = { character: james, text: `Ooh, Peter! Nice, firm handshake! The last quy always gave me the dead fish. I already think we'r gonna get along fine.` },
+    () => narration.dialogue = { character: james, text: `Come on in and...` },
+    () => narration.dialogue = { character: james, text: `...` },
+    () => narration.dialogue = { character: james, text: `I know you're both watching, come on out already!` },
+    () => narration.dialogue = { character: james, text: `I just wanted to see what the new guy was like. Hey, you, Peter- be nice to our little brother, or you'll have to deal with *us*.` },
+    () => narration.dialogue = { character: mc, text: `...` },
+    () => narration.dialogue = { character: james, text: `Peter, this is Sly. Yes, that is her real name.` },
+    () => { narration.dialogue = "I put out my hand." },
+    () => narration.dialogue = { character: james, text: `I'm not shakin' your hand until I decide you're an all-right dude. Sorry, policy.` },
+    () => narration.dialogue = { character: mc, text: `Fair enough, I'm a pretty scary guy, or so l've been told.` },
+    () => narration.dialogue = { character: james, text: `The redhead behind her is Stephanie.` },
+    // Example of using Tailwind CSS
+    () => narration.dialogue = { character: steph, text: `<span class="inline-block motion-translate-y-loop-25">Hey</span>! Everyone calls me Steph. I'll shake your hand.` },
+    // ...
+]);
+export default startLabel;
+```
+
+### Split the narrative into labels
+
+非常に長い`ラベル`（線形の視覚小説でも）を作成することは推奨されませんが、複数の小さな`ラベル`を作成し、必要に応じて<DynamicLink href="/start/labels-flow">ナレーションフロー制御機能</DynamicLink>を使用して「呼び出す」ことが推奨されます。
+
+このため、私たちの場合、物語は線形であっても、2つの`labels`に分かれます。最初のものは私たちが作成したばかりのもので、2番目のものは`second_part`と呼ばれます。
+
+これは例です：
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+james: You're my roommate's replacement, huh?
+james: Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you' fine!
+mc: ...
+
+He thrusts out his hand.
+
+james: James!
+mc: ...Peter.
+
+// ...
+-> second_part
+
+=== second_part ===
+
+She enters my room before I'VE even had a chance to. \\n\\n...I could've just come back and gotten the platter later...
+She sets it on a desk. I throw my two paper bags down beside the empty bed.
+
+steph: They got you a new mattress, right? That last guy was a druggie, did James tell you that?
+sly: *We're* the reason he got expelled!
+steph: Sly! If word gets out about that... well, actually, it wouldn't matter, *he's* the one who shot himself up.
+
+I'm fumbling for a new subject.
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    () => narration.dialogue = { character: james, text: `You're my roommate's replacement, huh?` },
+    () => narration.dialogue = { character: james, text: `Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you' fine!` },
+    () => narration.dialogue = { character: mc, text: `...` },
+    () => { narration.dialogue = "He thrusts out his hand." },
+    () => narration.dialogue = { character: james, text: `James!` },
+    () => narration.dialogue = { character: mc, text: `...Peter.` },
+    // ...
+    async (props) => await narration.jump(secondPart, props),
+]);
+export default startLabel;
+
+const secondPart = newLabel("second_part", [
+    () => { narration.dialogue = `She enters my room before I'VE even had a chance to. \n\n...I could've just come back and gotten the platter later...` },
+    () => { narration.dialogue = `She sets it on a desk. I throw my two paper bags down beside the empty bed.` },
+    () => narration.dialogue = { character: steph, text: `They got you a new mattress, right? That last guy was a druggie, did James tell you that?` },
+    () => narration.dialogue = { character: sly, text: `*We're* the reason he got expelled!` },
+    () => narration.dialogue = { character: steph, text: `Sly! If word gets out about that... well, actually, it wouldn't matter, *he's* the one who shot himself up.` },
+    () => { narration.dialogue = `I'm fumbling for a new subject.` },
+    // ...
+]);
+```
+
+## 選択メニュー
+
+これから、プレイヤーに視覚小説の第2部を続けるかどうかを尋ねます。
+
+これを行うために、<DynamicLink href="/start/choices">選択メニュー</DynamicLink>を使用します。
+
+これは例です：
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+// ...
+
+You want continue to the next part?
+* Yes, I want to continue
+-> second_part
+* No, I want to stop here
+-> END
+
+=== second_part ===
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    // ...
+    async () => {
+        narration.dialogue = `You want continue to the next part?`
+        narration.choices = [
+            newChoiceOption("Yes, I want to continue", secondPart, {}, { type: "jump" }),
+            newCloseChoiceOption("No, I want to stop here"),
+        ]
+    },
+]);
+export default startLabel;
+
+const secondPart = newLabel("second_part", [
+    // ...
+]);
+```
+
+## キャラクター情報を編集し、それを変数として使用します。
+
+これからプレイヤーに`mc`の名前を変更する能力を与えます。
+
+これを行うために、プレイヤーに<DynamicLink href="/start/input">Pixi’VNの機能を使用して入力ボックスを完成させる</DynamicLink>ように依頼します。
+
+入力値を取得した後、得られた値を使用して<DynamicLink href="/start/character#edit">キャラクター名を設定する</DynamicLink>ことができます。
+
+これは例です：
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+// ...
+
+He thrusts out his hand.
+# request input type string default Peter
+What is your name?
+# rename mc { _input_value_ }
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    // ...
+    () => { narration.dialogue = `He thrusts out his hand.` },
+    () => {
+        narration.requestInput({ type: "string" }, "Peter")
+        narration.dialogue = `What is your name?`
+    },
+    () => {
+        mc.name = narration.inputValue as string
+    },
+    // ...
+]);
+export default startLabel;
+```
+
+今、私たちは対話の中で<DynamicLink href="/start/character#use">キャラクター名を使用できます</DynamicLink>。
+
+これは例です：
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+VAR steph_fullname = "Stephanie"
+
+=== start ===
+// ...
+
+sly: I just wanted to see what the new guy was like. Hey, you, [mc]- be nice to our little brother, or you'll have to deal with *us*.
+mc: ...
+james: [mc], this is [sly]. Yes, that is her real name.
+
+I put out my hand.
+
+sly: I'm not shakin' your hand until I decide you're an all-right dude. Sorry, policy.
+mc: Fair enough, I'm a pretty scary guy, or so l've been told.
+james: The redhead behind her is [steph_fullname].
+steph: Hey! Everyone calls me [steph]. I'll shake your hand.
+
+She puts out her hand, and I take it.
+
+mc: Thanks, good to meet you, [steph_fullname].
+steph: WOW, that is, like, the most perfect handshake I've ever had! Firm, but also gentle. [sly], you *gotta* shake his hand!
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+const steph_fullname = "Stephanie";
+
+const startLabel = newLabel("start", [
+    // ...
+    () => narration.dialogue = { character: sly, text: `I just wanted to see what the new guy was like. Hey, you, ${mc.name}- be nice to our little brother, or you'll have to deal with *us*.` },
+    () => narration.dialogue = { character: mc, text: `...` },
+    () => narration.dialogue = { character: james, text: `${mc.name}, this is ${sly.name}. Yes, that is her real name.` },
+    () => { narration.dialogue = `I put out my hand.` },
+    () => narration.dialogue = { character: sly, text: `I'm not shakin' your hand until I decide you're an all-right dude. Sorry, policy.` },
+    () => narration.dialogue = { character: mc, text: `Fair enough, I'm a pretty scary guy, or so I've been told.` },
+    () => narration.dialogue = { character: james, text: `The redhead behind her is ${steph_fullname}.` },
+    () => narration.dialogue = { character: steph, text: `Hey! Everyone calls me ${steph.name}. I'll shake your hand.` },
+    () => { narration.dialogue = `She puts out her hand, and I take it.` },
+    () => narration.dialogue = { character: mc, text: `Thanks, good to meet you, ${steph_fullname}.` },
+    () => narration.dialogue = { character: steph, text: `WOW, that is, like, the most perfect handshake I've ever had! Firm, but also gentle. ${sly.name}, you *gotta* shake his hand!` },
+    // ...
+]);
+export default startLabel;
+```
+
+## 対話の「接着剤」機能を使用する
+
+視覚小説では、現在の対話にテキストを貼り付けることがよく役立ちます。 例えば、会話を一時停止し、その後の`step`で続けることができます。 これを行うために、<DynamicLink href="/start/dialogue#dialogue-glue">接着機能</DynamicLink>を使用できます。
+
+これは例です：
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+// ...
+
+james: Ooh, [mc]! Nice, firm handshake!
+<>The last guy always gave me the dead fish.
+<>I already think we're gonna get along fine.
+james: Come on in and...
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    // ...
+    async () => narration.dialogue = { character: james, text: `Ooh, ${mc.name}! Nice, firm handshake!` },
+    async () => {
+        narration.dialogGlue = true
+        narration.dialogue = `The last guy always gave me the dead fish.`
+    },
+    async () => {
+        narration.dialogGlue = true
+        narration.dialogue = `I already think we're gonna get along fine.`
+    },
+    async () => narration.dialogue = { character: james, text: `Come on in and...` },
+    // ...
+]);
+export default startLabel;
+```
+
+## アセットを定義し、それらをロードします。
+
+<Callout type="info">
+
+アセット（画像、GIF、動画など）をロードして操作するには `Assets`を使用する必要があります。 `Assets`は多くの機能を持つクラスで、PixiJSライブラリから来ています。詳細については[こちら](https://pixijs.com/8.x/guides/components/assets)をお読みください。
+
+</Callout>
+
+最初のステップの一つは、視覚小説のアセットを保存する場所を選ぶことです。 この場合、アセットはFirebaseストレージ（ホスティングサービス）に保存します。 お好きなホスティングサービスを使用することもできますし、プロジェクト内にアセットをローカルに保存することもできます。詳しくは<DynamicLink href="/start/assets">こちら</DynamicLink>をご覧ください。
+
+アセットを使用する前に、<DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">アセットマトリックスを初期化する</DynamicLink>ことが強く推奨されます。
+
+デフォルトでは、`assets/manifest.ts`ファイルに示すように、`onLoadingLabel`のすべてのテンプレートは、現在の`label`のIDに等しいエイリアスを持つ「バンドルアセット」をバックグラウンドでロードしようとします。 したがって、`manifest`に各`label`に対してエイリアスが`label`のIDと等しく、その`label`で使用される画像を含む「バンドルアセット」を追加することが推奨されます。
+
+これは例です：
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+import { MAIN_MENU_ROUTE } from "../constans";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        // screens
+        {
+            name: MAIN_MENU_ROUTE,
+            assets: [
+                {
+                    alias: "background_main_menu",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fmain-menu.webp?alt=media",
+                },
+            ],
+        },
+        // labels
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "bg01-hallway",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fbg01-hallway.webp?alt=media",
+                },
+            ],
+        },
+        {
+            name: "second_part",
+            assets: [
+                {
+                    alias: "bg02-dorm",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fbg02-dorm.webp?alt=media",
+                },
+            ],
+        },
+        // characters
+        {
+            name: "fm01",
+            assets: [
+                {
+                    alias: "fm01-body",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-body.webp?alt=media",
+                },
+                {
+                    alias: "fm01-eyes-grin",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-eyes-grin.webp?alt=media",
+                },
+                {
+                    alias: "fm01-eyes-smile",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-eyes-smile.webp?alt=media",
+                },
+                {
+                    alias: "fm01-eyes-soft",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-eyes-soft.webp?alt=media",
+                },
+                {
+                    alias: "fm01-eyes-upset",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-eyes-upset.webp?alt=media",
+                },
+                {
+                    alias: "fm01-eyes-wow",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-eyes-wow.webp?alt=media",
+                },
+                {
+                    alias: "fm01-mouth-grin00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-grin00.webp?alt=media",
+                },
+                {
+                    alias: "fm01-mouth-serious00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-serious00.webp?alt=media",
+                },
+                {
+                    alias: "fm01-mouth-serious01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-serious01.webp?alt=media",
+                },
+                {
+                    alias: "fm01-mouth-smile00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-smile00.webp?alt=media",
+                },
+                {
+                    alias: "fm01-mouth-smile01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-smile01.webp?alt=media",
+                },
+                {
+                    alias: "fm01-mouth-soft00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-soft00.webp?alt=media",
+                },
+                {
+                    alias: "fm01-mouth-soft01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-soft01.webp?alt=media",
+                },
+                {
+                    alias: "fm01-mouth-upset00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-upset00.webp?alt=media",
+                },
+                {
+                    alias: "fm01-mouth-upset01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-upset01.webp?alt=media",
+                },
+                {
+                    alias: "fm01-mouth-wow01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-wow01.webp?alt=media",
+                },
+            ],
+        },
+        {
+            name: "fm02",
+            assets: [
+                {
+                    alias: "fm02-body",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-body.webp?alt=media",
+                },
+                {
+                    alias: "fm02-eyes-bawl",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-eyes-bawl.webp?alt=media",
+                },
+                {
+                    alias: "fm02-eyes-joy",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-eyes-joy.webp?alt=media",
+                },
+                {
+                    alias: "fm02-eyes-nervous",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-eyes-nervous.webp?alt=media",
+                },
+                {
+                    alias: "fm02-eyes-smile",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-eyes-smile.webp?alt=media",
+                },
+                {
+                    alias: "fm02-eyes-upset",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-eyes-upset.webp?alt=media",
+                },
+                {
+                    alias: "fm02-eyes-wow",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-eyes-wow.webp?alt=media",
+                },
+                {
+                    alias: "fm02-mouth-cry01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-mouth-cry01.webp?alt=media",
+                },
+                {
+                    alias: "fm02-mouth-nervous00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-mouth-nervous00.webp?alt=media",
+                },
+                {
+                    alias: "fm02-mouth-nervous01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-mouth-nervous01.webp?alt=media",
+                },
+                {
+                    alias: "fm02-mouth-smile00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-mouth-smile00.webp?alt=media",
+                },
+                {
+                    alias: "fm02-mouth-smile01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-mouth-smile01.webp?alt=media",
+                },
+                {
+                    alias: "fm02-mouth-upset00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-mouth-upset00.webp?alt=media",
+                },
+                {
+                    alias: "fm02-mouth-upset01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-mouth-upset01.webp?alt=media",
+                },
+                {
+                    alias: "fm02-mouth-wow01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-mouth-wow01.webp?alt=media",
+                },
+            ],
+        },
+        {
+            name: "m01",
+            assets: [
+                {
+                    alias: "m01-body",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes-annoy",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-annoy.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes-concern",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-concern.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes-cry",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-cry.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes-grin",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-grin.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes-smile",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-smile.webp?alt=media",
+                },
+                {
+                    alias: "m01-eyes-wow",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-wow.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth-annoy00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-annoy00.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth-annoy01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-annoy01.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth-concern00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-concern00.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth-concern01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-concern01.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth-cry00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-cry00.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth-cry01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-cry01.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth-grin00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-grin00.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth-neutral00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-neutral00.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth-neutral01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-neutral01.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth-smile00",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile00.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth-smile01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-smile01.webp?alt=media",
+                },
+                {
+                    alias: "m01-mouth-wow01",
+                    src: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-wow01.webp?alt=media",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+```ts tab="utils/defineAssets.ts"
+import { Assets } from "@drincs/pixi-vn";
+import manifest from "../assets/manifest";
+
+/**
+ * Define all the assets that will be used in the game.
+ * This function will be called before the game starts.
+ * You can read more about assets management in the documentation: https://pixi-vn.web.app/start/assets-management.html
+ */
+export async function defineAssets() {
+    Assets.init({ manifest });
+
+    // The game will not start until these asserts are loaded.
+    await Assets.loadBundle("main_menu");
+
+    // The game will start immediately, but these asserts will be loaded in the background.
+    // Assets.backgroundLoadBundle("main_menu");
+    // Assets.backgroundLoad("background_main_menu");
+}
+```
+
+```ts tab="src/main.ts"
+import { Assets, canvas, Container, Game } from "@drincs/pixi-vn";
+import { createRoot } from "react-dom/client";
+import App from "./App";
+import { CANVAS_UI_LAYER_NAME } from "./constans";
+import "./index.css";
+import "./values/characters";
+
+// ...
+
+Game.onLoadingLabel((_stepId, { id }) => { // [!code focus]
+    Assets.backgroundLoadBundle(id); // [!code focus]
+}); // [!code focus]
+```
+
+## 背景画像とキャラクター画像を追加する
+
+さあ、視覚的な部分についても考える時です。 背景とキャラクタースプライトを視覚小説のキャンバスに追加します。
+
+**スプライトとは何ですか？** コンピュータグラフィックスにおいて、スプライトは大きなシーンに統合された二次元ビットマップであり、最も多くは2Dビデオゲームで使用されます。
+
+私たちの場合、キャラクタースプライトは体、目、口の3つの画像で構成されています。 次に、<DynamicLink href="/start/canvas-image-container">ImageContainer</DynamicLink>を使用してキャラクターを構成します。 キャンバスコンポーネントの追加方法については、<DynamicLink href="/start/canvas-components">このドキュメント</DynamicLink>でさらに情報を見つけることができます。
+
+これは例です：
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+# show image bg bg01-hallway
+# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-neutral01] xAlign 0.5 yAlign 1
+james: You're my roommate's replacement, huh?
+# show imagecontainer james [m01-body m01-eyes-grin m01-mouth-smile01]
+james: Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you'll be fine!
+# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-grin00]
+mc: ...
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    async () => {
+        await showImage("bg", "bg01-hallway");
+        await showImageContainer("james", ["m01-body", "m01-eyes-smile", "m01-mouth-neutral01"], { xAlign: 0.5, yAlign: 1 });
+        narration.dialogue = { character: james, text: `You're my roommate's replacement, huh?` }
+    },
+    async () => {
+        await showImageContainer("james", ["m01-body", "m01-eyes-grin", "m01-mouth-smile01"])
+        narration.dialogue = { character: james, text: `Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you'll be fine!` }
+    },
+    async () => {
+        await showImageContainer("james", ["m01-body", "m01-eyes-smile", "m01-mouth-grin00"])
+        narration.dialogue = { character: mc, text: `...` }
+    },
+    // ...
+]);
+export default startLabel;
+```
+
+## スマートアセットロード
+
+私たちの場合、ゲーム画像はホスティングサービス（Firebase）に保存しました。 このため、アセットの読み込みはタイムリーではありません。
+
+プレイヤーが過剰な読み込みを感じないように、ゲームの特定のフェーズにそれらをグループ化する必要があります。 私の場合、`label`の最初に最も使用される画像をロードします。
+
+読み込みを管理する方法については、<DynamicLink href="/start/assets-management">こちら</DynamicLink>で詳細情報を見つけることができます。
+
+これは例です：
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+# lazyload bundle m01 fm01 fm02 // [!code focus]
+
+# show image bg bg01-hallway
+# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-neutral01] xAlign 0.5 yAlign 1 with movein direction right speed 300
+james: You're my roommate's replacement, huh?
+# show imagecontainer james [m01-body m01-eyes-grin m01-mouth-smile01]
+james: Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you'll be fine!
+# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-grin00]
+mc: ...
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    // ...
+], {
+    onLoadingLabel: () => { // [!code focus]
+        Assets.backgroundLoadBundle(["fm01", "fm02", "m01"]); // [!code focus]
+    } // [!code focus]
+});
+export default startLabel;
+```
+
+## トランジションを使用する
+
+視覚小説をよりダイナミックにするために、画像を表示するためのトランジションを使用できます。 トランジションの使用に関する詳細情報は<DynamicLink href="/start/canvas-transition">こちら</DynamicLink>で見つけることができます。
+
+これは例です：
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+// ...
+
+# show image bg bg01-hallway
+# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-neutral01] xAlign 0.5 yAlign 1 with movein direction right speed 300
+james: You're my roommate's replacement, huh?
+# show imagecontainer james [m01-body m01-eyes-grin m01-mouth-smile01]
+james: Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you'll be fine!
+# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-grin00]
+mc: ...
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    async () => {
+        await showImage("bg", "bg01-hallway");
+        await moveIn(
+            "james",
+            {
+                value: ["m01-body", "m01-eyes-smile", "m01-mouth-neutral01"],
+                options: { xAlign: 0.5, yAlign: 1 },
+            },
+            { direction: "right", ease: "circInOut", type: "spring" }
+        );
+        narration.dialogue = { character: james, text: `You're my roommate's replacement, huh?` };
+    },
+    async () => {
+        await showImageContainer("james", ["m01-body", "m01-eyes-grin", "m01-mouth-smile01"]);
+        narration.dialogue = {
+            character: james,
+            text: `Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you'll be fine!`,
+        };
+    },
+    async () => {
+        await showImageContainer("james", ["m01-body", "m01-eyes-smile", "m01-mouth-grin00"]);
+        narration.dialogue = { character: mc, text: `...` };
+    },
+    // ...
+]);
+export default startLabel;
+```
+
+## アニメーションの作成
+
+視覚小説をよりダイナミックにするために、アニメーションを使用できます。 アニメーションの使用方法についての詳細は<DynamicLink href="/start/canvas-animations-effects">こちら</DynamicLink>を参照してください。
+
+多くのプロパティを設定する必要がある場合は、TypeScriptの使用をお勧めします。これにより、より多くの制御、機能、および型フィードバックが得られます。
+
+この例では、私のアニメーションが`steph`をシーンから取り出し、次の`step`で再挿入します。 彼女が正しい方向を向いていることを確認するために、x軸で彼女をミラーします。
+
+`steph`を出したり入れたりするために、`moveOut`関数と`moveIn`関数を使用します。 ミラー効果のために、`canvas.animate`関数を使用します。
+
+まず、`canvas.animate`関数を使用してアニメーションを作成し、`scaleX`プロパティを`-1`（ミラー）から`1`に設定します。`autoplay: false`を指定すると、すぐには開始されません。
+
+その後、`moveIn`関数を使用して`steph`をシーンに移動させ、アニメーションの`tickerId`を渡します。これにより、トランジションが完了した後に再開できます。
+
+次の`step`が実行される前にアニメーションが完了するように、`forceCompleteBeforeNext: true`オプションを使用します。 `moveIn`はトランジションであるため、`forceCompleteBeforeNext`はデフォルトでtrueです。
+
+このアニメーションにはTypeScriptを使用しているので、他の言語からも呼び出せるように`label`を作成しました。
+
+```ts title="labels/animation01.ts"
+import { canvas, ImageContainer, moveIn, newLabel } from "@drincs/pixi-vn";
+
+export const animation01 = newLabel("animation_01", [
+    async () => {
+        let tickerId = canvas.animate<ImageContainer>(
+            "steph",
+            {
+                scaleX: 1,
+            },
+            { autoplay: false, forceCompleteBeforeNext: true }
+        );
+
+        await moveIn(
+            "steph",
+            {
+                value: ["fm02-body", "fm02-eyes-joy", "fm02-mouth-smile01"],
+                options: { xAlign: 0.8, yAlign: 1, scale: { y: 1, x: -1 }, anchor: 0.5 },
+            },
+            { direction: "right", ease: "easeInOut", tickerIdToResume: tickerId }
+        );
+    },
+]);
+```
+
+<Callout type="info" title="ink">
+
+As explained <DynamicLink href="/ink/label#use-the-call-script">here</DynamicLink>, from _ink_ you can call `labels` written in ts and vice versa.
+
+</Callout>
+
+これで、この`label`（`animation_01`）をメインの`label`（`start`）から呼び出すことができます。
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+// ...
+
+# show imagecontainer james [m01-body m01-eyes-grin m01-mouth-grin00]
+# show imagecontainer sly [fm01-body fm01-eyes-smile fm01-mouth-smile00]
+# show imagecontainer steph [fm02-body fm02-eyes-upset fm02-mouth-nervous00]
+# remove image steph with moveout direction left speed 300
+[steph_fullname] goes through the opposite door,
+# call animation_01
+<> and returns with a HUGE tinfoil-covered platter.
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    // ...
+    async () => {
+        await showImageContainer("james", ["m01-body", "m01-eyes-grin", "m01-mouth-grin00"]);
+        await showImageContainer("sly", ["fm01-body", "fm01-eyes-smile", "fm01-mouth-smile00"]);
+        await showImageContainer("steph", ["fm02-body", "fm02-eyes-upset", "fm02-mouth-nervous00"]);
+        moveOut("steph", { direction: "left", speed: 300 });
+        narration.dialogue = `${steph_fullname} goes through the opposite door,`;
+    },
+    async (props) => {
+        narration.dialogGlue = true;
+        narration.dialogue = ` and returns with a HUGE tinfoil-covered platter.`;
+        await narration.call(animation01, props);
+    },
+    // ...
+]);
+export default startLabel;
+```
+
+<Comments>
+## Use animations and effects or create your ticker
+
+This page is under construction.
+
+:::tabs
+
+== ink example
+
+```ink title="ink"
+
+```
+
+== Typescript example
+
+```ts
+
+```
+
+:::
+
+## Add music and sound effects
+
+This page is under construction.
+
+:::tabs
+
+== ink example
+
+```ink title="ink"
+
+```
+
+== Typescript example
+
+```ts
+
+```
+
+::: -->
+
+</Comments>
+
+## Conclusion
+
+さて、これでPixi’VNを使って視覚小説を作成する方法がわかりました。 大きな力には大きな責任が伴いますので、賢く使い素晴らしい物語を創造してください！ 🚀
+
+こちらは最小限のUI（HTML）を使用したインタラクティブな例です。 スクロールダウンすると、完全なUI（Reactテンプレート）を使用した同じ結果を見ることができます。
+
+<Tabs items={["ink", "Typescript"]} groupId="narrative_language">
+<Tab>
+<Sandbox
+  template="2r5f6v"
+  entry="/src/ink/start.ink"
+/>
+</Tab>
+<Tab>
+<TSVisualNovelExample />
+</Tab>
+</Tabs>
+
+<iframe src="https://pixi-vn-react-template.web.app/"
+    title="Visual Novel - React"
+    style={{
+        width: "100%",
+        height: "400px",
+        border: "0",
+        borderRadius: "4px",
+        overflow: "hidden",
+    }}
+    allowFullScreen={true}
+></iframe>
