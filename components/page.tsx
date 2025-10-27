@@ -5,7 +5,7 @@ import { DocsBody, DocsDescription, DocsPage, DocsTitle, EditOnGitHub } from "fu
 import { Edit } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { ChatGPTButton, TranslateButton } from "./page-actions";
+import { ChatGPTButton, PatreonButton, TranslateButton } from "./page-actions";
 
 export default async function MDXPage({
     lang,
@@ -65,6 +65,7 @@ export default async function MDXPage({
                     </EditOnGitHub>
                     <TranslateButton lang={lang} folther={folther} />
                     <ChatGPTButton markdownUrl={pageBase.url} />
+                    <PatreonButton />
                 </div>
                 <MDXContent
                     components={getMDXComponents({

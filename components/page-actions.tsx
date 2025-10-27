@@ -2,7 +2,7 @@
 import { cva } from "class-variance-authority";
 import { Popover, PopoverContent, PopoverTrigger } from "fumadocs-ui/components/ui/popover";
 import { useCopyButton } from "fumadocs-ui/utils/use-copy-button";
-import { Check, ChevronDown, Copy, ExternalLinkIcon, Globe, MessageCircleIcon } from "lucide-react";
+import { Check, ChevronDown, Copy, ExternalLinkIcon, Globe, Heart, MessageCircleIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { cn } from "../lib/cn";
@@ -241,6 +241,26 @@ export function TranslateButton({ lang, folther }: { lang?: string; folther: str
         >
             <Globe className='size-3.5' />
             {t("translate_crowdin")}
+        </a>
+    );
+}
+
+export function PatreonButton() {
+    return (
+        <a
+            target='_blank'
+            rel='noreferrer noopener'
+            className={cn(
+                buttonVariants({
+                    variant: "secondary",
+                    size: "xs",
+                    className: "gap-1.5 not-prose padding-6 padding-x-2",
+                })
+            )}
+            href={`https://www.patreon.com/cw/pixi_vn`}
+        >
+            <Heart className='size-3.5' />
+            {"Patreon"}
         </a>
     );
 }
