@@ -669,6 +669,7 @@ export async function sidebar(lang?: string): Promise<
             },
             {
                 title: "Pixi’VN Json",
+                icon: <Image width={16} height={16} src='/pixivn-json.svg' alt="Pixi’VN Json" />,
                 description: "Json Integration",
                 url: `${preUrl}/json`,
             },
