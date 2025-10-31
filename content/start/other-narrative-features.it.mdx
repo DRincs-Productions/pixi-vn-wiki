@@ -1,6 +1,6 @@
 ---
 title: Altre caratteristiche narrative
-description: Covers additional narrative features in Pixi'VN, including end-of-game handling, error management, and random number generation.
+description: Copre ulteriori funzionalità narrative di Pixi'VN, tra cui la gestione della fine del gioco, la gestione degli errori e la generazione di numeri casuali.
 ---
 
 import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
@@ -11,13 +11,13 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
 Quando tutti i `passaggi` di tutte le `etichette` saranno stati eseguiti, il gioco si fermerà. Lo sviluppatore è responsabile della gestione del finale del gioco, poiché le visual novel possono avere diverse strategie di conclusione:
 
-- The game ends when all `steps` are executed.
-- The game has no end; if the `steps` are finished, it is considered an error and should be handled.
-- The game ends when the player reaches a specific point, such as a game over screen.
+- Il gioco termina quando tutti gli `steps` sono stati eseguiti.
+- The game has no end; if all steps are completed, another `label` will be started or the player will have to interact with an interface that can potentially start another `label`.
+- The game ends when the player reaches a specific point, such as due to game over.
 
-To manage the end of the game, set `Game.onEnd`. This function is called when the game ends and has the same signature as a `step`.
+Per gestire la fine della partita, impostare `Game.onEnd`. Questa funzione viene chiamata al termine del gioco e ha la stessa firma di un `step`.
 
-For example, to end the game and navigate to an end screen:
+Ad esempio, per terminare il gioco e passare alla schermata finale:
 
 ```ts title="main.ts"
 import { Game } from '@drincs/pixi-vn'
@@ -27,7 +27,7 @@ Game.onEnd(async (props) => {
 })
 ```
 
-If your game has no end and should restart or loop:
+Se il gioco non ha fine e deve riavviarsi o andare in loop:
 
 ```ts title="labels/startLabel.ts"
 export const startLabel = newLabel("start_label_id",
@@ -68,21 +68,21 @@ Game.onError((type, error, { notify }) => {
 
 <Accordion title="Random number generation" id="random-number-generation">
 
-Pixi’VN include una funzione integrata per generare numeri casuali. Use `narration.getRandomNumber()` with the following parameters:
+Pixi’VN include una funzione integrata per generare numeri casuali. Utilizza `narration.getRandomNumber()` con i seguenti parametri:
 
 - `min`: Il valore minimo.
 - `max`: Il valore massimo.
-- `options` (Optional):
-  - `onceonly`: If `true`, the number will be generated only once for the current `step` of the `label` (default: `false`). Note: `min` and `max` affect the storage of already generated numbers.
+- `options` (Opzionale):
+  - `onceonly`: Se `true`, il numero verrà generato una sola volta per lo `step` corrente della `label` (predefinito: `false`). Nota: `min` e `max` influenzano la memorizzazione dei numeri già generati.
 
 </Accordion>
 
 <Accordion title="Check if the label has already been completed" id="check-if-the-label-has-already-been-completed">
 
-To check if a `label` has already been completed, use the `narration.isLabelAlreadyCompleted` function.
+Per verificare se un'etichetta è già stata completata, utilizzare la funzione `narration.isLabelAlreadyCompleted`.
 Questa funzione ha i seguenti parametri:
 
-- `label`: The <DynamicLink href="/start/labels">label</DynamicLink> to check.
+- `label`: The <DynamicLink href="/start/labels">`label`</DynamicLink> to check.
 
 ```typescript
 const isLabelCompleted = narration.isLabelAlreadyCompleted(startLabel)
@@ -93,7 +93,7 @@ const isLabelCompleted = narration.isLabelAlreadyCompleted("labelid")
 
 <Accordion title="Check if current step has already been opened" id="check-if-current-step-is-already-been-opened">
 
-To check if the current `step` has already been opened, use `narration.isCurrentStepAlreadyOpened`.
+Per verificare se lo `step` corrente è già stato aperto, utilizzare `narration.isCurrentStepAlreadyOpened`.
 
 ```typescript
 const isCurrentStepOpened = narration.isCurrentStepAlreadyOpened;
@@ -103,8 +103,7 @@ const isCurrentStepOpened = narration.isCurrentStepAlreadyOpened;
 
 <Accordion title="Counter of execution times of the current step" id="counter-of-execution-times-of-the-current-step">
 
-To get the execution count for the current `step`, use `narration.currentStepTimesCounter`.\
-**Important:** The counter is incremented only if `narration.currentStepTimesCounter` is accessed at least once in a `step`.
+Per ottenere il conteggio delle esecuzioni per lo `step` corrente, utilizzare `narration.currentStepTimesCounter`. **Important:** The counter is only incremented if `narration.currentStepTimesCounter` is executed.
 
 ```ts title="labels/startLabel.ts"
 export const label = newLabel("id",
@@ -142,7 +141,7 @@ export const label = newLabel("id",
 )
 ```
 
-To reset the execution counter for the current `step`, set `narration.currentStepTimesCounter = 0`.
+Per reimpostare il contatore di esecuzione per il `step` corrente, impostare `narration.currentStepTimesCounter = 0`.
 
 ```typescript
 narration.currentStepTimesCounter = 0;
