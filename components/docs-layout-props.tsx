@@ -474,7 +474,7 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
                 icon: <BookOpenText />,
                 defaultOpen: true,
                 children: [
-                    { type: "page", name: "Knots", url: `${preUrl}/ink/label` },
+                    { type: "page", name: "Knots", url: `${preUrl}/ink/labels` },
                     { type: "page", name: t("choices"), url: `${preUrl}/ink/choices` },
                     { type: "page", name: t("input"), url: `${preUrl}/ink/input` },
                     {
@@ -669,7 +669,7 @@ export async function sidebar(lang?: string): Promise<
             },
             {
                 title: "Pixi’VN Json",
-                icon: <Image width={16} height={16} src='/pixivn-json.svg' alt="Pixi’VN Json" />,
+                icon: <Image width={16} height={16} src='/pixivn-json.svg' alt='Pixi’VN Json' />,
                 description: "Json Integration",
                 url: `${preUrl}/json`,
             },
