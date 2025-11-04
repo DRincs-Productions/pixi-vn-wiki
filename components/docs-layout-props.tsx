@@ -632,10 +632,40 @@ export async function jsonTree(lang?: string): Promise<DocsLayoutProps["tree"]> 
             },
             { type: "separator", name: t("models") },
             {
-                type: "page",
+                type: "folder",
                 name: "PixiVNJson",
                 icon: <File />,
-                url: `${preUrl}/json/PixiVNJson`,
+                index: {
+                    type: "page",
+                    name: "PixiVNJson",
+                    url: `${preUrl}/json/PixiVNJson`,
+                },
+                children: [
+                    {
+                        type: "page",
+                        name: t("choices"),
+                        icon: <File />,
+                        url: `${preUrl}/json/PixiVNJsonChoices`,
+                    },
+                    {
+                        type: "page",
+                        name: t("labels-flow"),
+                        icon: <File />,
+                        url: `${preUrl}/json/PixiVNJsonLabelToOpen`,
+                    },
+                    {
+                        type: "page",
+                        name: t("operations"),
+                        icon: <File />,
+                        url: `${preUrl}/json/PixiVNJsonOperation`,
+                    },
+                ],
+            },
+            {
+                type: "page",
+                name: t("conditions"),
+                icon: <File />,
+                url: `${preUrl}/json/PixiVNJsonConditionalStatements`,
             },
         ],
     };
