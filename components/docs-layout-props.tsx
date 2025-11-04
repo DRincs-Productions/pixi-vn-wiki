@@ -9,6 +9,7 @@ import {
     CircleQuestionMark,
     Crop,
     Database,
+    File,
     Gamepad2,
     Globe,
     Hammer,
@@ -628,6 +629,13 @@ export async function jsonTree(lang?: string): Promise<DocsLayoutProps["tree"]> 
                 name: t("start"),
                 icon: <Album />,
                 url: `${preUrl}/json`,
+            },
+            { type: "separator", name: t("models") },
+            {
+                type: "page",
+                name: "PixiVNJson",
+                icon: <File />,
+                url: `${preUrl}/json/PixiVNJson`,
             },
         ],
     };
