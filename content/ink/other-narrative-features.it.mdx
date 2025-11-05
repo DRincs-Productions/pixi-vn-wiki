@@ -1,0 +1,85 @@
+---
+title: Altre caratteristiche narrative
+description: |
+  Spiega funzioni quali `pause` e `continue` e come influiscono sui `steps` e sul flusso del dialogo.
+---
+
+import { PauseExample, ContinueExample } from "@/components/ink-examples";
+
+## Pausa
+
+Dopo aver eseguito un "# script", il sistema esegue un <DynamicLink href="/start/labels-flow#continue">`continue`</DynamicLink> per passare al `step` successivo. Ad esempio, in questo caso vedrai l'immagine e il testo del dialogo.
+
+```ink title="ink"
+=== start ===
+# show image alien eggHead
+Hello, world!
+-> DONE
+```
+
+È possibile utilizzare `# pause` per interrompere l'avanzamento al `passo` successivo e cancellare il testo del dialogo finché il flusso non riprende. Questa funzione è utile quando è necessario visualizzare un'immagine o cambiare stato senza visualizzare alcuna finestra di dialogo.
+
+La sintassi è:
+
+```ink title="ink"
+# pause
+```
+
+```ink tab="ink/start.ink"
+=== start ===
+# show image alien eggHead
+# pause
+Hello, world!
+-> DONE
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "eggHead",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<PauseExample />
+
+## Continua
+
+Normalmente, quando una scelta viene presentata dopo un dialogo, la narrazione utilizza due `steps`: la prima mostra solo il dialogo, e la seconda mostra il dialogo più le scelte.
+
+```ink title="ink"
+=== start ===
+Who are we going to rescue: the kitten or the wizard?
+* [workplace_midground_kitten] 
+    -> END
+* [workplace_midground_wizard]
+    -> END
+```
+
+Per presentare il dialogo e le scelte in un unico `step`, aggiungere `<># continue` alla riga del dialogo. In questo modo si evita un ulteriore `step`.
+
+```ink title="ink"
+=== start ===
+Who are we going to rescue: the kitten or the wizard?<># continue
+* [workplace_midground_kitten] 
+    -> END
+* [workplace_midground_wizard]
+    -> END
+```
+
+<ContinueExample />
