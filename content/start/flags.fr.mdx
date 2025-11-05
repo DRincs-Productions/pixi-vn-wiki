@@ -1,0 +1,72 @@
+---
+title: Flags management
+description: Explains how to use boolean flags in Pixi'VN to control game flow.
+---
+
+Pixi’VN provides functions to manage "game flags". Game flags are boolean values used to control the flow of the game or to store other boolean value in the game storage.
+
+This mechanic has much less impact on save size than <DynamicLink href="/start/storage#set-a-variable-in-the-game-storage">saving a boolean in game storage</DynamicLink>.
+
+## Set
+
+To set a flag, use the `storage.setFlag` function.
+Cette fonction accepte les paramètres suivants:
+
+- `name`: The flag name.
+- `value`: The flag value.
+
+```typescript
+import { storage } from '@drincs/pixi-vn'
+
+storage.setFlag('flag1', true)
+```
+
+## Get
+
+To get a flag, use the `storage.getFlag` function.
+Cette fonction accepte les paramètres suivants:
+
+- `name`: The flag name.
+
+```typescript
+import { storage } from '@drincs/pixi-vn'
+
+const flag1 = storage.getFlag('flag1')
+```
+
+## Development possibilities
+
+### Connect a flag to a class boolean property
+
+If you are creating a class with a boolean property, you can connect it to a flag. This way, the property will automatically reflect the flag's value.
+
+This can simplify your code and make it more readable.
+
+```typescript
+import { storage } from '@drincs/pixi-vn'
+
+class ButtonClass {
+    private _disabled: boolean | string
+    get disabled() {
+        if (typeof this._disabled === 'string') {
+            return storage.getFlag(this._disabled)
+        }
+        return this._disabled
+    }
+    set disabled(value: boolean | string) {
+        this._disabled = value
+    }
+}
+```
+
+```typescript
+// Button to go to school
+const goToSchoolButton = new ButtonClass()
+goToSchoolButton.disabled = 'weekend'
+
+function afterNewDay() {
+    storage.setFlag('weekend', 
+        // Check if it is Saturday or Sunday
+    )
+}
+```
