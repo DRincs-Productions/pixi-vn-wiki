@@ -33,6 +33,14 @@ const locales = [
         name: "日本語",
         locale: "ja",
     },
+    {
+        name: "Español",
+        locale: "es",
+    },
+    {
+        name: "Français",
+        locale: "fr",
+    },
 ];
 
 export default function Provider({ children, locale }: { children: ReactNode; locale?: string }) {

@@ -3,7 +3,7 @@ import { useLocale } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-const SUPPORTED_LANGS = ["en", "it", "ru", "zh", "ja"];
+const SUPPORTED_LANGS = ["en", "it", "ru", "zh", "ja", "es", "fr"];
 
 export function useBrowserLanguage() {
     const locale = useLocale();
