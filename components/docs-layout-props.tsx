@@ -469,7 +469,6 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
             {
                 type: "folder",
                 name: t("make-your-first"),
-                defaultOpen: true,
                 icon: <Hammer />,
                 children: [
                     {
