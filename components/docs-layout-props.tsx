@@ -466,8 +466,34 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
             { type: "page", name: t("start"), icon: <Album />, url: `${preUrl}/ink` },
             { type: "page", name: t("vscode-extension"), url: `${preUrl}/ink/vscode-extension` },
             { type: "page", name: "Inky", url: `${preUrl}/ink/inky` },
+            {
+                type: "folder",
+                name: t("make-your-first"),
+                defaultOpen: true,
+                icon: <Hammer />,
+                children: [
+                    {
+                        type: "page",
+                        name: t("make-visual-novel"),
+                        url: `${preUrl}/start/make-visual-novel`,
+                    },
+                    {
+                        type: "page",
+                        name: t("make-point-and-click"),
+                        url: `${preUrl}/start/make-point-and-click`,
+                    },
+                    {
+                        type: "page",
+                        name: t("make-rpg"),
+                        url: `${preUrl}/start/make-rpg`,
+                    },
+                ],
+            },
             // { type: "page", name: "Writing with ink", url: `${preUrl}/ink/writing` },
-            { type: "separator", name: "First steps" },
+            {
+                type: "separator",
+                name: t("first-steps"),
+            },
             { type: "page", name: t("character"), url: `${preUrl}/ink/character`, icon: <User /> },
             {
                 type: "folder",
@@ -586,7 +612,7 @@ export async function nqtrTree(lang?: string): Promise<DocsLayoutProps["tree"]> 
             },
             {
                 type: "separator",
-                name: "First steps",
+                name: t("first-steps"),
             },
             {
                 type: "page",
