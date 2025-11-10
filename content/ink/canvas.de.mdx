@@ -231,18 +231,19 @@ export default manifest;
 
 <Accordion title="Show with transition" id="show-with-transition">
 
-If you want to show the canvas component with a <DynamicLink href="/start/canvas-transition">transition</DynamicLink>, you can add into the parameters the `with {transitionType}`.
+If you want to show the canvas component with a <DynamicLink href="/start/canvas-transition">transition</DynamicLink>, you can add into the parameters the `with {transition type}`.
 
 ```ink title="ink"
 # show {component type} {alias} {source} {parameters} with {transition type} {transition parameters}
 ```
 
-- `transitionType` (Optional): the available transitions are:
-  - `dissolve`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#dissolve-transition">dissolve transition</DynamicLink>. You can add all the parameters you would use in JS/TS.
-  - `fade`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#fade-transition">fade transition</DynamicLink>. You can add all the parameters you would use in JS/TS.
-  - `movein`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#move-inout-transition">movein transition</DynamicLink>. You can add all the parameters you would use in JS/TS.
-  - `zoomin`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#zoom-inout-transition">zoomin transition</DynamicLink>. You can add all the parameters you would use in JS/TS.
-  - `pushin`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#push-inout-transition">pushin transition</DynamicLink>. You can add all the parameters you would use in JS/TS.
+- `transition type` (Optional): the available transitions are:
+  - `dissolve`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#dissolve-transition">dissolve transition</DynamicLink>.
+  - `fade`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#fade-transition">fade transition</DynamicLink>.
+  - `movein`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#move-inout-transition">movein transition</DynamicLink>.
+  - `zoomin`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#zoom-inout-transition">zoomin transition</DynamicLink>.
+  - `pushin`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#push-inout-transition">pushin transition</DynamicLink>.
+- `transition parameters` (Optional): a space-separated list of property/value pairs. If a value contains spaces, wrap it in double quotes. If a value is a object, pass valid JSON and escape the braces for **_ink_** (e.g. `\{ "placeholder": "Enter your name", "maxLength": 20 \}`). You can add all the parameters you would use in JS/TS.
 
 ```ink tab="ink/start.ink"
 === start ===
@@ -283,13 +284,21 @@ export default manifest;
 
 ### Edit
 
-To edit a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink> in ink use:
+You can use the `edit` to edit a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink> in **_ink_**. To do this, you need to use the following syntax:
 
 ```ink title="ink"
 # edit {component type} {alias} {parameters}
 ```
 
-- `parameters` (Optional): a space-separated list of property/value pairs. If a value contains spaces, wrap it in double quotes. If a value is a object, pass valid JSON and escape the braces for **_ink_** (e.g. `\{ "placeholder": "Enter your name", "maxLength": 20 \}`).
+- `component type`: the component type. Available types:
+  - <DynamicLink href="/start/canvas-image">`image`</DynamicLink>
+  - <DynamicLink href="/start/canvas-image-container">`imagecontainer`</DynamicLink>
+  - <DynamicLink href="/start/canvas-video">`video`</DynamicLink>
+  - <DynamicLink href="/start/canvas-text">`text`</DynamicLink>
+- `parameters` (Optional): a space-separated list of property/value pairs. If a value contains spaces, wrap it in double quotes. If a value is a object, pass valid JSON and escape the braces for **_ink_** (e.g. `\{ "placeholder": "Enter your name", "maxLength": 20 \}`). Valid parameters vary by component:
+  - `image` and `video`: [`PixiJS.Sprite`](https://pixijs.com/8.x/guides/components/sprites) and <DynamicLink href="/start/canvas-position">`properties for positioning`</DynamicLink> properties.
+  - `text`: [`PixiJS.Text`](https://pixijs.com/8.x/guides/components/text) and <DynamicLink href="/start/canvas-position">`properties for positioning`</DynamicLink> properties.
+  - `imagecontainer`: [`PixiJS.Container`](https://pixijs.com/8.x/guides/components/containers) and <DynamicLink href="/start/canvas-position">`properties for positioning`</DynamicLink> properties.
 
 ```ink title="ink"
 # edit image bg position \{ "x": 20, "y": 30 \} visible true cursor "pointer" alpha 0.5 
@@ -297,11 +306,18 @@ To edit a <DynamicLink href="/start/canvas-components">canvas component</Dynamic
 
 ### Remove
 
-To remove a component:
+You can use the `remove` to remove a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink> in **_ink_**. To do this, you need to use the following syntax:
 
-```
+```ink title="ink"
 # remove {component type} {alias}
 ```
+
+- `component type`: the component type. Available types:
+  - <DynamicLink href="/start/canvas-image">`image`</DynamicLink>
+  - <DynamicLink href="/start/canvas-image-container">`imagecontainer`</DynamicLink>
+  - <DynamicLink href="/start/canvas-video">`video`</DynamicLink>
+  - <DynamicLink href="/start/canvas-text">`text`</DynamicLink>
+- `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> to identify the component. Use double quotes if the alias contains spaces.
 
 ```ink title="ink"
 # remove image bg
@@ -312,21 +328,19 @@ To remove a component:
 
 <Accordion title="Remove with transition" id="remove-with-transition">
 
-If you want to remove the canvas component with a <DynamicLink href="/start/canvas-transition">transition</DynamicLink>, you can add after the alias of the canvas component `with [transitionType]`.
+If you want to remove the canvas component with a <DynamicLink href="/start/canvas-transition">transition</DynamicLink>, you can add after the alias of the canvas component `with {transition type}`.
 
-`#` + `remove` + `[component type]` + `[alias]` + `with` + `[transitionType]`
+```ink title="ink"
+# remove {component type} {alias} with {transition type} {transition parameters}
+```
 
-After the `transitionType`, you can add the `transition parameters`. the `transition parameters` must be set as follows: `parameterName` + `SPACE` + `value`. If the `value` is a string and includes spaces, you must use double quotes. To do this, you need to use the following syntax:
-
-`#` + `remove` + `[component type]` + `[alias]` + `with` + `[transitionType]` + `[transition parameters]`
-
-The available transitions are:
-
-- `dissolve`: The canvas component disappears with a <DynamicLink href="/start/canvas-transition#dissolve-transition">dissolve transition</DynamicLink>. You can add all the parameters you would use in JS/TS.
-- `fade`: The canvas component disappears with a <DynamicLink href="/start/canvas-transition#fade-transition">fade transition</DynamicLink>. You can add all the parameters you would use in JS/TS.
-- `moveout`: The canvas component disappears with a <DynamicLink href="/start/canvas-transition#move-inout-transition">moveout transition</DynamicLink>. You can add all the parameters you would use in JS/TS.
-- `zoomout`: The canvas component disappears with a <DynamicLink href="/start/canvas-transition#zoom-inout-transition">zoomout transition</DynamicLink>. You can add all the parameters you would use in JS/TS.
-- `pushout`: The canvas component disappears with a <DynamicLink href="/start/canvas-transition#push-inout-transition">pushout transition</DynamicLink>. You can add all the parameters you would use in JS/TS.
+- `transition type` (Optional): the available transitions are:
+  - `dissolve`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#dissolve-transition">dissolve transition</DynamicLink>.
+  - `fade`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#fade-transition">fade transition</DynamicLink>.
+  - `movein`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#move-inout-transition">movein transition</DynamicLink>.
+  - `zoomin`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#zoom-inout-transition">zoomin transition</DynamicLink>.
+  - `pushin`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#push-inout-transition">pushin transition</DynamicLink>.
+- `transition parameters` (Optional): a space-separated list of property/value pairs. If a value contains spaces, wrap it in double quotes. If a value is a object, pass valid JSON and escape the braces for **_ink_** (e.g. `\{ "placeholder": "Enter your name", "maxLength": 20 \}`). You can add all the parameters you would use in JS/TS.
 
 ```ink title="ink"
 # remove image bg with dissolve duration 3
@@ -386,7 +400,9 @@ export default manifest;
 
 To pause a video in **_ink_**, you can use `pause`. To do this, you need to use the following syntax:
 
-`#` + `pause` + `video` + `[alias]`
+```ink title="ink"
+# pause video {alias}
+```
 
 ```ink title="ink"
 # pause video bg
@@ -399,7 +415,9 @@ To pause a video in **_ink_**, you can use `pause`. To do this, you need to use 
 
 To resume a video in **_ink_**, you can use `resume`. To do this, you need to use the following syntax:
 
-`#` + `resume` + `video` + `[alias]`
+```ink title="ink"
+# resume video {alias}
+```
 
 ```ink title="ink"
 # resume video bg
@@ -414,7 +432,16 @@ To resume a video in **_ink_**, you can use `resume`. To do this, you need to us
 
 You can use the `animate` to use the <DynamicLink href="/start/canvas-motion">animations</DynamicLink> in **_ink_**. To do this, you need to use the following syntax:
 
-`#` + `animate` + `[alias]` + `[keyframes]` + `options` + `[parameters]`
+```ink title="ink"
+# animate {alias} {keyframes} options {parameters}
+```
+
+- `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> to identify the component. Use double quotes if the alias contains spaces.
+- `keyframes`: a space-separated list of property/value pairs representing the properties to animate and the values to reach. If a value contains spaces, wrap it in double quotes. If a value is a object, pass valid JSON and escape the braces for **_ink_** (e.g. `\{ "placeholder": "Enter your name", "maxLength": 20 \}`). Valid parameters vary by component:
+  - `image` and `video`: [`PixiJS.Sprite`](https://pixijs.com/8.x/guides/components/sprites) and <DynamicLink href="/start/canvas-position">`properties for positioning`</DynamicLink> properties.
+  - `text`: [`PixiJS.Text`](https://pixijs.com/8.x/guides/components/text) and <DynamicLink href="/start/canvas-position">`properties for positioning`</DynamicLink> properties.
+  - `imagecontainer`: [`PixiJS.Container`](https://pixijs.com/8.x/guides/components/containers) and <DynamicLink href="/start/canvas-position">`properties for positioning`</DynamicLink> properties.
+- `parameters` (Optional): a space-separated list of property/value pairs. If a value contains spaces, wrap it in double quotes. If a value is a object, pass valid JSON and escape the braces for **_ink_** (e.g. `\{ "placeholder": "Enter your name", "maxLength": 20 \}`). You can add all the [`motion` options](https://motion.dev/docs/animate#options) and <DynamicLink href="/start/canvas-motion">additional parameters</DynamicLink> you would use in JS/TS.
 
 Here are some examples:
 
