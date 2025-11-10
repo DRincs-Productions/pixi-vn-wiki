@@ -487,7 +487,7 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
                     { type: "page", name: t("translate"), icon: <Globe />, url: `${preUrl}/ink/translate` },
                 ],
             },
-            { type: "page", name: "Variables", url: `${preUrl}/ink/variables` },
+            { type: "page", name: "Storage", url: `${preUrl}/ink/storage` },
             { type: "page", name: "Canvas", url: `${preUrl}/ink/canvas` },
             { type: "page", name: "Sounds and Music", url: `${preUrl}/ink/sound` },
             { type: "page", name: "Assets management", url: `${preUrl}/ink/assets` },
