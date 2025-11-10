@@ -489,7 +489,7 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
             },
             { type: "page", name: t("storage"), icon: <Database />, url: `${preUrl}/ink/storage` },
             { type: "page", name: t("canvas"), icon: <ImageIcon />, url: `${preUrl}/ink/canvas` },
-            { type: "page", name: t("sound"), icon: <Music />, url: `${preUrl}/ink/sound` },
+            { type: "page", name: t("sound"), url: `${preUrl}/ink/sound` },
             { type: "page", name: "Assets management", url: `${preUrl}/ink/assets` },
             { type: "page", name: "Text replacement", url: `${preUrl}/ink/replacement` },
             { type: "page", name: "Custom Hashtag Script", url: `${preUrl}/ink/hashtag` },
