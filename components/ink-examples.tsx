@@ -42,7 +42,6 @@ import "./styles.css";
 import { defineAssets } from "./utils/assets-utility";
 import { initializeInk } from "./utils/ink-utility";
 import "./values/characters";
-import "./labels/javascriptLabel";
 
 // Canvas setup with PIXI
 const body = document.body;
@@ -135,7 +134,7 @@ export function initializeInk() {
     return undefined;
   });
 }`,
-                "labels/javascriptLabel": ``,
+                "labels/index.ts": "",
                 ...files,
             }}
             previewHeight={previewHeight}
@@ -290,7 +289,7 @@ Start
 # jump javascript_label_id
 Start End
 -> DONE\`;`,
-                "labels/javascriptLabel": `import { narration, newLabel } from "@drincs/pixi-vn";
+                "labels/javascriptLabel.ts": `import { narration, newLabel } from "@drincs/pixi-vn";
 
 const javascriptLabel = newLabel("javascript_label_id", [
     () => {
@@ -301,6 +300,7 @@ const javascriptLabel = newLabel("javascript_label_id", [
     },
 ]);
 export default javascriptLabel;`,
+                "labels/index.ts": `import "./javascriptLabel";`,
             }}
         />
     );
