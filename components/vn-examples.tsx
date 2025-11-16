@@ -17,12 +17,11 @@ export function TSVisualNovelExample() {
   showImage,
   showImageContainer,
 } from "@drincs/pixi-vn";
-import { james, mc, sly, steph } from "../values/characters";
+import { james, mc, sly, steph, steph_fullname } from "../values/characters";
 import { animation01 } from "./animations-labels";
+import secondPart from "./secondPart";
 
-const steph_fullname = "Stephanie";
-
-export const startLabel = newLabel(
+const startLabel = newLabel(
   "start",
   [
     async () => {
@@ -376,6 +375,10 @@ export const startLabel = newLabel(
       narration.dialogue = { character: steph, text: \`Oh! You gotta take in your luggage!\` };
     },
     async () => {
+      await showImageContainer("steph", ["fm02-body", "fm02-eyes-smile", "fm02-mouth-smile00"]);
+      moveOut("james", { direction: "right", ease: "circInOut", type: "spring", duration: 0.5, delay: 0.05 });
+      moveOut("sly", { direction: "right", ease: "anticipate", duration: 0.5 });
+      moveOut("steph", { direction: "left", ease: "easeInOut", duration: 0.5, delay: 0.1 });
       narration.dialogue = \`You want continue to the next part?\`;
       narration.choices = [
         newChoiceOption("Yes, I want to continue", secondPart, {}, { type: "jump" }),
@@ -389,12 +392,60 @@ export const startLabel = newLabel(
     },
   }
 );
-export default startLabel;
+export default startLabel;`,
+                "labels/secondPart.ts": `import { moveIn, narration, newLabel, showImageContainer, showWithFade, Text, TextStyle } from "@drincs/pixi-vn";
+import { james, mc, sly, steph, steph_fullname } from "../values/characters";
 
-export const secondPart = newLabel("second_part", [
+const secondPart = newLabel("second_part", [
+  async ({ t }) => {
+    narration.dialogue = undefined;
+    const skewStyle = new TextStyle({
+      fontFamily: "Arial",
+      dropShadow: {
+        alpha: 0.8,
+        angle: 2.1,
+        blur: 4,
+        color: "0x111111",
+        distance: 10,
+      },
+      fill: "#ffffff",
+      stroke: { color: "#004620", width: 12, join: "round" },
+      fontSize: 60,
+      fontWeight: "lighter",
+    });
+    const text = new Text({
+      text: t(\`(A few minutes later...)\`),
+      style: skewStyle,
+    });
+    await showWithFade("bg", text);
+    text.align = 0.5;
+  },
   async () => {
-    await showImage("bg", "bg02-dorm");
-    await showImageContainer("steph", ["fm02-body", "fm02-eyes-wow", "fm02-mouth-nervous00"]);
+    await showWithFade("bg", "bg02-dorm");
+    await moveIn(
+      "james",
+      {
+        value: ["m01-body", "m01-eyes-smile", "m01-mouth-smile00"],
+        options: { xAlign: 0.5, yAlign: 1 },
+      },
+      { direction: "right", ease: "circInOut", type: "spring", delay: 0.3 }
+    );
+    await moveIn(
+      "sly",
+      {
+        value: ["fm01-body", "fm01-eyes-smile", "fm01-mouth-serious00"],
+        options: { xAlign: 0.2, yAlign: 1 },
+      },
+      { direction: "right", ease: "anticipate", delay: 0.3 }
+    );
+    await moveIn(
+      "steph",
+      {
+        value: ["fm02-body", "fm02-eyes-wow", "fm02-mouth-nervous00"],
+        options: { xAlign: 0.8, yAlign: 1 },
+      },
+      { direction: "left", ease: "easeInOut", delay: 0.3 }
+    );
     narration.dialogue = \`She enters my room before I'VE even had a chance to.\`;
   },
   async () => {
@@ -1422,7 +1473,8 @@ export const secondPart = newLabel("second_part", [
     await showImageContainer("steph", ["fm02-body", "fm02-eyes-joy", "fm02-mouth-smile01"]);
     narration.dialogue = \`...freedom...\`;
   },
-]);`,
+]);
+export default secondPart;`,
                 "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
 import startLabel, { secondPart } from "../labels/startLabel";
 
@@ -1681,6 +1733,7 @@ export const james = new CharacterBaseModel("james", {
   color: "#0084ac",
 });
 
+export const steph_fullname = "Stephanie";
 export const steph = new CharacterBaseModel("steph", {
   name: "Steph",
   color: "#ac5900",
@@ -1717,6 +1770,9 @@ export const animation01 = newLabel("animation_01", [
                 "constants.ts": `export const HEIGHT = 1080;
 export const WIDTH = 1920;
 export const BACKGROUND_COLOR = "#303030";`,
+                "labels/index.ts": `import "./animations-labels";
+import "./secondPart";
+import "./startLabel";`,
             }}
         />
     );
