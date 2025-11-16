@@ -547,47 +547,41 @@ export async function faqTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
 
 export async function homeLinks(lang?: string): Promise<LinkItemType[]> {
     const preUrl = lang ? `/${lang}` : "";
-    // const t = await getTranslations("layout");
+    const t = await getTranslations("layout");
     return [
         {
             type: "menu",
-            text: "Make your first",
+            text: t("make-your-first"),
             items: [
                 {
-                    text: "Visual Novel",
+                    text: t("make-visual-novel"),
                     url: `${preUrl}/start/make-visual-novel`,
                 },
                 {
-                    text: "Point & Click Adventure",
+                    text: t("make-point-and-click"),
                     url: `${preUrl}/start/make-point-and-click`,
                 },
                 {
-                    text: "RPG game",
+                    text: t("make-rpg"),
                     url: `${preUrl}/start/make-rpg`,
                 },
                 {
-                    text: "Game engine",
+                    text: t("make-game-engine"),
                     url: `${preUrl}/start/make-game-engine`,
                 },
             ],
         },
         {
-            text: "Guide",
+            text: t("getting-started"),
             url: `${preUrl}/start`,
         },
         {
-            type: "menu",
-            text: "Other topics",
-            items: [
-                {
-                    text: "FAQ",
-                    url: `${preUrl}/faq`,
-                },
-                {
-                    text: "Migration",
-                    url: `${preUrl}/faq/migration`,
-                },
-            ],
+            text: t("ink"),
+            url: `${preUrl}/ink`,
+        },
+        {
+            text: t("faq"),
+            url: `${preUrl}/faq`,
         },
     ];
 }
