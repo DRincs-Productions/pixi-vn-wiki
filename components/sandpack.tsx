@@ -40,6 +40,7 @@ export function ReactTemplate({
                 "index.tsx": index,
                 "hooks/useNarrationFunctions.ts": useNarrationFunctions,
                 "constants.ts": constants,
+                "labels/index.ts": labels,
                 "values/characters.ts": "",
                 ...files,
             }}
@@ -464,6 +465,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import { BACKGROUND_COLOR, HEIGHT, WIDTH } from "./constants";
 import { INTERFACE_DATA_USE_QUEY_KEY } from "./hooks/useQueryInterface";
+import "./labels";
 import { startLabel } from "./labels/startLabel";
 import "./styles.css";
 import { defineAssets } from "./utils/assets-utility";
@@ -594,3 +596,5 @@ export default function useNarrationFunctions() {
 const constants = `export const HEIGHT = 480;
 export const WIDTH = 720;
 export const BACKGROUND_COLOR = "#303030";`;
+
+const labels = `import "./startLabel";`;

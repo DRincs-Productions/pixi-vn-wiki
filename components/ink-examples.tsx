@@ -36,6 +36,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import { BACKGROUND_COLOR, HEIGHT, WIDTH } from "./constants";
 import { INTERFACE_DATA_USE_QUEY_KEY } from "./hooks/useQueryInterface";
+import "./labels";
 import { startLabel } from "./ink/start";
 import "./styles.css";
 import { defineAssets } from "./utils/assets-utility";
