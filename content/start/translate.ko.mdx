@@ -1,0 +1,187 @@
+---
+title: Internalization
+description: This page explains how to add multi-language support to your Pixi’VN game using i18next, including UI and narration translation strategies. How to translate the visual novel?
+---
+
+In visual novels and similar games, it is common to allow players to select their native language.
+
+For your Pixi’VN project, you should use an external library to handle translations. This gives you the flexibility to choose the implementation that best fits your needs.
+
+<Callout title="Templates" type="info">
+
+In all templates, i18next is already included and configured. You can start translating your game right away.
+
+</Callout>
+
+The most popular and widely compatible library is **i18next**.
+
+![i18next-h2](/i18next.svg)
+
+## i18next
+
+**What is i18next?** i18next is an internationalization framework for JavaScript. To use it, you need to install and initialize it. Learn more on the [i18next website](https://www.i18next.com/).
+
+Translations are stored in multiple JSON files (one per language), using key-value pairs. The key is a unique identifier for the text, and the value is the translated string.
+
+```ts tab="i18n.ts"
+import i18n from 'i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
+import { initReactI18next } from 'react-i18next';
+import strings_en from '../src/values/translations/strings_en.json';
+import strings_es from '../src/values/translations/strings_es.json';
+
+const getUserLang = (): string => {
+    let userLang: string = navigator.language || "en";
+    return userLang?.toLocaleLowerCase()?.split("-")[0];
+}
+
+export const useI18n = () => {
+    if (!i18n.isInitialized) {
+        i18n
+            .use(LanguageDetector)
+            .use(initReactI18next)
+            .init({
+                debug: false,
+                fallbackLng: 'en',
+                lng: getUserLang(),
+                interpolation: {
+                    escapeValue: false,
+                },
+                resources: {
+                    en: strings_en,
+                    es: strings_es,
+                    // Add more languages here
+                }
+            });
+    }
+}
+```
+
+```ts tab="main.ts"
+import { useI18n } from './i18n';
+
+useI18n()
+```
+
+<Accordions>
+
+<Accordion title="Translate the UI" id="translate-ui">
+
+To translate the UI, use the `t` function provided by i18next. Pass the translation key to `t` to get the corresponding text in the player's language.
+
+For example:
+
+```tsx tab="React"
+import { useTranslation } from 'react-i18next';
+
+export default function MyComponent() {
+    const { t } = useTranslation("ui");
+
+    return (
+        <div>
+            <Button>{t("text_speed")}</Button>
+        </div>
+    );
+}
+```
+
+```vue tab="Vue"
+<script setup>
+    import { useTranslation } from "i18next-vue";
+    const { t } = useTranslation("ui");
+</script>
+
+<template>
+    <div>
+        <button>{{ t('text_speed') }}</button>
+    </div>
+</template>
+```
+
+```svelte tab="Svelte"
+<script>
+    import { useTranslation } from 'svelte-i18n';
+    const { t } = useTranslation("ui");
+</script>
+
+<div>
+    <button>{t('text_speed')}</button>
+</div>
+```
+
+</Accordion>
+
+<Accordion title="Translate the narration (TypeScript/JavaScript)" id="translate-narration">
+
+<Callout title="Templates" type="info">
+
+In all templates, the `StepLabelProps` interface already includes a `t` function. See `pixi-vn.d.ts`.
+
+</Callout>
+
+<Callout type="info">
+
+It is recommended to use `t` inside the <DynamicLink href="/start/labels">label</DynamicLink> rather than directly in the UI, so you can take advantage of [i18n Interpolation](https://i18next.com/translation-function/interpolation).
+
+</Callout>
+
+In Pixi’VN projects, you often need to translate narration text in TypeScript/JavaScript <DynamicLink href="/start/labels">`labels`</DynamicLink>. To enable this, the translation function must be in the <DynamicLink href="/start/labels#steplabelprops">`StepLabelProps` interface</DynamicLink>.
+
+It is recommended to use the original string as the translation key.
+
+```ts tab="labels/startLabel.ts"
+export const startLabel = newLabel("start_label",
+    [
+        ({ t }) => { // [!code focus]
+            narration.dialogue = {
+                character: liam,
+                text: t("Hello, my name is {{name}}", { name: "Liam" }) // [!code focus]
+            }
+        },
+    ]
+)
+```
+
+```ts tab="pixi-vn.d.ts"
+declare module '@drincs/pixi-vn' {
+    interface StepLabelProps {
+        /**
+         * Translate a key to a string.
+         * @param key The key to translate.
+         * @returns The translated string.
+         */
+        t: TFunction<[string], undefined>
+        // ...
+    }
+}
+```
+
+</Accordion>
+
+</Accordions>
+
+## Create
+
+<Callout title="ink" type="info">
+
+If you use `ink`, you can automatically extract strings from `ink` text for translation. See more <DynamicLink href="/ink/translate">here</DynamicLink>.
+
+</Callout>
+
+Translation JSON files must be created manually. It is recommended to split translations into two sections (see `strings_es.json`):
+
+- <DynamicLink href="/start/interface">UI</DynamicLink> texts: for screens, settings, quick buttons, etc.—everything not part of the narration.
+- <DynamicLink href="/start/narration">Narration</DynamicLink> texts: for dialogues, choice menus, etc.
+
+```json tab="locales/strings_es.json"
+{
+    "ui": {
+        "text_speed": "Velocidad del texto",
+        // ...
+    },
+    "narration": {
+        "Hello, my name is {{name}}": "Hola, mi nombre es {{name}}"
+        // ...
+    }
+}
+```
