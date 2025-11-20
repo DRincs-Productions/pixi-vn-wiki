@@ -1,0 +1,85 @@
+---
+title: Other narrative features
+description: |
+  Explains features such as `pause` and `continue` and how they affect `steps` and dialogue flow.
+---
+
+import { PauseExample, ContinueExample } from "@/components/ink-examples";
+
+## Pause
+
+After executing a "# script", the system performs a <DynamicLink href="/start/labels-flow#continue">`continue`</DynamicLink> to move to the next `step`. For example, in this case you will see the image and the dialogue text.
+
+```ink title="ink"
+=== start ===
+# show image alien eggHead
+Hello, world!
+-> DONE
+```
+
+You can use `# pause` to stop progression to the next `step` and clear the dialogue text until the flow resumes. This is useful when you need to display an image or change state without showing any dialogue.
+
+The syntax is:
+
+```ink title="ink"
+# pause
+```
+
+```ink tab="ink/start.ink"
+=== start ===
+# show image alien eggHead
+# pause
+Hello, world!
+-> DONE
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "eggHead",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<PauseExample />
+
+## Continue
+
+Normally, when a choice is presented after dialogue the narration uses two `steps`: the first shows only the dialogue, and the second shows the dialogue plus the choices.
+
+```ink title="ink"
+=== start ===
+Who are we going to rescue: the kitten or the wizard?
+* [workplace_midground_kitten] 
+    -> END
+* [workplace_midground_wizard]
+    -> END
+```
+
+To present the dialogue and the choices in a single `step`, append `<># continue` to the dialogue line. This avoids an extra `step`.
+
+```ink title="ink"
+=== start ===
+Who are we going to rescue: the kitten or the wizard?<># continue
+* [workplace_midground_kitten] 
+    -> END
+* [workplace_midground_wizard]
+    -> END
+```
+
+<ContinueExample />
