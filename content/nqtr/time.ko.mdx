@@ -1,0 +1,210 @@
+---
+title: Time system
+---
+
+<Callout title="Nomenclature" type="info">
+
+It was decided to use the very generic terms date and time. The reason is that, depending on what is being developed, time can correspond to hours, minutes, or a long period of time. The same applies to date.
+
+</Callout>
+
+The time system is composed of the following elements:
+
+- `date`: A counter used to determine the date of the game.
+- `time`: A counter is used to determine the time of day and which is reset every time date is incremented.
+
+You can use `timeTracker` instance to manage your time system. It provides methods to initialize, get, increment time, etc. The time system is designed to be flexible and can be adapted to various game requirements.
+
+## Initialize
+
+To initialize the time system, you need use the `initialize` method of the `timeTracker` instance. This function has the following parameters:
+
+- `defaultTimeSpent`: The default time spent in the game (number). It is used to increment the time when no specific time is set.
+- `dayStartTime`: The minimum time of the day (number). It is used to determine the start time of the day.
+- `dayEndTime`: The maximum time of the day (number). It is used to determine the end time of the day.
+- `timeSlots`: An array of time slots. Each slot is an object with the following properties:
+  - `name`: The name of the time slot (string).
+  - `startTime`: The start time of the time slot (number). It is used to determine the start time of the slot.
+- `weekLength`: The length of the week (number). It is used to determine the number of days in the week.
+- `weekendStartDay`: The start day of the weekend (number). It is used to determine the weekend days.
+- `getDayName`: A function that returns the name of the day based on the week day number (number). It is used to determine the name of the day.
+
+```ts title="main.ts"
+timeTracker.initialize({
+    defaultTimeSpent: 1,
+    dayStartTime: 0,
+    dayEndTime: 24,
+    timeSlots: [
+        { name: "Morning", startTime: 5 },
+        { name: "Afternoon", startTime: 12 },
+        { name: "Evening", startTime: 18 },
+        { name: "Night", startTime: 22 },
+    ],
+    getDayName: (weekDayNumber: number) => {
+        const weekDaysNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        return weekDaysNames[weekDayNumber];
+    },
+    weekendStartDay: 6,
+    weekLength: 7,
+});
+```
+
+## Get
+
+To get a current `time`, use the `timeTracker.currentTime` property. It returns the current time as a number.
+
+```typescript
+import { timeTracker } from "@drincs/nqtr";
+
+const currentTime: number = timeTracker.currentTime;
+```
+
+To get a current `date`, use the `timeTracker.currentDate` property. It returns the current date as a number.
+
+```typescript
+import { timeTracker } from "@drincs/nqtr";
+
+const currentDate: number = timeTracker.currentDate;
+```
+
+## Set
+
+To set a specific `time`, use the `timeTracker.currentTime` property. It accepts a number representing the time to set.
+
+```typescript
+import { timeTracker } from "@drincs/nqtr";
+
+timeTracker.currentTime = 12; // Set time to 12
+```
+
+To set a specific `date`, use the `timeTracker.currentDate` property. It accepts a number representing the date to set.
+
+```typescript
+import { timeTracker } from "@drincs/nqtr";
+
+timeTracker.currentDate = 5; // Set date to 5
+```
+
+## Increment
+
+`timeTracker` has some functions to increment the time and date with some additional logic.
+
+To increment the current `time` by a specific amount, use the `increaseTime` method. In case that the new time exceeds the `dayEndTime`, it will automatically increment the date and reset the time to the `dayStartTime` plus the overflow time.
+This function has the following parameters:
+
+- `delta`: The amount of time to increment (number). If not provided, it defaults to the `defaultTimeSpent` value.
+
+```typescript
+import { timeTracker } from "@drincs/nqtr";
+
+timeTracker.increaseTime(2);
+```
+
+To increment the current `date` by a specific amount, use the `increaseDate` method. This function has the following parameters:
+
+- `delta`: The number of days to increase (number). If not provided, it defaults to 1.
+- `time`: The time of the new day (number). If not provided, it defaults to the `dayStartTime`.
+
+```typescript
+import { timeTracker } from "@drincs/nqtr";
+
+timeTracker.increaseDate(1, 8); // Increment date by 1 and set time to 8
+```
+
+## Is weekend
+
+To check if the current day is a weekend, use the `timeTracker.isWeekend` property. It returns a boolean indicating whether the current day is a weekend.
+
+```ts tab="Example"
+import { timeTracker } from "@drincs/nqtr";
+
+const isWeekend: boolean = timeTracker.isWeekend;
+```
+
+```ts tab="main.ts"
+timeTracker.initialize({
+    defaultTimeSpent: 1,
+    dayStartTime: 0,
+    dayEndTime: 24,
+    timeSlots: [
+        { name: "Morning", startTime: 5 },
+        { name: "Afternoon", startTime: 12 },
+        { name: "Evening", startTime: 18 },
+        { name: "Night", startTime: 22 },
+    ],
+    getDayName: (weekDayNumber: number) => {
+        const weekDaysNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        return weekDaysNames[weekDayNumber];
+    },
+    weekendStartDay: 6, // [!code focus]
+    weekLength: 7, // [!code focus]
+});
+```
+
+## FAQ
+
+<Accordions>
+
+<Accordion title="Image that changes based on the time period" id="image-time-period">
+
+You can create a class that manages the image based on the current time slot. The class can have properties for each time slot and a method to get the current image based on the time slot.
+
+For example:
+
+```ts tab="models/TimeSlotsImage.ts"
+import { timeTracker } from "@drincs/nqtr";
+
+export default class TimeSlotsImage {
+    constructor(data: { morning: string; afternoon: string; evening: string; night: string } | string) {
+        if (typeof data === "string") {
+            this.morning = data;
+            this.afternoon = data;
+            this.evening = data;
+            this.night = data;
+            return;
+        }
+        this.morning = data.morning;
+        this.afternoon = data.afternoon;
+        this.evening = data.evening;
+        this.night = data.night;
+    }
+    get src(): string {
+        if (timeTracker.currentTimeSlot === 0) {
+            return this.morning;
+        } else if (timeTracker.currentTimeSlot === 2) {
+            return this.evening;
+        } else if (timeTracker.currentTimeSlot === 3) {
+            return this.night;
+        }
+        return this.afternoon;
+    }
+    morning: string;
+    afternoon: string;
+    evening: string;
+    night: string;
+}
+```
+
+```ts tab="main.ts"
+timeTracker.initialize({
+    defaultTimeSpent: 1,
+    dayStartTime: 0,
+    dayEndTime: 24,
+    timeSlots: [ // [!code focus]
+        { name: "Morning", startTime: 5 }, // [!code focus]
+        { name: "Afternoon", startTime: 12 }, // [!code focus]
+        { name: "Evening", startTime: 18 }, // [!code focus]
+        { name: "Night", startTime: 22 }, // [!code focus]
+    ], // [!code focus]
+    getDayName: (weekDayNumber: number) => {
+        const weekDaysNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        return weekDaysNames[weekDayNumber];
+    },
+    weekendStartDay: 6,
+    weekLength: 7,
+});
+```
+
+</Accordion>
+
+</Accordions>
