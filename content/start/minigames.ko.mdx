@@ -1,0 +1,391 @@
+---
+title: Minigames
+description: Guide to integrating minigames into Pixi’VN, including best practices, lifecycle management, and example implementations using PixiJS and React.
+---
+
+import { SnakeExample } from "@/components/minigame-examples";
+
+<Callout type="info" name="AI">
+
+You can use the button above to create your own minigame, with AI.
+
+</Callout>
+
+The beauty of an interactive story compared to normal text is that you can take a break and interact with minigames related to the story.
+
+<Callout type="info">
+
+Minigames in visual novels are typically launched during the narrative. To switch between the narrative UI and the minigame UI, it is recommended to link the minigame to a route (e.g., "/minigame") and navigate to it from the story. More information is available <DynamicLink href="/start/interface-navigate">here</DynamicLink>.
+
+</Callout>
+
+Here are some tips:
+
+- Use components provided by the `@drincs/pixi-vn/pixi.js` submodule, such as `Graphics`, `Sprite`, and `Text`, to create your minigame. `@drincs/pixi-vn/pixi.js` is the PixiJS import, so you can use all its features.
+- Use <DynamicLink href="/start/interface#adding-pixijs-ui-layers">PixiJS Layers</DynamicLink> to create a separate layer for your minigame. This allows you to manage the minigame independently from the main visual novel interface.
+- Use the `Ticker` class to manage the game loop and update the game state.
+- Use `window.addEventListener` to handle user input, such as keyboard or mouse events.
+- Use HTML elements to create the UI, such as buttons, score displays, and game over messages.
+- If you use PixiJS Layers, remember that Pixi’VN does not save the state of layers, so you need to manage the minigame state yourself. Save the state in a variable and restore it when the minigame restarts.
+
+<Callout type="info" name="Template">
+
+`useMinigame` is a custom hook that helps you manage the lifecycle of a minigame, including starting, updating, and cleaning up resources. It is present in all templates.
+
+</Callout>
+
+For example:
+
+```tsx tab="React"
+import { Layer } from "@drincs/pixi-vn";
+import { Graphics, Ticker } from "@drincs/pixi-vn/pixi.js";
+import { useCallback, useMemo, useRef, useState } from "react";
+import useMinigame from "../hooks/useMinigame";
+
+export default function MiniGame() {
+    const ticker = useMemo(() => new Ticker(), []);
+    const [displayScore, setDisplayScore] = useState(0);
+    const [gameOver, setGameOver] = useState(false);
+
+    const onKeyDown = useCallback((e: KeyboardEvent) => {
+        // Handle key down events for game controls
+    }, []);
+
+    const game = useCallback(
+        (layer: Layer) => {
+            const endGame = () => {
+                ticker.stop();
+                setGameOver(true);
+            };
+
+            window.addEventListener("keydown", onKeyDown);
+
+            ticker.add(({ deltaMS }) => {
+                // Update game logic here
+            });
+            ticker.start();
+        },
+        [ticker] // They must not be changed during the game otherwise the game will restart
+    );
+
+    const options = useMemo(
+        () => ({
+            onExit() {
+                ticker.stop();
+                ticker.destroy();
+                window.removeEventListener("keydown", onKeyDown);
+            },
+        }),
+        [ticker, onKeyDown] // They must not be changed during the game otherwise the game will restart
+    );
+
+    const { loading } = useMinigame(game, options);
+
+    return (
+        <>
+            <div
+                style={{
+                    position: "absolute",
+                    top: 10,
+                    left: 10,
+                    color: "white",
+                    fontSize: "24px",
+                    background: "rgba(0,0,0,0.5)",
+                    padding: "5px 10px",
+                    borderRadius: "5px",
+                }}
+            >
+                Score: {displayScore}
+            </div>
+
+            {gameOver && (
+                <div
+                    style={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        color: "red",
+                        fontSize: "48px",
+                        background: "rgba(0,0,0,0.7)",
+                        padding: "20px 40px",
+                        borderRadius: "10px",
+                    }}
+                >
+                    GAME OVER
+                </div>
+            )}
+        </>
+    );
+}
+```
+
+```ts tab="hooks/useMinigame.ts"
+import { canvas, Layer } from "@drincs/pixi-vn";
+import { Container } from "@drincs/pixi-vn/pixi.js";
+import { useEffect, useRef } from "react";
+import { CANVAS_MINIGAME_LAYER_NAME } from "../constans";
+
+export default function useMinigame(
+    game: (layer: Layer) => void,
+    props?: {
+        onStart?: () => Promise<void>;
+        onExit?: (layer: Layer) => void;
+    }
+) {
+    const loading = useRef(false);
+
+    // Keep latest callbacks in refs to avoid effect restarts
+    const startRef = useRef<() => Promise<void>>(props?.onStart ?? (async () => {}));
+    const exitRef = useRef<(layer: Layer) => void>(props?.onExit);
+
+    // Update refs when props change, without changing effect identity
+    useEffect(() => {
+        startRef.current = props?.onStart ?? (async () => {});
+    }, [props?.onStart]);
+
+    useEffect(() => {
+        exitRef.current = props?.onExit;
+    }, [props?.onExit]);
+
+    useEffect(() => {
+        // Create the layer and start the game once
+        loading.current = true;
+        const layer = canvas.addLayer(CANVAS_MINIGAME_LAYER_NAME, new Container());
+        if (!layer) {
+            console.error("Failed to create UI layer for minigame");
+            return;
+        }
+
+        let cancelled = false;
+
+        startRef.current().then(() => {
+            if (cancelled) return;
+            loading.current = false;
+            game(layer);
+        });
+
+        return () => {
+            cancelled = true;
+            canvas.removeLayer(CANVAS_MINIGAME_LAYER_NAME);
+            if (exitRef.current) {
+                exitRef.current(layer);
+            }
+        };
+    }, [game]);
+
+    return { loading };
+}
+```
+
+Here are some examples:
+
+<Callout type="info">
+
+The Pixi’VN Team welcomes new proposals and contributions to make this library even more complete. You can create a [discussion](https://github.com/DRincs-Productions/pixi-vn/discussions/categories/show-and-tell) to share or propose your minigame implementations.
+
+</Callout>
+
+<Accordions>
+
+<Accordion title="Snake" id="snake">
+
+```tsx tab="React"
+import { canvas, Layer } from "@drincs/pixi-vn";
+import { Graphics, Ticker } from "@drincs/pixi-vn/pixi.js";
+import { useCallback, useMemo, useRef, useState } from "react";
+import useMinigame from "../hooks/useMinigame";
+
+export default function SnakeGame() {
+    const ticker = useMemo(() => new Ticker(), []);
+    const [displayScore, setDisplayScore] = useState(0);
+    const [gameOver, setGameOver] = useState(false);
+
+    const directionRef = useRef({ x: 1, y: 0 });
+    const setDirection = (x: number, y: number) => {
+        if ((x !== 0 && directionRef.current.x === 0) || (y !== 0 && directionRef.current.y === 0)) {
+            directionRef.current = { x, y };
+        }
+    };
+
+    const onKeyDown = useCallback((e: KeyboardEvent) => {
+        if (e.key === "ArrowUp" && directionRef.current.y === 0) setDirection(0, -1);
+        else if (e.key === "ArrowDown" && directionRef.current.y === 0) setDirection(0, 1);
+        else if (e.key === "ArrowLeft" && directionRef.current.x === 0) setDirection(-1, 0);
+        else if (e.key === "ArrowRight" && directionRef.current.x === 0) setDirection(1, 0);
+    }, []);
+
+    const game = useCallback(
+        (layer: Layer) => {
+            const gridSize = 20;
+            const snake: Graphics[] = [];
+            const moveInterval = 150;
+            let elapsed = 0;
+
+            const head = new Graphics();
+            head.rect(0, 0, gridSize, gridSize).fill({ color: 0x00ff00 });
+            head.x = 200;
+            head.y = 200;
+            layer.addChild(head);
+            snake.push(head);
+
+            const apple = new Graphics();
+            apple.rect(0, 0, gridSize, gridSize).fill({ color: 0xff0000 });
+            layer.addChild(apple);
+
+            const placeApple = () => {
+                const cols = Math.floor(canvas.width / gridSize);
+                const rows = Math.floor(canvas.height / gridSize);
+                apple.x = Math.floor(Math.random() * cols) * gridSize;
+                apple.y = Math.floor(Math.random() * rows) * gridSize;
+
+                // Avoid placing the apple on top of the snake
+                for (let segment of snake) {
+                    if (segment.x === apple.x && segment.y === apple.y) {
+                        placeApple();
+                        return;
+                    }
+                }
+            };
+            placeApple();
+
+            const endGame = () => {
+                ticker.stop();
+                setGameOver(true);
+            };
+
+            window.addEventListener("keydown", onKeyDown);
+
+            ticker.add(({ deltaMS }) => {
+                elapsed += deltaMS;
+                if (elapsed < moveInterval) return;
+                elapsed = 0;
+
+                // Move the body
+                for (let i = snake.length - 1; i > 0; i--) {
+                    snake[i].position.set(snake[i - 1].x, snake[i - 1].y);
+                }
+
+                // Move the head
+                head.x += directionRef.current.x * gridSize;
+                head.y += directionRef.current.y * gridSize;
+
+                // Collision with the wall
+                if (head.x < 0 || head.y < 0 || head.x >= canvas.width || head.y >= canvas.height) {
+                    endGame();
+                    return;
+                }
+
+                // Collision with the body
+                for (let i = 1; i < snake.length; i++) {
+                    if (head.x === snake[i].x && head.y === snake[i].y) {
+                        endGame();
+                        return;
+                    }
+                }
+
+                // Eat the apple
+                if (head.x === apple.x && head.y === apple.y) {
+                    const newSegment = new Graphics();
+                    newSegment.rect(0, 0, gridSize, gridSize).fill({ color: 0x00ff00 });
+                    newSegment.position.set(head.x, head.y);
+                    layer.addChild(newSegment);
+                    snake.push(newSegment);
+
+                    setDisplayScore((prev) => prev + 1);
+                    placeApple();
+                }
+            });
+
+            ticker.start();
+        },
+        [ticker]
+    );
+
+    const options = useMemo(
+        () => ({
+            onExit() {
+                ticker.stop();
+                ticker.destroy();
+                window.removeEventListener("keydown", onKeyDown);
+            },
+        }),
+        [ticker, onKeyDown]
+    );
+
+    useMinigame(game, options);
+
+    return (
+        <>
+            <div
+                style={{
+                    position: "absolute",
+                    top: 10,
+                    left: 10,
+                    color: "white",
+                    fontSize: "24px",
+                    background: "rgba(0,0,0,0.5)",
+                    padding: "5px 10px",
+                    borderRadius: "5px",
+                }}
+            >
+                Score: {displayScore}
+            </div>
+
+            {gameOver && (
+                <div
+                    style={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        color: "red",
+                        fontSize: "48px",
+                        background: "rgba(0,0,0,0.7)",
+                        padding: "20px 40px",
+                        borderRadius: "10px",
+                    }}
+                >
+                    GAME OVER
+                </div>
+            )}
+
+            {/* Direction buttons */}
+            <div
+                style={{
+                    position: "absolute",
+                    bottom: 0,
+                    right: 0,
+                    textAlign: "center",
+                    pointerEvents: "auto",
+                }}
+            >
+                <div style={{ marginTop: "10px" }}>
+                    <button style={{ fontSize: "30px" }} onClick={() => setDirection(0, -1)}>
+                        ⬆️
+                    </button>
+                </div>
+                <div>
+                    <button style={{ fontSize: "30px", marginRight: "50px" }} onClick={() => setDirection(-1, 0)}>
+                        ⬅️
+                    </button>
+                    <button style={{ fontSize: "30px" }} onClick={() => setDirection(1, 0)}>
+                        ➡️
+                    </button>
+                </div>
+                <div>
+                    <button style={{ fontSize: "30px" }} onClick={() => setDirection(0, 1)}>
+                        ⬇️
+                    </button>
+                </div>
+            </div>
+        </>
+    );
+}
+```
+
+<SnakeExample />
+
+</Accordion>
+
+</Accordions>
