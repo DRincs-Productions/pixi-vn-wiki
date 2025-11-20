@@ -1,4 +1,3 @@
-import * as AccordionsComponents from "@/components/mdx/accordion";
 import { Image } from "@/components/mdx/img";
 import { Mermaid } from "@/components/mdx/mermaid";
 import * as TabsComponents from "fumadocs-ui/components/tabs";
@@ -13,7 +12,6 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
         ...(icons as unknown as MDXComponents),
         ...defaultMdxComponents,
         ...TabsComponents,
-        ...AccordionsComponents,
         img: Image,
         Sandbox: ({
             entry,
