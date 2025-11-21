@@ -572,7 +572,7 @@ export async function homeLinks(lang?: string): Promise<LinkItemType[]> {
             ],
         },
         {
-            text: t("getting-started"),
+            text: t("start"),
             url: `${preUrl}/start`,
         },
         {
