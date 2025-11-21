@@ -41,6 +41,10 @@ const locales = [
         name: "Français",
         locale: "fr",
     },
+    {
+        name: "한국어",
+        locale: "ko",
+    },
 ];
 
 export default function Provider({ children, locale }: { children: ReactNode; locale?: string }) {
