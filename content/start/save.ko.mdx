@@ -1,0 +1,477 @@
+---
+title: Save and load
+description: This page explains how to implement saving and loading game progress in Pixi’VN, including file export, IndexedDB usage, and auto-save strategies for browser games.
+---
+
+<Callout type="info" title="Templates">
+
+The `createGameSave` and `loadSave` functions are already implemented in all templates. See `utils/save-utility.ts`.
+
+</Callout>
+
+Saving and loading is a core feature that lets players save their progress and continue later. This is essential for visual novels, allowing players to resume the story from where they left off.
+
+## Create
+
+To create a save, use `Game.exportGameState()`. This returns an object with the game data, which you can store in a file or database.
+
+Tip: Add extra info to your save file, such as the save name, creation date, and a screenshot of the current game state.
+
+<Callout type="info">
+
+To generate an image, use `canvas.extractImage()`. This returns a base64 string of the current canvas, which you can use as a screenshot.
+
+</Callout>
+
+For example:
+
+```ts tab="utils/save-utility.ts"
+import { Game } from "@drincs/pixi-vn";
+import GameSaveData from "../models/GameSaveData";
+
+export function createGameSave(options?: { image?: string; name?: string }): GameSaveData {
+    const { image, name = "" } = options || {};
+    return {
+        saveData: Game.exportGameState(),
+        gameVersion: __APP_VERSION__,
+        date: new Date(),
+        name: name,
+        image: image,
+    };
+}
+```
+
+```ts tab="models/GameSaveData.ts"
+import { GameState } from "@drincs/pixi-vn";
+
+export default interface GameSaveData {
+    saveData: GameState;
+    gameVersion: string;
+    date: Date;
+    name: string;
+    image?: string;
+}
+```
+
+## Load
+
+To load a save, use `Game.restoreGameState`. This function has the following parameters:
+
+- `saveData`: The save data object to restore the game state.
+- `navigate`: <DynamicLink href="/start/interface-navigate">A function to navigate to a specific route</DynamicLink> after loading the save.
+
+For example:
+
+```ts tab="utils/save-utility.ts"
+import { Game } from "@drincs/pixi-vn";
+import { LOADING_ROUTE } from "../constans";
+import GameSaveData from "../models/GameSaveData";
+
+export async function loadSave(saveData: GameSaveData, navigate: NavigateFunction) {
+    await navigate(LOADING_ROUTE);
+    await Game.restoreGameState(saveData.saveData, navigate);
+}
+```
+
+## FAQ
+
+<Accordions>
+
+<Accordion title="Export the save to a file" id="generate-file">
+
+You can export the save data to a file for backup or sharing.
+
+For example:
+
+```ts tab="utils/save-utility.ts"
+import { NavigateFunction } from "react-router-dom";
+import { LOADING_ROUTE, NARRATION_ROUTE } from "../constans";
+import GameSaveData from "../models/GameSaveData";
+
+const SAVE_FILE_EXTENSION = "json";
+
+export function downloadGameSave(data: GameSaveData = createGameSave()) {
+    const jsonString = JSON.stringify(data);
+    // download the save data as a JSON file
+    const blob = new Blob([jsonString], { type: "application/json" });
+    // download the file
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${__APP_NAME__}-${__APP_VERSION__}-${data.name} ${data.date.toISOString()}.${SAVE_FILE_EXTENSION}`;
+    a.click();
+}
+
+export function loadGameSaveFromFile(navigate: NavigateFunction, afterLoad?: () => void) {
+    // load the save data from a JSON file
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = `application/${SAVE_FILE_EXTENSION}`;
+    input.onchange = (e) => {
+        const file = (e.target as HTMLInputElement).files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const jsonString = e.target?.result as string;
+                navigate(LOADING_ROUTE);
+                let data: GameSaveData = JSON.parse(jsonString);
+                // load the save data from the JSON string
+                loadSave(data, navigate)
+                    .then(() => {
+                        afterLoad && afterLoad();
+                    })
+                    .catch(() => {
+                        navigate(NARRATION_ROUTE);
+                    });
+            };
+            reader.readAsText(file);
+        }
+    };
+    input.click();
+}
+```
+
+</Accordion>
+
+<Accordion title="IndexedDB" id="indexeddb">
+
+**What is IndexedDB?** IndexedDB is a browser API for storing large amounts of structured data, including files/blobs. It lets you save and load game states efficiently.
+
+For example:
+
+```ts tab="utils/save-utility.ts"
+import { canvas } from "@drincs/pixi-vn";
+import GameSaveData from "../models/GameSaveData";
+import {
+    deleteRowFromIndexDB,
+    getLastRowFromIndexDB,
+    getListFromIndexDB,
+    getRowFromIndexDB,
+    INDEXED_DB_SAVE_TABLE,
+    putRowIntoIndexDB,
+} from "./indexedDB-utility";
+
+export async function saveGameToIndexDB(
+    info: Partial<GameSaveData> & { id?: number } = {},
+    data = createGameSave()
+): Promise<GameSaveData & { id: number }> {
+    const { image = await canvas.extractImage(), ...rest } = info;
+    let item = {
+        ...data,
+        image: image,
+        ...rest,
+    };
+    if (item.id === undefined) {
+        let lastSave = await getLastRowFromIndexDB<GameSaveData & { id: number }>(INDEXED_DB_SAVE_TABLE);
+        if (lastSave) {
+            item.id = lastSave.id + 1;
+        } else {
+            item.id = 0;
+        }
+    }
+    await putRowIntoIndexDB(INDEXED_DB_SAVE_TABLE, item);
+    if (item.id) {
+        return item as GameSaveData & { id: number };
+    }
+    return (await getLastSaveFromIndexDB()) as GameSaveData & { id: number };
+}
+
+export async function getSaveFromIndexDB(id: number): Promise<(GameSaveData & { id: number }) | null> {
+    return await getRowFromIndexDB(INDEXED_DB_SAVE_TABLE, id);
+}
+
+export async function getLastSaveFromIndexDB(): Promise<(GameSaveData & { id: number }) | null> {
+    let list = await getListFromIndexDB<GameSaveData & { id: number }>(INDEXED_DB_SAVE_TABLE, {
+        pagination: { limit: 1, offset: 0 },
+        order: { field: "date", direction: "prev" },
+    });
+    if (list.length > 0) {
+        return list[0];
+    }
+    return null;
+}
+
+export async function deleteSaveFromIndexDB(id: number): Promise<void> {
+    return await deleteRowFromIndexDB(INDEXED_DB_SAVE_TABLE, id);
+}
+```
+
+```ts tab="utils/indexedDB-utility.ts"
+const INDEXED_DB_VERSION = 2; // Increment this version number when you change the database schema
+const INDEXED_DB_NAME = "game_db";
+export const INDEXED_DB_SAVE_TABLE = "saves";
+
+export function initializeIndexedDB(): Promise<void> {
+    return new Promise((resolve, reject) => {
+        let request = indexedDB.open(INDEXED_DB_NAME, INDEXED_DB_VERSION);
+        // check if the object store exists
+        request.onupgradeneeded = function (_event) {
+            let db = request.result;
+            if (!db.objectStoreNames.contains(INDEXED_DB_SAVE_TABLE)) {
+                // create the object store
+                let objectStore = db.createObjectStore(INDEXED_DB_SAVE_TABLE, { keyPath: "id", autoIncrement: true });
+                objectStore.createIndex("id", "id", { unique: true });
+                objectStore.createIndex("date", "date", { unique: false });
+                objectStore.createIndex("name", "name", { unique: false });
+                objectStore.createIndex("gameVersion", "gameVersion", { unique: false });
+            }
+        };
+
+        request.onsuccess = function (_event) {
+            resolve();
+        };
+        request.onerror = function (event) {
+            console.error("Error opening indexDB", event);
+            reject();
+        };
+    });
+}
+
+export async function putRowIntoIndexDB<T extends {}>(tableName: string, data: T): Promise<T> {
+    return new Promise((resolve, reject) => {
+        let request = indexedDB.open(INDEXED_DB_NAME);
+
+        request.onsuccess = function (_event) {
+            let db = request.result;
+            // run onupgradeneeded before onsuccess
+            if (!db.objectStoreNames.contains(tableName)) {
+                console.error("Object store rescues does not exist");
+                reject();
+            }
+            let transaction = db.transaction([tableName], "readwrite");
+            let objectStore = transaction.objectStore(tableName);
+            let setRequest = objectStore.put(data);
+            setRequest.onsuccess = function (_event) {
+                resolve(data);
+            };
+            setRequest.onerror = function (event) {
+                console.error("Error adding save data to indexDB", event);
+                reject();
+            };
+        };
+        request.onerror = function (event) {
+            console.error("Error adding save data to indexDB", event);
+        };
+    });
+}
+
+export async function getRowFromIndexDB<T extends {}>(tableName: string, id: any): Promise<T | null> {
+    return new Promise((resolve, reject) => {
+        let request = indexedDB.open(INDEXED_DB_NAME);
+        request.onsuccess = function (_event) {
+            let db = request.result;
+            // check if the object store exists
+            if (!db.objectStoreNames.contains(tableName)) {
+                resolve(null);
+                return;
+            }
+            let transaction = db.transaction([tableName], "readwrite");
+            let objectStore = transaction.objectStore(tableName);
+            let getRequest = objectStore.get(id);
+            getRequest.onsuccess = function (_event) {
+                resolve(getRequest.result);
+            };
+            getRequest.onerror = function (event) {
+                console.error("Error getting save data from indexDB", event);
+                reject();
+            };
+        };
+        request.onerror = function (event) {
+            console.error("Error opening indexDB", event);
+            reject();
+        };
+    });
+}
+
+export async function getLastRowFromIndexDB<T extends {}>(tableName: string): Promise<T | null> {
+    return new Promise((resolve, reject) => {
+        let request = indexedDB.open(INDEXED_DB_NAME);
+        request.onsuccess = function (_event) {
+            let db = request.result;
+            // check if the object store exists
+            if (!db.objectStoreNames.contains(tableName)) {
+                resolve(null);
+                return;
+            }
+            let transaction = db.transaction([tableName], "readwrite");
+            let objectStore = transaction.objectStore(tableName);
+            let getRequest = objectStore.openCursor(null, "prev");
+            getRequest.onsuccess = function (_event) {
+                let cursor = getRequest.result;
+                if (cursor) {
+                    resolve(cursor.value);
+                } else {
+                    resolve(null);
+                }
+            };
+            getRequest.onerror = function (event) {
+                console.error("Error getting save data from indexDB", event);
+                reject();
+            };
+        };
+        request.onerror = function (event) {
+            console.error("Error opening indexDB", event);
+            reject();
+        };
+    });
+}
+
+export async function deleteRowFromIndexDB(tableName: string, id: any): Promise<void> {
+    return new Promise((resolve, reject) => {
+        let request = indexedDB.open(INDEXED_DB_NAME);
+        request.onsuccess = function (_event) {
+            let db = request.result;
+            let transaction = db.transaction([tableName], "readwrite");
+            let objectStore = transaction.objectStore(tableName);
+            let deleteRequest = objectStore.delete(id);
+            deleteRequest.onsuccess = function (_event) {
+                resolve();
+            };
+            deleteRequest.onerror = function (event) {
+                console.error("Error deleting save data from indexDB", event);
+                reject();
+            };
+        };
+        request.onerror = function (event) {
+            console.error("Error deleting save data from indexDB", event);
+        };
+    });
+}
+
+export async function getListFromIndexDB<T extends {}>(
+    tableName: string,
+    options: {
+        order?: { field: keyof T; direction: IDBCursorDirection };
+        pagination?: { offset: number; limit: number };
+    } = {}
+): Promise<T[]> {
+    return new Promise((resolve, reject) => {
+        let request = indexedDB.open(INDEXED_DB_NAME);
+        request.onsuccess = function (_event) {
+            let db = request.result;
+            // check if the object store exists
+            if (!db.objectStoreNames.contains(tableName)) {
+                resolve([]);
+                return;
+            }
+            let transaction = db.transaction([tableName], "readwrite");
+            let objectStore = transaction.objectStore(tableName);
+            let getRequest = options.order
+                ? objectStore.index(options.order.field as string).openCursor(null, options.order.direction)
+                : objectStore.openCursor();
+            let results: T[] = [];
+            let counter = 0;
+            let limit = options.pagination?.limit ?? Infinity;
+            let offset = options.pagination?.offset ?? 0;
+            let advanced = false;
+            getRequest.onsuccess = (_event) => {
+                let cursor = getRequest.result;
+                if (cursor) {
+                    if (counter >= offset) {
+                        results.push(cursor.value);
+                        if (results.length >= limit) {
+                            resolve(results);
+                            advanced = true;
+                        }
+                    }
+                    counter++;
+                    cursor.continue();
+                } else {
+                    if (!advanced) {
+                        resolve(results);
+                    }
+                }
+            };
+            getRequest.onerror = function (event) {
+                console.error("Error getting save data from indexDB", event);
+                reject();
+            };
+        };
+        request.onerror = function (event) {
+            console.error("Error opening indexDB", event);
+            reject();
+        };
+    });
+}
+```
+
+</Accordion>
+
+<Accordion title="Save to prevent accidental closure" id="prevent-accidental-closure">
+
+Since it is possible to create browser games, the problem of losing the last state of the game after accidentally closing the browser is common.
+
+To prevent this, you can generate a timely save when closing the game and automatically load it when you reopen it.
+
+For example:
+
+```ts tab="hooks/useClosePageDetector.ts"
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { LOADING_ROUTE, MAIN_MENU_ROUTE } from "../constans";
+import { addRefreshSave, loadRefreshSave } from "../utils/save-utility";
+import useEventListener from "./useKeyDetector";
+import useMyNavigate from "./useMyNavigate";
+import { INTERFACE_DATA_USE_QUEY_KEY } from "./useQueryInterface";
+
+export default function useClosePageDetector() {
+    const navigate = useMyNavigate();
+    const queryClient = useQueryClient();
+    const location = useLocation();
+
+    useEventListener({
+        type: "beforeunload",
+        listener: async () => {
+            if (location.pathname === MAIN_MENU_ROUTE || location.pathname === LOADING_ROUTE) {
+                return;
+            }
+            await addRefreshSave();
+        },
+    });
+
+    useEffect(() => {
+        loadRefreshSave(navigate).then(() =>
+            queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] })
+        );
+    }, []);
+
+    return null;
+}
+```
+
+```ts tab="utils/save-utility.ts"
+import { NavigateFunction } from "react-router-dom";
+import { LOADING_ROUTE, MAIN_MENU_ROUTE, REFRESH_SAVE_LOCAL_STORAGE_KEY } from "../constans";
+import GameSaveData from "../models/GameSaveData";
+
+export async function addRefreshSave() {
+    const data = createGameSave();
+    let jsonString = JSON.stringify(data);
+    if (jsonString) {
+        localStorage.setItem(REFRESH_SAVE_LOCAL_STORAGE_KEY, jsonString);
+    }
+}
+
+export async function loadRefreshSave(navigate: NavigateFunction) {
+    const jsonString = localStorage.getItem(REFRESH_SAVE_LOCAL_STORAGE_KEY);
+    if (jsonString) {
+        navigate(LOADING_ROUTE);
+        let data: GameSaveData = JSON.parse(jsonString);
+
+        return loadSave(data, navigate)
+            .then(() => {
+                localStorage.removeItem(REFRESH_SAVE_LOCAL_STORAGE_KEY);
+            })
+            .catch(() => {
+                navigate(MAIN_MENU_ROUTE);
+            });
+    } else {
+        navigate(MAIN_MENU_ROUTE);
+    }
+}
+```
+
+</Accordion>
+
+</Accordions>

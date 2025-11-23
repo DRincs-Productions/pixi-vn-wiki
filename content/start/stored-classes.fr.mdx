@@ -1,0 +1,44 @@
+---
+title: Storage classes
+description: |
+  How to create classes whose properties are stored using `StoredClassModel`.
+---
+
+Pixi’VN provides an abstract class `StoredClassModel` that you can use to create classes with properties saved in the game storage.
+
+The constructor of the `StoredClassModel` class has two parameters:
+
+- `categoryId`: The id of the category. For example, if you are storing a character class, you can use `"characters"` as `categoryId`. All instances of that class will be stored in the `"characters"` category.
+- `id`: The unique id of the instance within its category.
+
+```typescript
+const MY_CLASS_CATEGORY = "__MyClass__"
+
+export default class MyClass extends StoredClassModel {
+    constructor(id: string, props: IMyClass) {
+        super(MY_CLASS_CATEGORY, id)
+        // ...
+    }
+}
+```
+
+## Storate properties
+
+To stored class properties in the game storage use the `getStorageProperty` and `setStorageProperty` helpers.
+
+For example, to stored a `test` property, add a getter and setter:
+
+```typescript
+export default class MyClass extends StoredClassModel {
+    constructor(id: string, props: IMyClass) {
+        // ...
+    }
+
+    get test(): string {
+        return this.getStorageProperty<string>("test") || ""
+    }
+    set test(value: string) {
+        this.setStorageProperty<string>("test", value)
+    }
+}
+```

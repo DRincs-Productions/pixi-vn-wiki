@@ -1,0 +1,223 @@
+---
+title: FAQ
+description: Frequently Asked Questions about Pixi'VN
+---
+
+Some common questions you may encounter.
+
+<Accordions>
+
+<Accordion title="How enable the decorators in TypeScript?" id="how-enable-the-decorators-in-typescript">
+
+In Pixi’VN, in some advanced features, it is necessary to use decorators.
+
+By default, TypeScript does not enable the use of decorators. To enable the use of decorators in TypeScript, you must add the following configuration to the `tsconfig.json` file:
+
+```json title="tsconfig.json"
+{
+    "compilerOptions": {
+        // ...
+        "experimentalDecorators": true
+    }
+}
+```
+
+</Accordion>
+
+<Accordion title="Skip step and Auto Forward" id="skip-step-and-auto-forward">
+
+In a visual novel, it's very useful to be able to "skip," accelerate, or skip multiple `steps`, or automatically advance to the next `step` after a period of time.
+
+The suggested implementation for this feature is to create the following function:
+
+```tsx title="React example"
+const [skipEnabled, setSkipEnabled] = useState<boolean>(false)
+const [autoEnabled, setAutoEnabled] = useState<boolean>(false)
+const [recheckSkipAuto, setRecheckSkipAuto] = useState<number>(0)
+
+useEffect(() => {
+    if (skipEnabled || autoEnabled) {
+        nextOnClick()
+    }
+}, [skipEnabled, recheckSkipAuto, autoEnabled])
+
+function nextOnClick() {
+    narration.continue({})
+        .then(() => {
+            if (skipEnabled) {
+                setTimeout(() => {
+                    setRecheckSkipAuto((p) => p + 1)
+                }, 0.2);
+            }
+            else if (autoEnabled) {
+                setTimeout(() => {
+                    setRecheckSkipAuto((p) => p + 1)
+                }, 2);
+            }
+        })
+        .catch((e) => {
+            // ...
+        })
+}
+
+// Button for enable skip and auto ...
+```
+
+</Accordion>
+
+<Accordion title="How to link a character to an image to add to the canvas?" id="how-to-link-a-character-to-an-image">
+
+Linking a character to an image to add to the canvas is a common feature in visual novels. It can be useful for example for showing the character's expression.
+
+To do this, you just need to create a <DynamicLink href="/start/character#custom-class">custom character</DynamicLink> or modify the existing one (it is already present in the templates).
+I recommend adding an array of strings containing the links/aliases of the images that make up the character (body, head...), and using an <DynamicLink href="/start/canvas-image-container">ImageContainer</DynamicLink> when you need to display the character.
+
+For example:
+
+```ts tab="models/Character.ts"
+import { CharacterInterface, CharacterStoredClass } from "@drincs/pixi-vn";
+
+export class Character extends CharacterStoredClass implements CharacterInterface {
+    constructor(id: string | { id: string, emotion: string }, props: CharacterProps) {
+        // ...
+        this.images = props.images ?? []
+    }
+    
+    // other properties...
+
+    readonly images: string[] = []
+}
+
+interface CharacterProps {
+    // other properties...
+    images?: string[] // is optional
+}
+```
+
+```ts tab="pixi-vn.d.ts"
+declare module '@drincs/pixi-vn' {
+    interface CharacterInterface {
+        // other properties...
+        readonly images: string[]
+    }
+}
+```
+
+Now you can use the `images` property to show the character on the canvas.
+
+```ts tab="labels/startLabel.ts"
+import { newLabel, showImageContainer } from "@drincs/pixi-vn";
+import { alice } from "../values/characters";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await showImageContainer("alice", alice.images, { // [!code focus]
+            xAlign: 0.5, // [!code focus]
+            yAlign: 1, // [!code focus]
+        }); // [!code focus]
+    },
+]);
+```
+
+```ts tab="values/characters.ts"
+import { Character } from "../models/Character";
+
+const alice = new Character('alice_id', {
+    // other properties...
+    images: ['alice-body', 'alice-head', 'alice-eyes']
+})
+RegisteredCharacters.add(alice)
+```
+
+**If you are using _ink_**:
+
+You can create a <DynamicLink href="/ink/hashtag">custom hashtag script</DynamicLink> to use this feature.
+For example you can add a script with the following syntax and convert it to a <DynamicLink href="/ink/canvas#show-a-image-container-in-ink">show imagecontainer script</DynamicLink>:
+
+```ink title="ink"
+# show character {character id} {parameters}
+```
+
+```ts tab="utils/ink-utility.ts"
+import { onInkHashtagScript } from '@drincs/pixi-vn-ink'
+import { getCharacterById } from '@drincs/pixi-vn'
+
+onInkHashtagScript((script, convertListStringToObj) => {
+    // ...
+    if (script[0] === "show" && script[1] === "character" && script.length > 2) {
+        let character = getCharacterById(script[2])
+        if (character) {
+            console.error('Character not found')
+            return false 
+        }
+        let characterId: string = script[2].split('@')[0] // to remove the emotion
+        let oltherProps: string = script.slice(3).join(' ')
+        let images = character.images.join(' ')
+        let newScript: string = `show imagecontainer ${characterId} [${images}] ${oltherProps}`
+        return newScript
+    }
+    return false
+})
+```
+
+```ink tab="ink/start.ink"
+=== start ===
+# show character alice xAlign 0.8 yAlign 1 with dissolve
+-> DONE
+```
+
+</Accordion>
+
+<Accordion title="Keyboard shortcuts (hotkeys)" id="hotkeys">
+
+I suggest the following hotkeys:
+
+- `Space` or `Enter`: Continue the dialogue.
+- `Keep Space` or `Keep Enter`: Skip the dialogue.
+- `Alt` + `S`: Quick save the game.
+- `Alt` + `L`: Quick load the game.
+- `Alt` + `H`: Open the history modal.
+- `Esc`: Open the settings modal.
+- `Alt` + `V`: Hide the UI (Show only the canvas).
+
+Why not use the `Ctrl` key? Because it is used by the browser for many shortcuts, and it is better to avoid conflicts.
+
+</Accordion>
+
+<Accordion title="Attaching events to keymaps to allow hotkeys" id="keymaps-events">
+
+To attach events to keymaps is useful to allow hotkeys.
+
+For example:
+
+```ts title="EventInterceptor.ts"
+import { useEffect } from 'react';
+
+export default function EventInterceptor() {
+    useEffect(() => {
+        window.addEventListener('keydown', onkeydown);
+
+        return () => {
+            window.removeEventListener('keydown', onkeydown);
+        };
+    }, []);
+
+    function onkeydown(event: KeyboardEvent) {
+        if (event.code == 'Enter' || event.code == 'Space') {
+            nextStep((prev) => prev + 1)
+        }
+        else if (event.code == 'Escape') {
+            setOpenSettings((prev) => !prev)
+        }
+        else if (event.code == 'KeyH') {
+            setOpenHistory((prev) => !prev)
+        }
+    }
+
+    return null
+}
+```
+
+</Accordion>
+
+</Accordions>
