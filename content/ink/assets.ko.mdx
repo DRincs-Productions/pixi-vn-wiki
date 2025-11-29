@@ -1,40 +1,40 @@
 ---
-title: Assets management in ink
+title: 잉크 자산 관리
 ---
 
-As explained in more detail <DynamicLink href="/start/assets-management">here</DynamicLink>, it is recommended to initialize the asset matrix at project start and load the assets and think about when the assets should be loaded.
+자세한 내용은 <DynamicLink href="/start/assets-management">여기</DynamicLink>에서 설명된 바와 같이, 프로젝트 시작 시 자산 매트릭스를 초기화하고 자산을 로드하며 자산이 언제 로드되어야 하는지 고려하는 것이 좋습니다.
 
-On ink you have less control than in Javascript/Typescript over how and when to load assets. On **_ink_**, pixi-vn provides a single function that <DynamicLink href="/start/assets-management#load-assets-before-a-label-starts">load assets before a label starts</DynamicLink>. To do this, you need to use the following syntax:
+Ink에서는 자바스크립트/타입스크립트에 비해 자산을 로드하는 방식과 시점을 제어하는 데 있어 제약이 더 많습니다. **_ink_**에서 pixi-vn은 <DynamicLink href="/start/assets-management#load-assets-before-a-label-starts">레이블이 시작되기 전에 에셋을 로드</DynamicLink>하는 단일 함수를 제공합니다. To do this, you need to use the following syntax:
 
-`#` + `[operation]` + `[assets or bundle]` + `[list of URL/path of the image]`
+`#` + `[작업]` + `[자산 또는 번들]` + `[이미지 URL/경로 목록]`
 
-- `#`: It is a special character used by **_ink_ syntax** for use a special script.
-- `[operation]`: It is the operation that you want to do. The available operations are:
-  - `load`: It loads with await the assets or bundle (`Assets.load` or `Assets.loadBundle`).
-  - `lazyload`: It loads the assets or bundle in the background (`Assets.backgroundLoad` or `Assets.backgroundLoadBundle`).
-- `[assets or bundle]`: It is the type of asset that you want to load. The available types are:
-  - `assets`: It loads the assets.
-  - `bundle`: It loads the bundle.
-- `[list of URL/path of the image]`: It is the list of URL/path of the images that you want to show. If you have initialized the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink>, you can use the alias of the texture. Keep in mind that to write `https://` in **_ink_** you must use `https:\/\/` because the `//` is considered a comment in **_ink_**.
+- `#`: 특수 스크립트를 사용하기 위해 **_ink_ 구문**에서 사용하는 특수 문자입니다.
+- `[작업]`: 수행하려는 작업입니다. 사용 가능한 작업은 다음과 같습니다:
+  - 'load': 대기 자산이나 번들('Asset.load' 또는 'Asset.loadBundle')과 함께 로드됩니다.
+  - 'lazyload': 백그라운드에서 자산이나 번들을 로드합니다('Assets.backgroundLoad' 또는 'Assets.backgroundLoadBundle').
+- `[자산 또는 번들]`: 로드하려는 자산의 유형입니다. 사용 가능한 유형은 다음과 같습니다:
+  - `assets`: 자산을 로드합니다.
+  - `bundle`: 번들을 로드합니다.
+- `[이미지 URL/경로 목록]`: 표시하고자 하는 이미지의 URL/경로 목록입니다. <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">자산 매트릭스</DynamicLink>를 초기화한 경우, 텍스처의 별칭을 사용할 수 있습니다. `https://`를 **_ink_**로 작성하려면 `https:\/\/`를 사용해야 합니다. **_ink_**에서는 `//`가 주석으로 간주되기 때문입니다.
 
 ```ink tab="ink/start.ink"
-=== start ===
-# lazyload bundle main_menu start
-# load assets eggHead flowerTop my_video
-# show image eggHead
-# show image flowerTop
-# show video my_video
-# pause
--> start
+=== 시작 ===
+# lazyload 번들 main_menu 시작
+# 자산 egghead flowerTop my_video 로드하기
+# 이미지 eggHead 표시
+# 이미지 flowerTop 표시
+# 비디오 표시 my_video
+# 일시 중지
+-시작
 ```
 
 ```ts tab="utils/defineAssets.ts"
 import { Assets } from "@drincs/pixi-vn"
 
 export async function defineAssets() {
-    // manifest
+    // 매니페스트
     Assets.init({ manifest });
-    // single asset
+    // 단일 애셋
     Assets.add({ alias: 'eggHead', src: "https://pixijs.com/assets/eggHead.png" })
     Assets.add({ alias: 'flowerTop', src: "https://pixijs.com/assets/flowerTop.png" })
     Assets.add({ alias: "my_video", src: "https://pixijs.com/assets/video.mp4" });
@@ -45,12 +45,12 @@ export async function defineAssets() {
 import { AssetsManifest } from "@drincs/pixi-vn";
 
 /**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ * 게임에서 사용되는 에셋을 위한 매니페스트.
+ * 매니페스트에 대한 자세한 내용은 여기에서 확인할 수 있습니다: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
  */
 const manifest: AssetsManifest = {
     bundles: [
-        // screens
+        // 화면
         {
             name: "main_menu",
             assets: [
@@ -60,7 +60,7 @@ const manifest: AssetsManifest = {
                 },
             ],
         },
-        // labels
+        // 레이블
         {
             name: "start",
             assets: [
