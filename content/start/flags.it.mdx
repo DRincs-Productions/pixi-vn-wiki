@@ -1,0 +1,72 @@
+---
+title: Gestione dei flag
+description: Spiega come utilizzare i flag booleani in Pixi'VN per controllare il flusso del gioco.
+---
+
+Pixi’VN fornisce funzioni per gestire i "flags di gioco". I flag di gioco sono valori booleani utilizzati per controllare il flusso del gioco o per memorizzare altri valori booleani nella memoria del gioco.
+
+Questa meccanica ha un impatto molto minore sulle dimensioni del salvataggio rispetto al <DynamicLink href="/start/storage#set-a-variable-in-the-game-storage">salvataggio di un valore booleano nell'archivio di gioco</DynamicLink>.
+
+## Imposta
+
+Per impostare un flag, utilizzare la funzione `storage.setFlag`.
+Questa funzione ha i seguenti parametri:
+
+- `name`: Il nome della bandiera.
+- `value`: Il valore della bandiera.
+
+```typescript
+import { storage } from '@drincs/pixi-vn'
+
+storage.setFlag('flag1', true)
+```
+
+## Ottieni
+
+Per ottenere un flag, utilizzare la funzione `storage.getFlag`.
+Questa funzione ha i seguenti parametri:
+
+- `name`: Il nome della bandiera.
+
+```typescript
+import { storage } from '@drincs/pixi-vn'
+
+const flag1 = storage.getFlag('flag1')
+```
+
+## Possibilità di sviluppo
+
+### Collega un flag a una proprietà booleana di una classe
+
+Se si crea una classe con una proprietà booleana, è possibile collegarla a un flag. In questo modo, la proprietà rifletterà automaticamente il valore del flag.
+
+Ciò può semplificare il codice e renderlo più leggibile.
+
+```typescript
+import { storage } from '@drincs/pixi-vn'
+
+class ButtonClass {
+    private _disabled: boolean | string
+    get disabled() {
+        if (typeof this._disabled === 'string') {
+            return storage.getFlag(this._disabled)
+        }
+        return this._disabled
+    }
+    set disabled(value: boolean | string) {
+        this._disabled = value
+    }
+}
+```
+
+```typescript
+// Button to go to school
+const goToSchoolButton = new ButtonClass()
+goToSchoolButton.disabled = 'weekend'
+
+function afterNewDay() {
+    storage.setFlag('weekend', 
+        // Check if it is Saturday or Sunday
+    )
+}
+```
