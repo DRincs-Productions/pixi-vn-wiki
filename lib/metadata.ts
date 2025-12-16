@@ -7,7 +7,7 @@ export function createMetadata(props: Metadata = {}): Metadata {
 
         ...override
     } = props;
-    const images = "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fog_image.png?alt=media";
+    const images = "/og_image.png";
     return {
         ...override,
         openGraph: {
