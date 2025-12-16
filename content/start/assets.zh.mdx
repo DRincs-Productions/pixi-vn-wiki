@@ -65,7 +65,7 @@ You can save your assets as you like, with complete freedom. If you plan to save
 You can use Github to host your assets. You can use the raw link of the file in your project. The link will be in the following format:
 
 ```text
-https://github.com/[repository]/raw/refs/heads/main/[file path]
+https://raw.githubusercontent.com/[repository]/raw/refs/heads/main/[file path]
 ```
 
 - **Price**: Completely free.
@@ -88,7 +88,7 @@ Image hosting is a service that allows you to upload images. There are many site
 
 </Accordion>
 
-<Accordion title="Cloud_storage" id="Cloud-storage">
+<Accordion title="cloud_storage" id="Cloud-storage">
 
 Cloud storage is a service that allows you to upload files online.
 
@@ -107,6 +107,92 @@ Here is a list of some of the most popular cloud storage services:
 - ![aws-text](/aws.svg) **Amazon S3** is a cloud service. Compared to its competitors, it has many settings, but it may be more difficult to use. There is a payment plan to use Amazon S3. You can find more information [here](https://aws.amazon.com/s3/pricing/).
 - ![supabase-text](/supabase.svg) **Supabase** is an open-source Firebase alternative. Supabase has two plans: Free and Pay as you go. You can find more information [here](https://supabase.io/pricing).
 - **Convex** is a cloud service that allows you to store and serve user-generated content, such as photos, videos, or other files. Convex has two plans: Free and Pay as you go. You can find more information [here](https://www.convex.dev/pricing).
+
+## 其他叙事功能
+
+<Accordions>
+
+<Accordion title="caching_assets" id="caching-assets">
+
+<Callout title="Templates" type="info">
+
+In all templates, a service worker is included to cache external assets (images, sounds, videos, etc.) used in your game. This improves performance and reduces loading times for returning players.
+
+</Callout>
+
+For assets hosted online, the service worker caches them locally on the user's device after the first download. This means that subsequent requests for the same asset will be served from the cache, resulting in faster load times and reduced data usage.
+
+```js tab="public/service-worker.js"
+const CACHE_NAME = "external-assets-v1";
+const MAX_AGE_DAYS = 7;
+const MAX_AGE_MS = MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
+
+const lastUsed = {};
+
+// The fetch event handler below implements a simple cache-for-host strategy:
+// - It only attempts to cache responses for requests whose hostname is explicitly allowed in the switch below.
+// - Cached entries are kept in the "external-assets-v1" cache and tracked via `lastUsed` timestamps.
+// - If a cached response exists and is not older than MAX_AGE_DAYS, it is served directly.
+// - Otherwise the service worker fetches from the network, caches the successful response, and returns it.
+// - If the network fails and a cached response exists, the cached response is returned as a fallback.
+// NOTE: Add the hostnames of external asset providers you want to cache (CDNs, raw asset hosts, etc.) in the switch below.
+self.addEventListener("fetch", (event) => {
+    const request = event.request;
+    const url = new URL(request.url);
+
+    switch (url.hostname) {
+        case "raw.githubusercontent.com":
+            break;
+        // Add asset hostnames here to enable caching for them.
+        // Examples:
+        // case "raw.githubusercontent.com":
+        // case "cdn.jsdelivr.net":
+        // case "your.cdn.domain.com":
+        //     break;
+        default:
+            return;
+    }
+
+    event.respondWith(
+        (async () => {
+            const cache = await caches.open(CACHE_NAME);
+            const now = Date.now();
+            const cached = await cache.match(request);
+
+            if (cached && lastUsed[url.href]) {
+                const age = now - lastUsed[url.href];
+                if (age < MAX_AGE_MS) {
+                    lastUsed[url.href] = now;
+                    return cached;
+                }
+                await cache.delete(request);
+                delete lastUsed[url.href];
+            }
+
+            try {
+                const response = await fetch(request);
+                if (response && (response.type === "opaque" || response.status < 400)) {
+                    await cache.put(request, response.clone());
+                    lastUsed[url.href] = now;
+                }
+                return response;
+            } catch (err) {
+                if (cached) return cached;
+                return fetch(request);
+            }
+        })()
+    );
+});
+```
+
+```ts tab="main.ts"
+// Register service worker
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js").catch(console.error);
+    });
+}
+```
 
 </Accordion>
 
