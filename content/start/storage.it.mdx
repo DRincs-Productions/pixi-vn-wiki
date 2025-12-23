@@ -1,0 +1,113 @@
+---
+title: Storage
+description: Come archiviare, recuperare e gestire variabili persistenti e temporanee in Pixi'VN, inclusa l'integrazione Keyv.
+---
+
+**Che cos'è lo storage di gioco?** Lo storage di gioco è un luogo in cui è possibile salvare le variabili che si desidera conservare tra le sessioni di gioco.
+
+È fondamentale capire che se le variabili non vengono salvate nella memoria del gioco, il motore non sarà in grado di gestirle quando <DynamicLink href="/start/save#load">carichi un salvataggio</DynamicLink> o quando <DynamicLink href="/start/labels-flow#go-back">torni indietro</DynamicLink>.
+
+Inoltre, nell'archivio del gioco è possibile salvare qualsiasi tipo di variabile, eccetto `class` e `function` (perché non possono essere convertite in JSON), come: `string`, `number`, `boolean`, `object`, `array`, ecc. Se si desidera salvare i "flag" (booleani), si consiglia di utilizzare la <DynamicLink href="/start/flags">funzionalità flag</DynamicLink>, un sistema di gestione dei flag ad altissime prestazioni.
+
+<Callout title="ink" type="info">
+
+È possibile utilizzare questo metodo con la sintassi _ink_. Scopri di più <DynamicLink href="/ink/storage">qui</DynamicLink>.
+
+</Callout>
+
+## Imposta
+
+Per impostare una variabile nell'archivio di gioco, utilizzare `storage.set`. Questa funzione ha i seguenti parametri:
+
+- `name`: Il nome della variabile da impostare.
+- `value`: Il valore della variabile da impostare.
+
+```typescript
+import { storage } from '@drincs/pixi-vn'
+
+storage.set("myVariable", 42);
+```
+
+## Ottieni
+
+Per ottenere una variabile dall'archivio del gioco, utilizzare `storage.get`. Questa funzione ha i seguenti parametri:
+
+- `name`: Il nome della variabile da ottenere.
+
+```typescript
+import { storage } from '@drincs/pixi-vn'
+
+const myVariable = storage.get("myVariable");
+```
+
+## Rimuovi
+
+Per rimuovere una variabile dall'archivio del gioco, utilizzare `storage.remove`. Questa funzione ha i seguenti parametri:
+
+- `name`: Il nome della variabile da rimuovere.
+
+```typescript
+import { storage } from '@drincs/pixi-vn'
+
+storage.remove("myVariable");
+```
+
+## Altre funzionalità
+
+<Accordions>
+
+<Accordion title="system_variables" id="system-variables">
+
+Nello storage di gioco sono presenti alcune variabili di sistema utilizzate dal motore di gioco. Tutte le variabili di sistema iniziano con il prefisso `___`.
+Si prega quindi di evitare di utilizzare questo prefisso nelle tue variabili.
+
+È possibile ottenere tutte le chiavi delle variabili di sistema dalla costante `SYSTEM_RESERVED_STORAGE_KEYS`.
+
+![keyv-h2](/keyv.svg)
+
+</Accordion>
+
+<Accordion title="keyv" id="keyv">
+
+L'intero sistema di archiviazione è stato sviluppato utilizzando `Map`, un oggetto JavaScript nativo, in modo da poter utilizzare Keyv per interagire con l'archiviazione dei giochi.
+
+**Cos'è Keyv?** Keyv è un semplice sistema di archiviazione chiave-valore. È un sistema molto semplice da usare e molto popolare nella comunità Node.js. Keyv può essere combinato con altre librerie, come [Cacheable](https://cacheable.org/) (Caching per Node.js basata su Keyv). Per saperne di più, visita il [sito web Keyv](https://keyv.org/).
+
+**Come utilizzare Keyv con Pixi'VN?** È possibile utilizzare Keyv con Pixi'VN creando una nuova istanza di Keyv e passando lo storage come parametro.
+
+```typescript
+import { storage } from '@drincs/pixi-vn'
+import Keyv from 'keyv';
+
+const keyvStorage = new Keyv({ store: storage.storage });
+
+keyvStorage.get<string>("myValue").then((value) => {
+    console.log(value);
+});
+```
+
+</Accordion>
+
+<Accordion title="default_storage_variables" id="default-storage-variables">
+
+È possibile impostare il valore iniziale delle variabili di archiviazione.
+
+Queste variabili avranno le seguenti caratteristiche:
+
+- Se vengono rimossi o impostati su undefined o null, il valore verrà automaticamente impostato sul valore predefinito (quindi non potranno mai essere undefined o null).
+- I valori predefiniti non verranno salvati nei salvataggi, quindi potrai modificarli da una versione all'altra senza problemi.
+
+È possibile impostare le variabili di archiviazione predefinite utilizzando l'oggetto `storage.default`.
+
+```typescript
+import { storage } from '@drincs/pixi-vn'
+
+storage.default = {
+    myVariable: 42,
+    anotherVariable: "Hello, world!"
+};
+```
+
+</Accordion>
+
+</Accordions>

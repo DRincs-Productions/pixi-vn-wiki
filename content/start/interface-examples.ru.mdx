@@ -1,0 +1,643 @@
+---
+title: UI screen examples
+---
+
+<Callout type="info" name="AI">
+
+You can use the button above to create your own AI UI screen.
+
+</Callout>
+
+<Callout type="info">
+
+All examples were created using basic HTML elements, you will need to replace them with UI components from your favorite library to improve the graphics.
+
+</Callout>
+
+<Accordions>
+
+<Accordion title="Narrative dialogue UI screen" id="narrative-dialogue">
+
+```tsx tab="React"
+import Markdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
+import { useQueryDialogue } from "../hooks/useQueryInterface";
+import ChoiceMenu from "./ChoiceMenu";
+
+export default function NarrationScreen() {
+    const { data: { text, character } = {} } = useQueryDialogue();
+
+    return (
+        <div
+            style={{
+                position: "absolute",
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+                width: "100%",
+            }}
+        >
+            <div style={{ flex: 1, minHeight: 0 }}>
+                {/* READ THIS: https://pixi-vn.web.app/start/choices.html#how-to-create-the-choice-menu-ui-screen */}
+                <ChoiceMenu />
+            </div>
+            {text && (
+                <div
+                    style={{
+                        flex: "0 0 auto",
+                        height: "30%",
+                        minHeight: 0,
+                        pointerEvents: "auto",
+                        backgroundColor: "white",
+                        display: "flex",
+                        flexDirection: "column",
+                        overflow: "hidden",
+                    }}
+                >
+                    {character && character.name && <b>{`${character?.name || ""} ${character?.surname || ""}`}</b>}
+                    <div
+                        style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            height: "100%",
+                            minHeight: 0,
+                            overflow: "hidden",
+                        }}
+                    >
+                        {character?.icon && (
+                            <img
+                                src={character?.icon}
+                                loading='lazy'
+                                alt=''
+                                style={{
+                                    maxWidth: "30%",
+                                    height: "auto",
+                                    objectFit: "contain",
+                                    display: "block",
+                                }}
+                            />
+                        )}
+                        <div style={{ flex: 1, minHeight: 0, overflow: "auto", height: "100%" }}>
+                            <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                                {text}
+                            </Markdown>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+```
+
+```ts tab="hooks/useQueryInterface.ts"
+import { CharacterBaseModel, narration } from "@drincs/pixi-vn";
+import { useQuery } from "@tanstack/react-query";
+
+export const INTERFACE_DATA_USE_QUEY_KEY = "interface_data_use_quey_key";
+
+const DIALOGUE_USE_QUEY_KEY = "dialogue_use_quey_key";
+export function useQueryDialogue() {
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, DIALOGUE_USE_QUEY_KEY],
+        queryFn: async ({ queryKey }) => {
+            let dialogue = narration.dialogue;
+            let text = dialogue?.text;
+            if (Array.isArray(text)) {
+                text = text.join(" ");
+            }
+            let character = dialogue?.character as string | CharacterBaseModel | undefined;
+            if (typeof character === "string") {
+                character = new CharacterBaseModel(character, {
+                    name: character,
+                });
+            }
+
+            return {
+                text,
+                character,
+            };
+        },
+    });
+}
+```
+
+</Accordion>
+
+<Accordion title="Choice menu UI screen" id="choice-menu">
+
+```tsx tab="React"
+import useNarrationFunctions from "../hooks/useNarrationFunctions";
+import { useQueryChoiceMenuOptions } from "../hooks/useQueryInterface";
+
+export default function ChoiceMenu() {
+    const { data: menu = [] } = useQueryChoiceMenuOptions();
+    const { selectChoice } = useNarrationFunctions();
+
+    return (
+        <div
+            style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                height: "100%",
+                overflow: "auto",
+                gap: "8px",
+                maxHeight: "100%",
+                margin: 0,
+                pointerEvents: menu?.length > 0 ? "auto" : "none",
+            }}
+        >
+            {menu?.map((item, index) => (
+                <button
+                    key={"choice-" + index}
+                    style={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                    }}
+                    onClick={() => selectChoice(item)}
+                >
+                    {item.text}
+                </button>
+            ))}
+        </div>
+    );
+}
+```
+
+```ts tab="hooks/useQueryInterface.ts"
+import { CharacterBaseModel, narration } from "@drincs/pixi-vn";
+import { useQuery } from "@tanstack/react-query";
+
+export const INTERFACE_DATA_USE_QUEY_KEY = "interface_data_use_quey_key";
+
+const CHOICE_MENU_OPTIONS_USE_QUEY_KEY = "choice_menu_options_use_quey_key";
+export function useQueryChoiceMenuOptions() {
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, CHOICE_MENU_OPTIONS_USE_QUEY_KEY],
+        queryFn: async () =>
+            narration.choices?.map((option) => ({
+                ...option,
+                text: typeof option.text === "string" ? option.text : option.text.join(" "),
+            })) || [],
+    });
+}
+```
+
+```ts tab="hooks/useNarrationFunctions.ts"
+import { narration, StoredIndexedChoiceInterface } from "@drincs/pixi-vn";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
+import { INTERFACE_DATA_USE_QUEY_KEY } from "./useQueryInterface";
+
+export default function useNarrationFunctions() {
+    const queryClient = useQueryClient();
+    const gameProps = {};
+
+    const selectChoice = useCallback(
+        async (item: StoredIndexedChoiceInterface) => {
+        return narration
+            .selectChoice(item, gameProps)
+            .then(() => queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] }))
+            .catch((e) => console.error(e));
+        },
+        [gameProps, queryClient]
+    );
+
+    return {
+        selectChoice,
+    };
+}
+```
+
+</Accordion>
+
+<Accordion title="Go next button" id="go-next">
+
+```tsx tab="React"
+import { useState } from "react";
+import useNarrationFunctions from "../hooks/useNarrationFunctions";
+import { useQueryCanGoNext } from "../hooks/useQueryInterface";
+
+export default function NextButton() {
+    const { data: canGoNext = false } = useQueryCanGoNext();
+    const [loading, setLoading] = useState(false);
+    const { goNext } = useNarrationFunctions();
+
+    if (!canGoNext) {
+        return null;
+    }
+
+    return (
+        <button
+            onClick={() => {
+                setLoading(true);
+                goNext()
+                    .then(() => setLoading(false))
+                    .catch(() => setLoading(false));
+            }}
+            disabled={loading}
+            style={{
+                width: 40,
+                height: 20,
+                pointerEvents: "auto",
+            }}
+        >
+            Next
+        </button>
+    );
+}
+```
+
+```ts tab="hooks/useQueryInterface.ts"
+import { narration } from "@drincs/pixi-vn";
+import { useQuery } from "@tanstack/react-query";
+
+export const INTERFACE_DATA_USE_QUEY_KEY = "interface_data_use_quey_key";
+
+const CAN_GO_NEXT_USE_QUEY_KEY = "can_go_next_use_quey_key";
+export function useQueryCanGoNext() {
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, CAN_GO_NEXT_USE_QUEY_KEY],
+        queryFn: async () => narration.canGoNext && !narration.isRequiredInput,
+    });
+}
+```
+
+```ts tab="hooks/useNarrationFunctions.ts"
+import { narration } from "@drincs/pixi-vn";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
+import { INTERFACE_DATA_USE_QUEY_KEY } from "./useQueryInterface";
+
+export default function useNarrationFunctions() {
+    const queryClient = useQueryClient();
+    const gameProps = {};
+
+    const goNext = useCallback(async () => {
+        try {
+            if (!narration.canGoNext) {
+                return;
+            }
+            return narration
+                .continue(gameProps)
+                .then(() => queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] }))
+                .catch((e) => console.error(e));
+        } catch (e) {
+            console.error(e);
+            return;
+        }
+    }, [gameProps, queryClient]);
+
+    return {
+        goNext,
+    };
+}
+```
+
+</Accordion>
+
+<Accordion title="Go back buttonn" id="go-back">
+
+```tsx tab="React"
+import { useState } from "react";
+import useNarrationFunctions from "../hooks/useNarrationFunctions";
+import { useQueryCanGoBack } from "../hooks/useQueryInterface";
+
+export default function BackButton() {
+    const { data: canGoBack = false } = useQueryCanGoBack();
+    const [loading, setLoading] = useState(false);
+    const { goBack } = useNarrationFunctions();
+
+    if (!canGoBack) {
+        return null;
+    }
+
+    return (
+        <button
+            onClick={() => {
+                setLoading(true);
+                goBack()
+                    .then(() => setLoading(false))
+                    .catch(() => setLoading(false));
+            }}
+            disabled={loading}
+            style={{
+                width: 40,
+                height: 20,
+                pointerEvents: "auto",
+            }}
+        >
+            Back
+        </button>
+    );
+}
+```
+
+```ts tab="hooks/useQueryInterface.ts"
+import { stepHistory } from "@drincs/pixi-vn";
+import { useQuery } from "@tanstack/react-query";
+
+export const INTERFACE_DATA_USE_QUEY_KEY = "interface_data_use_quey_key";
+
+const CAN_GO_BACK_USE_QUEY_KEY = "can_go_back_use_quey_key";
+export function useQueryCanGoBack() {
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, CAN_GO_BACK_USE_QUEY_KEY],
+        queryFn: async () => stepHistory.canGoBack,
+    });
+}
+```
+
+```ts tab="hooks/useNarrationFunctions.ts"
+import { stepHistory } from "@drincs/pixi-vn";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
+import { INTERFACE_DATA_USE_QUEY_KEY } from "./useQueryInterface";
+
+export default function useNarrationFunctions() {
+    const queryClient = useQueryClient();
+    const gameProps = {};
+
+    const goBack = useCallback(async () => {
+        return stepHistory
+            .back((_path) => {
+                // TODO: navigate in the url path
+                // READ THIS: https://pixi-vn.web.app/start/interface.html#navigate-switch-between-ui-screens
+            })
+            .then(() => queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] }))
+            .catch((e) => console.error(e));
+    }, [gameProps, queryClient]);
+
+    return {
+        goBack,
+    };
+}
+```
+
+</Accordion>
+
+<Accordion title="Input prompt dialog UI" id="input-prompt">
+
+```tsx tab="React"
+import { narration } from "@drincs/pixi-vn";
+import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { INTERFACE_DATA_USE_QUEY_KEY, useQueryDialogue, useQueryInputValue } from "../../hooks/useQueryInterface";
+
+export default function TextInput() {
+    const { data: { text } = {} } = useQueryDialogue();
+    const {
+        data: { isRequired: open, currentValue } = {
+            currentValue: undefined,
+            isRequired: false,
+        },
+    } = useQueryInputValue<string | number>();
+    const [tempValue, setTempValue] = useState<string | number>();
+    const queryClient = useQueryClient();
+
+    return (
+        <dialog
+            open={open}
+            style={{
+                pointerEvents: "auto",
+            }}
+        >
+            <p>{text}</p>
+            {open && (
+                <input
+                    defaultValue={currentValue || ""}
+                    onChange={(e) => {
+                        if (e && e.target && "value" in e.target) {
+                            let value: any = e.target.value;
+                            if ("type" in e.target && e.target.type === "number" && "valueAsNumber" in e.target) {
+                                value = e.target.valueAsNumber;
+                            }
+                            setTempValue(value);
+                        }
+                    }}
+                />
+            )}
+            <button
+                onClick={() => {
+                    narration.inputValue = tempValue || currentValue;
+                    setTempValue(undefined);
+                    queryClient.invalidateQueries({
+                        queryKey: [INTERFACE_DATA_USE_QUEY_KEY],
+                    });
+                }}
+            >
+                Confirm
+            </button>
+        </dialog>
+    );
+}
+```
+
+```ts tab="hooks/useQueryInterface.ts"
+import { CharacterBaseModel, narration } from "@drincs/pixi-vn";
+import { useQuery } from "@tanstack/react-query";
+
+export const INTERFACE_DATA_USE_QUEY_KEY = "interface_data_use_quey_key";
+
+const INPUT_VALUE_USE_QUEY_KEY = "input_value_use_quey_key";
+export function useQueryInputValue<T>() {
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, INPUT_VALUE_USE_QUEY_KEY],
+        queryFn: async () => ({
+            isRequired: narration.isRequiredInput,
+            type: narration.inputType,
+            currentValue: narration.inputValue as T | undefined,
+        }),
+    });
+}
+
+const DIALOGUE_USE_QUEY_KEY = "dialogue_use_quey_key";
+export function useQueryDialogue() {
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, DIALOGUE_USE_QUEY_KEY],
+        queryFn: async ({ queryKey }) => {
+            let dialogue = narration.dialogue;
+            let text = dialogue?.text;
+            if (Array.isArray(text)) {
+                text = text.join(" ");
+            }
+            let character = dialogue?.character as string | CharacterBaseModel | undefined;
+            if (typeof character === "string") {
+                character = new CharacterBaseModel(character, {
+                    name: character,
+                });
+            }
+
+            return {
+                text,
+                character,
+            };
+        },
+    });
+}
+```
+
+</Accordion>
+
+<Accordion title="History UI screen" id="history">
+
+```tsx tab="React"
+import { Box, Stack } from "@mui/system";
+import React from "react";
+import { useQueryNarrativeHistory } from "../use_query/useQueryInterface";
+
+export default function HistoryScreen() {
+    const { data = [] } = useQueryNarrativeHistory();
+
+    return (
+        <dialog
+            open={true}
+            style={{
+                height: "80%",
+            }}
+        >
+            <Box
+                sx={{
+                    display: "flex",
+                    flex: 1,
+                    minHeight: 0,
+                    px: 2,
+                    py: 3,
+                    overflowY: "scroll",
+                    flexDirection: "column-reverse",
+                    pointerEvents: "auto",
+                    overflow: "auto",
+                    height: "80%",
+                }}
+            >
+                <Stack spacing={2} justifyContent="flex-end">
+                {data.map((data, index) => {
+                    return (
+                    <React.Fragment key={"history" + index}>
+                        <Stack direction="row" spacing={1.5}>
+                            <img
+                                src={data.icon}
+                                loading="lazy"
+                                alt=""
+                                style={{
+                                    verticalAlign: "middle",
+                                    maxWidth: "50px",
+                                    maxHeight: "50px",
+                                    borderRadius: "50%",
+                                }}
+                            />
+                            <Box sx={{ flex: 1 }}>
+                                {data.character && data.character}
+                                <div />
+                                {data.text}
+                            </Box>
+                        </Stack>
+                        <Stack direction="row" spacing={0.5}>
+                            <Box sx={{ flex: 1 }}>
+                                {data.choices &&
+                                data.choices.map((choice, index) => {
+                                    if (choice.hidden) {
+                                        return null;
+                                    }
+                                    if (choice.isResponse) {
+                                        return (
+                                            <div
+                                                key={"choices-success" + index}
+                                                style={{
+                                                    display: "inline-block",
+                                                    padding: "5px 5px",
+                                                    fontSize: "12px",
+                                                    borderRadius: "25px",
+                                                    backgroundColor: "#21ff3e",
+                                                }}
+                                            >
+                                                {choice.text}
+                                            </div>
+                                        );
+                                    }
+                                    return (
+                                        <div
+                                            key={"choices" + index}
+                                            style={{
+                                                display: "inline-block",
+                                                padding: "5px 5px",
+                                                fontSize: "12px",
+                                                borderRadius: "25px",
+                                                backgroundColor: "#bcfdff",
+                                            }}
+                                        >
+                                            {choice.text}
+                                        </div>
+                                    );
+                                })}
+                                {data.inputValue && (
+                                    <div
+                                        key={"choices-success" + index}
+                                        style={{
+                                            display: "inline-block",
+                                            padding: "5px 5px",
+                                            fontSize: "12px",
+                                            borderRadius: "25px",
+                                            backgroundColor: "#b0c2b2",
+                                        }}
+                                    >
+                                        {data.inputValue.toString()}
+                                    </div>
+                                )}
+                            </Box>
+                        </Stack>
+                    </React.Fragment>
+                    );
+                })}
+                </Stack>
+            </Box>
+        </dialog>
+    );
+}
+```
+
+```ts tab="hooks/useQueryInterface.ts"
+import {
+    CharacterBaseModel,
+    getCharacterById,
+    narration,
+} from "@drincs/pixi-vn";
+import { useQuery } from "@tanstack/react-query";
+
+export const INTERFACE_DATA_USE_QUEY_KEY = "interface_data_use_quey_key";
+
+const NARRATIVE_HISTORY_USE_QUEY_KEY = "narrative_history_use_quey_key";
+export function useQueryNarrativeHistory() {
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, NARRATIVE_HISTORY_USE_QUEY_KEY],
+        queryFn: () => {
+            return narration.narrativeHistory.map((step) => {
+                let character = step.dialoge?.character
+                    ? getCharacterById(step.dialoge?.character) ??
+                        new CharacterBaseModel(step.dialoge?.character, {
+                            name: step.dialoge?.character,
+                        })
+                    : undefined;
+                return {
+                    character: character?.name
+                        ? character.name +
+                        (character.surname ? " " + character.surname : "")
+                        : undefined,
+                    text: step.dialoge?.text || "",
+                    icon: character?.icon,
+                    choices: step.choices,
+                    inputValue: step.inputValue,
+                };
+            });
+        },
+    });
+}
+```
+
+</Accordion>
+
+</Accordions>
