@@ -16,7 +16,7 @@ export function ReactTemplate({
             template='react-ts'
             customSetup={{
                 dependencies: {
-                    "@drincs/pixi-vn": "^1.3.32",
+                    "@drincs/pixi-vn": "^1.4.0",
                     "@tanstack/react-query": "^5.85.2",
                     "react-markdown": "^8.0.0",
                     "rehype-raw": "^7.0.0",
@@ -568,10 +568,7 @@ export default function useNarrationFunctions() {
 
   const goBack = useCallback(async () => {
     return stepHistory
-      .back((_path) => {
-        // TODO: navigate in the url path
-        // READ THIS: https://pixi-vn.web.app/start/interface.html#navigate-switch-between-ui-screens
-      })
+      .back(gameProps)
       .then(() => queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] }))
       .catch((e) => console.error(e));
   }, [gameProps, queryClient]);
