@@ -459,53 +459,6 @@ export default manifest;`,
     );
 }
 
-export function SpecialPropertiesExample() {
-    return (
-        <ReactTemplate
-            files={{
-                "labels/startLabel.ts": `import { canvas, MoveTicker, newLabel, Repeat, showImage } from "@drincs/pixi-vn";
-
-export const startLabel = newLabel("start_label", [
-  async () => {
-    await showImage("alien");
-    canvas.addTickersSequence("alien", [
-      new MoveTicker({
-        destination: { x: 1, y: 0, type: "align" },
-        speedProgression: { type: "linear", amt: -1, limit: 20 },
-      }),
-      new MoveTicker({
-        destination: { x: 0, y: 0, type: "align" },
-        speedProgression: { type: "exponential", percentage: 0.05 },
-      }),
-      Repeat,
-    ]);
-  },
-]);`,
-                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
-
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
-  bundles: [
-    {
-      name: "start",
-      assets: [
-        {
-          alias: "alien",
-          src: "https://pixijs.com/assets/eggHead.png",
-        },
-      ],
-    },
-  ],
-};
-export default manifest;`,
-            }}
-        />
-    );
-}
-
 export function ShakeExample() {
     return (
         <ReactTemplate
@@ -566,7 +519,7 @@ export const startLabel = newLabel("start_label", [
   },
   () => {
     canvas.removeAllTickers();
-    let tickerId = canvas.addTicker("james", new MoveTicker({ destination: { x: 0, y: 1, type: "align" } }));
+    let tickerId = canvas.animate<ImageContainer>("james", { xAlign: 0, yAlign: 1 });
   },
 ]);`,
                 "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
