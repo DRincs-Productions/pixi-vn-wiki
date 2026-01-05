@@ -2,6 +2,38 @@
 title: Migration guide
 ---
 
+## Migration from v1.3.x to v1.4.0
+
+This document describes the changes that need to be made to your code to migrate from v1.3.x to v1.4.0.
+
+In this release, some functions for managing "navigation of the narrative" have been modified to allow for the easy implementation of rollback and rollforward. Specifically, it is now possible to execute multiple back and continue requests synchronously, and the system will internally queue them and calculate the delta to execute only the necessary processes. You can read more about this in the <DynamicLink href="/start/labels-flow#rollback-rollforward">Rollback and Rollforward</DynamicLink> section.
+
+For this reason it was necessary to modify the `stepHistory.back()` function and the `Game.init()` function. `stepHistory.back()` now requires a path navigation function rather than a `StepLabelProps` function. You can now define the path navigation function in `Game.init()`.
+
+```ts
+stepHistory.back((_path) => { // [!code --]
+    // TODO: navigate in the url path // [!code --]
+    // READ THIS: https://pixi-vn.web.app/start/interface.html#navigate-switch-between-ui-screens // [!code --]
+}) // [!code --]
+const gameProps = {}; // [!code ++]
+stepHistory.back(gameProps); // [!code ++]
+```
+
+```ts
+Game.init(body, {
+    height: 1080,
+    width: 1920,
+    backgroundColor: "#303030",
+    navigate: (_path) => { // [!code ++]
+        // TODO: navigate in the url path // [!code ++]
+    }, // [!code ++]
+}).then(() => {
+    // ...
+});
+```
+
+Some long-deprecated features have been removed in this release, including: `stepHistory.goBack`, `narration.goNext`, `PIXI`, `canvas.canvasWidth`, `canvas.canvasHeight`, `canvas.onEndOfTicker`, `FadeAlphaTicker`, `MoveTicker`, `RotateTicker`, `ZoomTicker`, `narration.canGoNext`, `narration.callLabel`, `narration.jumpLabel`, `narration.choiceMenuOptions`, `storage.startingStorage`, `storage.setVariable`, `storage.getVariable` and `storage.removeVariable`.
+
 ## Migration from v1.2.x to v1.3.0
 
 This document describes the changes that need to be made to your code to migrate from v1.2.x to v1.3.0.
