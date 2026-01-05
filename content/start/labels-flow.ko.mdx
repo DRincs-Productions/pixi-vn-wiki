@@ -229,7 +229,7 @@ if (stepHistory.canGoBack) {
 
 <Accordions>
 
-<Accordion title="Check if can go back" id="can-go-back">
+<Accordion title="can_go_back" id="can-go-back">
 
 You can use the `stepHistory.canGoBack` property to check if going back is possible.
 
@@ -251,7 +251,7 @@ function BackButton() {
 
 </Accordion>
 
-<Accordion title="Block the possibility of going back" id="block-the-possibility-of-going-back">
+<Accordion title="block_the_possibility_of_going_back" id="block-the-possibility-of-going-back">
 
 You can block the "go back" by calling `stepHistory.blockGoBack()`.
 
@@ -269,7 +269,7 @@ stepHistory.blockGoBack()
 
 <Accordions>
 
-<Accordion title="Close current label" id="close-current-label">
+<Accordion title="close_current_label" id="close-current-label">
 
 To close the current `label`, use the `narration.closeCurrentLabel()` function.
 
@@ -281,7 +281,7 @@ narration.closeCurrentLabel()
 
 </Accordion>
 
-<Accordion title="Close all labels" id="close-all-labels">
+<Accordion title="close_all_labels" id="close-all-labels">
 
 To close all `labels`, use the `narration.closeAllLabels()` function.\
 **If you call this function and do not call any `label` afterwards, the <DynamicLink href="/start/other-narrative-features#how-manage-the-end-of-the-game">game will end</DynamicLink>.**
@@ -295,3 +295,91 @@ narration.closeAllLabels()
 </Accordion>
 
 </Accordions>
+
+## 기타 기능
+
+<Accordions>
+
+<Accordion title="rollback_rollforward" id="rollback-rollforward">
+
+<Callout title="Templates" type="info">
+
+In all templates, this implementation is already included.
+
+</Callout>
+
+If you execute multiple `stepHistory.back()` and `narration.continue()` requests synchronously, the system will internally queue them and calculate the delta to execute only the necessary processes.
+
+So you can implement rollback and rollforward features using the `stepHistory.back()` and `narration.continue()` functions.
+
+```tsx title="hooks/useWheelActions.tsx"
+import { stepHistory, StepLabelProps } from "@drincs/pixi-vn";
+import { narration } from "@drincs/pixi-vn/narration";
+import { useQueryClient } from "@tanstack/react-query";
+import { throttle } from "es-toolkit";
+import { useCallback, useEffect, useRef } from "react";
+import useStepStore from "../stores/useStepStore";
+import useGameProps from "./useGameProps";
+import { INTERFACE_DATA_USE_QUEY_KEY } from "./useQueryInterface";
+
+export function useWheelActions({
+    throttleMs = 300,
+    minDelta = 20,
+}: {
+    throttleMs?: number;
+    minDelta?: number;
+} = {}) {
+    const pendingAsync = useRef(0);
+    const setLoading = useStepStore((state) => state.setLoading);
+    const queryClient = useQueryClient();
+    const gameProps = useGameProps();
+
+    const runAsync = async (fn: (props: StepLabelProps) => Promise<unknown>) => {
+        try {
+            pendingAsync.current += 1;
+            setLoading(pendingAsync.current > 0);
+            await fn(gameProps);
+        } finally {
+            pendingAsync.current -= 1;
+            setLoading(pendingAsync.current > 0);
+            if (pendingAsync.current === 0) {
+                queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] });
+            }
+        }
+    };
+
+    const handleWheel = useCallback(
+        throttle(async (event: WheelEvent) => {
+            // blocca lo scroll nativo
+            event.preventDefault();
+
+            const { deltaY } = event;
+
+            // ignora micro-movimenti del trackpad
+            if (Math.abs(deltaY) < minDelta) return;
+
+            if (deltaY < 0) {
+                // ⬆️ Scroll up
+                await runAsync(narration.continue.bind(narration));
+            }
+
+            if (deltaY > 0) {
+                // ⬇️ Scroll down
+                await runAsync(stepHistory.back.bind(stepHistory));
+            }
+        }, throttleMs),
+        [throttleMs, minDelta]
+    );
+
+    useEffect(() => {
+        window.addEventListener("wheel", handleWheel, { passive: false });
+
+        return () => {
+            window.removeEventListener("wheel", handleWheel);
+            handleWheel.cancel();
+        };
+    }, [handleWheel]);
+
+    return null;
+}
+```
