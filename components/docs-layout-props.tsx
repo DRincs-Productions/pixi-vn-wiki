@@ -485,6 +485,16 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
                         name: t("make-rpg"),
                         url: `${preUrl}/start/make-rpg`,
                     },
+                    {
+                        type: "page",
+                        name: t("make-ide"),
+                        url: `${preUrl}/start/make-ide`,
+                    },
+                    {
+                        type: "page",
+                        name: t("make-game-engine"),
+                        url: `${preUrl}/start/make-game-engine`,
+                    },
                 ],
             },
             {
@@ -564,6 +574,10 @@ export async function homeLinks(lang?: string): Promise<LinkItemType[]> {
                     url: `${preUrl}/start/make-rpg`,
                 },
                 {
+                    text: t("make-ide"),
+                    url: `${preUrl}/start/make-ide`,
+                },
+                {
                     text: t("make-game-engine"),
                     url: `${preUrl}/start/make-game-engine`,
                 },
@@ -620,6 +634,16 @@ export async function nqtrTree(lang?: string): Promise<DocsLayoutProps["tree"]> 
                         type: "page",
                         name: t("make-rpg"),
                         url: `${preUrl}/start/make-rpg`,
+                    },
+                    {
+                        type: "page",
+                        name: t("make-ide"),
+                        url: `${preUrl}/start/make-ide`,
+                    },
+                    {
+                        type: "page",
+                        name: t("make-game-engine"),
+                        url: `${preUrl}/start/make-game-engine`,
                     },
                 ],
             },
