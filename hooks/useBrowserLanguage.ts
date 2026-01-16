@@ -18,7 +18,9 @@ export function useBrowserLanguage() {
                 navigateToLocale(stored);
             }
         } else {
-            const ln = (navigator.language || navigator.languages?.[0] || "en").split("-")[0];
+            const userLang = navigator.language || navigator.languages?.[0];
+            if (!userLang) return;
+            const ln = userLang.split("-")[0];
             const lang = SUPPORTED_LANGS.includes(ln) ? ln : "en";
             localStorage.setItem("lang", lang);
             if (lang !== locale) {
