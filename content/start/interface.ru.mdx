@@ -1,0 +1,134 @@
+---
+title: User Interface (UI) with JavaScript Framework
+description: How to build and integrate UI screens in Pixi’VN using external JavaScript frameworks like React, Vue, and PixiJS.
+---
+
+**What is UI?** UI stands for User Interface. It refers to the visual elements and interactive components through which a user interacts with a digital device, application, or website. The UI includes everything that users interact with, such as buttons, menus, icons, text fields, and layout. The goal of UI design is to create an interface that is both aesthetically pleasing and functional, providing a seamless and intuitive experience for users.
+
+Pixi’VN does not provide built-in components to create the game UI. Instead, you should use external JavaScript frameworks to build your UI. This allows you to leverage systems such as React, Vue, etc., to create complex and high-performance **UI screens**.
+
+- <DynamicLink href="/start/interface-react">React</DynamicLink>
+- <DynamicLink href="/start/interface-vue">Vue</DynamicLink>
+- <DynamicLink href="/start/interface-pixijs">PixiJS</DynamicLink>
+
+Pixi’VN offers features to improve compatibility with other JavaScript frameworks:
+
+<Accordions>
+
+<Accordion title="adding_html_ui_layers" id="adding-html-ui-layers">
+
+**What is an HTML UI Layer?** An HTML UI Layer is an HTML element that is added above the PixiJS canvas and has the same dimensions as the canvas. This allows you to create a UI with a JavaScript framework such as React or Vue.
+
+To add an HTML UI Layer, you can use the `canvas.addHtmlLayer` function. Эта функция принимает следующие параметры:
+
+- `id`: A unique identifier (string). It is used to reference the layer (must be unique).
+- `element`: the HTML element to add as a layer.
+- `style`: An object with the style properties to apply to the layer. The default style is `{ position: "absolute", pointerEvents: "none" }`.
+
+For example:
+
+```ts tab="src/main.ts"
+const root = document.getElementById("root");
+if (!root) {
+    throw new Error("root element not found");
+}
+const htmlLayer = canvas.addHtmlLayer("ui", root, {
+    position: "absolute",
+    pointerEvents: "none"
+});
+```
+
+```html tab="index.html"
+<!doctype html>
+<html lang="en">
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
+```
+
+To get the HTML element of the layer, you can use the `canvas.getHtmlLayer` function. Эта функция принимает следующие параметры:
+
+- `id`: The id of the layer.
+
+To remove an HTML UI Layer, you can use the `canvas.removeHtmlLayer` function. Эта функция принимает следующие параметры:
+
+- `id`: The id of the layer.
+
+</Accordion>
+
+<Accordion title="how_to_enable_ui_interaction" id="how-to-enable-ui-interaction">
+
+By default, all HTML elements of the HTML UI Layers have the `pointer-events: none` style. This means that the HTML elements will not intercept any mouse or touch events, allowing the PixiJS canvas to receive all events. This is useful when you want to display an image or a video in the canvas and you don't want the UI to interfere with it.
+
+So you must set the `pointer-events: auto` style only for the conponent that you want to interact with the user.
+
+For example:
+
+```tsx tab="React"
+export default function NextButton() {
+    return (
+        <button
+            style={{
+                pointerEvents: "auto",
+            }}
+        >
+            Next
+        </button>
+    );
+}
+```
+
+```vue tab="Vue"
+<template>
+    <button style="pointer-events: auto;">
+        Next
+    </button>
+</template>
+```
+
+</Accordion>
+
+<Accordion title="adding_pixijs_ui_layers" id="adding-pixijs-ui-layers">
+
+**What is an PixiJS UI Layer?** It is PixiJS Container. Unlike the main Container dedicated only for Pixi’VN features:
+
+- The current state of the Ul will not be included in saves.
+- It has better performance. Pixi’VN will not do any checks on it.
+- You can't use Pixi'VN features.
+- Being a core PixiJS component, you can add all PixiJS compatible components.
+
+To add a PixiJS UI Layer, you can use the `canvas.addLayer` function. Эта функция принимает следующие параметры:
+
+- `label`: The PixiJS Container label, it must be unique.
+
+For example:
+
+```ts title="src/main.ts"
+const container = canvas.addLayer("ui");
+```
+
+To get the PixiJS Container of the layer, you can use the `canvas.getLayer` function. Эта функция принимает следующие параметры:
+
+- `label`: The PixiJS Container label.
+
+To remove a PixiJS UI Layer, you can use the `canvas.removeLayer` function. Эта функция принимает следующие параметры:
+
+- `label`: The PixiJS Container label.
+
+</Accordion>
+
+</Accordions>
+
+![Architecture](/arch.png)
+
+## Differences between the UI and the canvas
+
+As Pixi’VN was designed and conceived, the UI and the canvas are two distinct and independent elements. The UI is above the canvas and is used to create buttons, forms, etc. The canvas is used to display images, videos, etc.
+
+All information about the current state of the canvas is included in the save and it is possible to restore the state of a previous step. The current state of the UI will not be included in the saves. So you have to <DynamicLink href="/start/interface-connect-storage">manage it yourself by saving the information</DynamicLink> you need to <DynamicLink href="/start/storage">game storage</DynamicLink> or browser storage.
+
+In the canvas you can add components during each step. In the UI you can't do that, you can create several <DynamicLink href="/start/interface-connect-storage">"screens" and navigate between them</DynamicLink>.
+
+In the canvas you can only add Pixi’VN components. In the UI you can add any HTML/PixiJS component or use any UI component library, so you can create much more complex interfaces.
