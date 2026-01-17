@@ -25,6 +25,6 @@ export async function generateMetadata(props: { params: Promise<{ slug?: string[
             title: `Pixi'VN - ${page.data.title}`,
             description: page.data.description,
         },
-        { slug: params.slug ? params.slug.join("/") : "" },
+        { slug: params.slug ? ["ink", ...params.slug].join("/") : "" },
     );
 }

@@ -25,6 +25,6 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
             title: `Pixi'VN - ${page.data.title}`,
             description: page.data.description,
         },
-        { slug: slug ? slug.join("/") : "", lang },
+        { slug: slug ? ["ink", ...slug].join("/") : "", lang },
     );
 }
