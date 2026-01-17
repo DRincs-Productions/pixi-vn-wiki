@@ -13,5 +13,5 @@ export default function Page() {
 }
 
 export async function generateMetadata() {
-    return createMetadata();
+    return createMetadata({}, {});
 }

@@ -17,7 +17,7 @@ import { CreateAppAnimation, PreviewImages } from "./home.client";
 import { ItchLogo } from "./icons";
 
 const badgeVariants = cva(
-    "inline-flex size-7 items-center justify-center rounded-full bg-fd-primary font-medium text-fd-primary-foreground"
+    "inline-flex size-7 items-center justify-center rounded-full bg-fd-primary font-medium text-fd-primary-foreground",
 );
 
 export async function generateStaticParams() {
@@ -181,7 +181,7 @@ async function Hero() {
                                     size: "lg",
                                     variant: "outline",
                                     className: "rounded-full bg-fd-background",
-                                })
+                                }),
                             )}
                         >
                             {t("discord")}
@@ -195,7 +195,7 @@ async function Hero() {
                                     size: "lg",
                                     variant: "outline",
                                     className: "rounded-full bg-fd-background",
-                                })
+                                }),
                             )}
                         >
                             {t("open_demo")}
@@ -329,5 +329,5 @@ async function Contributing() {
 }
 
 export async function generateMetadata() {
-    return createMetadata();
+    return createMetadata({}, {});
 }

@@ -20,8 +20,11 @@ export async function generateMetadata(props: { params: Promise<{ slug?: string[
     const page = source.getPage(params.slug);
     if (!page) notFound();
 
-    return createMetadata({
-        title: `Pixi'VN - ${page.data.title}`,
-        description: page.data.description,
-    });
+    return createMetadata(
+        {
+            title: `Pixi'VN - ${page.data.title}`,
+            description: page.data.description,
+        },
+        { slug: params.slug ? params.slug.join("/") : "" }
+    );
 }
