@@ -11,6 +11,8 @@ export function createMetadata(props: Metadata, params: { lang?: string; slug?: 
     const slug = params.slug ? "/" + params.slug : "";
     const lang = params.lang ? "/" + params.lang : "";
     return {
+        title: title,
+        description: description,
         ...override,
         openGraph: {
             title: title ?? undefined,
