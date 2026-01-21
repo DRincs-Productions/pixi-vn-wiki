@@ -416,6 +416,7 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                     {
                         type: "folder",
                         name: "Website distribution",
+                        defaultOpen: true,
                         index: {
                             type: "page",
                             name: "Website distribution",
