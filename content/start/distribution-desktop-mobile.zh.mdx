@@ -30,7 +30,7 @@ The <DynamicLink href="/start#project-initialization">multi-device templates</Dy
 
 ```yml title=".github/workflows/tauri.yml"
 # https://tauri.app/distribute/pipelines/github/
-name: Tauri CI
+name: 'publish'
 
 on:
   push:
@@ -46,20 +46,14 @@ jobs:
       matrix:
         include:
           - platform: 'macos-latest' # for Arm based macs (M1 and above).
-            name: 'macOS Arm'
-            tauriScript: 'npm run tauri' # or yarn
             args: '--target aarch64-apple-darwin'
           - platform: 'macos-latest' # for Intel based macs.
-            name: 'macOS Intel'
-            tauriScript: 'npm run tauri' # or yarn
             args: '--target x86_64-apple-darwin'
           - platform: 'ubuntu-22.04'
-            name: 'Linux'
-            tauriScript: 'npm run tauri' # or yarn
+            args: ''
+          - platform: 'ubuntu-22.04-arm' # Only available in public repos.
             args: ''
           - platform: 'windows-latest'
-            name: 'Windows'
-            tauriScript: 'npm run tauri' # or yarn
             args: ''
 
     runs-on: ${{ matrix.platform }}
@@ -76,7 +70,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          cache: 'npm' # or 'yarn'
+          cache: 'yarn' # Set this to npm, yarn or pnpm.
 
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable # Set this to dtolnay/rust-toolchain@nightly
@@ -91,19 +85,17 @@ jobs:
 
       - name: install frontend dependencies
         # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
-        run: npm install # this for npm, for yarn use `yarn install`
+        run: yarn install # change this to npm or pnpm depending on which one you use.
 
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
         with:
           tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
           releaseName: 'App v__VERSION__'
           releaseBody: 'See the assets to download this version and install.'
           releaseDraft: true
           prerelease: false
-          tauriScript: ${{ matrix.tauriScript }}
           args: ${{ matrix.args }}
 ```
 
