@@ -414,19 +414,25 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                 },
                 children: [
                     {
-                        type: "page",
+                        type: "folder",
                         name: "Website distribution",
-                        url: `${preUrl}/start/distribution-website`,
+                        index: {
+                            type: "page",
+                            name: "Website distribution",
+                            url: `${preUrl}/start/distribution-website`,
+                        },
+                        children: [
+                            {
+                                type: "page",
+                                name: "itch.io",
+                                url: `${preUrl}/start/distribution-itchio`,
+                            },
+                        ],
                     },
                     {
                         type: "page",
                         name: "Desktop & mobile devices",
                         url: `${preUrl}/start/distribution-desktop-mobile`,
-                    },
-                    {
-                        type: "page",
-                        name: "itch.io",
-                        url: `${preUrl}/start/distribution-itchio`,
                     },
                 ],
             },
