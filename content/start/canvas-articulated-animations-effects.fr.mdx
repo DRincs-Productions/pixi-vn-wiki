@@ -1,0 +1,63 @@
+---
+title: Articulated animations
+---
+
+import { ShakeExample } from "@/components/examples";
+
+Articulated animations are functions that use the <DynamicLink href="/start/canvas-alias">`canvas.animate`</DynamicLink> function to create animations that can be applied to canvas components. These functions are typically used to create effects like shaking, bouncing, or other complex animations that involve multiple steps or components.
+
+## Shake
+
+The `shakeEffect` function is an articulated animation that shakes a component.
+Cette fonction accepte les paramètres suivants:
+
+- `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> to identify the component.
+- `options` (Optional): Animation options, matching the <DynamicLink href="/start/canvas-motion">`options` of animate function</DynamicLink>. Additional properties:
+  - `shocksNumber` (Optional): The number of shocks.
+  - `shakeType` (Optional): The type of shake effect. Possible values are `vertical` and `horizontal`.
+  - `maxShockSize` (Optional): The maximum size of the shock.
+- `priority` (Optional): The priority of the PixiJS ticker. This parameter sets the ticker's priority. The default is `UPDATE_PRIORITY.NORMAL`.
+
+```ts tab="labels/startLabel.ts"
+import { CANVAS_APP_GAME_LAYER_ALIAS, newLabel, shakeEffect, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await showImage("bg", "bg", { scale: 1.3 });
+        await showImage("alien", "alien", { align: 0.5 });
+        shakeEffect("alien"); // [!code focus]
+    },
+    async () => {
+        shakeEffect(CANVAS_APP_GAME_LAYER_ALIAS); // [!code focus]
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "bg",
+                    src: "https://pixijs.com/assets/bg_grass.jpg",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<ShakeExample />
