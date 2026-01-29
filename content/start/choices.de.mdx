@@ -1,0 +1,234 @@
+---
+title: Choice menus
+description: Explains how to implement and customize interactive choice menus in Pixi'VN, allowing players to make decisions that affect the story.
+---
+
+import { ChoiceMenus, ChoicesAlreadyMade } from "@/components/examples";
+
+<Callout title="UI screen" type="info">
+
+You can find an example of the choice menu UI screen in the <DynamicLink href="/start/interface-examples#choice-menu">interface examples</DynamicLink> section.
+
+</Callout>
+
+<Callout title="ink" type="info">
+
+You can use this method with the _ink_ syntax. See more <DynamicLink href="/ink/choices">here</DynamicLink>.
+
+</Callout>
+
+In visual novels, choice menus allow the player to make decisions that affect the story.
+
+In Pixi’VN, you can prompt the player to make a choice. Each choice can either start a `label` or close the choice menu.
+
+## Require the player to make a choice
+
+To require the player to make a choice, set `narration.choices` to an array of `StoredChoiceInterface`. To create a `StoredChoiceInterface` object, use:
+
+<Accordions>
+
+<Accordion title="newchoiceoption" id="newchoiceoption">
+
+In Pixi’VN, you can create a choice menu option using the `newChoiceOption` function.
+This function has the following parameters:
+
+- `text`: The text displayed in the choice menu.
+- `label`: The <DynamicLink href="/start/labels#label">`label`</DynamicLink> to call when the player selects the option.
+- `props`: The properties passed to the `label`. If the `label` does not require parameters, pass an empty object `{}`.
+- `options` (Optional): An object with the `choice`'s options:
+  - `type`: How the <DynamicLink href="/start/labels-flow#run-a-label">label will be performed</DynamicLink>. Can be `call` or `jump`. Default is `call`.
+  - `oneTime`: If `true`, the choice can only be made once.
+  - `onlyHaveNoChoice`: If `true`, the choice is shown only if there are no other choices.
+  - `autoSelect`: If `true` and it is the only choice, it will be selected automatically.
+
+</Accordion>
+
+<Accordion title="newclosechoiceoption" id="newclosechoiceoption">
+
+In addition to `newChoiceOption`, you can use `newCloseChoiceOption` to create a closing option. This closes the choice menu and continues with the <DynamicLink href="/start/labels">steps</DynamicLink>, without calling any <DynamicLink href="/start/labels#label">label</DynamicLink>.
+This function has the following parameters:
+
+- `text`: The text displayed in the choice menu.
+- `options` (Optional): An object with the `choice`'s options:
+  - `closeCurrentLabel`: If `true`, the current `label` will be closed. Default is `false`.
+  - `oneTime`: If `true`, the choice can only be made once.
+  - `onlyHaveNoChoice`: If `true`, the choice is shown only if there are no other choices.
+  - `autoSelect`: If `true` and it is the only choice, it will be selected automatically.
+
+</Accordion>
+
+</Accordions>
+
+```ts title="labels/startLabel.ts"
+import { newChoiceOption, newCloseChoiceOption, narration, newLabel } from "@drincs/pixi-vn"
+
+export const startLabel = newLabel("start_label",
+    [
+        async () => {
+            narration.dialogue = "Choose a fruit:"
+            narration.choices = [ // [!code focus]
+                newChoiceOption("Orange", orangeLabel, {}), // by default, the label will be called with "call" // [!code focus]
+                newChoiceOption("Banana", bananaLabel, {}, { type: "jump" }), // [!code focus]
+                newChoiceOption("Apple", appleLabel, { quantity: 5 }, { type: "call" }), // [!code focus]
+                newCloseChoiceOption("Cancel"), // [!code focus]
+            ] // [!code focus]
+        },
+        () => { narration.dialogue = "Restart" },
+        async (props) => await narration.jump("start_label", props)
+    ],
+)
+```
+
+<ChoiceMenus />
+
+## Get
+
+To get the current choice menu, use `narration.choices`. This returns an array of `StoredChoiceInterface`.
+
+```typescript
+const menuOptions: StoredChoiceInterface[] = narration.choices;
+```
+
+## Request
+
+To select a choice, use `narration.selectChoice`.
+
+```typescript
+const item = narration.choices![0]; // get the first item
+
+narration.selectChoice(item, {
+    // Add StepLabelProps here
+    navigate: navigate, // example
+    // And the props to pass to the label
+    ...item.props
+})
+    .then(() => {
+        // ...
+    })
+    .catch((e) => {
+        // ...
+    })
+```
+
+## Remove
+
+To clear the choice options, set `narration.choices = undefined`.
+
+```typescript
+narration.choices = undefined;
+```
+
+## Custom class
+
+You can customize a choice menu option by adding properties to the `ChoiceInterface` interface. For example, add an `icon` property to display an icon.
+
+Override the `ChoiceInterface` interface in your `.d.ts` file:
+
+```ts tab="pixi-vn.d.ts"
+declare module '@drincs/pixi-vn' {
+    interface ChoiceInterface {
+        icon?: string
+    }
+}
+```
+
+```ts tab="labels/startLabel.ts"
+narration.choices = [
+    newChoiceOption("Orange", orangeLabel, {}, { icon: "orange.png" }),
+    newChoiceOption("Banana", bananaLabel, {}, { icon: "banana.png" }),
+    newChoiceOption("Apple", appleLabel, {}, { icon: "apple.png" }),
+]
+```
+
+```tsx tab="screens/ChoiceMenu.tsx"
+function ChoiceMenu({ choices }: { choices: StoredIndexedChoiceInterface[] }) {
+    return (
+        <div>
+            {choices.map((choice, index) => (
+                <div key={index}>
+                    {choice.icon && <img src={choice.icon} alt={choice.text} />}
+                    <button onClick={() => narration.selectChoice(choice)}>{choice.text}</button>
+                </div>
+            ))}
+        </div>
+    )
+}
+```
+
+## Other features
+
+<Accordions>
+
+<Accordion title="choices_already_made" id="choices-already-made">
+
+To get the choices already made in the current `step`, use `narration.alreadyCurrentStepMadeChoices`.
+
+```ts tab="hooks/useQueryInterface.ts"
+import { narration } from "@drincs/pixi-vn";
+import { useQuery } from "@tanstack/react-query";
+
+export const INTERFACE_DATA_USE_QUEY_KEY = "interface_data_use_quey_key";
+
+const CHOICE_MENU_OPTIONS_USE_QUEY_KEY = "choice_menu_options_use_quey_key";
+export function useQueryChoiceMenuOptions() {
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, CHOICE_MENU_OPTIONS_USE_QUEY_KEY],
+        queryFn: async () =>
+            narration.choices?.map((option) => ({
+                ...option,
+                text: typeof option.text === "string" ? option.text : option.text.join(" "),
+                alreadyChosen: // [!code ++]
+                    narration.alreadyCurrentStepMadeChoices?.find((index) => index === option.choiceIndex) !== // [!code ++]
+                    undefined, // [!code ++]
+            })) || [],
+    });
+}
+```
+
+```tsx tab="screens/ChoiceMenu.tsx"
+import useNarrationFunctions from "../hooks/useNarrationFunctions";
+import { useQueryChoiceMenuOptions } from "../hooks/useQueryInterface";
+
+export default function ChoiceMenu() {
+    const { data: menu = [] } = useQueryChoiceMenuOptions();
+    const { selectChoice } = useNarrationFunctions();
+
+    return (
+        <div
+            style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                height: "100%",
+                overflow: "auto",
+                gap: "8px",
+                maxHeight: "100%",
+                margin: 0,
+                pointerEvents: menu?.length > 0 ? "auto" : "none",
+            }}
+        >
+            {menu?.map((item, index) => (
+                <button
+                    key={"choice-" + index}
+                    style={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                    }}
+                    onClick={() => selectChoice(item)}
+                >
+                    {item.alreadyChosen ? "✓ " : ""} // [!code ++]
+                    {item.text}
+                </button>
+            ))}
+        </div>
+    );
+}
+```
+
+<ChoicesAlreadyMade />
+
+</Accordion>
+
+</Accordions>

@@ -1,0 +1,77 @@
+---
+title: Menù a scelta
+description: |
+  Come presentare e controllare i menu di scelta in ink nativo, comprese le scelte una tantum, permanenti, condizionali e di fallback. Compatibile con l'integrazione Pixi’VN.
+---
+
+<Callout>
+  L'integrazione ***ink* + Pixi'VN** supporta le scelte native *ink* senza introdurre nuovi tipi di scelta. Per maggiori dettagli sulla sintassi e sul comportamento delle scelte, fare riferimento alla [documentazione ufficiale di ink](https://www.inklestudios.com/ink/).
+</Callout>
+
+Puoi chiedere al giocatore di fare una scelta in *ink* usando un elenco di punti elenco `*` o `+`, seguito dal testo della scelta. Il testo della scelta viene mostrato al giocatore, che può selezionare un'opzione per continuare la storia.
+
+* `*` indica una scelta che può essere fatta una sola volta.
+* `+` indica una scelta che può essere effettuata più volte (scelta fissa).
+
+```ink title="ink"
+=== start ===
+* Go to Paris
+  You decide to visit Paris. -> visit_paris
++ Go to London -> visit_london
+* Stay at home
+  You decide to stay at home. -> DONE
+```
+
+## Soppressione del testo di scelta
+
+Per impostazione predefinita, il testo dell'opzione scelta viene stampato nuovamente nell'output. Se il testo della scelta visibile è racchiuso tra parentesi quadre, tale testo viene mostrato solo nel menu di scelta e non viene stampato nell'output successivo.
+
+```ink title="ink"
+=== start ===
+Hello world!
+* [Hello back!]
+ Nice to hear from you!
+```
+
+Le parentesi quadre dividono il contenuto dell'opzione: ciò che appare prima viene stampato sia nel menu che nell'output; ciò che è tra parentesi appare solo nel menu; ciò che segue appare solo nell'output. Questo è utile per le scelte di dialogo:
+
+```ink title="ink"
+=== start ===
+"What's that?" my master asked.
+* "I am somewhat tired[."]," I repeated.
+ "Really," he responded. "How deleterious."
+```
+
+## Scelte variabili
+
+### Scelte di fallback
+
+Le scelte di fallback non vengono mai mostrate al giocatore, ma vengono scelte automaticamente dal motore se non sono disponibili altre opzioni.
+
+Una scelta di fallback è semplicemente una scelta senza testo di scelta visibile:
+
+```ink title="ink"
+* -> out_of_options
+```
+
+```ink title="ink"
+=== start ===
+ You search desperately for a friendly face in the crowd.
+ * The woman in the hat[?] pushes you roughly aside. -> find_help
+ * The man with the briefcase[?] looks disgusted as you stumble past him. -> find_help
+ * -> // fallback
+  But it is too late: you collapse onto the station platform. This is the end.
+  -> END
+```
+
+### Scelte condizionali
+
+È possibile abilitare o disabilitare le scelte tramite condizioni. Il test più semplice è verificare se il giocatore ha già visitato un particolare `knot` o `stitch`.
+
+```ink title="ink"
+* { not visit_paris }  [Go to Paris] -> visit_paris
++ { visit_paris }      [Return to Paris] -> visit_paris
+* { visit_paris.met_estelle } [Telephone Mme Estelle] -> phone_estelle
+```
+
+Nota: il test `knot_name` è vero se è stato visitato un `stitch` all'interno di quel nodo. Le condizioni non sostituiscono il comportamento una tantum delle opzioni `*`: utilizzare `+` per le opzioni ripetibili.
