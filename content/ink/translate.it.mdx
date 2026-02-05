@@ -1,0 +1,86 @@
+---
+title: Internalizzazione
+---
+
+Come spiegato più dettagliatamente <DynamicLink href="/start/translate">qui</DynamicLink>, Pixi’VN offre la possibilità di tradurre il testo del gioco utilizzando una libreria, come [i18next](https://www.i18next.com/). Inoltre nell'integrazione **_ink_ + Pixi'VN** puoi usare una libreria per tradurre il testo di **_ink_**.
+
+Pixi’VN offre allo sviluppatore la possibilità di intercettare l’evento di traduzione con la funzione `onInkTranslate`.
+
+La funzione `onInkTranslate` ha come parametro una funzione di callback che accetta come parametro il testo da tradurre e restituisce il testo tradotto.
+
+```ts tab="index.ts"
+import { onInkTranslate } from "@drincs/pixi-vn-ink";
+
+export function initializeInk(options: { t: (key: string) => string }) {
+    const { t } = options;
+    onInkTranslate(t);
+}
+```
+
+```ink tab="ink/start.ink"
+=== start ===
+Hello, my name is [joe]
+-> DONE
+```
+
+```json tab="locales/strings_es.json"
+{
+    "narration": {
+        "Hello, my name is [joe]": "Hola, mi nombre es [joe]"
+        // ...
+    }
+}
+```
+
+## Generazione automatica dei file di traduzione
+
+<Callout title="Templates" type="info">
+
+In tutti i template, puoi utilizzare il seguente pulsante nelle impostazioni per generare automaticamente il file json che verrà utilizzato per le traduzioni.
+![dowload-translate](/dowload-translate.png)
+
+</Callout>
+
+Per facilitare la creazione dei file di traduzione, è possibile utilizzare la funzione `generateJsonInkTranslation` per generare automaticamente la struttura JSON dal testo ink.
+
+```ts
+import { generateJsonInkTranslation } from "@drincs/pixi-vn-ink";
+import i18n from "i18next";
+import { convertInkToJson } from "./utils/ink-utility";
+
+function getLocalesResource(lng: string): Promise<any> {
+    return import(`./locales/strings_${lng}.json`);
+}
+
+async function generateResourceToTranslate(lng: string): Promise<any> {
+    let res = await getLocalesResource(lng);
+    res = { ...res };
+    if (!res) {
+        res = {};
+    }
+    if (!res.narration) {
+        res.narration = {};
+    }
+    if (res.default) {
+        delete res.default;
+    }
+    (await convertInkToJson()).forEach((element) => {
+        element && generateJsonInkTranslation(element, res.narration);
+    });
+    return res;
+}
+
+export async function downloadResourceToTranslate() {
+    const lng = i18n.options.fallbackLng?.toString() || "en";
+    const data = await generateResourceToTranslate(lng);
+    const jsonString = JSON.stringify(data);
+    // download the save data as a JSON file
+    const blob = new Blob([jsonString], { type: "application/json" });
+    // download the file
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `strings_${lng}.json`;
+    a.click();
+}
+```
