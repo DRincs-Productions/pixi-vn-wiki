@@ -22,7 +22,11 @@ The available components are:
 
 You can create custom components by extending the base components. To do this, you need to use the decorator `@canvasComponentDecorator`.
 
-`@canvasComponentDecorator` is a decorator that saves the canvas component in memory. It has an optional parameter that is the id used by Pixi’VN to refer to this class (must be unique). If you don't pass the id, the class name will be used as the id. (<DynamicLink href="/faq#enable-typescript-decorators">How to enable decorators in TypeScript?</DynamicLink>)
+`@canvasComponentDecorator` is a decorator that saves the canvas component in memory (<DynamicLink href="/faq#enable-typescript-decorators">How to enable decorators in TypeScript?</DynamicLink>). この関数は以下のパラメータを持ちます：
+
+- `name`: The id used by Pixi’VN to refer to this class (must be unique). If you don't pass the id, the class name will be used as the id.
+- `getInstance`: A function that returns an instance of the canvas component. This function is used when restoring the canvas from memory. If not set, it will use the default constructor of the class.
+- `copyProperty`: A function that copies the properties of the canvas component. This function is used when copying the properties of the canvas component into another instance of the same canvas component. This function is used when copying the canvas component properties into another instance of the same canvas component.
 
 It is necessary to override the `memory` property to store the custom component properties.
 In `get memory()`, it is very important to return the `className` property; this property must be equal to the id used in the decorator.
@@ -30,7 +34,10 @@ In `get memory()`, it is very important to return the `className` property; this
 For example, you can create an `AlienTinting` class that extends the `Sprite` class to manage the direction and speed of each individual alien in an animation.
 
 ```typescript title="canvas/components/AlienTinting.ts"
-@canvasComponentDecorator() // or @canvasComponentDecorator("AlienTintingTest")
+const ALIEN_TINTING_TEST_ID = "AlienTintingTest"
+@canvasComponentDecorator({
+    name: ALIEN_TINTING_TEST_ID,
+})
 class AlienTintingTest extends Sprite<IAlienTintingMemory> {
     override get memory() {
         return {
@@ -41,7 +48,7 @@ class AlienTintingTest extends Sprite<IAlienTintingMemory> {
             className: "AlienTintingTest",
         }
     }
-    override set memory(memory: IAlienTintingMemory) {
+    override setMemory(memory: IAlienTintingMemory) {
         super.memory = memory as ICanvasSpriteMemory
         this.direction = memory.direction
         this.turningSpeed = memory.turningSpeed
