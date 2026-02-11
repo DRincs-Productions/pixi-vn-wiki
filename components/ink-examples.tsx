@@ -111,10 +111,10 @@ Game.init(body, {
   export default content;
 }`,
                 "utils/ink-utility.ts": `import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
-import { onInkHashtagScript, onReplaceTextAfterTranslation } from "@drincs/pixi-vn-ink";
+import { HashtagScript, onReplaceTextAfterTranslation } from "@drincs/pixi-vn-ink";
 
 export function initializeInk() {
-  onInkHashtagScript((script, props, convertListStringToObj) => {
+  HashtagScript.add((script, props, convertListStringToObj) => {
     if (script[0] === "rename" && script.length === 3) {
       let character = RegisteredCharacters.get<CharacterBaseModel>(script[1]);
       if (character) {
