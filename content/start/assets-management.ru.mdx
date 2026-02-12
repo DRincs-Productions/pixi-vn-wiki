@@ -1,0 +1,360 @@
+---
+title: Управление ресурсами
+description: Организация, привязка и загрузка ресурсов (изображений, звуков, видео) в Pixi'VN с помощью псевдонимов и манифестов.
+---
+
+Чтобы загружать и управлять ресурсами (изображениями, гифками, видео и т. д.) необходимо использовать `Assets`. `Assets` — это класс с множеством функций, который принадлежит библиотеке PixiJS. Для получения дополнительной информации, ознакомьтесь [здесь](https://pixijs.com/8.x/guides/components/assets).
+
+Во всех функциях Pixi'VN можно напрямую использовать URL-адрес изображения, даже если он не определен в `Assets`.
+
+```ts
+let alien1 = await showImage("alien", "https://pixijs.com/assets/eggHead.png");
+```
+
+Этот метод имеет несколько недостатков:
+
+- Изменение URL-адреса ресурса из одной версии в другую может привести к несовместимости.
+- The player will have to wait for a short loading time every time they press "continue" and a <DynamicLink href="/start/labels">`step`</DynamicLink> is started that uses assets.
+- Запись всего URL в коде увеличит его длину и сделает менее читабельным.
+
+По этим причинам рекомендуется работать с ресурсами следующим образом.
+
+## Инициализация матрицы ресурсов в начале проекта
+
+Инициализация матрицы ресурсов в начале проекта позволяет ссылаться на ресурсы по уникальному псевдониму без необходимости использовать URL/путь. Используя псевдоним, вы можете изменить URL-адрес ресурсов, не заботясь о совместимости версий.
+
+Для этого рекомендуется создать асинхронную функцию `defineAssets`, которая будет вызываться при старте проекта.
+В функции `defineAssets` используйте `Assets` (например, `Assets.add`, `Assets.addBundle` и `Assets.init`) для назначения псевдонимов URL. Более подробную информацию о них можно найти [здесь](https://pixijs.com/8.x/guides/components/assets), чтобы назначить псевдоним каждым ресурсам.
+
+```ts tab="utils/defineAssets.ts"
+import { Assets, sound } from "@drincs/pixi-vn";
+import manifest from "../assets/manifest";
+
+export async function defineAssets() {
+    // manifest
+    await Assets.init({ manifest });
+    // single asset
+    Assets.add({ alias: 'eggHead', src: "https://pixijs.com/assets/eggHead.png" })
+    Assets.add({ alias: 'flowerTop', src: "https://pixijs.com/assets/flowerTop.png" })
+    Assets.add({ alias: 'video', src: "https://pixijs.com/assets/video.mp4" })
+    sound.add('bird', 'https://pixijs.io/sound/examples/resources/bird.mp3');
+    sound.add('musical', 'https://pixijs.io/sound/examples/resources/musical.mp3');
+    // bundle
+    Assets.addBundle('liam', {
+        "liam-head": 'liam_head.png',
+        "liam-body": 'liam_body.png',
+        "liam-arms": 'liam_arms.png',
+    });
+}
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        // screens
+        {
+            name: "main_menu",
+            assets: [
+                {
+                    alias: "background_main_menu",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/main-menu.png",
+                },
+            ],
+        },
+        // labels
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "bg01-hallway",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/bg01-hallway.webp",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+## Загрузка ресурсов
+
+По умолчанию ресурсы загружаются только при необходимости.
+
+Но **если ресурсы сохранены не локально**, а на <DynamicLink href="/start/assets#assets-hosting">"хостинге ресурсов"</DynamicLink>, их загрузка может занять некоторое время. Это означает, что начало `шага` может быть не мгновенным. So, after starting the execution of the <DynamicLink href="/start/labels-flow#continue">next `step`</DynamicLink> (for example with the "next" button), the player may have to wait some time to "view" the changes and be able to run another `step`.
+
+Выполнение этих загрузок на каждом `шаге` может раздражать игрока, даже если они очень короткие.
+
+Чтобы решить эту проблему, разработчик может сгруппировать несколько загрузок на определенном этапе игры. Таким образом, игрок будет испытывать не постоянные загрузки, а меньшие, пусть и более длительные.
+
+Вот различные способы загрузки ресурсов:
+
+### Загрузка ресурсов при запуске проекта
+
+Возможно загружать ресурсы при запуске проекта, прежде чем игрок сможет взаимодействовать с проектом, например при загрузке экрана. Рекомендуется использовать эту процедуру только для ресурсов, используемых на главной странице или часто используемых, и не превышающих 100МБ.
+
+Для этого вы должны использовать функцию `Assets.load` и дождаться ее завершения (с помощью `await`), когда проект запустится. Подробнее о функции `Assets.load` вы можете узнать [здесь](https://pixijs.com/8.x/guides/components/assets).
+
+```ts tab="utils/defineAssets.ts"
+import { Assets, sound } from "@drincs/pixi-vn";
+import manifest from "../assets/manifest";
+
+export async function defineAssets() {
+    // manifest
+    await Assets.init({ manifest });
+    // single asset
+    Assets.add({ alias: 'eggHead', src: "https://pixijs.com/assets/eggHead.png" })
+    Assets.add({ alias: 'flowerTop', src: "https://pixijs.com/assets/flowerTop.png" })
+    Assets.add({ alias: 'video', src: "https://pixijs.com/assets/video.mp4" })
+    sound.add('bird', 'https://pixijs.io/sound/examples/resources/bird.mp3');
+    sound.add('musical', 'https://pixijs.io/sound/examples/resources/musical.mp3');
+    // bundle
+    Assets.addBundle('liam', {
+        "liam-head": 'liam_head.png',
+        "liam-body": 'liam_body.png',
+        "liam-arms": 'liam_arms.png',
+    });
+
+    // The game will not start until these assets are loaded. // [!code focus]
+    await Assets.load('eggHead') // [!code focus]
+    await Assets.loadBundle('liam') // [!code focus]
+}
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        // screens
+        {
+            name: "main_menu",
+            assets: [
+                {
+                    alias: "background_main_menu",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/main-menu.png",
+                },
+            ],
+        },
+        // labels
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "bg01-hallway",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/bg01-hallway.webp",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+### Загрузка ресурсов в фоновом режиме при запуске проекта
+
+Возможно загружать ресурсы в фоновом режиме при запуске проекта, что сокращает время загрузки при запуске проекта. Рекомендуется не превышать размер 2ГБ.
+
+Для этого можно использовать функцию `Assets.backgroundLoad` при запуске проекта. Подробнее о функции `Assets.backgroundLoad` вы можете узнать [здесь](https://pixijs.com/8.x/guides/components/assets).
+
+```ts tab="utils/defineAssets.ts"
+import { Assets, sound } from "@drincs/pixi-vn";
+import manifest from "../assets/manifest";
+
+export async function defineAssets() {
+    // manifest
+    await Assets.init({ manifest });
+    // single asset
+    Assets.add({ alias: 'eggHead', src: "https://pixijs.com/assets/eggHead.png" })
+    Assets.add({ alias: 'video', src: "https://pixijs.com/assets/video.mp4" })
+    sound.add('bird', 'https://pixijs.io/sound/examples/resources/bird.mp3');
+    sound.add('musical', 'https://pixijs.io/sound/examples/resources/musical.mp3');
+    // bundle
+    Assets.addBundle('liam', {
+        "liam-head": 'liam_head.png',
+        "liam-body": 'liam_body.png',
+        "liam-arms": 'liam_arms.png',
+    });
+
+    // The game will not start until these assets are loaded.
+    await Assets.load('eggHead')
+
+    // The game will start immediately, but these assets will be loaded in the background. // [!code focus]
+    Assets.backgroundLoadBundle(['liam']); // [!code focus]
+    // Load an individual asset in the background // [!code focus]
+    Assets.backgroundLoad({ alias: 'flowerTop', src: 'https://pixijs.com/assets/flowerTop.png' }); // [!code focus]
+}
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        // screens
+        {
+            name: "main_menu",
+            assets: [
+                {
+                    alias: "background_main_menu",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/main-menu.png",
+                },
+            ],
+        },
+        // labels
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "bg01-hallway",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/bg01-hallway.webp",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+### Загрузка ресурсов при запуске части
+
+<Callout title="ink" type="info">
+
+Вы можете использовать этот способ с синтаксисом _ink_. See more <DynamicLink href="/ink/assets">here</DynamicLink>.
+
+</Callout>
+
+Чтобы сгруппировать загрузку от одного `шага` до другой `части` в одну загрузку, возможно загрузить все или часть ресурсов, используемых `частью`, до её запуска. Поскольку это не уменьшает время ожидания для игрока, а добавляет его к одной загрузке, рекомендуется [загружать их в фоновом режиме](#load-assets-in-the-background-at-label-start).
+
+Для этого вы должны использовать функцию `Assets.load` и дождаться ее завершения (с помощью `await`), когда `часть` запустится. Вы будете использовать функцию <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink>.
+
+Чтобы код был чище, рекомендуется определить в манифесте пакет с id, соответствующим id `части`, и определить в нем ресурсы, которые будут использоваться в этой `части`.
+
+```ts title="labels/startLabel.ts"
+import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
+
+const startLabel = newLabel("start", [
+    () => {
+        await showImage("eggHead")
+    },
+    () => {
+        await showImage("flowerTop")
+    },
+], {
+    onLoadingLabel: async (_stepId, label) => { // [!code focus]
+        // The label will not start until these assets are loaded. // [!code focus]
+        await Assets.loadBundle(label.id) // [!code focus]
+    } // [!code focus]
+})
+export default startLabel;
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+import startLabel from "../labels/startLabel";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        // labels
+        {
+            name: startLabel.id,
+            assets: [
+                {
+                    alias: "eggHead",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flowerTop",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+### Загрузка ресурсов в фоновом режиме при запуске части
+
+<Callout title="Already present in the templates" type="info">
+
+In all templates, when a `label` is started, the background loading of the bundle (if it exists) with the id corresponding to the `label` will be started. Поэтому достаточно **создать манифест с пакетом для каждой `части`**. Вот реализация, используемая для этого:
+
+```ts title="main.ts"
+import { Assets, Game } from "@drincs/pixi-vn";
+
+Game.onLoadingLabel((_stepId, { id }) => Assets.backgroundLoadBundle(id));
+```
+
+</Callout>
+
+Чтобы сделать игру более плавной, пытаясь уменьшить время загрузки ресурсов от одного `шага` к другому, можно запустить "группу загрузки" в начале `части`. Это означает, что потенциально вы можете не почувствовать никакой загрузки, особенно на поздних `шагах` `части`.
+
+Для этого можно использовать функцию `Assets.backgroundLoad` при запуске части. Подробнее о функции `Assets.backgroundLoad` вы можете узнать [здесь](https://pixijs.com/8.x/guides/components/assets). И вы будете использовать функцию <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink>.
+
+Чтобы код был чище, рекомендуется определить в манифесте пакет с id, соответствующим id `части`, и определить в нем ресурсы, которые будут использоваться в этой `части`.
+
+```ts title="labels/startLabel.ts"
+import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
+
+const startLabel = newLabel("start", [
+    () => {
+        await showImage("eggHead")
+    },
+    () => {
+        await showImage("flowerTop")
+    },
+], {
+    onLoadingLabel: async (_stepId, label) => { // [!code focus]
+        // The label will start immediately, but these assets will be loaded in the background. // [!code focus]
+        Assets.backgroundLoadBundle(label.id) // [!code focus]
+    } // [!code focus]
+})
+export default startLabel;
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+import startLabel from "../labels/startLabel";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        // labels
+        {
+            name: startLabel.id,
+            assets: [
+                {
+                    alias: "eggHead",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flowerTop",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
