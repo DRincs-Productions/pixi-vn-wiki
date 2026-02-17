@@ -217,25 +217,24 @@ Questa funzione ha i seguenti parametri:
   - avere il metodo `fn` che verrà eseguito quando l'evento viene attivato.
   - avere il decorator `@eventDecorator`. `@eventDecorator` è un decorator che salva l'evento nella memoria. Ha un parametro facoltativo che è l'id utilizzato da Pixi'VN per fare riferimento a questa classe (deve essere univoco). Se non si passa l'id, verrà utilizzato come id il nome della classe. (<DynamicLink href="/faq#enable-typescript-decorators">Come abilitare i decorator in TypeScript?</DynamicLink>)
 
-```ts tab="canvas/events/ButtonEvent.ts"
-import { CanvasEvent, CanvasEventNamesType, eventDecorator, Sprite } from "@drincs/pixi-vn";
+```ts tab="canvas/events/buttonEvent.ts"
+import { AllFederatedEventMap } from from "@drincs/pixi-vn/pixi.js";
+import { eventDecorator, Sprite } from "@drincs/pixi-vn";
 
 @eventDecorator()
-export default class ButtonEvent extends CanvasEvent<Sprite> {
-    override fn(event: CanvasEventNamesType, sprite: Sprite): void {
-        switch (event) {
-            case "pointerdown":
-                sprite.scale.x *= 1.25;
-                sprite.scale.y *= 1.25;
-                break;
-        }
+export default function buttonEvent(event: AllFederatedEventMap, sprite: Sprite): void {
+    switch (event) {
+        case "pointerdown":
+            sprite.scale.x *= 1.25;
+            sprite.scale.y *= 1.25;
+            break;
     }
 }
 ```
 
 ```ts tab="labels/startLabel.ts"
 import { newLabel, showImage } from "@drincs/pixi-vn";
-import ButtonEvent from "../canvas/events/ButtonEvent";
+import buttonEvent from "../canvas/events/buttonEvent";
 
 export const startLabel = newLabel("start_label", [
     async () => {
@@ -248,7 +247,7 @@ export const startLabel = newLabel("start_label", [
         // Shows hand cursor
         bunny.cursor = "pointer";
         // Pointers normalize touch and mouse (good for mobile and desktop)
-        bunny.onEvent("pointerdown", ButtonEvent); // [!code focus]
+        bunny.on("pointerdown", buttonEvent); // [!code focus]
     },
 ]);
 ```
