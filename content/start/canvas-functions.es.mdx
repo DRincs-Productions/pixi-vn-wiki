@@ -217,25 +217,24 @@ Esta función tiene los siguientes parámetros:
   - have the `fn` method that will be executed when the event is triggered.
   - have the decorator `@eventDecorator`. `@eventDecorator` is a decorator that saves the event in memory. It has an optional parameter that is the id used by Pixi’VN to refer to this class (must be unique). If you don't pass the id, the class name will be used as the id. (<DynamicLink href="/faq#enable-typescript-decorators">How to enable decorators in TypeScript?</DynamicLink>)
 
-```ts tab="canvas/events/ButtonEvent.ts"
-import { CanvasEvent, CanvasEventNamesType, eventDecorator, Sprite } from "@drincs/pixi-vn";
+```ts tab="canvas/events/buttonEvent.ts"
+import { AllFederatedEventMap } from from "@drincs/pixi-vn/pixi.js";
+import { eventDecorator, Sprite } from "@drincs/pixi-vn";
 
 @eventDecorator()
-export default class ButtonEvent extends CanvasEvent<Sprite> {
-    override fn(event: CanvasEventNamesType, sprite: Sprite): void {
-        switch (event) {
-            case "pointerdown":
-                sprite.scale.x *= 1.25;
-                sprite.scale.y *= 1.25;
-                break;
-        }
+export default function buttonEvent(event: AllFederatedEventMap, sprite: Sprite): void {
+    switch (event) {
+        case "pointerdown":
+            sprite.scale.x *= 1.25;
+            sprite.scale.y *= 1.25;
+            break;
     }
 }
 ```
 
 ```ts tab="labels/startLabel.ts"
 import { newLabel, showImage } from "@drincs/pixi-vn";
-import ButtonEvent from "../canvas/events/ButtonEvent";
+import buttonEvent from "../canvas/events/buttonEvent";
 
 export const startLabel = newLabel("start_label", [
     async () => {
@@ -248,7 +247,7 @@ export const startLabel = newLabel("start_label", [
         // Shows hand cursor
         bunny.cursor = "pointer";
         // Pointers normalize touch and mouse (good for mobile and desktop)
-        bunny.onEvent("pointerdown", ButtonEvent); // [!code focus]
+        bunny.on("pointerdown", buttonEvent); // [!code focus]
     },
 ]);
 ```
