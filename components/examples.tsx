@@ -789,7 +789,7 @@ export function AddListenerGivenEvent() {
         <ReactTemplate
             files={{
                 "labels/startLabel.ts": `import { newLabel, showImage } from "@drincs/pixi-vn";
-import buttonEvent from "../canvas/events/buttonEvent";
+import { buttonEvent } from "../canvas/events";
 
 export const startLabel = newLabel("start_label", [
   async () => {
@@ -820,7 +820,7 @@ const manifest: AssetsManifest = {
   ],
 };
 export default manifest;`,
-                "canvas/events/ButtonEvent.ts": `import { AllFederatedEventMap } from from "@drincs/pixi-vn/pixi.js";
+                "canvas/events.ts": `import { AllFederatedEventMap } from from "@drincs/pixi-vn/pixi.js";
 import { eventDecorator, Sprite } from "@drincs/pixi-vn";
 
 @eventDecorator()
