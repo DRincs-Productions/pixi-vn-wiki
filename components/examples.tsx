@@ -820,7 +820,7 @@ const manifest: AssetsManifest = {
   ],
 };
 export default manifest;`,
-                "canvas/events.ts": `import { AllFederatedEventMap } from from "@drincs/pixi-vn/pixi.js";
+                "canvas/events.ts": `import { AllFederatedEventMap } from "@drincs/pixi-vn/pixi.js";
 import { eventDecorator, Sprite } from "@drincs/pixi-vn";
 
 @eventDecorator()
