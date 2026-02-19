@@ -824,7 +824,7 @@ export default manifest;`,
 import { eventDecorator, Sprite } from "@drincs/pixi-vn";
 
 @eventDecorator()
-export default function buttonEvent(event: AllFederatedEventMap, sprite: Sprite): void {
+export function buttonEvent(event: AllFederatedEventMap, sprite: Sprite): void {
     switch (event) {
       case "pointerdown":
         sprite.scale.x *= 1.25;
