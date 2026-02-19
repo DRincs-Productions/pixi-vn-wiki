@@ -207,34 +207,31 @@ If possible, try using <DynamicLink href="/start/interface">HTML and PixiJS UI</
 
 </Callout>
 
-In Pixi’VN, compared to PixiJS, you can't use a [listener with the `on` method](https://pixijs.com/8.x/examples/events/click) (because `on` associates an event with a lambda, and lambdas cannot be saved in the current state of the canvas).
+In Pixi’VN, compared to PixiJS, you can use a [listener with the `on` method](https://pixijs.com/8.x/examples/events/click), but if you don't use the `@eventDecorator` decorator, the event will not be registered in the Pixi’VN event system, so if you load a save where that event was used, it will be lost.
 
-You can use `onEvent`, which has similar behavior to `on`, but associates an event with a class that extends `CanvasEvent`.
-Esta función tiene los siguientes parámetros:
+`@eventDecorator` is a decorator that saves the event in memory (<DynamicLink href="/faq#enable-typescript-decorators">How to enable decorators in TypeScript?</DynamicLink>). Esta función tiene los siguientes parámetros:
 
-- `eventTypes`: The event type that will be listened to. You can read the list of event types [here](https://pixijs.com/8.x/guides/components/interaction#event-types).
-- `eventClass`: The class that extends `CanvasEvent` and will be executed when the event is triggered. This class must:
-  - have the `fn` method that will be executed when the event is triggered.
-  - have the decorator `@eventDecorator`. `@eventDecorator` is a decorator that saves the event in memory. It has an optional parameter that is the id used by Pixi’VN to refer to this class (must be unique). If you don't pass the id, the class name will be used as the id. (<DynamicLink href="/faq#enable-typescript-decorators">How to enable decorators in TypeScript?</DynamicLink>)
+- `name`: The id used by Pixi’VN to refer to this function (must be unique). If you don't pass the id, the function name will be used as the id.
 
 ```ts tab="canvas/events.ts"
-import { AllFederatedEventMap } from "@drincs/pixi-vn/pixi.js";
-import { eventDecorator, Sprite } from "@drincs/pixi-vn";
+import { eventDecorator, Sprite, AllFederatedEventMap } from "@drincs/pixi-vn";
 
-@eventDecorator()
-export default function buttonEvent(event: AllFederatedEventMap, sprite: Sprite): void {
-    switch (event) {
-        case "pointerdown":
+export default class Events {
+    @eventDecorator()
+    static buttonEvent(event: keyof AllFederatedEventMap, sprite: Sprite): void {
+        switch (event) {
+            case "pointerdown":
             sprite.scale.x *= 1.25;
             sprite.scale.y *= 1.25;
             break;
+        }
     }
 }
 ```
 
 ```ts tab="labels/startLabel.ts"
 import { newLabel, showImage } from "@drincs/pixi-vn";
-import { buttonEvent } from "../canvas/events";
+import Events from "../canvas/events";
 
 export const startLabel = newLabel("start_label", [
     async () => {
@@ -247,7 +244,7 @@ export const startLabel = newLabel("start_label", [
         // Shows hand cursor
         bunny.cursor = "pointer";
         // Pointers normalize touch and mouse (good for mobile and desktop)
-        bunny.on("pointerdown", buttonEvent); // [!code focus]
+        bunny.on("pointerdown", Events.buttonEvent);
     },
 ]);
 ```
