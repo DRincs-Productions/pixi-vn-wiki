@@ -1,0 +1,210 @@
+---
+title: Navigate/switch between UI screens
+description: Learn how to navigate between different UI screens in Pixi'VN using routing systems.
+---
+
+To switch between UI screens (without interrupting the canvas), you can use popups and modals, or navigate between different **URL paths/routes**.
+
+**What is the URL paths/routes?** The **URL paths/routes** are the parts of the URL that come after the domain. For example, in the URL `https://example.com/path/to/page`, the route is `/path/to/page`. Typically, in all front-end (client) web projects, each route is linked to a web page (UI screen).
+
+A routing system can be used to manage navigation between **URL paths/routes**. For example, you can use:
+
+- [React Router](https://reactrouter.com/)
+- [Vue Router](https://router.vuejs.org/)
+- [Angular Router](https://angular.io/guide/router)
+- [TanStack Router](https://tanstack.com/router/latest)
+
+```tsx tab="React Router"
+import { Route, Routes } from "react-router-dom";
+import LoadingScreen from "./screens/LoadingScreen";
+import MainMenu from "./screens/MainMenu";
+import NarrationElement from "./screens/NarrationElement";
+
+export default function AppRoutes() {
+    return (
+        <Routes>
+            <Route key={"main_menu"} path={"/"} element={<MainMenu />} />
+            <Route key={"loading"} path={"/loading"} element={<LoadingScreen />} />
+            <Route key={"narration"} path={"/narration"} element={<NarrationElement />} />
+            <Route path='*' element={<MainMenu />} />
+        </Routes>
+    );
+}
+```
+
+```vue tab="Vue Router"
+<script setup>
+import { createRouter, createWebHistory } from 'vue-router'
+import MainMenu from './screens/MainMenu.vue'
+import LoadingScreen from './screens/LoadingScreen.vue'
+import NarrationElement from './screens/NarrationElement.vue'
+
+const routes = [
+  { path: '/', component: MainMenu },
+  { path: '/loading', component: LoadingScreen },
+  { path: '/narration', component: NarrationElement },
+  { path: '/:pathMatch(.*)*', component: MainMenu }
+]
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes
+})
+
+export default router
+</script>
+```
+
+```typescript tab="Angular Router"
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { MainMenuComponent } from './screens/main-menu.component';
+import { LoadingScreenComponent } from './screens/loading-screen.component';
+import { NarrationElementComponent } from './screens/narration-element.component';
+
+const routes: Routes = [
+  { path: '', component: MainMenuComponent },
+  { path: 'loading', component: LoadingScreenComponent },
+  { path: 'narration', component: NarrationElementComponent },
+  { path: '**', component: MainMenuComponent }
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
+```
+
+```tsx tab="TanStack Router"
+import { Router, Route } from '@tanstack/router'
+import MainMenu from './screens/MainMenu'
+import LoadingScreen from './screens/LoadingScreen'
+import NarrationElement from './screens/NarrationElement'
+
+const router = new Router({
+  routeTree: (
+    <>
+      <Route path="/" element={<MainMenu />} />
+      <Route path="/loading" element={<LoadingScreen />} />
+      <Route path="/narration" element={<NarrationElement />} />
+      <Route path="*" element={<MainMenu />} />
+    </>
+  )
+})
+
+export default router
+```
+
+## How to navigate between routes?
+
+To navigate between routes, use the navigation function provided by your routing system.
+
+<Callout title="Templates" type="info">
+
+In all templates, the `StepLabelProps` interface is already extended to include a `navigate` function. You can find it in the `pixi-vn.d.ts` file.
+
+</Callout>
+
+In pixi-vn projects, it's very common to need to navigate between routes while narrating. To enable this, the navigation function must be included in the <DynamicLink href="/start/labels#steplabelprops">`StepLabelProps` interface</DynamicLink>.
+
+```ts tab="pixi-vn.d.ts"
+import { narration } from '@drincs/pixi-vn'
+
+declare module '@drincs/pixi-vn' {
+    interface StepLabelProps {
+        navigate: (route: string) => void,
+    }
+}
+```
+
+```ts tab="hooks/useGameProps.ts"
+import { StepLabelProps } from "@drincs/pixi-vn";
+import useMyNavigate from "./useMyNavigate";
+
+export default function useGameProps(): StepLabelProps {
+    const navigate = useMyNavigate();
+
+    return {
+        navigate,
+    };
+}
+```
+
+<Callout title="ink" type="info">
+
+In all _ink_ templates, a <DynamicLink href="/ink/hashtag">custom hashtag command</DynamicLink> has been introduced to navigate between routes. To do this, you need to use the following syntax:
+
+```ink title="ink"
+# navigate [route]
+```
+
+- `route`: The destination route/path. For example, `# navigate /new-route`.
+
+</Callout>
+
+So, when you create a new label, you can use the `navigate` function to switch between routes:
+
+```ts tab="labels/startLabel.ts"
+export const startLabel = newLabel("start_label",
+    [
+        ({ navigate }) => { // [!code focus]
+            navigate("/new-route") // [!code focus]
+        }, // [!code focus]
+    ]
+)
+```
+
+<Accordions>
+
+<Accordion title="block_back_forward" id="block-back-forward">
+
+Using the browser's back and forward buttons can cause the game to be in an inconsistent state. This is because those keys allow the player to navigate between routes, not between narrative `steps`.
+
+It is recommended to prevent the path from changing when the browser's back button is pressed. There are many ways to do this, but the following approach is suggested:
+
+Intercept the `popstate` event, which is triggered after the back button is pressed, and immediately go forward one step. This means that when the back button is pressed, it returns to the previous path for a short time and then immediately returns to the current path. To ensure the path does not change, even briefly, you can add two nodes to the history every time you navigate to a new path, instead of one (the default).
+
+For example:
+
+```ts title="EventInterceptor.ts"
+import { useEffect } from 'react';
+
+export default function EventInterceptor() {
+    useEffect(() => {
+        window.addEventListener("popstate", onpopstate);
+        return () => {
+            window.removeEventListener("popstate", onpopstate);
+        };
+    }, []);
+
+    function onpopstate() {
+        window.history.forward();
+    }
+
+    return null
+}
+```
+
+```tsx title="React example"
+import { Assets } from "@drincs/pixi-vn";
+import { NavigateFunction, NavigateOptions, To, useNavigate } from "react-router-dom";
+
+export default function useMyNavigate(): NavigateFunction {
+    const navigate = useNavigate();
+
+    return async (to: To | number, options?: NavigateOptions) => {
+        if (typeof to === "number") {
+            await navigate(to);
+        } else {
+            Assets.backgroundLoadBundle(to as string);
+            await navigate(to, options);
+        }
+        window.history.pushState(null, window.location.href, window.location.href);
+    };
+}
+```
+
+</Accordion>
+
+</Accordions>

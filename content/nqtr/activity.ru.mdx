@@ -1,0 +1,333 @@
+---
+title: Activity
+---
+
+`Activity` - действия, которые игрок может предпринять, и они могут быть связаны с элементом <DynamicLink href="/nqtr/navigation">навигации</DynamicLink>. Разработчик решает, как игрок будет с ними взаимодействовать.
+
+## Инициализация
+
+Чтобы инициализировать персонажа, создайте новый экземпляр класса `CharacterBaseModel` (или вашего [пользовательского класса](#custom-class)) и добавьте его в словарь игровых персонажей, когда игра будет инициализирована.
+
+<Callout type="info">
+
+It is recommended to import the instances at project startup, see the `src/main.ts` file.
+
+</Callout>
+
+Чтобы создать новый экземпляр `CharacterBaseModel`, вам нужны следующие параметры:
+
+- `id`: A unique identifier (string). Used to reference the `activity` in the game (must be unique).
+- `onRun`: Функция, которая вызывается при запуске `активности`. It receives two parameters:
+  - The `activity` instance itself.
+  - `props`: the properties that will be passed to the activity. Its interface corresponds to <DynamicLink href="/nqtr#onrunprops">`OnRunProps`</DynamicLink>.
+- `props`: An object with the activity's properties:
+  - `name`: The name of the activity (Optional).
+  - `timeSlot`: The time slot in which the activity will be active (Optional).
+  - `dateScheduling`: Used to schedule what date it will be added and removed (Optional).
+  - `disabled`: Whether the activity is disabled. You can also pass a Pixi'VN flag name (optional, default is `false`).
+  - `hidden`: Whether the activity is hidden. You can also pass a Pixi'VN flag name (optional, default is `false`).
+  - `renderIcon`: The icon of the activity (Optional).
+
+```ts tab="values/activities.ts"
+import { ActivityBaseModel, RegisteredActivities, timeTracker } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { napLabel, sleepLabel } from "../labels/sleepNapLabels";
+import { orderProductLabel, takeKeyLabel } from "../labels/variousActionsLabels";
+
+export const bed = new ActivityBaseModel(
+    "bed",
+    async (_, props) => {
+        if (timeTracker.nowIsBetween(5, 22)) {
+            await narration.jump(napLabel, props);
+        } else {
+            await narration.jump(sleepLabel, props);
+        }
+    },
+    {
+        name: "bed",
+    }
+);
+
+export const orderProduct = new ActivityBaseModel(
+    "order_product",
+    async (_, props) => await narration.jump(orderProductLabel, props),
+    {
+        name: "order_product",
+    }
+);
+
+export const takeProduct = new ActivityBaseModel(
+    "take_product",
+    async (_, props) => await narration.jump(takeKeyLabel, props),
+    {
+        name: "take_product",
+    }
+);
+
+RegisteredActivities.add([bed, orderProduct, takeProduct]);
+```
+
+```ts tab="src/main.ts"
+import "./values/activities";
+
+// ...
+```
+
+`RegisteredActivities.add` is **required** to save the `activities` in the game.
+
+You can also create a function to load `activities`. The important thing is that it is called at least once before the `activities` are used in the game, otherwise they will not be available.
+
+## Ссылка
+
+Чтобы связать действие с <DynamicLink href="/nqtr/navigation">элементом навигации</DynamicLink>, у вас есть два варианта:
+
+### During game initialization
+
+Когда игра начнется, будет определен список связанных с ней действий. Этот список не будет сохранен при сохранении игры. Таким образом, разработчик может изменять этот список от одной версии игры к другой, не беспокоясь о переносе старых версий.
+
+```ts tab="values/rooms.ts"
+import { RegisteredRooms, RoomBaseModel } from "@drincs/nqtr";
+import { bed } from "./activity";
+import { mcHome } from "./locations";
+
+export const mcRoom = new RoomBaseModel("mc_room", mcHome, {
+    name: "MC room",
+    image: "location_myroom",
+    activities: [bed],
+});
+
+RegisteredRooms.add([mcRoom]);
+```
+
+```ts tab="values/activities.ts"
+import { ActivityBaseModel, RegisteredActivities, timeTracker } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { napLabel, sleepLabel } from "../labels/sleepNapLabels";
+
+export const bed = new ActivityBaseModel(
+    "bed",
+    async (_, props) => {
+        if (timeTracker.nowIsBetween(5, 22)) {
+            await narration.jump(napLabel, props);
+        } else {
+            await narration.jump(sleepLabel, props);
+        }
+    },
+    {
+        name: "bed",
+    }
+);
+
+RegisteredActivities.add([bed]);
+```
+
+### В ходе игры
+
+Вы также можете связать действие с элементом навигации во время игры. Эта функция полезна, если вы хотите временно добавить активность. Список действий, добавленных таким образом, будет включен в ваши игровые сохранения.
+
+Чтобы привязать активность к элементу навигации во время игры, можно использовать метод `addActivity`.
+
+```ts tab="Example"
+import { orderProduct } from "../activities";
+import { mcRoom } from "../rooms";
+
+mcRoom.addActivity(orderProduct); 
+```
+
+```ts tab="Typescript" title="index.ts" groupId="narrative_language"
+import { ActivityBaseModel, RegisteredActivities } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { orderProductLabel } from "../labels/variousActionsLabels";
+
+export const orderProduct = new ActivityBaseModel(
+    "order_product",
+    async (_, props) => await narration.jump(orderProductLabel, props),
+    {
+        name: "order_product",
+    }
+);
+
+RegisteredActivities.add([orderProduct]);
+```
+
+```ink tab="ink" title="index.ink" groupId="narrative_language"
+// {order_product} is the id of the activity
+# add activity {order_product} in mc_room
+```
+
+```ts tab="values/rooms.ts"
+
+```
+
+## Unlink
+
+To unlink an activity from a navigation element, you can use the `removeActivity` method.
+
+```ts tab="Example"
+import { orderProduct } from "../activities";
+import { mcRoom } from "../rooms";
+
+mcRoom.removeActivity(orderProduct);
+```
+
+```ts tab="Typescript" title="index.ts" groupId="narrative_language"
+import { ActivityBaseModel, RegisteredActivities } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { orderProductLabel } from "../labels/variousActionsLabels";
+
+export const orderProduct = new ActivityBaseModel(
+    "order_product",
+    async (_, props) => await narration.jump(orderProductLabel, props),
+    {
+        name: "order_product",
+    }
+);
+
+RegisteredActivities.add([orderProduct]);
+```
+
+```ink tab="ink" title="index.ink" groupId="narrative_language"
+// {order_product} is the id of the activity
+# remove activity {order_product} from mc_room
+```
+
+```ts tab="values/rooms.ts"
+
+```
+
+## Get
+
+To get a `activity` by its `id`, use the `RegisteredActivities.get` function.
+
+```ts
+import { RegisteredActivities } from "@drincs/nqtr";
+
+const orderProduct = RegisteredActivities.get('order_product');
+```
+
+## Получить все
+
+To get all `activities`, use the `RegisteredActivities.values` function.
+
+```ts
+import { RegisteredActivities } from "@drincs/nqtr";
+
+const activities = RegisteredActivities.values();
+```
+
+## Пользовательский класс
+
+<Callout title="Templates" type="info">
+
+In all templates, the `Activity` class is already defined in the file `models/nqtr/Activity.ts`. Вы можете использовать это напрямую или изменить его в соответствии с вашими потребностями.
+
+</Callout>
+
+It is recommended to create your own class `Activity` that extends `ActivityStoredClass` and "override" the interface `ActivityInterface` to add, edit, or remove properties or methods.
+
+For example, if you want to create a class `Activity`, you must "override" the interface `ActivityInterface` to use your properties or methods. (See the file `nqtr.d.ts`)
+
+Now you can create a class `Activity` that extends `ActivityStoredClass` and implements the `ActivityInterface`. (Для получения дополнительной информации о том, как создать класс в TypeScript, прочитайте [официальную документацию](https://www.typescriptlang.org/docs/handbook/2/classes.html))
+
+To create a property that stores its value in the game storage, you can create [Getters/Setters](https://www.typescriptlang.org/docs/handbook/2/classes.html#getters--setters) and use the `this.getStorageProperty()` / `this.setStorageProperty()` methods. (See the file `Activity.ts`)
+
+```ts tab="models/nqtr/Activity.ts"
+import { ActivityInterface, ActivityStoredClass, ActivityStoredClassProps, OnRunEvent, OnRunProps } from "@drincs/nqtr";
+import { ReactElement } from "react";
+
+export default class Activity extends ActivityStoredClass implements ActivityInterface {
+    constructor(
+        id: string,
+        onRun: OnRunEvent<ActivityInterface>,
+        props: {
+            name?: string;
+            sprite?: string | ContainerChild | ((props: Activity, runProps: OnRunProps) => ContainerChild);
+            icon?: ReactElement | ((props: Activity, runProps: OnRunProps) => ReactElement);
+            disabled?: boolean | (() => boolean);
+            hidden?: boolean | (() => boolean);
+        } & ActivityStoredClassProps
+    ) {
+        super(id, onRun, props);
+        this.name = props.name || "";
+        this._sprite = props.sprite;
+        this._icon = props.icon;
+        this._defaultDisabled = props.disabled || false;
+        this._defaultHidden = props.hidden || false;
+    }
+    readonly name: string;
+    private readonly _sprite?: string | ContainerChild | ((props: Activity, runProps: OnRunProps) => ContainerChild);
+    get sprite(): string | ContainerChild | ((props: OnRunProps) => ContainerChild) | undefined {
+        const sprite = this._sprite;
+        if (typeof sprite === "function") {
+            return (runProps: OnRunProps) => sprite(this, runProps);
+        }
+        return sprite;
+    }
+    private readonly _icon?: ReactElement | ((props: Activity, runProps: OnRunProps) => ReactElement);
+    get icon(): ReactElement | ((props: OnRunProps) => ReactElement) | undefined {
+        const icon = this._icon;
+        if (typeof icon === "function") {
+            return (runProps: OnRunProps) => icon(this, runProps);
+        }
+        return icon;
+    }
+    private _defaultDisabled: boolean | (() => boolean) = false;
+    get disabled(): boolean {
+        let value = this.getStorageProperty<boolean>("disabled") || this._defaultDisabled;
+        if (typeof value === "function") {
+            return value();
+        }
+        return value;
+    }
+    set disabled(value: boolean) {
+        this.setStorageProperty("disabled", value);
+    }
+    private _defaultHidden: boolean | (() => boolean) = false;
+    get hidden(): boolean {
+        let value = this.getStorageProperty<boolean>("hidden") || this._defaultHidden;
+        if (typeof value === "function") {
+            return value();
+        }
+        return value;
+    }
+    set hidden(value: boolean) {
+        this.setStorageProperty("hidden", value);
+    }
+    override get isActive(): boolean {
+        if (this.hidden) {
+            return false;
+        }
+        return super.isActive;
+    }
+}
+```
+
+```ts tab="nqtr.d.ts"
+import { ReactElement } from "react";
+import { ContainerChild } from "@drincs/pixi-vn";
+
+declare module "@drincs/nqtr" {
+    interface ActivityInterface {
+        /**
+         * The name of the activity.
+         */
+        readonly name: string;
+        /**
+         * Whether is disabled.
+         */
+        disabled: boolean;
+        /**
+         * Whether is hidden.
+         */
+        hidden: boolean;
+        /**
+         * The sprite of the activity.
+         */
+        readonly sprite?: string | ContainerChild | ((props: OnRunProps) => ContainerChild);
+        /**
+         * The React icon of the activity.
+         */
+        readonly icon?: ReactElement | ((props: OnRunProps) => ReactElement);
+    }
+}
+```

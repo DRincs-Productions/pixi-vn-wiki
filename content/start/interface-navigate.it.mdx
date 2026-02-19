@@ -1,0 +1,210 @@
+---
+title: Navigare/passare da una schermata all'altra dell'UI
+description: Scopri come navigare tra le diverse schermate dell'interfaccia utente in Pixi'VN utilizzando i sistemi di routing.
+---
+
+Per passare da una schermata all'altra dell'interfaccia utente (senza interrompere il canvas), è possibile utilizzare popup e finestre modali oppure navigare tra diversi **percorsi/route URL**.
+
+**Cosa sono i percorsi/route URL?** I **percorsi/route URL** sono le parti dell'URL che seguono il dominio. Ad esempio, nell'URL `https://example.com/path/to/page`, la route è `/path/to/page`. In genere, in tutti i progetti web front-end (client), ogni percorso è collegato a una pagina web (schermata dell'interfaccia utente).
+
+È possibile utilizzare un sistema di routing per gestire la navigazione tra **percorsi/route URL**. Ad esempio, puoi usare:
+
+- [React Router](https://reactrouter.com/)
+- [Vue Router](https://router.vuejs.org/)
+- [Angular Router](https://angular.io/guide/router)
+- [TanStack Router](https://tanstack.com/router/latest)
+
+```tsx tab="React Router"
+import { Route, Routes } from "react-router-dom";
+import LoadingScreen from "./screens/LoadingScreen";
+import MainMenu from "./screens/MainMenu";
+import NarrationElement from "./screens/NarrationElement";
+
+export default function AppRoutes() {
+    return (
+        <Routes>
+            <Route key={"main_menu"} path={"/"} element={<MainMenu />} />
+            <Route key={"loading"} path={"/loading"} element={<LoadingScreen />} />
+            <Route key={"narration"} path={"/narration"} element={<NarrationElement />} />
+            <Route path='*' element={<MainMenu />} />
+        </Routes>
+    );
+}
+```
+
+```vue tab="Vue Router"
+<script setup>
+import { createRouter, createWebHistory } from 'vue-router'
+import MainMenu from './screens/MainMenu.vue'
+import LoadingScreen from './screens/LoadingScreen.vue'
+import NarrationElement from './screens/NarrationElement.vue'
+
+const routes = [
+  { path: '/', component: MainMenu },
+  { path: '/loading', component: LoadingScreen },
+  { path: '/narration', component: NarrationElement },
+  { path: '/:pathMatch(.*)*', component: MainMenu }
+]
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes
+})
+
+export default router
+</script>
+```
+
+```typescript tab="Angular Router"
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { MainMenuComponent } from './screens/main-menu.component';
+import { LoadingScreenComponent } from './screens/loading-screen.component';
+import { NarrationElementComponent } from './screens/narration-element.component';
+
+const routes: Routes = [
+  { path: '', component: MainMenuComponent },
+  { path: 'loading', component: LoadingScreenComponent },
+  { path: 'narration', component: NarrationElementComponent },
+  { path: '**', component: MainMenuComponent }
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
+```
+
+```tsx tab="TanStack Router"
+import { Router, Route } from '@tanstack/router'
+import MainMenu from './screens/MainMenu'
+import LoadingScreen from './screens/LoadingScreen'
+import NarrationElement from './screens/NarrationElement'
+
+const router = new Router({
+  routeTree: (
+    <>
+      <Route path="/" element={<MainMenu />} />
+      <Route path="/loading" element={<LoadingScreen />} />
+      <Route path="/narration" element={<NarrationElement />} />
+      <Route path="*" element={<MainMenu />} />
+    </>
+  )
+})
+
+export default router
+```
+
+## Come navigare tra le route?
+
+Per navigare tra i percorsi, utilizza la funzione di navigazione fornita dal sistema di routing.
+
+<Callout title="Templates" type="info">
+
+In tutti i template, l'interfaccia `StepLabelProps` è già estesa per includere una funzione `navigate`. La puoi trovare nel file `pixi-vn.d.ts`.
+
+</Callout>
+
+Nei progetti pixi-vn è molto comune dover navigare tra i percorsi durante la narrazione. Per abilitare questa funzione, la funzione di navigazione deve essere inclusa nell'interfaccia <DynamicLink href="/start/labels#steplabelprops">`StepLabelProps`</DynamicLink>.
+
+```ts tab="pixi-vn.d.ts"
+import { narration } from '@drincs/pixi-vn'
+
+declare module '@drincs/pixi-vn' {
+    interface StepLabelProps {
+        navigate: (route: string) => void,
+    }
+}
+```
+
+```ts tab="hooks/useGameProps.ts"
+import { StepLabelProps } from "@drincs/pixi-vn";
+import useMyNavigate from "./useMyNavigate";
+
+export default function useGameProps(): StepLabelProps {
+    const navigate = useMyNavigate();
+
+    return {
+        navigate,
+    };
+}
+```
+
+<Callout title="ink" type="info">
+
+In tutti i modelli _ink_ è stato introdotto un <DynamicLink href="/ink/hashtag">comando hashtag personalizzato</DynamicLink> per navigare tra i percorsi. Per fare ciò, è necessario utilizzare la seguente sintassi:
+
+```ink title="ink"
+# navigate [route]
+```
+
+- `route`: Il percorso/route di destinazione. Ad esempio, `# navigate /new-route`.
+
+</Callout>
+
+Quindi, quando si crea una nuova etichetta, è possibile utilizzare la funzione `navigate` per passare da un percorso all'altro:
+
+```ts tab="labels/startLabel.ts"
+export const startLabel = newLabel("start_label",
+    [
+        ({ navigate }) => { // [!code focus]
+            navigate("/new-route") // [!code focus]
+        }, // [!code focus]
+    ]
+)
+```
+
+<Accordions>
+
+<Accordion title="block_back_forward" id="block-back-forward">
+
+L'utilizzo dei pulsanti Avanti e Indietro del browser può causare incoerenze nel gioco. Questo perché quei tasti consentono al giocatore di navigare tra i percorsi, non tra i `steps` narrativi.
+
+Si consiglia di impedire che il percorso cambi quando si preme il pulsante Indietro del browser. Esistono molti modi per farlo, ma si suggerisce il seguente approccio:
+
+Intercetta l'evento `popstate`, che viene attivato dopo aver premuto il pulsante Indietro, e avanza immediatamente di un passo. Ciò significa che quando si preme il pulsante Indietro, si torna brevemente al percorso precedente e poi si torna immediatamente al percorso corrente. Per garantire che il percorso non cambi, nemmeno brevemente, puoi aggiungere due nodi alla cronologia ogni volta che navighi su un nuovo percorso, anziché uno (impostazione predefinita).
+
+Ad esempio:
+
+```ts title="EventInterceptor.ts"
+import { useEffect } from 'react';
+
+export default function EventInterceptor() {
+    useEffect(() => {
+        window.addEventListener("popstate", onpopstate);
+        return () => {
+            window.removeEventListener("popstate", onpopstate);
+        };
+    }, []);
+
+    function onpopstate() {
+        window.history.forward();
+    }
+
+    return null
+}
+```
+
+```tsx title="React example"
+import { Assets } from "@drincs/pixi-vn";
+import { NavigateFunction, NavigateOptions, To, useNavigate } from "react-router-dom";
+
+export default function useMyNavigate(): NavigateFunction {
+    const navigate = useNavigate();
+
+    return async (to: To | number, options?: NavigateOptions) => {
+        if (typeof to === "number") {
+            await navigate(to);
+        } else {
+            Assets.backgroundLoadBundle(to as string);
+            await navigate(to, options);
+        }
+        window.history.pushState(null, window.location.href, window.location.href);
+    };
+}
+```
+
+</Accordion>
+
+</Accordions>

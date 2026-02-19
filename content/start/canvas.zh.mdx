@@ -1,0 +1,60 @@
+---
+title: Canvas (WebGL)
+description: Overview of how Pixi’VN uses PixiJS for rendering, differences between Pixi’VN and PixiJS, and how to interact with the canvas and debugging tools.
+---
+
+Pixi’VN uses [PixiJS](https://pixijs.com/8.x/guides/basics/what-pixijs-is) for rendering. You can use the Pixi’VN API to add images, text, and animations to the PixiJS canvas (or, more precisely, to the 2D WebGL rendering engine).
+
+<Callout title="ink" type="info">
+
+此方法可以与 _ink_ 语法一起使用。 See more <DynamicLink href="/ink/canvas">here</DynamicLink>.
+
+</Callout>
+
+![pixijs-h2](/pixijs.svg)
+
+## What is PixiJS?
+
+PixiJS is the fastest, most lightweight 2D library available for the web, working across all devices and allowing you to create rich, interactive graphics and cross-platform applications using WebGL and WebGPU. It is fast, flexible, and easy to use. PixiJS is used in games like [Good Pizza, Great Pizza](https://www.goodpizzagreatpizza.com/) and [The Enchanted Cave 2](https://store.steampowered.com/app/368610/The_Enchanted_Cave_2/).
+
+You can learn more about PixiJS on the [PixiJS website](https://www.pixijs.com/).
+
+## Differences between Pixi’VN and PixiJS
+
+<Callout type="info">
+
+PixiJS is not designed to support multiple instances. For this reason, in non-CDN builds, `pixi.js` is treated as an **external dependency**.
+
+If you are using build tools such as Vite.js or similar systems, you can directly install and use the `pixi.js` package. However, this approach is not supported in CDN-based environments such as CodePen.
+
+If you need direct access to PixiJS while working with Pixi’VN, it is recommended to use the `@drincs/pixi-vn/pixi.js` submodule. This submodule exposes the PixiJS application instance that is internally used by Pixi’VN, ensuring full compatibility and avoiding multiple-instance issues.
+
+```ts
+import { Graphics } from "@drincs/pixi-vn/pixi.js";
+```
+
+This is useful when creating <DynamicLink href="/start/interface#adding-pixijs-ui-layers">UI layers with PixiJS</DynamicLink> or for <DynamicLink href="/start/minigames">creating minigames</DynamicLink>.
+
+</Callout>
+
+Pixi’VN provides an API object called `canvas` to interface with its PixiJS application. You do not need to install pixi.js separately, and Pixi’VN's features are not identical to those of PixiJS. Although not recommended, you can use `canvas.app` to directly access the PixiJS application used by Pixi’VN.
+
+Rendering in Pixi’VN is very similar to PixiJS, with the following differences:
+
+- All components added to the canvas are linked to an <DynamicLink href="/start/canvas-alias">alias</DynamicLink> of your choice. This alias is used to identify and manipulate the component.
+- Pixi’VN saves the current canvas state at each <DynamicLink href="/start/labels">`step`</DynamicLink>.
+  **Note:** Only components linked to an alias are saved. If you add components directly to `PixiJS.Application`, they will not be included in the saved state.
+- Pixi’VN provides <DynamicLink href="/start/canvas-functions">various functions</DynamicLink> to add, remove, find, and manipulate components in the canvas.
+- Pixi’VN offers <DynamicLink href="/start/canvas-components">custom components</DynamicLink>, some of which correspond to PixiJS components, while others add new features.
+- Tickers are managed by Pixi’VN. If you use a PixiJS ticker, its state will not be saved.
+- To add event listeners and save their state in saves, it is recommended to read <DynamicLink href="/start/canvas-functions#add-a-listener-for-a-given-event">here</DynamicLink>.
+
+## Use PixiJS DevTools with Pixi’VN
+
+[**PixiJS DevTools**](https://pixijs.io/devtools/) is a [Chrome extension](https://chromewebstore.google.com/detail/pixijs-devtools/dlkffcaaoccbofklocbjcmppahjjboce) that allows you to inspect and debug PixiJS applications. You can use it to view the display list, inspect textures, and debug your PixiJS application. PixiJS DevTools works with Pixi’VN, allowing you to inspect the canvas.
+
+![devtools](/devtool-properties.gif)
+
+After installing PixiJS DevTools, open Chrome DevTools (F12) and go to the `PixiJS` tab.
+
+![image](/devtool-info.png)
