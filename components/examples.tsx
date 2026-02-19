@@ -789,7 +789,7 @@ export function AddListenerGivenEvent() {
         <ReactTemplate
             files={{
                 "labels/startLabel.ts": `import { newLabel, showImage } from "@drincs/pixi-vn";
-import { buttonEvent } from "../canvas/events";
+import Events from "../canvas/events";
 
 export const startLabel = newLabel("start_label", [
   async () => {
@@ -802,7 +802,7 @@ export const startLabel = newLabel("start_label", [
     // Shows hand cursor
     bunny.cursor = "pointer";
     // Pointers normalize touch and mouse (good for mobile and desktop)
-    bunny.on("pointerdown", buttonEvent); // [!code focus]
+    bunny.on("pointerdown", Events.buttonEvent);
   },
 ]);`,
                 "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
@@ -820,16 +820,17 @@ const manifest: AssetsManifest = {
   ],
 };
 export default manifest;`,
-                "canvas/events.ts": `import { AllFederatedEventMap } from "@drincs/pixi-vn/pixi.js";
-import { eventDecorator, Sprite } from "@drincs/pixi-vn";
+                "canvas/events.ts": `import { eventDecorator, Sprite, AllFederatedEventMap } from "@drincs/pixi-vn";
 
-@eventDecorator()
-export function buttonEvent(event: keyof AllFederatedEventMap, sprite: Sprite): void {
+export default class Events {
+  @eventDecorator()
+  static buttonEvent(event: keyof AllFederatedEventMap, sprite: Sprite): void {
     switch (event) {
       case "pointerdown":
         sprite.scale.x *= 1.25;
         sprite.scale.y *= 1.25;
         break;
+    }
   }
 }`,
             }}
