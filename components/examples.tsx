@@ -820,12 +820,12 @@ const manifest: AssetsManifest = {
   ],
 };
 export default manifest;`,
-                "canvas/events.ts": `import { eventDecorator, Sprite, AllFederatedEventMap } from "@drincs/pixi-vn";
+                "canvas/events.ts": `import { eventDecorator, FederatedEvent, Sprite } from "@drincs/pixi-vn";
 
 export default class Events {
   @eventDecorator()
-  static buttonEvent(event: keyof AllFederatedEventMap, sprite: Sprite): void {
-    switch (event) {
+  static buttonEvent(event: FederatedEvent, sprite: Sprite): void {
+    switch (event.type) {
       case "pointerdown":
         sprite.scale.x *= 1.25;
         sprite.scale.y *= 1.25;
