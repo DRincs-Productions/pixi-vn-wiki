@@ -3,18 +3,249 @@ icon: /spine.svg
 title: Spine 2D
 ---
 
+import { AnimationExample, MotionExample, AnimationSequenceExample } from "@/components/spine-examples";
+
 <Callout title="This page is under construction" type="warn">
 
-Currently, this functionality is not available in Pixi’VN, but we plan to implement it. You can follow the development and show your interest in the following thread [discussion#284](https://github.com/DRincs-Productions/pixi-vn/discussions/284).
+This library is currently in **testing phase**, so it may change significantly between versions.
 
 </Callout>
 
-**What is Spine 2D?** Spine 2D is a powerful 2D animation software specifically designed for game development. It utilizes a skeletal animation system, meaning that characters and objects are animated using a hierarchy of "bones" that control the movement of attached parts.
+**What is Spine 2D?** Spine 2D is a powerful 2D animation software specifically designed for game development. It uses a skeletal animation system, meaning that characters and objects are animated through a hierarchy of **bones** that control the movement of attached parts.
 
-You can learn more about Spine 2D on the [Spine 2D website](https://it.esotericsoftware.com/).
+You can learn more about Spine 2D on the [official Spine 2D website](https://it.esotericsoftware.com/).
 
-![Spine 2D](https://github.com/user-attachments/assets/2376d014-8d51-4093-b0ac-7ecd510f4c05)
+Within your **Pixi’VN** project, you can use the Spine 2D integration to create complex and smooth animations for your characters and objects.\
+This integration is essentially a wrapper around the official [Spine 2D runtime for PixiJS](https://it.esotericsoftware.com/spine-pixi), allowing you to use all Spine 2D features directly inside your Pixi’VN project.
 
-Having the ability to use elements with advanced animations can be very useful in many cases.
+## Why?
 
-The [spine-pixi](https://it.esotericsoftware.com/spine-pixi) library provides this capability to PixiJS.
+By using the Spine 2D integration in Pixi’VN, you can easily add animated components while taking advantage of both Pixi’VN and Spine 2D features, such as:
+
+- Saving the current animation state within game save files.
+- Using the <DynamicLink href="/start/canvas-position">additional Pixi’VN positioning properties</DynamicLink>.
+- Starting animation sequences quickly and easily.
+- Accessing additional features shared with other Pixi’VN components.
+
+## Instalación
+
+To install the Spine 2D package in an existing JavaScript project, use one of the following commands:
+
+```sh tab="npm"
+npm install @drincs/pixi-vn-spine
+```
+
+```sh tab="yarn"
+yarn add @drincs/pixi-vn-spine
+```
+
+```sh tab="pnpm"
+pnpm add @drincs/pixi-vn-spine
+```
+
+```sh tab="bun"
+bun add @drincs/pixi-vn-spine
+```
+
+```sh tab="deno"
+deno install npm:@drincs/pixi-vn-spine
+```
+
+### Inicialización
+
+Due to compatibility issues with Lazy components, the library must be imported when the game is initialized, so that it can be used inside Lazy components.
+
+```ts title="main.ts"
+import "@drincs/pixi-vn-spine"; // [!code focus]
+
+Game.init(body, {
+    // ...
+})
+```
+
+## Usage
+
+You can use the `Spine` component just like any other Pixi’VN component.\
+However, you must first load the Spine 2D assets (**skeleton** and **atlas**) before using it.
+
+This component has two required properties: `skeleton` and `atlas`, which must match the names of the loaded assets.
+
+For example:
+
+```ts tab="labels/startLabel.ts"
+import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
+import { Spine } from "@drincs/pixi-vn-spine";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await Assets.load("spineboySkeleton", "spineboyAtlas");
+        const spine = new Spine({ atlas: "spineAtlas", skeleton: "spineSkeleton", xAlign: 0.5, yAlign: 1 });
+        spine.addAnimation("idle", { loop: true });
+        canvas.add("spine", spine);
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "spineboySkeleton",
+                    src: "https://raw.githubusercontent.com/pixijs/spine-v8/main/examples/assets/spineboy-pro.skel",
+                },
+                {
+                    alias: "spineboyAtlas",
+                    src: "https://raw.githubusercontent.com/pixijs/spine-v8/main/examples/assets/spineboy-pma.atlas",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+### Animation
+
+```ts tab="labels/startLabel.ts"
+import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
+import { Spine } from "@drincs/pixi-vn-spine";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await Assets.load("spineboySkeleton", "spineboyAtlas");
+        const spine = new Spine({ atlas: "spineAtlas", skeleton: "spineSkeleton", xAlign: 0.5, yAlign: 1 });
+        spine.addAnimation("idle", { loop: true });
+        canvas.add("spine", spine);
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "spineboySkeleton",
+                    src: "https://raw.githubusercontent.com/pixijs/spine-v8/main/examples/assets/spineboy-pro.skel",
+                },
+                {
+                    alias: "spineboyAtlas",
+                    src: "https://raw.githubusercontent.com/pixijs/spine-v8/main/examples/assets/spineboy-pma.atlas",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<AnimationExample />
+
+### Spine + motion.js animations
+
+```ts tab="labels/startLabel.ts"
+import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
+import { Spine } from "@drincs/pixi-vn-spine";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await Assets.load("spineboySkeleton", "spineboyAtlas");
+        const spine = new Spine({ atlas: "spineAtlas", skeleton: "spineSkeleton", xAlign: 0.5, yAlign: 1 });
+        spine.addAnimation("idle", { loop: true });
+        canvas.add("spine", spine);
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "spineboySkeleton",
+                    src: "https://raw.githubusercontent.com/pixijs/spine-v8/main/examples/assets/spineboy-pro.skel",
+                },
+                {
+                    alias: "spineboyAtlas",
+                    src: "https://raw.githubusercontent.com/pixijs/spine-v8/main/examples/assets/spineboy-pma.atlas",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<MotionExample />
+
+### Animations sequence
+
+```ts tab="labels/startLabel.ts"
+import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
+import { Spine } from "@drincs/pixi-vn-spine";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await Assets.load("spineboySkeleton", "spineboyAtlas");
+        const spine = new Spine({ atlas: "spineAtlas", skeleton: "spineSkeleton", xAlign: 0.5, yAlign: 1 });
+        spine.playSequence([["idle", { loop: true, duration: 2 }], "jump"], {
+            repeat: Infinity,
+        });
+        canvas.add("spine", spine);
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "spineboySkeleton",
+                    src: "https://raw.githubusercontent.com/pixijs/spine-v8/main/examples/assets/spineboy-pro.skel",
+                },
+                {
+                    alias: "spineboyAtlas",
+                    src: "https://raw.githubusercontent.com/pixijs/spine-v8/main/examples/assets/spineboy-pma.atlas",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<AnimationSequenceExample />
