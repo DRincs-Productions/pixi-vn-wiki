@@ -31,6 +31,9 @@ const manifest: AssetsManifest = {
   ],
 };
 export default manifest;`,
+                "constants.ts": `export const HEIGHT = 1080;
+export const WIDTH = 1920;
+export const BACKGROUND_COLOR = "#303030";`,
                 ...files,
             }}
             previewHeight={previewHeight}
