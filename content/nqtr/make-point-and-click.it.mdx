@@ -38,7 +38,7 @@ npm install
 npm start
 ```
 
-## Navigation elements
+## Navigazione e mappa
 
 <Callout type="info">
 
@@ -129,6 +129,8 @@ RegisteredMaps.add([mainMap]);
 
 Now, before you can use the navigation utilities, you need to set the current room. After that, it is possible to navigate to the navigation screen at the start of the game or after a short initial narrative.
 
+Additionally, it is important to keep in mind that the current `location` and `map` are deduced from the current `room`, so it is sufficient to set the `room` to obtain all the necessary information for navigation.
+
 <Callout type="info">
 
 You can find more detailed documentation on how to navigate between UI screens <DynamicLink href="/start#interface-navigate">here</DynamicLink>.
@@ -163,4 +165,31 @@ const startLabel = newLabel("start", [
     },
 ]);
 export default startLabel;
+```
+
+## Time system
+
+```ts title="utils/nqtr-utility.ts"
+import { timeTracker } from "@drincs/nqtr";
+import { timeSlots } from "../constans";
+
+const weekDaysNames = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+export function initializeNQTR() {
+    timeTracker.initialize({
+        defaultTimeSpent: 1,
+        dayStartTime: 0,
+        dayEndTime: 24,
+        timeSlots: [
+            { name: timeSlots.morning.description, startTime: timeSlots.morning.value },
+            { name: timeSlots.afternoon.description, startTime: timeSlots.afternoon.value },
+            { name: timeSlots.evening.description, startTime: timeSlots.evening.value },
+            { name: timeSlots.night.description, startTime: timeSlots.night.value },
+        ],
+        getDayName: (weekDayNumber: number) => {
+            return weekDaysNames[weekDayNumber];
+        },
+        weekendStartDay: 6,
+        weekLength: 7,
+    });
+}
 ```
