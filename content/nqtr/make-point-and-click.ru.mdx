@@ -4,12 +4,124 @@ title: Make your first Point & Click Adventure
 
 <Callout title="This page is under construction" type="warn">
 
-`@drincs/nqtr` is currently under development, so this page is under construction. You can follow the progress of the library in the [NQTR Repository](https://github.com/DRincs-Productions/nqtr-pixi-vn)
+Questa documentazione è ancora in fase di scrittura.
+
+</Callout>
+
+<Callout title="Requisiti" type="warn">
+
+Prima di continuare é importante considerare che in questa pagina si terranno per scontato le nozioni spiegate in <DynamicLink href="/start#make-visual-novel">"Make your first Visual Novel"</DynamicLink> e che tutte le funzionalità spiegate in quella pagina possono essere applicate anche qui. Inoltre é di essenziale importanza avere conoscenza medie di JS/TS (come funzioni, classi, interfacce e l'uso di file `.d.ts`).
+Non continuare cose non hai queste nozioni.
 
 </Callout>
 
 This tutorial will guide you through the process of creating your first Point & Click Adventure.
 
-Прежде всего, вам нужно установить `@drincs/nqtr`.
+**Cosa è un Point & Click Adventure?** Un Point & Click Adventure è un genere di gioco in cui il giocatore interagisce con l'ambiente e gli oggetti attraverso il puntamento e il clic del mouse. Questi giochi spesso presentano enigmi, dialoghi e una narrazione coinvolgente.
 
-**What is NQTR?** The Navigation Quest Time Routine (NQTR) is a library that introduces a navigation, quest, and time system to the Pixi’VN visual novel engine.
+**Come implementarlo in un progetto Pixi’VN?** L'ambiente Pixi’VN offre una libreria di utilità e modelli base chiamata `NQTR` (Navigation Quest Time Routine) che permette di implementare facilmente un sistema di navigazione, gestione del tempo e delle quest. Il funzionamento di NQTR è basato sulla creazione di instanze di classi che rispettino determinate interfacce, che verranno registrate e fornite dalle utilità di NQTR. In questo modo, è possibile creare una UI dedicata alle esigenze del gioco. In alternativa è possibile utilizzare i modelli base forniti da NQTR e la UI fornita dal template "Point & Click Adventure - React" per creare un gioco completo in poco tempo.
+
+Inoltre è molto importante considerare che gli elementi possono avviare della `labels` (narrative), quindi c'è la possibilita di spostarsi sul interfaccia di narrazione e viceversa.
+
+## Создание нового проекта
+
+Первым шагом является создание нового проекта. Более подробную информацию о создании проекта на основе шаблона можно найти <DynamicLink href="/start#project-initialization">здесь</DynamicLink>. We will use the template "Point & Click Adventure - React".
+
+`Point & Click Adventure -> React`
+
+После завершения создания проекта крайне важно ознакомиться с файлом `README.md`, находящимся в корне проекта. В этом файле содержится важная информация о проекте и способах его использования.
+
+В нашем случае для запуска проекта потребуется лишь выполнить указанные команды:
+
+```bash
+npm install
+npm start
+```
+
+## Navigation elements
+
+<Callout type="info">
+
+Puoi trovare una documentazione più dettagliata su questi elementi <DynamicLink href="/nqtr#navigation">qui</DynamicLink>.
+
+</Callout>
+
+Il primo passo per creare un Point & Click Adventure è quello di creare gli elementi di navigazione. Questi elementi permettono al giocatore di muoversi all'interno del gioco e interagire con l'ambiente.
+
+The navigation system is composed of the following elements:
+
+- `rooms`: The core elements of navigation, from which the position of the `mc` and `npc` is deduced.
+- `locations`: A container of `rooms`.
+- `maps`: A container of `locations`.
+
+For example:
+
+```ts title="values/rooms.ts"
+import { RegisteredRooms, RoomBaseModel } from "@drincs/nqtr";
+import { mcHome } from "./locations";
+
+export const mcRoom = new RoomBaseModel("mc_room", mcHome, {
+    name: "MC room",
+});
+
+RegisteredRooms.add([mcRoom]);
+```
+
+```ts title="values/locations.ts"
+import { LocationBaseModel, RegisteredLocations } from "@drincs/nqtr";
+import { mainMap } from "./maps";
+
+export const mcHome = new LocationBaseModel("mc_home", mainMap, {
+    name: "MC Home",
+});
+
+RegisteredLocations.add([mcHome]);
+```
+
+```ts title="values/maps.ts"
+import { MapBaseModel, RegisteredMaps } from "@drincs/nqtr";
+
+export const mainMap = new MapBaseModel("main_map", {
+    name: "Main Map",
+});
+
+RegisteredMaps.add([mainMap]);
+```
+
+Ora prima di poter usare le utilità che riguardano la navigazione, è necessario settare la stanza corrente. Dopo di che è possibile navigare nella schermata di navigazione all'avvio del gioco o dopo una breve narrazione iniziale.
+
+<Callout type="info">
+
+Puoi trovare una documentazione più dettagliata su come navigare tra schermate UI<DynamicLink href="/start#interface-navigate">qui</DynamicLink>.
+
+</Callout>
+
+For example:
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+    # navigate /narration
+    Hello, welcome to the my first game!
+
+    # enter room mc_room
+    # navigate /navigation
+    -> DONE
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+import { navigator } from "@drincs/nqtr";
+import { narration, newLabel } from "@drincs/pixi-vn";
+import { mcRoom } from "../values/rooms";
+
+const startLabel = newLabel("start", [
+    async (props) => {
+        await props.navigate("/narration");
+        narration.dialogue = "Hello, welcome to the my first game!";
+    },
+    async (props) => {
+        navigator.currentRoom = mcRoom;
+        await props.navigate("/navigation");
+    },
+]);
+export default startLabel;
+```
