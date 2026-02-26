@@ -57,32 +57,71 @@ The navigation system is composed of the following elements:
 For example:
 
 ```ts title="values/rooms.ts"
-import { RegisteredRooms, RoomBaseModel } from "@drincs/nqtr";
+import { RegisteredRooms } from "@drincs/nqtr";
+import TimeSlotsImage from "../models/TimeSlotsImage";
+import Room from "../models/nqtr/Room";
+import { bed } from "./activities";
 import { mcHome } from "./locations";
 
-export const mcRoom = new RoomBaseModel("mc_room", mcHome, {
+export const mcRoom = new Room("mc_room", mcHome, {
     name: "MC room",
+    background: new TimeSlotsImage({
+        morning: "location_myroom-0",
+        afternoon: "location_myroom-1",
+        evening: "location_myroom-2",
+        night: "location_myroom-3",
+    }),
+    activities: [bed],
 });
 
 RegisteredRooms.add([mcRoom]);
 ```
 
 ```ts title="values/locations.ts"
-import { LocationBaseModel, RegisteredLocations } from "@drincs/nqtr";
+import { navigator, RegisteredLocations } from "@drincs/nqtr";
+import { ImageSprite } from "@drincs/pixi-vn";
+import { NAVIGATION_ROUTE } from "../constans";
+import Location from "../models/nqtr/Location";
 import { mainMap } from "./maps";
 
-export const mcHome = new LocationBaseModel("mc_home", mainMap, {
+export const mcHome = new Location("mc_home", mainMap, {
     name: "MC Home",
+    sprite: (location, { navigate }) => {
+        const icon = new ImageSprite(
+            { xAlign: 0.3, yAlign: 0.2, height: 120, width: 120, eventMode: "static", cursor: "pointer" },
+            "icon_location_home",
+        );
+        icon.on("pointerdown", () => {
+            const entrance = location.entrance;
+            if (entrance) {
+                navigator.currentRoom = entrance;
+                navigate(NAVIGATION_ROUTE);
+            }
+        });
+        icon.load();
+        return icon;
+    },
 });
 
 RegisteredLocations.add([mcHome]);
 ```
 
 ```ts title="values/maps.ts"
-import { MapBaseModel, RegisteredMaps } from "@drincs/nqtr";
+import { RegisteredMaps } from "@drincs/nqtr";
+import TimeSlotsImage from "../models/TimeSlotsImage";
+import Map from "../models/nqtr/Map";
 
-export const mainMap = new MapBaseModel("main_map", {
+export const mainMap = new Map("main_map", {
     name: "Main Map",
+    background: new TimeSlotsImage({
+        morning: "map-0",
+        afternoon: "map-1",
+        evening: "map-2",
+        night: "map-3",
+    }),
+    neighboringMaps: {
+        north: "nightcity_map",
+    },
 });
 
 RegisteredMaps.add([mainMap]);
