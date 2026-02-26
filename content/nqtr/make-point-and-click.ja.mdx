@@ -4,24 +4,24 @@ title: Make your first Point & Click Adventure
 
 <Callout title="This page is under construction" type="warn">
 
-Questa documentazione è ancora in fase di scrittura.
+This documentation is still being written.
 
 </Callout>
 
 <Callout title="Requisiti" type="warn">
 
-Prima di continuare é importante considerare che in questa pagina si terranno per scontato le nozioni spiegate in <DynamicLink href="/start#make-visual-novel">"Make your first Visual Novel"</DynamicLink> e che tutte le funzionalità spiegate in quella pagina possono essere applicate anche qui. Inoltre é di essenziale importanza avere conoscenza medie di JS/TS (come funzioni, classi, interfacce e l'uso di file `.d.ts`).
-Non continuare cose non hai queste nozioni.
+Before continuing, it is important to consider that this page assumes the concepts explained in <DynamicLink href="/start#make-visual-novel">"Make your first Visual Novel"</DynamicLink>, and that all the features explained on that page can also be applied here. Additionally, having an intermediate knowledge of JS/TS (such as functions, classes, interfaces, and the use of `.d.ts` files) is essential.
+Do not continue if you do not have this knowledge.
 
 </Callout>
 
 This tutorial will guide you through the process of creating your first Point & Click Adventure.
 
-**Cosa è un Point & Click Adventure?** Un Point & Click Adventure è un genere di gioco in cui il giocatore interagisce con l'ambiente e gli oggetti attraverso il puntamento e il clic del mouse. Questi giochi spesso presentano enigmi, dialoghi e una narrazione coinvolgente.
+**What is a Point & Click Adventure?** A Point & Click Adventure is a game genre in which the player interacts with the environment and objects through mouse pointing and clicking. These games often feature puzzles, dialogues, and an engaging narrative.
 
-**Come implementarlo in un progetto Pixi’VN?** L'ambiente Pixi’VN offre una libreria di utilità e modelli base chiamata `NQTR` (Navigation Quest Time Routine) che permette di implementare facilmente un sistema di navigazione, gestione del tempo e delle quest. Il funzionamento di NQTR è basato sulla creazione di instanze di classi che rispettino determinate interfacce, che verranno registrate e fornite dalle utilità di NQTR. In questo modo, è possibile creare una UI dedicata alle esigenze del gioco. In alternativa è possibile utilizzare i modelli base forniti da NQTR e la UI fornita dal template "Point & Click Adventure - React" per creare un gioco completo in poco tempo.
+**How to implement it in a Pixi’VN project?** The Pixi’VN environment provides a utility library and base models called `NQTR` (Navigation Quest Time Routine), which allow you to easily implement a navigation system, time management, and quests. The way NQTR works is based on creating class instances that comply with specific interfaces, which will be registered and provided by the NQTR utilities. In this way, it is possible to create a UI tailored to the game's needs. Alternatively, you can use the base models provided by NQTR and the UI included in the "Point & Click Adventure - React" template to create a complete game in a short time.
 
-Inoltre è molto importante considerare che gli elementi possono avviare della `labels` (narrative), quindi c'è la possibilita di spostarsi sul interfaccia di narrazione e viceversa.
+Additionally, it is very important to consider that elements can trigger `labels` (narratives), allowing you to switch to the narrative interface and back.
 
 ## 新しいプロジェクトを作成する
 
@@ -42,11 +42,11 @@ npm start
 
 <Callout type="info">
 
-Puoi trovare una documentazione più dettagliata su questi elementi <DynamicLink href="/nqtr#navigation">qui</DynamicLink>.
+You can find more detailed documentation about these elements <DynamicLink href="/nqtr#navigation">here</DynamicLink>.
 
 </Callout>
 
-Il primo passo per creare un Point & Click Adventure è quello di creare gli elementi di navigazione. Questi elementi permettono al giocatore di muoversi all'interno del gioco e interagire con l'ambiente.
+The first step to create a Point & Click Adventure is to create the navigation elements. These elements allow the player to move within the game and interact with the environment.
 
 The navigation system is composed of the following elements:
 
@@ -57,42 +57,81 @@ The navigation system is composed of the following elements:
 For example:
 
 ```ts title="values/rooms.ts"
-import { RegisteredRooms, RoomBaseModel } from "@drincs/nqtr";
+import { RegisteredRooms } from "@drincs/nqtr";
+import TimeSlotsImage from "../models/TimeSlotsImage";
+import Room from "../models/nqtr/Room";
+import { bed } from "./activities";
 import { mcHome } from "./locations";
 
-export const mcRoom = new RoomBaseModel("mc_room", mcHome, {
+export const mcRoom = new Room("mc_room", mcHome, {
     name: "MC room",
+    background: new TimeSlotsImage({
+        morning: "location_myroom-0",
+        afternoon: "location_myroom-1",
+        evening: "location_myroom-2",
+        night: "location_myroom-3",
+    }),
+    activities: [bed],
 });
 
 RegisteredRooms.add([mcRoom]);
 ```
 
 ```ts title="values/locations.ts"
-import { LocationBaseModel, RegisteredLocations } from "@drincs/nqtr";
+import { navigator, RegisteredLocations } from "@drincs/nqtr";
+import { ImageSprite } from "@drincs/pixi-vn";
+import { NAVIGATION_ROUTE } from "../constans";
+import Location from "../models/nqtr/Location";
 import { mainMap } from "./maps";
 
-export const mcHome = new LocationBaseModel("mc_home", mainMap, {
+export const mcHome = new Location("mc_home", mainMap, {
     name: "MC Home",
+    sprite: (location, { navigate }) => {
+        const icon = new ImageSprite(
+            { xAlign: 0.3, yAlign: 0.2, height: 120, width: 120, eventMode: "static", cursor: "pointer" },
+            "icon_location_home",
+        );
+        icon.on("pointerdown", () => {
+            const entrance = location.entrance;
+            if (entrance) {
+                navigator.currentRoom = entrance;
+                navigate(NAVIGATION_ROUTE);
+            }
+        });
+        icon.load();
+        return icon;
+    },
 });
 
 RegisteredLocations.add([mcHome]);
 ```
 
 ```ts title="values/maps.ts"
-import { MapBaseModel, RegisteredMaps } from "@drincs/nqtr";
+import { RegisteredMaps } from "@drincs/nqtr";
+import TimeSlotsImage from "../models/TimeSlotsImage";
+import Map from "../models/nqtr/Map";
 
-export const mainMap = new MapBaseModel("main_map", {
+export const mainMap = new Map("main_map", {
     name: "Main Map",
+    background: new TimeSlotsImage({
+        morning: "map-0",
+        afternoon: "map-1",
+        evening: "map-2",
+        night: "map-3",
+    }),
+    neighboringMaps: {
+        north: "nightcity_map",
+    },
 });
 
 RegisteredMaps.add([mainMap]);
 ```
 
-Ora prima di poter usare le utilità che riguardano la navigazione, è necessario settare la stanza corrente. Dopo di che è possibile navigare nella schermata di navigazione all'avvio del gioco o dopo una breve narrazione iniziale.
+Now, before you can use the navigation utilities, you need to set the current room. After that, it is possible to navigate to the navigation screen at the start of the game or after a short initial narrative.
 
 <Callout type="info">
 
-Puoi trovare una documentazione più dettagliata su come navigare tra schermate UI<DynamicLink href="/start#interface-navigate">qui</DynamicLink>.
+You can find more detailed documentation on how to navigate between UI screens <DynamicLink href="/start#interface-navigate">here</DynamicLink>.
 
 </Callout>
 
