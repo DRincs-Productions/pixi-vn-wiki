@@ -204,6 +204,43 @@ const secondPart = newLabel("second_part", [
 ]);
 ```
 
+### Use the "glue" feature of dialogues
+
+In visual novels, it is often useful to paste text into the current dialogue. For example, to pause a conversation and have it continue in a subsequent `step`. To do this, we can use the <DynamicLink href="/start/dialogue#dialogue-glue">glue functionality</DynamicLink>.
+
+This is the example:
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+// ...
+
+james: Ooh, [mc]! Nice, firm handshake!
+<>The last guy always gave me the dead fish.
+<>I already think we're gonna get along fine.
+james: Come on in and...
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    // ...
+    async () => narration.dialogue = { character: james, text: `Ooh, ${mc.name}! Nice, firm handshake!` },
+    async () => {
+        narration.dialogGlue = true
+        narration.dialogue = `The last guy always gave me the dead fish.`
+    },
+    async () => {
+        narration.dialogGlue = true
+        narration.dialogue = `I already think we're gonna get along fine.`
+    },
+    async () => narration.dialogue = { character: james, text: `Come on in and...` },
+    // ...
+]);
+export default startLabel;
+```
+
 ## Choice menus
 
 Now we will ask the player if he wants to continue with the second part of the visual novel.
@@ -331,43 +368,6 @@ const startLabel = newLabel("start", [
     () => { narration.dialogue = `She puts out her hand, and I take it.` },
     () => narration.dialogue = { character: mc, text: `Thanks, good to meet you, ${steph_fullname}.` },
     () => narration.dialogue = { character: steph, text: `WOW, that is, like, the most perfect handshake I've ever had! Firm, but also gentle. ${sly.name}, you *gotta* shake his hand!` },
-    // ...
-]);
-export default startLabel;
-```
-
-## Use the "glue" feature of dialogues
-
-In visual novels, it is often useful to paste text into the current dialogue. For example, to pause a conversation and have it continue in a subsequent `step`. To do this, we can use the <DynamicLink href="/start/dialogue#dialogue-glue">glue functionality</DynamicLink>.
-
-This is the example:
-
-```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
-=== start ===
-// ...
-
-james: Ooh, [mc]! Nice, firm handshake!
-<>The last guy always gave me the dead fish.
-<>I already think we're gonna get along fine.
-james: Come on in and...
-
-// ...
--> DONE
-```
-
-```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
-const startLabel = newLabel("start", [
-    // ...
-    async () => narration.dialogue = { character: james, text: `Ooh, ${mc.name}! Nice, firm handshake!` },
-    async () => {
-        narration.dialogGlue = true
-        narration.dialogue = `The last guy always gave me the dead fish.`
-    },
-    async () => {
-        narration.dialogGlue = true
-        narration.dialogue = `I already think we're gonna get along fine.`
-    },
-    async () => narration.dialogue = { character: james, text: `Come on in and...` },
     // ...
 ]);
 export default startLabel;
