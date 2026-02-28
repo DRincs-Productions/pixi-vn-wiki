@@ -8,9 +8,9 @@ This documentation is still being written.
 
 </Callout>
 
-<Callout title="Requisiti" type="warn">
+<Callout type="warn">
 
-Before continuing, it is important to consider that this page assumes the concepts explained in <DynamicLink href="/start#make-visual-novel">"Make your first Visual Novel"</DynamicLink>, and that all the features explained on that page can also be applied here. Additionally, having an intermediate knowledge of JS/TS (such as functions, classes, interfaces, and the use of `.d.ts` files) is essential.
+Before continuing, it is important to consider that this page assumes the concepts explained in <DynamicLink href="/start/make-visual-novel">"Make your first Visual Novel"</DynamicLink>, and that all the features explained on that page can also be applied here. Additionally, having an intermediate knowledge of JS/TS (such as functions, classes, interfaces, and the use of `.d.ts` files) is essential.
 Do not continue if you do not have this knowledge.
 
 </Callout>
@@ -36,6 +36,86 @@ En nuestro caso, para iniciar el proyecto solo será necesario ejecutar los coma
 ```bash
 npm install
 npm start
+```
+
+## Aggiungere elementi cliccabili
+
+La principale caratteristica di un Point & Click Adventure è la possibilità di interagire con l'ambiente attraverso il click del mouse. Per aggiungere elementi cliccabili è consigliato utilizzare UI (nei nostro caso React o PixiJS) e non il canvas di Pixi’VN, in quanto è più semplice gestire gli eventi e le interazioni.
+
+Nel template che stiamo usando, durante la creazione degli elementi che vedremo in seguito, c'è la possibilita di definire degli elementi grafici (come ad esempio un'icona). Questi elementi grafici possono essere definiti usando diversi tipi, in base a cio il sistema aggiungera l'elemento grafico nel <DynamicLink href="/start/interface-pixijs">PixiJS UI</DynamicLink> o in quello di <DynamicLink href="/start/interface-react">React</DynamicLink>. In questo modo è possibile creare elementi cliccabili in modo semplice e veloce.
+
+Di solito è possibile definire un elemento grafico come una stringa che rappresenta il nome dell'asset. Il template da anche la possibilita usare la classe <DynamicLink href="/nqtr/time#image-time-period">`TimeSlotsImage`</DynamicLink>, che permette di definire un'immagine diversa in base al periodo del giorno.
+
+```ts
+export const nightcityMap = new Map("nightcity_map", {
+    name: "Nightcity",
+    background: "map-nightcity", // [!code focus]
+    neighboringMaps: {
+        south: "main_map",
+    },
+});
+```
+
+Di solito è possibile definire un elemento grafico come una elemento React.
+
+```tsx
+export const bed = new Activity(
+    "bed",
+    async (_, event) => {
+        if (timeTracker.nowIsBetween(5, 22)) {
+            await navigateAndJumpToLabel(napLabel, NARRATION_ROUTE, event);
+        } else {
+            await navigateAndJumpToLabel(sleepLabel, NARRATION_ROUTE, event);
+        }
+    },
+    {
+        name: "bed",
+        icon: (activity, props) => { // [!code focus]
+            return ( // [!code focus]
+                <NqtrRoundIconButton // [!code focus]
+                    disabled={activity.disabled} // [!code focus]
+                    onClick={() => { // [!code focus]
+                        activity.run(props).then(() => { // [!code focus]
+                            props.invalidateInterfaceData(); // [!code focus]
+                        }); // [!code focus]
+                    }} // [!code focus]
+                    ariaLabel={props.uiTransition(activity.name)} // [!code focus]
+                    variant='solid' // [!code focus]
+                    color='primary' // [!code focus]
+                > {/* [!code focus] */}
+                    <BedIcon // [!code focus]
+                        sx={{ // [!code focus]
+                            fontSize: { sx: "1.5rem", sm: "2rem", md: "2.5rem", lg: "3rem", xl: "3.5rem" }, // [!code focus]
+                        }} // [!code focus]
+                    /> {/* [!code focus] */}
+                </NqtrRoundIconButton> // [!code focus]
+            ); // [!code focus]
+        }, // [!code focus]
+    }
+);
+```
+
+Inoltre quando è disponibile la propertà `sprite` è possibile definire un elemento grafico come un elemento PixiJS.
+
+```ts
+export const mcHome = new Location("mc_home", mainMap, {
+    name: "MC Home",
+    sprite: (location, { navigate }) => { // [!code focus]
+        const icon = new ImageSprite( // [!code focus]
+            { xAlign: 0.3, yAlign: 0.2, height: 120, width: 120, eventMode: "static", cursor: "pointer" }, // [!code focus]
+            "icon_location_home" // [!code focus]
+        ); // [!code focus]
+        icon.on("pointerdown", () => { // [!code focus]
+            const entrance = location.entrance; // [!code focus]
+            if (entrance) { // [!code focus]
+                navigator.currentRoom = entrance; // [!code focus]
+                navigate(NAVIGATION_ROUTE); // [!code focus]
+            } // [!code focus]
+        }); // [!code focus]
+        icon.load(); // [!code focus]
+        return icon; // [!code focus]
+    }, // [!code focus]
+});
 ```
 
 ## Navigation and map
@@ -133,7 +213,7 @@ Additionally, it is important to keep in mind that the current `location` and `m
 
 <Callout type="info">
 
-You can find more detailed documentation on how to navigate between UI screens <DynamicLink href="/start#interface-navigate">here</DynamicLink>.
+You can find more detailed documentation on how to navigate between UI screens <DynamicLink href="/start/interface-navigate">here</DynamicLink>.
 
 </Callout>
 
