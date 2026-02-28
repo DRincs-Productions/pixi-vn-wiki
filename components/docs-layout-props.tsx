@@ -71,6 +71,7 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                     },
                 ],
             },
+            { type: "page", name: "llms.txt", url: `/llms-full.txt`, icon: <User /> },
             {
                 type: "folder",
                 name: t("make-your-first"),
