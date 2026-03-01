@@ -122,7 +122,7 @@ export const mcHome = new Location("mc_home", mainMap, {
 
 <Callout type="info">
 
-You can find more detailed documentation about these elements <DynamicLink href="/nqtr#navigation">here</DynamicLink>.
+You can find more detailed documentation about these elements <DynamicLink href="/nqtr/navigation">here</DynamicLink>.
 
 </Callout>
 
@@ -249,7 +249,17 @@ export default startLabel;
 
 ## Time system
 
-```ts title="utils/nqtr-utility.ts"
+<Callout type="info">
+
+You can find more detailed documentation about these elements <DynamicLink href="/nqtr/time">here</DynamicLink>.
+
+</Callout>
+
+Now let's move on to another fundamental element: the time management system. The time management system is a key component in a Point & Click Adventure, as it allows you to create a dynamic and realistic world where the player's actions can have different consequences depending on the time of day.
+
+Before you can use the time management features, it is necessary to initialize the `timeTracker` with the information required for the system to function. As shown in the following example, it is possible to define every aspect of the time management system, such as time slots, days of the week, the start and end time of the day, and so on.
+
+```ts tab="utils/nqtr-utility.ts"
 import { timeTracker } from "@drincs/nqtr";
 import { timeSlots } from "../constans";
 
@@ -272,4 +282,31 @@ export function initializeNQTR() {
         weekLength: 7,
     });
 }
+```
+
+```ts tab="constans.ts"
+export const timeSlots = {
+    morning: { description: "morning", value: 5 },
+    afternoon: { description: "afternoon", value: 12 },
+    evening: { description: "evening", value: 18 },
+    night: { description: "night", value: 22 },
+};
+```
+
+The main functionality of the time management system is the ability to advance time based on the player's actions.
+
+```ink tab="ink" title="index.ink" groupId="narrative_language"
+// {timeValue} is a number representing the amount of time to increment
+// {dateValue} is a number representing the amount of days to increment
+# wait {timeValue} // Increment time by {value}
+# wait // Increment time by defaultTimeSpent
+# wait days {dateValue} // Increment date by {dateValue} and set time to dayStartTime
+# wait days {dateValue} hours {timeValue} // Increment date by {dateValue} and time by {timeValue}
+```
+
+```ts tab="Typescript" title="index.ts" groupId="narrative_language"
+import { timeTracker } from "@drincs/nqtr";
+
+timeTracker.increaseTime(2);
+timeTracker.increaseDate(1, 8); // Increment date by 1 and set time to 8
 ```
