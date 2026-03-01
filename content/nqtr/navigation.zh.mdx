@@ -1,0 +1,561 @@
+---
+title: Navigation and map
+description: How to define, organize, and navigate rooms, locations, and maps in Pixi’VN, including custom classes and usage examples.
+---
+
+<Callout title="Nomenclature" type="info">
+
+Usually in video games, navigation elements used to identify the position of characters are called room, location (e.g. restaurant, house, hospital, etc.), and map. For this reason, names that follow this logic are used.
+
+This does not prevent you from using these elements to manage navigation with the same logic but with different terms. For example, in a game set in space where the player moves between planets, rooms can be the planets, locations can be the solar systems, and maps can be the galaxy.
+
+</Callout>
+
+The navigation system is composed of the following elements:
+
+- `rooms`: The core elements of navigation, from which the position of the `mc` and `npc` is deduced.
+- `locations`: A container of `rooms`.
+- `maps`: A container of `locations`.
+
+The player can move between `rooms`. The `location` and the `map` are also determined based on the `room` in which the player is located.
+
+## 初始化
+
+To initialize a `room`/`location`/`map`, create a new instance of the `RoomBaseModel` / `LocationBaseModel` / `MapBaseModel` class (or your [custom class](#custom-class)) and add it to the game room/location/map dictionary when the game is initialized.
+
+<Callout type="info">
+
+It is recommended to import the instances at project startup, see the `src/main.ts` file.
+
+</Callout>
+
+To create a new instance of `RoomBaseModel`, you need the following parameters:
+
+- `id`: A unique identifier (string). Used to reference the `room` in the game (must be unique).
+- `location`: The `location` where the `room` is.
+- `props`: An object with the room's properties:
+  - `name` (Optional): The room's name.
+  - `image` (Optional): The room's image URL.
+  - `activities` (Optional): The <DynamicLink href="/nqtr/activity">activities</DynamicLink> available in this room.
+  - `disabled` (Optional): Whether the room is disabled. You can also pass a <DynamicLink href="/start/flags">Pixi’VN flag</DynamicLink> name.
+  - `hidden` (Optional): Whether the room is hidden. You can also pass a <DynamicLink href="/start/flags">Pixi’VN flag</DynamicLink> name.
+  - `icon` (Optional): The room's icon image URL.
+
+To create a new instance of `LocationBaseModel`, you need the following parameters:
+
+- `id`: A unique identifier (string). Used to reference the `location` in the game (must be unique).
+- `map`: The `map` where the `location` is.
+- `props`: An object with the location's properties:
+  - `name` (Optional): The location's name.
+  - `icon` (Optional): The location's icon image URL.
+  - `activities` (Optional): The <DynamicLink href="/nqtr/activity">activities</DynamicLink> available in this location.
+  - `disabled` (Optional): Whether the location is disabled. You can also pass a <DynamicLink href="/start/flags">Pixi’VN flag</DynamicLink> name.
+  - `hidden` (Optional): Whether the location is hidden. You can also pass a <DynamicLink href="/start/flags">Pixi’VN flag</DynamicLink> name.
+
+To create a new instance of `MapBaseModel`, you need the following parameters:
+
+- `id`: A unique identifier (string). Used to reference the `map` in the game (must be unique).
+- `props`: An object with the map's properties:
+  - `name` (Optional): The map's name.
+  - `image` (Optional): The map's image URL.
+  - `activities` (Optional): The <DynamicLink href="/nqtr/activity">activities</DynamicLink> available in this map.
+
+```ts tab="values/rooms.ts"
+import { RegisteredRooms, RoomBaseModel } from "@drincs/nqtr";
+import { bed } from "./activity";
+import { mcHome } from "./locations";
+
+export const mcRoom = new RoomBaseModel("mc_room", mcHome, {
+    name: "MC room",
+    image: "location_myroom",
+    activities: [bed],
+});
+
+export const aliceRoom = new RoomBaseModel("alice_room", mcHome, {
+    name: "Alice room",
+    image: "location_aliceroom",
+});
+
+export const annRoom = new RoomBaseModel("ann_room", mcHome, {
+    name: "Ann room",
+    image: "location_annroom",
+});
+
+export const bathroom = new RoomBaseModel("bathroom", mcHome, {
+    name: "Bathroom",
+    image: "location_bathroom",
+});
+
+export const lounge = new RoomBaseModel("lounge", mcHome, {
+    name: "Lounge",
+    image: "location_lounge",
+});
+
+export const terrace = new RoomBaseModel("terrace", mcHome, {
+    name: "Terrace",
+    image: "location_terrace",
+});
+
+RegisteredRooms.add([mcRoom, aliceRoom, annRoom, bathroom, lounge, terrace]);
+```
+
+```ts tab="values/locations.ts"
+import { LocationBaseModel, RegisteredLocations } from "@drincs/nqtr";
+import { mainMap } from "./maps";
+
+export const mcHome = new LocationBaseModel("mc_home", mainMap, {
+    name: "MC Home",
+});
+
+export const gym = new LocationBaseModel("gym", mainMap, {
+    name: "Gym",
+});
+
+export const school = new LocationBaseModel("school", mainMap, {
+    name: "School",
+});
+
+RegisteredLocations.add([mcHome, gym, school]);
+```
+
+```ts tab="values/maps.ts"
+import { MapBaseModel, RegisteredMaps } from "@drincs/nqtr";
+
+export const mainMap = new MapBaseModel("main_map", {
+    name: "Main Map",
+    image: "map",
+});
+
+export const nightcityMap = new MapBaseModel("nightcity_map", {
+    name: "Nightcity",
+    image: "nightcity_map",
+});
+
+RegisteredMaps.add([mainMap, nightcityMap]);
+```
+
+```ts tab="src/main.ts"
+import "./values/rooms";
+import "./values/locations";
+import "./values/maps";
+
+// ...
+```
+
+`RegisteredRooms.add` / `RegisteredLocations.add` / `RegisteredMaps.add` is **required** to save the `rooms`/`locations`/`maps` in the game.
+
+You can also create a function to load `rooms`/`locations`/`maps`. The important thing is that it is called at least once before the `rooms`/`locations`/`maps` are used in the game, otherwise they will not be available.
+
+It is also recommended to [set the current room](#navigate) during the start of the game.
+
+```ts title="labels/startLabel.ts"
+import { navigator } from "@drincs/nqtr";
+import { newLabel } from "@drincs/pixi-vn";
+import { mcRoom } from "../values/rooms";
+
+const startLabel = newLabel("start", [
+    async () => {
+        navigator.currentRoom = mcRoom;
+        // ... other initialization logic
+    },
+]);
+export default startLabel;
+```
+
+## Get
+
+To get a `room`/`location`/`map` by its `id`, use the `RegisteredRooms.get` / `RegisteredLocations.get` / `RegisteredMaps.get` function.
+
+```ts tab="Rooms"
+import { RegisteredRooms } from "@drincs/nqtr";
+
+const mcRoom = RegisteredRooms.get('mc_room');
+```
+
+```ts tab="Locations"
+import { RegisteredLocations } from "@drincs/nqtr";
+
+const mcHome = RegisteredLocations.get('mc_home');
+```
+
+```ts tab="Maps"
+import { RegisteredMaps } from "@drincs/nqtr";
+
+const mainMap = RegisteredMaps.get('main_map');
+```
+
+## 获取所有
+
+To get all `rooms`/`locations`/`maps`, use the `RegisteredRooms.values` / `RegisteredLocations.values` / `RegisteredMaps.values` function.
+
+```ts tab="Rooms"
+import { RegisteredRooms } from "@drincs/nqtr";
+
+const rooms = RegisteredRooms.values();
+```
+
+```ts tab="Locations"
+import { RegisteredLocations } from "@drincs/nqtr";
+
+const locations = RegisteredLocations.values();
+```
+
+```ts tab="Maps"
+import { RegisteredMaps } from "@drincs/nqtr";
+
+const maps = RegisteredMaps.values();
+```
+
+## Navigate
+
+As explained above, the player can navigate between `rooms`, and the current `room` determines the current `location` and `map`.
+
+To navigate to a `room`, set the `navigator.currentRoom` property to the desired room instance. This will automatically update the current `location` and `map` based on the room's location and map.
+
+```ts tab="Typescript" title="index.ts" groupId="narrative_language"
+import { navigator } from "@drincs/nqtr";
+import { mcRoom } from "../values/rooms";
+
+navigator.currentRoom = mcRoom;
+```
+
+```ink tab="ink" title="index.ink" groupId="narrative_language"
+// {roomId} is the id of the room
+# enter room {roomId}
+```
+
+## 自定义类
+
+<Callout title="Templates" type="info">
+
+In all templates, the `Room` / `Location` / `Map` class is already defined in the file `models/nqtr/Room.ts` / `models/nqtr/Location.ts` / `models/nqtr/Map.ts`. 您可以直接使用它或修改它以满足您的需求。
+
+</Callout>
+
+It is recommended to create your own class `Room` / `Location` / `Map` that extends `RoomStoredClass` / `LocationStoredClass` / `MapStoredClass` and "override" the interface `RoomInterface` / `LocationInterface` / `MapInterface` to add, edit, or remove properties or methods.
+
+For example, if you want to create a class `Room` / `Location` / `Map`, you must "override" the interface `RoomInterface` / `LocationInterface` / `MapInterface` to use your properties or methods. (See the file `nqtr.d.ts`)
+
+Now you can create a class `Room` / `Location` / `Map` that extends `RoomStoredClass` / `LocationStoredClass` / `MapStoredClass` and implements the `RoomInterface` / `LocationInterface` / `MapInterface`. （有关如何在TypeScript中创建类的更多信息，请阅读[官方文档](https://www.typescriptlang.org/docs/handbook/2/classes.html)）
+
+To create a property that stores its value in the game storage, you can create [Getters/Setters](https://www.typescriptlang.org/docs/handbook/2/classes.html#getters--setters) and use the `this.getStorageProperty()` / `this.setStorageProperty()` methods. (See the file `Room.ts` / `Location.ts` / `Map.ts`)
+
+```ts tab="models/nqtr/Room.ts"
+import { ActivityInterface, LocationInterface, OnRunProps, RoomInterface, RoomStoredClass } from "@drincs/nqtr";
+
+export default class Room extends RoomStoredClass implements RoomInterface {
+    constructor(
+        id: string,
+        location: LocationInterface,
+        props: {
+            name: string;
+            disabled?: boolean | (() => boolean);
+            hidden?: boolean | (() => boolean);
+            background: string | ContainerChild | ((props: Room, runProps: OnRunProps) => ContainerChild);
+            activities?: ActivityInterface[];
+            isEntrance?: boolean;
+        }
+    ) {
+        super(id, location, props.activities);
+        this.name = props.name;
+        this._defaultDisabled = props.disabled || false;
+        this._defaultHidden = props.hidden || false;
+        this._background = props.background;
+        this.isEntrance = props.isEntrance || false;
+    }
+    readonly name: string;
+    private readonly _background: string | ContainerChild | ((props: Room, runProps: OnRunProps) => ContainerChild);
+    get background(): string | ContainerChild | ((props: OnRunProps) => ContainerChild) {
+        const background = this._background;
+        if (typeof background === "function") {
+            return (runProps: OnRunProps) => background(this, runProps);
+        }
+        return background;
+    }
+    readonly isEntrance: boolean;
+    private _defaultDisabled: boolean | (() => boolean) = false;
+    get disabled(): boolean {
+        let value = this.getStorageProperty<boolean>("disabled") || this._defaultDisabled;
+        if (typeof value === "function") {
+            return value();
+        }
+        return value;
+    }
+    set disabled(value: boolean) {
+        this.setStorageProperty("disabled", value);
+    }
+    private _defaultHidden: boolean | (() => boolean) = false;
+    get hidden(): boolean {
+        let value = this.getStorageProperty<boolean>("hidden") || this._defaultHidden;
+        if (typeof value === "function") {
+            return value();
+        }
+        return value;
+    }
+    set hidden(value: boolean) {
+        this.setStorageProperty("hidden", value);
+    }
+}
+```
+
+```ts tab="models/nqtr/Location.ts"
+import {
+    ActivityInterface,
+    LocationInterface,
+    LocationStoredClass,
+    MapInterface,
+    OnRunProps,
+    RoomInterface,
+} from "@drincs/nqtr";
+import { ContainerChild } from "@drincs/pixi-vn";
+
+export default class Location extends LocationStoredClass implements LocationInterface {
+    constructor(
+        id: string,
+        map: MapInterface,
+        props: {
+            activities?: ActivityInterface[];
+            name: string;
+            disabled?: boolean | (() => boolean);
+            hidden?: boolean | (() => boolean);
+            sprite: ContainerChild | ((props: Location, runProps: OnRunProps) => ContainerChild);
+        }
+    ) {
+        super(id, map, props.activities);
+        this.name = props.name;
+        this._defaultDisabled = props.disabled || false;
+        this._defaultHidden = props.hidden || false;
+        this._sprite = props.sprite;
+    }
+    readonly name: string;
+    private readonly _sprite: ContainerChild | ((props: Location, runProps: OnRunProps) => ContainerChild);
+    get sprite(): ContainerChild | ((props: OnRunProps) => ContainerChild) {
+        let sprite = this._sprite;
+        if (typeof sprite === "function") {
+            return (runProps: OnRunProps) => sprite(this, runProps);
+        }
+        return sprite;
+    }
+    private _defaultDisabled: boolean | (() => boolean) = false;
+    get disabled(): boolean {
+        let value = this.getStorageProperty<boolean>("disabled") || this._defaultDisabled;
+        if (typeof value === "function") {
+            return value();
+        }
+        return value;
+    }
+    set disabled(value: boolean) {
+        this.setStorageProperty("disabled", value);
+    }
+    private _defaultHidden: boolean | (() => boolean) = false;
+    get hidden(): boolean {
+        let value = this.getStorageProperty<boolean>("hidden") || this._defaultHidden;
+        if (typeof value === "function") {
+            return value();
+        }
+        return value;
+    }
+    set hidden(value: boolean) {
+        this.setStorageProperty("hidden", value);
+    }
+    override get rooms(): RoomInterface[] {
+        return super.rooms.filter((room) => !room.hidden);
+    }
+    get entrance(): RoomInterface | undefined {
+        if (super.rooms.length === 0) {
+            return undefined;
+        }
+        return super.rooms.find((room) => room.isEntrance) || super.rooms[0];
+    }
+}
+```
+
+```ts tab="models/nqtr/Map.ts"
+import { ActivityInterface, LocationInterface, MapInterface, MapStoredClass, OnRunProps } from "@drincs/nqtr";
+
+export default class Map extends MapStoredClass implements MapInterface {
+    constructor(
+        id: string,
+        props: {
+            activities?: ActivityInterface[];
+            name: string;
+            background: string | ContainerChild | ((props: Map, runProps: OnRunProps) => ContainerChild);
+        }
+    ) {
+        super(id, props.activities);
+        this.name = props.name;
+        this._background = props.background;
+    }
+    readonly name: string;
+    private readonly _background: string | ContainerChild | ((props: Map, runProps: OnRunProps) => ContainerChild);
+    get background(): string | ContainerChild | ((props: OnRunProps) => ContainerChild) {
+        const background = this._background;
+        if (typeof background === "function") {
+            return (runProps: OnRunProps) => background(this, runProps);
+        }
+        return background;
+    }
+    override get locations(): LocationInterface[] {
+        return super.locations.filter((location) => !location.hidden);
+    }
+}
+```
+
+```ts tab="nqtr.d.ts"
+import { ContainerChild } from "@drincs/pixi-vn";
+
+declare module "@drincs/nqtr" {
+    interface RoomInterface {
+        /**
+         * The name.
+         * If you set undefined, it will return the initial value of name.
+         */
+        readonly name: string;
+        /**
+         * The background of the room.
+         */
+        readonly background: string | ContainerChild | ((props: OnRunProps) => ContainerChild);
+        /**
+         * Whether is disabled.
+         */
+        disabled: boolean;
+        /**
+         * Whether is hidden.
+         */
+        hidden: boolean;
+        /**
+         * If is the entrance of the location. (the first room)
+         */
+        readonly isEntrance: boolean;
+    }
+    interface LocationInterface {
+        /**
+         * The name of the location.
+         * If you set undefined, it will return the initial value of name.
+         */
+        readonly name: string;
+        /**
+         * Whether is disabled.
+         */
+        disabled: boolean;
+        /**
+         * Whether is hidden.
+         */
+        hidden: boolean;
+        /**
+         * The sprite of the location.
+         */
+        readonly sprite: ContainerChild | ((props: OnRunProps) => ContainerChild);
+        /**
+         * The entrance room of the location.
+         */
+        readonly entrance: RoomInterface | undefined;
+    }
+    interface MapInterface {
+        /**
+         * The name of the map.
+         */
+        readonly name: string;
+        /**
+         * The background of the map.
+         */
+        readonly background: string | ContainerChild | ((props: OnRunProps) => ContainerChild);
+    }
+}
+```
+
+## FAQ
+
+<Accordions>
+
+<Accordion title="how_set_default_room_for_location" id="how-set-default-room-for-location">
+
+The developer can designate an "index" `room` for locations.
+
+To set a default room for a location, you can add in your [Custom class](#custom-class) a property `isEntrance` to the `Room` class, which will be set to `true` for the default room of the location, and then use the `entrance` property of the `Location` class to get the default room.
+
+For example:
+
+```ts tab="mcRoom.ts"
+import { navigator, RegisteredRooms } from "@drincs/nqtr";
+import { ImageSprite } from "@drincs/pixi-vn";
+import { NAVIGATION_ROUTE } from "../constans";
+import Location from "../models/nqtr/Location";
+import Room from "../models/nqtr/Room";
+import { mainMap } from "./maps";
+
+export const mcHome = new Location("mc_home", mainMap, {
+    name: "MC Home",
+    icon: (location, { navigate }) => {
+        const icon = new ImageSprite(
+            { xAlign: 0.3, yAlign: 0.2, height: 120, width: 120, eventMode: "static", cursor: "pointer" },
+            "icon_location_home"
+        );
+        icon.on("pointerdown", () => {
+            const entrance = location.entrance;
+            if (entrance) {
+                navigator.currentRoom = entrance;
+                navigate(NAVIGATION_ROUTE);
+            }
+        });
+        icon.load();
+        return icon;
+    },
+});
+
+export const mcRoom = new Room("mc_room", mcHome, {
+    name: "MC room",
+    image: "location_myroom",
+    isEntrance: true, // This room is the entrance of the location
+});
+
+RegisteredRooms.add([mcRoom]);
+```
+
+```ts tab="models/nqtr/Room.ts"
+import { RoomInterface, RoomStoredClass } from "@drincs/nqtr";
+
+export default class Room extends RoomStoredClass implements RoomInterface {
+    constructor() {
+        // ... other initializations
+        this.isEntrance = props.isEntrance || false;
+    }
+    // ... other methods and properties
+    readonly isEntrance: boolean;
+}
+```
+
+```ts tab="models/nqtr/Location.ts"
+import { LocationInterface, LocationStoredClass, RoomInterface } from "@drincs/nqtr";
+
+export default class Location extends LocationStoredClass implements LocationInterface {
+    // ... other methods and properties
+    get entrance(): RoomInterface | undefined {
+        if (super.rooms.length === 0) {
+            return undefined;
+        }
+        return super.rooms.find((room) => room.isEntrance) || super.rooms[0];
+    }
+}
+```
+
+```ts tab="nqtr.d.ts"
+declare module "@drincs/nqtr" {
+    interface LocationInterface {
+        /**
+         * The entrance room of the location.
+         */
+        readonly entrance: RoomInterface | undefined;
+    }
+    interface RoomInterface {
+        /**
+         * If is the entrance of the location. (the first room)
+         */
+        readonly isEntrance: boolean;
+    }
+}
+```
+
+</Accordion>
+
+</Accordions>

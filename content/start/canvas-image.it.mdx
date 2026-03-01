@@ -1,0 +1,146 @@
+---
+title: ImageSprite
+description: Guida all'utilizzo del componente ImageSprite in Pixi'VN, inclusa l'inizializzazione, il caricamento, l'aggiunta, la visualizzazione e la rimozione delle immagini sul canvas.
+---
+
+import { ImageSpriteAdd, ImageSpriteShow } from "@/components/examples";
+
+Il componente `ImageSprite` estende il componente [`PixiJS.Sprite`](https://pixijs.com/8.x/guides/components/sprites), così puoi utilizzare tutti i metodi e le proprietà di `PixiJS.Sprite`. Viene utilizzato per visualizzare una singola immagine sul canvas.
+
+Per inizializzare questo componente, è necessario passare i seguenti parametri:
+
+- `options` (Opzionale): Le opzioni per il componente.
+- `imageUrl` (Opzionale): L'URL o il percorso. If you have initialized the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink>, you can use the alias of the texture.
+
+```ts
+import { canvas, ImageSprite } from "@drincs/pixi-vn"
+
+let alien = new ImageSprite({
+    anchor: { x: 0.5, y: 0.5 },
+    x: 100,
+    y: 100,
+}, 'https://pixijs.com/assets/eggHead.png')
+
+await alien.load()
+canvas.add("alien", alien)
+```
+
+Rispetto al componente `Sprite`, `ImageSprite` aggiunge le seguenti funzionalità:
+
+- `load()`: Carica l'URL dell'immagine e imposta la texture risultante sul componente.
+- Posizionamento aggiuntivo: <DynamicLink href="/start/canvas-position">align e posizione con la percentuale</DynamicLink>.
+
+## Visualizza
+
+Il modo più semplice per mostrare un'immagine sul canvas è utilizzare la funzione `showImage`. Questa funzione combina `load` e <DynamicLink href="/start/canvas-functions#add-a-canvas-component">`canvas.add`</DynamicLink>.
+
+Questa funzione restituisce un `ImageSprite` che è possibile utilizzare per manipolare il componente. Questa funzione ha i seguenti parametri:
+
+- `alias`: L'<DynamicLink href="/start/canvas-alias">alias</DynamicLink> per identificare il componente.
+- `imageUrl` (Opzionale): L'URL o il percorso. If you have initialized the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink>, you can use the alias of the texture. Se non si specifica l'URL, verrà utilizzato l'alias come URL.
+- `options` (Opzionale): Le opzioni per il componente.
+
+```ts tab="labels/startLabel.ts"
+import { newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        let alien1 = await showImage("alien"); // [!code focus]
+        let alien2 = await showImage("alien2", "alien", { // [!code focus]
+            xAlign: 0.5, // [!code focus]
+        }); // [!code focus]
+        let alien3 = await showImage("alien3", "https://pixijs.com/assets/eggHead.png", { // [!code focus]
+            xAlign: 1, // [!code focus]
+        }); // [!code focus]
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<ImageSpriteShow />
+
+## Aggiungi
+
+Per aggiungere un'immagine al canvas, utilizzare la funzione `addImage`. Questa funzione aggiunge solo il componente al canvas; **non** lo mostra né ne carica la texture. Utilizza <DynamicLink href="/start/canvas-functions#add-a-canvas-component">`canvas.add`</DynamicLink> per aggiungere il componente al canvas.
+
+Questa funzione restituisce un `ImageSprite` che è possibile utilizzare per manipolare il componente. Questa funzione ha i seguenti parametri:
+
+- `alias`: L'<DynamicLink href="/start/canvas-alias">alias</DynamicLink> per identificare il componente.
+- `imageUrl` (Opzionale): L'URL o il percorso. If you have initialized the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink>, you can use the alias of the texture. Se non si specifica l'URL, verrà utilizzato l'alias come URL.
+- `options` (Opzionale): Le opzioni per il componente.
+
+```ts tab="labels/startLabel.ts"
+import { addImage, canvas, ImageSprite, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    () => {
+        let alien1 = addImage("alien"); // [!code focus]
+        let alien2 = addImage("alien2", "alien", { // [!code focus]
+            xAlign: 0.5, // [!code focus]
+        }); // [!code focus]
+        let alien3 = addImage("alien3", "https://pixijs.com/assets/eggHead.png", { // [!code focus]
+            xAlign: 1, // [!code focus]
+        }); // [!code focus]
+    },
+    async () => {
+        let alien1 = canvas.find<ImageSprite>("alien");
+        let alien2 = canvas.find<ImageSprite>("alien2");
+        let alien3 = canvas.find<ImageSprite>("alien3");
+        // Load the textures
+        alien1 && (await alien1.load());
+        alien2 && (await alien2.load());
+        alien3 && (await alien3.load());
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<ImageSpriteAdd />
+
+## Rimuovi
+
+Come con altri componenti canvas, puoi rimuovere questo componente utilizzando la funzione <DynamicLink href="/start/canvas-functions#remove-a-canvas-component">`canvas.remove`</DynamicLink>.

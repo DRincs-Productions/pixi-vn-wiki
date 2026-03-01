@@ -1,0 +1,132 @@
+---
+title: Desktop & mobile devices
+description: Learn how to distribute your game for desktop and mobile platforms using Tauri and GitHub Actions.
+---
+
+There are several ways to distribute your game for desktop and mobile platforms. Common choices include [Tauri](https://v2.tauri.app/), [Ionic](https://ionicframework.com/), [Electron](https://www.electronjs.org/), [NW.js](https://nwjs.io/), and [React Native for Windows + Mac](https://microsoft.github.io/react-native-windows/).
+
+If you don't want to manage a heavily customized native project, consider using the <DynamicLink href="/start#project-initialization">multi-device templates</DynamicLink>. Those templates include Tauri so you can develop a web app and also build desktop and mobile apps from the same codebase.
+
+![tauri-h2](/tauri.svg)
+
+## Tauri
+
+Tauri is a framework for building desktop and mobile applications with web technologies. It leverages **Rust** to produce secure, lightweight, and fast native binaries, while a WebView renders your HTML, CSS, and JavaScript.
+
+Learn more on the [Tauri website](https://v2.tauri.app/).
+
+## Distributing your game with Tauri
+
+Creating releases manually for every platform is difficult: it requires many tools to be installed, and building iOS apps requires a Mac. For these reasons, manual release generation is generally not recommended.
+
+Tauri supports using GitHub Actions to automate release builds. GitHub Actions runs jobs on virtual machines (runners) that you configure with YAML workflow files. In a workflow you define the events that trigger the pipeline (for example, pushing a tag) and the list of commands the runner should execute.
+
+<Callout title="Mobile" type="warn">
+
+Currently, mobile builds via GitHub Actions are experimental.
+
+</Callout>
+
+The <DynamicLink href="/start#project-initialization">multi-device templates</DynamicLink> include the file `/.github/workflows/tauri.yml`. That workflow builds release artifacts (installation packages) for multiple operating systems.
+
+```yml title=".github/workflows/tauri.yml"
+# https://tauri.app/distribute/pipelines/github/
+name: 'publish'
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish-tauri:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'macos-latest' # for Arm based macs (M1 and above).
+            args: '--target aarch64-apple-darwin'
+          - platform: 'macos-latest' # for Intel based macs.
+            args: '--target x86_64-apple-darwin'
+          - platform: 'ubuntu-22.04'
+            args: ''
+          - platform: 'windows-latest'
+            args: ''
+          - platform: 'macos-latest' # iOS
+            args: '--target x86_64-apple-darwin'
+            mobile: "ios"
+          - platform: 'ubuntu-22.04' # Android
+            args: ''
+            mobile: "android"
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04' # This must match the platform value defined above.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: setup node
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+
+      - name: Update Java (only for Android builds)
+        if: matrix.mobile == 'android'
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: setup Android SDK (only for Android builds)
+        if: matrix.mobile == 'android'
+        uses: android-actions/setup-android@v3
+
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable # Set this to dtolnay/rust-toolchain@nightly
+        with:
+          # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: install frontend dependencies
+        # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
+        run: yarn install # change this to npm or pnpm depending on which one you use.
+
+      - name: Upload Tauri icons
+        run: npm run tauri icon public/pwa-512x512.png
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
+          releaseName: 'App v__VERSION__'
+          releaseBody: 'See the assets to download this version and install.'
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}
+          mobile: ${{ matrix.mobile || null }}
+```
+
+To trigger this workflow you need a GitHub repository for your project and a Git tag that starts with `v`. For example:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+You can follow the workflow runs in the repository's Actions tab.
+
+![Actions section](https://github.com/user-attachments/assets/b39055a9-02a7-472b-930f-daf0a9c6c78b)
+
+At the end of a successful run a GitHub Release will be created. Read more about GitHub Releases [here](https://docs.github.com/en/repositories/releasing-projects-on-github/viewing-your-repositorys-releases-and-tags).

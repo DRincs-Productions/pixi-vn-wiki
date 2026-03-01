@@ -1,0 +1,384 @@
+---
+title: Make your first Point & Click Adventure
+---
+
+<Callout title="This page is under construction" type="warn">
+
+This documentation is still being written.
+
+</Callout>
+
+<Callout type="warn">
+
+Before continuing, it is important to consider that this page assumes the concepts explained in <DynamicLink href="/start/make-visual-novel">"Make your first Visual Novel"</DynamicLink>, and that all the features explained on that page can also be applied here. Additionally, having an intermediate knowledge of JS/TS (such as functions, classes, interfaces, and the use of `.d.ts` files) is essential.
+Do not continue if you do not have this knowledge.
+
+</Callout>
+
+This tutorial will guide you through the process of creating your first Point & Click Adventure.
+
+**What is a Point & Click Adventure?** A Point & Click Adventure is a game genre in which the player interacts with the environment and objects through mouse pointing and clicking. These games often feature puzzles, dialogues, and an engaging narrative.
+
+**How to implement it in a Pixi’VN project?** The Pixi’VN environment provides a utility library and base models called `NQTR` (Navigation Quest Time Routine), which allow you to easily implement a navigation system, time management, and quests. The way NQTR works is based on creating class instances that comply with specific interfaces, which will be registered and provided by the NQTR utilities. In this way, it is possible to create a UI tailored to the game's needs. Alternatively, you can use the base models provided by NQTR and the UI included in the "Point & Click Adventure - React" template to create a complete game in a short time.
+
+Additionally, it is very important to consider that elements can trigger `labels` (narratives), allowing you to switch to the narrative interface and back.
+
+## Create a new project
+
+The first step is to create a new project. You can find more information on how to create a new project starting from a template <DynamicLink href="/start#project-initialization">here</DynamicLink>. We will use the template "Point & Click Adventure - React".
+
+`Point & Click Adventure -> React`
+
+After the creation is complete, it is very important to read the `README.md` file that is in the root of the project. This file contains important information about the project and how to use it.
+
+In our case, to start the project we will simply need to execute the following commands:
+
+```bash
+npm install
+npm start
+```
+
+## Add clickable elements
+
+The main feature of a Point & Click Adventure is the ability to interact with the environment through mouse clicks. To add clickable elements, it is recommended to use UI (in our case React or PixiJS) rather than the Pixi’VN canvas, as it is easier to manage events and interactions.
+
+In the template we are using, when creating the elements that we will see later, there is the possibility to define graphical elements (such as an icon). These graphical elements can be defined using different types; based on this, the system will add the graphical element to the <DynamicLink href="/start/interface-pixijs">PixiJS UI</DynamicLink> or to the <DynamicLink href="/start/interface-react">React</DynamicLink> UI. In this way, it is possible to create clickable elements in a simple and fast way.
+
+Usually, it is possible to define a graphical element as a string representing the asset name. The template also provides the possibility to use the <DynamicLink href="/nqtr/time#image-time-period">`TimeSlotsImage`</DynamicLink> class, which allows you to define a different image depending on the time of day.
+
+```ts
+export const nightcityMap = new Map("nightcity_map", {
+    name: "Nightcity",
+    background: "map-nightcity", // [!code focus]
+    neighboringMaps: {
+        south: "main_map",
+    },
+});
+```
+
+Usually, it is possible to define a graphical element as a React element.
+
+```tsx
+export const bed = new Activity(
+    "bed",
+    async (_, event) => {
+        if (timeTracker.nowIsBetween(5, 22)) {
+            await navigateAndJumpToLabel(napLabel, NARRATION_ROUTE, event);
+        } else {
+            await navigateAndJumpToLabel(sleepLabel, NARRATION_ROUTE, event);
+        }
+    },
+    {
+        name: "bed",
+        icon: (activity, props) => { // [!code focus]
+            return ( // [!code focus]
+                <NqtrRoundIconButton // [!code focus]
+                    disabled={activity.disabled} // [!code focus]
+                    onClick={() => { // [!code focus]
+                        activity.run(props).then(() => { // [!code focus]
+                            props.invalidateInterfaceData(); // [!code focus]
+                        }); // [!code focus]
+                    }} // [!code focus]
+                    ariaLabel={props.uiTransition(activity.name)} // [!code focus]
+                    variant='solid' // [!code focus]
+                    color='primary' // [!code focus]
+                > {/* [!code focus] */}
+                    <BedIcon // [!code focus]
+                        sx={{ // [!code focus]
+                            fontSize: { sx: "1.5rem", sm: "2rem", md: "2.5rem", lg: "3rem", xl: "3.5rem" }, // [!code focus]
+                        }} // [!code focus]
+                    /> {/* [!code focus] */}
+                </NqtrRoundIconButton> // [!code focus]
+            ); // [!code focus]
+        }, // [!code focus]
+    }
+);
+```
+
+Additionally, when the `sprite` property is available, it is possible to define a graphical element as a PixiJS element.
+
+```ts
+export const mcHome = new Location("mc_home", mainMap, {
+    name: "MC Home",
+    sprite: (location, { navigate }) => { // [!code focus]
+        const icon = new ImageSprite( // [!code focus]
+            { xAlign: 0.3, yAlign: 0.2, height: 120, width: 120, eventMode: "static", cursor: "pointer" }, // [!code focus]
+            "icon_location_home" // [!code focus]
+        ); // [!code focus]
+        icon.on("pointerdown", () => { // [!code focus]
+            const entrance = location.entrance; // [!code focus]
+            if (entrance) { // [!code focus]
+                navigator.currentRoom = entrance; // [!code focus]
+                navigate(NAVIGATION_ROUTE); // [!code focus]
+            } // [!code focus]
+        }); // [!code focus]
+        icon.load(); // [!code focus]
+        return icon; // [!code focus]
+    }, // [!code focus]
+});
+```
+
+## Navigation and map
+
+<Callout type="info">
+
+You can find more detailed documentation about these elements <DynamicLink href="/nqtr/navigation">here</DynamicLink>.
+
+</Callout>
+
+The first step to create a Point & Click Adventure is to create the navigation elements. These elements allow the player to move within the game and interact with the environment.
+
+The navigation system is composed of the following elements:
+
+- `rooms`: The core elements of navigation, from which the position of the `mc` and `npc` is deduced.
+- `locations`: A container of `rooms`.
+- `maps`: A container of `locations`.
+
+For example:
+
+```ts title="values/rooms.ts"
+import { RegisteredRooms } from "@drincs/nqtr";
+import TimeSlotsImage from "../models/TimeSlotsImage";
+import Room from "../models/nqtr/Room";
+import { bed } from "./activities";
+import { mcHome } from "./locations";
+
+export const mcRoom = new Room("mc_room", mcHome, {
+    name: "MC room",
+    background: new TimeSlotsImage({
+        morning: "location_myroom-0",
+        afternoon: "location_myroom-1",
+        evening: "location_myroom-2",
+        night: "location_myroom-3",
+    }),
+    activities: [bed],
+});
+
+RegisteredRooms.add([mcRoom]);
+```
+
+```ts title="values/locations.ts"
+import { navigator, RegisteredLocations } from "@drincs/nqtr";
+import { ImageSprite } from "@drincs/pixi-vn";
+import { NAVIGATION_ROUTE } from "../constans";
+import Location from "../models/nqtr/Location";
+import { mainMap } from "./maps";
+
+export const mcHome = new Location("mc_home", mainMap, {
+    name: "MC Home",
+    sprite: (location, { navigate }) => {
+        const icon = new ImageSprite(
+            { xAlign: 0.3, yAlign: 0.2, height: 120, width: 120, eventMode: "static", cursor: "pointer" },
+            "icon_location_home",
+        );
+        icon.on("pointerdown", () => {
+            const entrance = location.entrance;
+            if (entrance) {
+                navigator.currentRoom = entrance;
+                navigate(NAVIGATION_ROUTE);
+            }
+        });
+        icon.load();
+        return icon;
+    },
+});
+
+RegisteredLocations.add([mcHome]);
+```
+
+```ts title="values/maps.ts"
+import { RegisteredMaps } from "@drincs/nqtr";
+import TimeSlotsImage from "../models/TimeSlotsImage";
+import Map from "../models/nqtr/Map";
+
+export const mainMap = new Map("main_map", {
+    name: "Main Map",
+    background: new TimeSlotsImage({
+        morning: "map-0",
+        afternoon: "map-1",
+        evening: "map-2",
+        night: "map-3",
+    }),
+    neighboringMaps: {
+        north: "nightcity_map",
+    },
+});
+
+RegisteredMaps.add([mainMap]);
+```
+
+Now, before you can use the navigation utilities, you need to set the current room. After that, it is possible to navigate to the navigation screen at the start of the game or after a short initial narrative.
+
+Additionally, it is important to keep in mind that the current `location` and `map` are deduced from the current `room`, so it is sufficient to set the `room` to obtain all the necessary information for navigation.
+
+<Callout type="info">
+
+You can find more detailed documentation on how to navigate between UI screens <DynamicLink href="/start/interface-navigate">here</DynamicLink>.
+
+</Callout>
+
+For example:
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+    # navigate /narration
+    Hello, welcome to the my first game!
+
+    # enter room mc_room
+    # navigate /navigation
+    -> DONE
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+import { navigator } from "@drincs/nqtr";
+import { narration, newLabel } from "@drincs/pixi-vn";
+import { mcRoom } from "../values/rooms";
+
+const startLabel = newLabel("start", [
+    async (props) => {
+        await props.navigate("/narration");
+        narration.dialogue = "Hello, welcome to the my first game!";
+    },
+    async (props) => {
+        navigator.currentRoom = mcRoom;
+        await props.navigate("/navigation");
+    },
+]);
+export default startLabel;
+```
+
+## Time system
+
+<Callout type="info">
+
+You can find more detailed documentation about these elements <DynamicLink href="/nqtr/time">here</DynamicLink>.
+
+</Callout>
+
+Now let's move on to another fundamental element: the time management system. The time management system is a key component in a Point & Click Adventure, as it allows you to create a dynamic and realistic world where the player's actions can have different consequences depending on the time of day.
+
+Before you can use the time management features, it is necessary to initialize the `timeTracker` with the information required for the system to function. As shown in the following example, it is possible to define every aspect of the time management system, such as time slots, days of the week, the start and end time of the day, and so on.
+
+```ts tab="utils/nqtr-utility.ts"
+import { timeTracker } from "@drincs/nqtr";
+import { timeSlots } from "../constans";
+
+const weekDaysNames = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+export function initializeNQTR() {
+    timeTracker.initialize({
+        defaultTimeSpent: 1,
+        dayStartTime: 0,
+        dayEndTime: 24,
+        timeSlots: [
+            { name: timeSlots.morning.description, startTime: timeSlots.morning.value },
+            { name: timeSlots.afternoon.description, startTime: timeSlots.afternoon.value },
+            { name: timeSlots.evening.description, startTime: timeSlots.evening.value },
+            { name: timeSlots.night.description, startTime: timeSlots.night.value },
+        ],
+        getDayName: (weekDayNumber: number) => {
+            return weekDaysNames[weekDayNumber];
+        },
+        weekendStartDay: 6,
+        weekLength: 7,
+    });
+}
+```
+
+```ts tab="constans.ts"
+export const timeSlots = {
+    morning: { description: "morning", value: 5 },
+    afternoon: { description: "afternoon", value: 12 },
+    evening: { description: "evening", value: 18 },
+    night: { description: "night", value: 22 },
+};
+```
+
+The main functionality of the time management system is the ability to advance time based on the player's actions.
+
+```ink tab="ink" title="index.ink" groupId="narrative_language"
+// {timeValue} is a number representing the amount of time to increment
+// {dateValue} is a number representing the amount of days to increment
+# wait {timeValue} // Increment time by {value}
+# wait // Increment time by defaultTimeSpent
+# wait days {dateValue} // Increment date by {dateValue} and set time to dayStartTime
+# wait days {dateValue} hours {timeValue} // Increment date by {dateValue} and time by {timeValue}
+```
+
+```ts tab="Typescript" title="index.ts" groupId="narrative_language"
+import { timeTracker } from "@drincs/nqtr";
+
+timeTracker.increaseTime(2);
+timeTracker.increaseDate(1, 8); // Increment date by 1 and set time to 8
+```
+
+## Activity
+
+<Callout type="info">
+
+You can find more detailed documentation about these elements <DynamicLink href="/nqtr/activity">here</DynamicLink>.
+
+</Callout>
+
+A fundamental element in Point & Click Adventures is interactive elements, which allow the player to interact with the environment and progress the story. In NQTR, these elements are represented by `Activity`. `Activity` are elements that can be executed by the player and can have different consequences depending on the context in which they are performed.
+
+For example:
+
+```ts tab="values/activities.tsx"
+import { RegisteredActivities, timeTracker } from "@drincs/nqtr";
+import BedIcon from "@mui/icons-material/Bed";
+import NqtrRoundIconButton from "../components/NqtrRoundIconButton";
+import { NARRATION_ROUTE } from "../constans";
+import { navigateAndJumpToLabel } from "../labels/label-utility";
+import { napLabel, sleepLabel } from "../labels/sleepNapLabels";
+import Activity from "../models/nqtr/Activity";
+
+export const bed = new Activity(
+    "bed",
+    async (_, event) => {
+        if (timeTracker.nowIsBetween(5, 22)) {
+            await navigateAndJumpToLabel(napLabel, NARRATION_ROUTE, event);
+        } else {
+            await navigateAndJumpToLabel(sleepLabel, NARRATION_ROUTE, event);
+        }
+    },
+    {
+        name: "bed",
+        sprite: (activity, { navigate }) => {
+            const icon = new ImageSprite(
+                { xAlign: 0.5, yAlign: 0.5, height: 100, width: 100, eventMode: "static", cursor: "pointer" },
+                "icon_activity_bed",
+            );
+            icon.on("pointerdown", () => {
+                activity.run({ navigate }).then(() => {
+                    // Invalidate interface data if necessary
+                });
+            });
+            icon.load();
+            return icon;
+        },
+        icon: (activity, props) => {
+            return (
+                <NqtrRoundIconButton
+                    disabled={activity.disabled}
+                    onClick={() => {
+                        activity.run(props).then(() => {
+                            props.invalidateInterfaceData();
+                        });
+                    }}
+                    ariaLabel={props.uiTransition(activity.name)}
+                    variant='solid'
+                    color='primary'
+                >
+                    <BedIcon
+                        sx={{
+                            fontSize: { sx: "1.5rem", sm: "2rem", md: "2.5rem", lg: "3rem", xl: "3.5rem" },
+                        }}
+                    />
+                </NqtrRoundIconButton>
+            );
+        },
+    },
+);
+
+RegisteredActivities.add([bed]);
+```

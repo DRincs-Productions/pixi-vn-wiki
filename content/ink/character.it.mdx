@@ -1,0 +1,268 @@
+---
+title: Personaggi
+description: |
+  Scopri come definire, utilizzare e personalizzare i personaggi negli script di inchiostro Pixi'VN, tra cui l'associazione dei dialoghi, la sostituzione dei nomi, la ridenominazione e le emozioni.
+---
+
+import { CharacterDialogueExample, CharacterDialogueTextExample, CharacterEditExample, CharacterEmotionsExample } from "@/components/ink-examples";
+
+Prima di leggere questa sezione, si consiglia di leggere <DynamicLink href="/start/character#initialize">come creare e utilizzare i personaggi in Pixi'VN</DynamicLink>.
+
+## Usa
+
+### Associa un personaggio a un dialogo
+
+È possibile associare un personaggio a un dialogo in **_ink_**. Per fare ciò, è necessario utilizzare la seguente sintassi:
+
+```ink title="ink"
+{character_id}: {text}
+```
+
+- `character_id`: è l'`id` del personaggio definito in **JavaScript/TypeScript**.
+- `:`: è il separatore tra il personaggio e il testo.
+- `text`: è il testo del dialogo.
+
+```ink tab="ink/start.ink"
+=== start ===
+mc: Hello, I'm Liam.
+-> DONE
+```
+
+```ts tab="values/characters.ts"
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
+
+export const mc = new CharacterBaseModel("mc", {
+    name: "Liam",
+});
+
+RegisteredCharacters.add(mc);
+```
+
+```ts tab="src/main.ts"
+import "./values/characters";
+
+// ...
+```
+
+<CharacterDialogueExample />
+
+### Usa il nome del personaggio nel testo dei dialoghi
+
+Puoi usare il nome del personaggio nei dialoghi. Per fare ciò, è necessario utilizzare la seguente sintassi:
+
+`[` + `character_id` + `]`
+
+- `[` e `]`: sono i delimitatori per identificare il personaggio.
+- `character_id`: è l'`id` del personaggio definito in **JavaScript/TypeScript**.
+
+```ink tab="ink/start.ink"
+=== start ===
+Hello, [mc].
+-> DONE
+```
+
+```ts tab="values/characters.ts"
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
+
+export const mc = new CharacterBaseModel("mc", {
+    name: "Liam",
+});
+
+RegisteredCharacters.add(mc);
+```
+
+<CharacterDialogueTextExample />
+
+Per fare ciò, dovrai prima implementare la funzionalità per sostituire l'Id con il nome del personaggio. Per farlo, puoi utilizzare uno dei seguenti metodi:
+
+<Callout title="Templates" type="info">
+
+Questa implementazione è già inclusa in tutti i template.
+
+</Callout>
+
+<Accordions>
+
+<Accordion title="i18next_implementation" id="i18next-implementation">
+
+Se utilizzi [i18next](https://www.i18next.com/) per la traduzione, puoi usare il seguente metodo:
+
+```ts tab="utils/ink-utility.ts"
+import { onReplaceTextBeforeTranslation } from "@drincs/pixi-vn-ink";
+
+export function initializeInk() {
+    onReplaceTextBeforeTranslation((key) => { // [!code focus]
+        return `{{${key}}}`; // [!code focus]
+    }); // [!code focus]
+}
+```
+
+```ts tab="i18n.ts"
+import { RegisteredCharacters } from "@drincs/pixi-vn";
+import i18n from "i18next";
+import Backend from "i18next-chained-backend";
+import { initReactI18next } from "react-i18next";
+
+export const useI18n = () => {
+    if (!i18n.isInitialized) {
+        i18n.use(Backend)
+            .use(initReactI18next)
+            .init({
+                debug: false,
+                fallbackLng: "en",
+                lng: "en",
+                interpolation: {
+                    escapeValue: false,
+                },
+                load: "currentOnly",
+                missingInterpolationHandler(_text, value, _options) { // [!code focus]
+                    let key = value[1]; // [!code focus]
+                    let character = RegisteredCharacters.get(key); // [!code focus]
+                    if (character) { // [!code focus]
+                        return character.name; // [!code focus]
+                    } // [!code focus]
+                    return `[${key}]`; // [!code focus]
+                }, // [!code focus]
+            });
+    }
+};
+```
+
+</Accordion>
+
+<Accordion title="replacement_implementation" id="replacement-implementation">
+
+Per utilizzare il nome del personaggio nei dialoghi, puoi sfruttare la <DynamicLink href="/ink/replacement">possibilità di sostituire parti di testo</DynamicLink>. Ad esempio, puoi utilizzare il seguente metodo:
+
+```ts title="utils/ink-utility.ts"
+import { RegisteredCharacters } from "@drincs/pixi-vn";
+import { onReplaceTextAfterTranslation } from "@drincs/pixi-vn-ink";
+
+export function initializeInk() {
+    onReplaceTextAfterTranslation((key) => { // [!code focus]
+        let character = RegisteredCharacters.get(key); // [!code focus]
+        if (character) { // [!code focus]
+            return character.name; // [!code focus]
+        } // [!code focus]
+
+        // if return undefined, the system will not replace the character id // [!code focus]
+        return undefined; // [!code focus]
+    }); // [!code focus]
+}
+```
+
+</Accordion>
+
+</Accordions>
+
+## Modifica
+
+Puoi modificare le informazioni di un personaggio in **_ink_**, ad esempio puoi cambiare il nome del personaggio. Per fare ciò, è necessario utilizzare la seguente sintassi:
+
+```ink title="ink"
+# rename {character_id} {new_name}
+```
+
+- `#`: is the hashtag symbol to identify a hashtag command.
+- `rename`: è il comando per rinominare un personaggio.
+- `character_id`: è l'`id` del personaggio definito in **JavaScript/TypeScript**.
+- `new_name`: è il nuovo nome del personaggio.
+
+```ink tab="ink/start.ink"
+=== start ===
+mc: Hello, I'm [mc].
+# request input string
+mc: My name is:
+# rename mc {_input_value_}
+mc: My name is [mc]
+-> DONE
+```
+
+```ts tab="values/characters.ts"
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
+
+export const mc = new CharacterBaseModel("mc", {
+    name: "Liam",
+});
+
+RegisteredCharacters.add(mc);
+```
+
+<CharacterEditExample />
+
+Per fare ciò, dovrai prima implementare la funzionalità per rinominare il personaggio.  Per farlo, puoi utilizzare uno dei seguenti metodi:
+
+<Callout title="Templates" type="info">
+
+Questa implementazione è già inclusa in tutti i template.
+
+</Callout>
+
+<Accordions>
+
+<Accordion title="custom_hashtag_script_implementation" id="custom-hashtag-script-implementation">
+
+Using the possibility of <DynamicLink href="/ink/hashtag">customizing hashtag commands</DynamicLink>. Ad esempio, puoi utilizzare il seguente metodo:
+
+```ts title="utils/ink-utility.ts"
+import { RegisteredCharacters } from "@drincs/pixi-vn";
+import { HashtagCommands } from "@drincs/pixi-vn-ink";
+
+export function initializeInk() {
+    HashtagCommands.add((script, props, convertListStringToObj) => { // [!code focus]
+        if (script[0] === "rename" && script.length === 3) { // [!code focus]
+            let character = RegisteredCharacters.get(script[1]); // [!code focus]
+            if (character) { // [!code focus]
+                character.name = script[2]; // [!code focus]
+            } // [!code focus]
+            return true; // [!code focus]
+        } // [!code focus]
+        return false; // [!code focus]
+    }); // [!code focus]
+}
+```
+
+</Accordion>
+
+</Accordions>
+
+## Emozioni del personaggio
+
+Puoi usare le <DynamicLink href="/start/character#character-emotions">emozioni dei personaggi</DynamicLink> in **_ink_**. Per fare ciò è sufficiente utilizzare un ID speciale composto da:
+
+`character_id` + `@` + `emotion`
+
+- `character_id`: è l'`id` del personaggio definito in **JavaScript/TypeScript**.
+- `@`: è il separatore tra il personaggio e l'emozione.
+- `emotion`: è l'emozione definita in **JavaScript/TypeScript**.
+
+Ad esempio:
+
+```ink title="ink"
+{character_id}@{emotion}: {text}
+```
+
+```ink tab="ink/start.ink"
+=== start ===
+mc@happy: Hi, I'm Liam. I'm very happy today.
+-> DONE
+```
+
+```ts tab="values/characters.ts"
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
+
+export const mc = new CharacterBaseModel("mc", {
+  name: "Liam",
+});
+
+export const mcHappy = new CharacterBaseModel(
+  { id: "mc", emotion: "happy" },
+  {
+    name: "Liam happy",
+  }
+);
+
+RegisteredCharacters.add([mc, mcHappy]);
+```
+
+<CharacterEmotionsExample />

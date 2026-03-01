@@ -1,0 +1,628 @@
+---
+title: Transitions
+description: Learn about the built-in transition effects in Pixi’VN for showing and removing canvas components, including dissolve, fade, move, push, and zoom transitions. Discover how to customize or create your own transitions for advanced visual effects in your game's flow.
+---
+
+import { DissolveTransitionExample, FadeTransitionExample, MoveinTransitionExample, PushinTransitionExample, ZoominTransitionExample } from "@/components/examples";
+
+Pixi’VN provides various transition effects to show or remove a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink>, as well as the ability to [create your own transitions](#create-your-own-transition).
+
+<Accordions>
+
+<Accordion title="dissolve" id="dissolve">
+
+The dissolve transition:
+
+- When showing a component, gradually increases its `alpha`. If a component with the same alias exists, it will be removed when the new component's transition is complete.
+- When removing a component, gradually decreases its `alpha`.
+
+The `showWithDissolve` function displays a canvas element with a dissolve transition. 该函数具有以下参数：
+
+- `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> to identify the component.
+- `image` (Optional): The image to show. If not provided, the alias is used as the URL. It can be:
+  - a URL/path (video: <DynamicLink href="/start/canvas-video">VideoSprite</DynamicLink>, otherwise <DynamicLink href="/start/canvas-image">ImageSprite</DynamicLink>)
+  - an array of URLs/paths (<DynamicLink href="/start/canvas-image">ImageContainer</DynamicLink>)
+  - `{ value: string, options: ImageSpriteOptions }` (video: <DynamicLink href="/start/canvas-video">VideoSprite</DynamicLink>, otherwise <DynamicLink href="/start/canvas-image">ImageSprite</DynamicLink>)
+  - `{ value: string[], options: ImageContainerOptions }` (<DynamicLink href="/start/canvas-image">ImageContainer</DynamicLink>)
+  - a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink>
+- `options` (Optional): Animation options, matching the <DynamicLink href="/start/canvas-motion">`options` of `animate` function</DynamicLink>.
+- `priority` (Optional): The priority of the PixiJS ticker. This parameter sets the ticker's priority. The default is `UPDATE_PRIORITY.NORMAL`.
+
+The `removeWithDissolve` function removes a canvas element with a dissolve transition. 该函数具有以下参数：
+
+- `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> of the component to remove.
+- `options` (Optional): Animation options, matching the <DynamicLink href="/start/canvas-motion">`options` of `animate` function</DynamicLink>.
+- `priority` (Optional): The priority of the PixiJS ticker. This parameter sets the ticker's priority. The default is `UPDATE_PRIORITY.NORMAL`.
+
+```ts tab="labels/startLabel.ts"
+import { newLabel, removeWithDissolve, showWithDissolve } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await showWithDissolve("alien", "egg_head"); // [!code focus]
+        await showWithDissolve("human", { // [!code focus]
+            value: ["m01-body", "m01-eyes", "m01-mouth"], // [!code focus]
+            options: { scale: 0.5, xAlign: 0.7 }, // [!code focus]
+        }); // [!code focus]
+    },
+    async () => {
+        await showWithDissolve("alien", "flower_top"); // [!code focus]
+        removeWithDissolve("human"); // [!code focus]
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                {
+                    alias: "m01-body",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-body.webp",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-smile.webp",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-smile00.webp",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<DissolveTransitionExample />
+
+</Accordion>
+
+<Accordion title="fade" id="fade">
+
+The fade transition:
+
+- When showing a component, gradually increases its `alpha`. If a component with the same alias exists, the existing component will be removed with a fade-out effect before the new component is shown.
+- When removing a component, gradually decreases its `alpha`.
+
+The `showWithFade` function displays a canvas element with a fade transition. 该函数具有以下参数：
+
+- `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> to identify the component.
+- `image` (Optional): The image to show. If not provided, the alias is used as the URL. It can be:
+  - a URL/path (video: <DynamicLink href="/start/canvas-video">VideoSprite</DynamicLink>, otherwise <DynamicLink href="/start/canvas-image">ImageSprite</DynamicLink>)
+  - an array of URLs/paths (<DynamicLink href="/start/canvas-image">ImageContainer</DynamicLink>)
+  - `{ value: string, options: ImageSpriteOptions }` (video: <DynamicLink href="/start/canvas-video">VideoSprite</DynamicLink>, otherwise <DynamicLink href="/start/canvas-image">ImageSprite</DynamicLink>)
+  - `{ value: string[], options: ImageContainerOptions }` (<DynamicLink href="/start/canvas-image">ImageContainer</DynamicLink>)
+  - a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink>
+- `options` (Optional): Animation options, matching the <DynamicLink href="/start/canvas-motion">`options` of `animate` function</DynamicLink>.
+- `priority` (Optional): The priority of the PixiJS ticker. This parameter sets the ticker's priority. The default is `UPDATE_PRIORITY.NORMAL`.
+
+The `removeWithFade` function removes a canvas element with a fade transition. 该函数具有以下参数：
+
+- `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> of the component to remove.
+- `options` (Optional): Animation options, matching the <DynamicLink href="/start/canvas-motion">`options` of `animate` function</DynamicLink>.
+- `priority` (Optional): The priority of the PixiJS ticker. This parameter sets the ticker's priority. The default is `UPDATE_PRIORITY.NORMAL`.
+
+```ts tab="labels/startLabel.ts"
+import { newLabel, removeWithFade, showWithFade } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await showWithFade("alien", "egg_head", { duration: 5 }); // [!code focus]
+        await showWithFade("human", { // [!code focus]
+            value: ["m01-body", "m01-eyes", "m01-mouth"], // [!code focus]
+            options: { scale: 0.5, xAlign: 0.7 }, // [!code focus]
+        }); // [!code focus]
+    },
+    async () => {
+        await showWithFade("alien", "flower_top"); // [!code focus]
+        removeWithFade("human"); // [!code focus]
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                {
+                    alias: "m01-body",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-body.webp",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-smile.webp",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-smile00.webp",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<FadeTransitionExample />
+
+</Accordion>
+
+<Accordion title="move_in_out" id="move-in-out">
+
+The move in/out transition:
+
+- When showing a component, moves it from outside (right, left, top, or bottom) to its position on the canvas. If a component with the same alias exists, the existing component will be removed with a move-out effect before the new component is shown.
+- When removing a component, moves it from its position to outside the canvas.
+
+The `moveIn` function displays a canvas element with a move-in transition. 该函数具有以下参数：
+
+- `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> to identify the component.
+- `image` (Optional): The image to show. If not provided, the alias is used as the URL. It can be:
+  - a URL/path (video: <DynamicLink href="/start/canvas-video">VideoSprite</DynamicLink>, otherwise <DynamicLink href="/start/canvas-image">ImageSprite</DynamicLink>)
+  - an array of URLs/paths (<DynamicLink href="/start/canvas-image">ImageContainer</DynamicLink>)
+  - `{ value: string, options: ImageSpriteOptions }` (video: <DynamicLink href="/start/canvas-video">VideoSprite</DynamicLink>, otherwise <DynamicLink href="/start/canvas-image">ImageSprite</DynamicLink>)
+  - `{ value: string[], options: ImageContainerOptions }` (<DynamicLink href="/start/canvas-image">ImageContainer</DynamicLink>)
+  - a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink>
+- `options` (Optional): Animation options, matching the <DynamicLink href="/start/canvas-motion">`options` of `animate` function</DynamicLink>. Additional properties:
+  - `direction`: Direction of the move (`right`, `left`, `top`, `bottom`). Default: `right`.
+  - `removeOldComponentWithMoveOut` (Optional): If true, removes the existing component with a move-out effect after the new component transition. Default: `false`.
+- `priority` (Optional): The priority of the PixiJS ticker. This parameter sets the ticker's priority. The default is `UPDATE_PRIORITY.NORMAL`.
+
+The `moveOut` function removes a canvas element with a move-out transition. 该函数具有以下参数：
+
+- `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> of the component to remove.
+- `options` (Optional): Animation options, matching the <DynamicLink href="/start/canvas-motion">`options` of `animate` function</DynamicLink>. Additional properties:
+  - `direction`: Direction of the move (`right`, `left`, `top`, `bottom`). Default: `right`.
+- `priority` (Optional): The priority of the PixiJS ticker. This parameter sets the ticker's priority. The default is `UPDATE_PRIORITY.NORMAL`.
+
+```ts tab="labels/startLabel.ts"
+import { moveIn, moveOut, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await moveIn("alien", "egg_head", { direction: "up" }); // [!code focus]
+        await moveIn("human", { // [!code focus]
+            value: ["m01-body", "m01-eyes", "m01-mouth"], // [!code focus]
+            options: { scale: 0.5, xAlign: 0.7 }, // [!code focus]
+        }); // [!code focus]
+    },
+    async () => {
+        await moveIn("alien", "flower_top", { direction: "up" }); // [!code focus]
+        moveOut("human"); // [!code focus]
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                {
+                    alias: "m01-body",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-body.webp",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-smile.webp",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-smile00.webp",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<MoveinTransitionExample />
+
+</Accordion>
+
+<Accordion title="push_in_out" id="push-in-out">
+
+The push in/out transition:
+
+- When showing a component, moves it from outside (right, left, top, or bottom) to its position on the canvas. If a component with the same alias exists, the existing component will be removed with a push-out effect while the new component is moving in.
+- When removing a component, moves it from its position to outside the canvas.
+
+The `pushIn` function displays a canvas element with a push-in transition. 该函数具有以下参数：
+
+- `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> to identify the component.
+- `image` (Optional): The image to show. If not provided, the alias is used as the URL. It can be:
+  - a URL/path (video: <DynamicLink href="/start/canvas-video">VideoSprite</DynamicLink>, otherwise <DynamicLink href="/start/canvas-image">ImageSprite</DynamicLink>)
+  - an array of URLs/paths (<DynamicLink href="/start/canvas-image">ImageContainer</DynamicLink>)
+  - `{ value: string, options: ImageSpriteOptions }` (video: <DynamicLink href="/start/canvas-video">VideoSprite</DynamicLink>, otherwise <DynamicLink href="/start/canvas-image">ImageSprite</DynamicLink>)
+  - `{ value: string[], options: ImageContainerOptions }` (<DynamicLink href="/start/canvas-image">ImageContainer</DynamicLink>)
+  - a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink>
+- `options` (Optional): Animation options, matching the <DynamicLink href="/start/canvas-motion">`options` of `animate` function</DynamicLink>. Additional properties:
+  - `direction`: Direction of the move (`right`, `left`, `top`, `bottom`). Default: `right`.
+- `priority` (Optional): The priority of the PixiJS ticker. This parameter sets the ticker's priority. The default is `UPDATE_PRIORITY.NORMAL`.
+
+The `pushOut` function removes a canvas element with a push-out transition. 该函数具有以下参数：
+
+- `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> of the component to remove.
+- `options` (Optional): Animation options, matching the <DynamicLink href="/start/canvas-motion">`options` of `animate` function</DynamicLink>. Additional properties:
+  - `direction`: Direction of the move (`right`, `left`, `top`, `bottom`). Default: `right`.
+- `priority` (Optional): The priority of the PixiJS ticker. This parameter sets the ticker's priority. The default is `UPDATE_PRIORITY.NORMAL`.
+
+```ts tab="labels/startLabel.ts"
+import { newLabel, pushIn, pushOut } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await pushIn("alien", "egg_head"); // [!code focus]
+        await pushIn("human", { // [!code focus]
+            value: ["m01-body", "m01-eyes", "m01-mouth"], // [!code focus]
+            options: { scale: 0.5, xAlign: 0.7 }, // [!code focus]
+        }); // [!code focus]
+    },
+    async () => {
+        await pushIn("alien", "flower_top", { direction: "up" }); // [!code focus]
+        pushOut("human"); // [!code focus]
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                {
+                    alias: "m01-body",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-body.webp",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-smile.webp",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-smile00.webp",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<PushinTransitionExample />
+
+</Accordion>
+
+<Accordion title="zoom_in_out" id="zoom-in-out">
+
+The zoom in/out transition:
+
+- When showing a component, scales it from 0 (from outside the canvas) to its original scale and position. If a component with the same alias exists, the existing component will be removed when the new component's transition is complete.
+- When removing a component, scales it from its original size to 0, moving it outside the canvas.
+
+The `zoomIn` function displays a canvas element with a zoom-in transition. 该函数具有以下参数：
+
+- `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> to identify the component.
+- `image` (Optional): The image to show. If not provided, the alias is used as the URL. It can be:
+  - a URL/path (video: <DynamicLink href="/start/canvas-video">VideoSprite</DynamicLink>, otherwise <DynamicLink href="/start/canvas-image">ImageSprite</DynamicLink>)
+  - an array of URLs/paths (<DynamicLink href="/start/canvas-image">ImageContainer</DynamicLink>)
+  - `{ value: string, options: ImageSpriteOptions }` (video: <DynamicLink href="/start/canvas-video">VideoSprite</DynamicLink>, otherwise <DynamicLink href="/start/canvas-image">ImageSprite</DynamicLink>)
+  - `{ value: string[], options: ImageContainerOptions }` (<DynamicLink href="/start/canvas-image">ImageContainer</DynamicLink>)
+  - a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink>
+- `options` (Optional): Animation options, matching the <DynamicLink href="/start/canvas-motion">`options` of `animate` function</DynamicLink>. Additional properties:
+  - `direction`: Direction of the move (`right`, `left`, `top`, `bottom`). Default: `right`.
+  - `removeOldComponentWithZoomOut` (Optional): If true, removes the existing component with a zoom-out effect after the new component transition. Default: `false`.
+- `priority` (Optional): The priority of the PixiJS ticker. This parameter sets the ticker's priority. The default is `UPDATE_PRIORITY.NORMAL`.
+
+The `zoomOut` function removes a canvas element with a zoom-out transition. 该函数具有以下参数：
+
+- `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> of the component to remove.
+- `options` (Optional): Animation options, matching the <DynamicLink href="/start/canvas-motion">`options` of `animate` function</DynamicLink>. Additional properties:
+  - `direction`: Direction of the move (`right`, `left`, `top`, `bottom`). Default: `right`.
+- `priority` (Optional): The priority of the PixiJS ticker. This parameter sets the ticker's priority. The default is `UPDATE_PRIORITY.NORMAL`.
+
+```ts tab="labels/startLabel.ts"
+import { newLabel, zoomIn, zoomOut } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await zoomIn("alien", "egg_head"); // [!code focus]
+        await zoomIn("human", { // [!code focus]
+            value: ["m01-body", "m01-eyes", "m01-mouth"], // [!code focus]
+            options: { scale: 0.5, xAlign: 0.7 }, // [!code focus]
+        }); // [!code focus]
+    },
+    async () => {
+        await zoomIn("alien", "flower_top"); // [!code focus]
+        zoomOut("human"); // [!code focus]
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                {
+                    alias: "m01-body",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-body.webp",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-smile.webp",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-smile00.webp",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<ZoominTransitionExample />
+
+</Accordion>
+
+</Accordions>
+
+## 自定义类
+
+<Callout type="info">
+
+The Pixi’VN Team welcomes new proposals and contributions to make this library even more complete. You can create a [discussion](https://github.com/DRincs-Productions/pixi-vn/discussions/categories/show-and-tell) to share or propose your transition.
+
+</Callout>
+
+Creating your own transition is simple: use <DynamicLink href="/start/canvas-motion">`canvas.animate`</DynamicLink> to define custom effects.
+
+To help you get started, here is a simplified version of [`showWithDissolve`](#dissolve):
+
+```ts title="canvas/transitions/showWithDissolve.ts"
+import { AnimationOptions, canvas, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn";
+
+export default async function showWithDissolve(
+    alias: string,
+    component: ImageSprite,
+    props: AnimationOptions = {},
+    priority?: UPDATE_PRIORITY
+): Promise<string[] | undefined> {
+    let { completeOnContinue = true, ...options } = props;
+    // add the new component
+    canvas.add(alias, component)
+    // edit the properties of the new component
+    component.alpha = 0;
+    // create the ticker and play it
+    let id = canvas.animate(
+        alias,
+        {
+            alpha: 1,
+        },
+        {
+            ...options,
+            completeOnContinue,
+        },
+        priority
+    );
+    // load the image if the image is not loaded
+    if (component.haveEmptyTexture) {
+        await component.load();
+    }
+    // return the ids of the tickers
+    if (id) {
+        return [id];
+    }
+}
+```
+
+### Replace or remove the previous component
+
+If a component with the same alias already exists, you can let it be replaced, or:
+
+<Accordions>
+
+<Accordion title="remove_the_previous_component_after_completion" id="remove-the-previous-component-after-completion">
+
+To remove the previous component when the new component's transition is complete, use the <DynamicLink href="/start/canvas-motion">`aliasToRemoveAfter` property</DynamicLink>.
+
+```ts title="canvas/transitions/showWithDissolve.ts"
+import { AnimationOptions, canvas, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn";
+
+export default async function showWithDissolve(
+    alias: string,
+    component: ImageSprite,
+    props: AnimationOptions = {},
+    priority?: UPDATE_PRIORITY
+): Promise<string[] | undefined> {
+    let { completeOnContinue = true, ...options } = props;
+    // check if the alias is already exist // [!code ++]
+    let oldComponentAlias: string | undefined = undefined; // [!code ++]
+    if (canvas.find(alias)) { // [!code ++]
+        oldComponentAlias = alias + "_temp_disolve"; // [!code ++]
+        canvas.editAlias(alias, oldComponentAlias); // [!code ++]
+    } // [!code ++]
+    // add the new component and transfer the properties of the old component to the new component
+    canvas.add(alias, component)
+    oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias); // [!code ++]
+    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate"); // [!code ++]
+    // edit the properties of the new component
+    component.alpha = 0;
+    // create the ticker and play it
+    let id = canvas.animate(
+        alias,
+        {
+            alpha: 1,
+        },
+        {
+            ...options,
+            completeOnContinue,
+        },
+        priority
+    );
+    // load the image if the image is not loaded
+    if (component.haveEmptyTexture) {
+        await component.load();
+    }
+    // return the ids of the tickers
+    if (id) {
+        return [id];
+    }
+}
+```
+
+</Accordion>
+
+<Accordion title="remove_the_previous_component_with_a_transition" id="remove-the-previous-component-with-a-transition">
+
+To remove the previous component with a transition, run another animation with <DynamicLink href="/start/canvas-motion">`canvas.animate`</DynamicLink> and use the <DynamicLink href="/start/canvas-motion">`tickerIdToResume` property</DynamicLink>.
+
+```ts title="canvas/transitions/showWithFade.ts"
+import { AnimationOptions, canvas, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn";
+
+export default async function showWithDissolve(
+    alias: string,
+    component: ImageSprite,
+    props: AnimationOptions = {},
+    priority?: UPDATE_PRIORITY
+): Promise<string[] | undefined> {
+    let { completeOnContinue = true, ...options } = props;
+    let res: string[] = []; // [!code ++]
+    // check if the alias is already exist // [!code ++]
+    if (!canvas.find(alias)) { // [!code ++]
+        return showWithDissolve(alias, component, props, priority); // [!code ++]
+    } // [!code ++]
+    let oldComponentAlias = alias + "_temp_fade"; // [!code ++]
+    canvas.editAlias(alias, oldComponentAlias); // [!code ++]
+    // add the new component and transfer the properties of the old component to the new component // [!code ++]
+    canvas.add(alias, component);
+    oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias); // [!code ++]
+    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate"); // [!code ++]
+    // edit the properties of the new component
+    component.alpha = 0;
+    // create the ticker and play it
+    let id = canvas.animate(
+        alias,
+        {
+            alpha: 1,
+        },
+        {
+            ...options,
+            completeOnContinue,
+        },
+        priority
+    );
+    if (id) { // [!code ++]
+        // pause the ticker // [!code ++]
+        canvas.pauseTicker({ id: id }); // [!code ++]
+        // remove the old component // [!code ++]
+        canvas.animate( // [!code ++]
+            alias, // [!code ++]
+            { // [!code ++]
+                alpha: 0, // [!code ++]
+            }, // [!code ++]
+            { // [!code ++]
+                ...options, // [!code ++]
+                tickerIdToResume: id, // [!code ++]
+                aliasToRemoveAfter: oldComponentAlias, // [!code ++]
+                completeOnContinue, // [!code ++]
+            }, // [!code ++]
+            priority // [!code ++]
+        ); // [!code ++]
+    } // [!code ++]
+    // load the image if the image is not loaded
+    if (component.haveEmptyTexture) {
+        await component.load();
+    }
+    // return the ids of the tickers
+    if (id) {
+        return [id];
+    }
+}
+```
+
+</Accordion>
+
+</Accordions>

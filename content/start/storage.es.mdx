@@ -1,0 +1,113 @@
+---
+title: Storage
+description: How to store, retrieve, and manage persistent and temporary variables in Pixi’VN, including Keyv integration.
+---
+
+**What is the game storage?** The game storage is a place where you can save variables that you want to keep between game sessions.
+
+It is essential to understand that if variables are not saved in the game memory, the engine will not be able to handle them when you <DynamicLink href="/start/save#load">load a save</DynamicLink> or when you <DynamicLink href="/start/labels-flow#go-back">go back</DynamicLink>.
+
+Additionally, in the game archive you can save any type of variable, except `class` and `function` (because they cannot be converted to JSON), such as: `string`, `number`, `boolean`, `object`, `array`, etc. If you want to save "flags" (boolean), it is recommended to use the <DynamicLink href="/start/flags">flags functionality</DynamicLink>, a very high-performance flag management system.
+
+<Callout title="ink" type="info">
+
+You can use this method with the _ink_ syntax. See more <DynamicLink href="/ink/storage">here</DynamicLink>.
+
+</Callout>
+
+## Set
+
+To set a variable in the game storage, use `storage.set`. Esta función tiene los siguientes parámetros:
+
+- `name`: The name of the variable to set.
+- `value`: The value of the variable to set.
+
+```typescript
+import { storage } from '@drincs/pixi-vn'
+
+storage.set("myVariable", 42);
+```
+
+## Get
+
+To get a variable from the game storage, use `storage.get`. Esta función tiene los siguientes parámetros:
+
+- `name`: The name of the variable to get.
+
+```typescript
+import { storage } from '@drincs/pixi-vn'
+
+const myVariable = storage.get("myVariable");
+```
+
+## Remove
+
+To remove a variable from the game storage, use `storage.remove`. Esta función tiene los siguientes parámetros:
+
+- `name`: The name of the variable to remove.
+
+```typescript
+import { storage } from '@drincs/pixi-vn'
+
+storage.remove("myVariable");
+```
+
+## Other features
+
+<Accordions>
+
+<Accordion title="system_variables" id="system-variables">
+
+In game storage, there are some system variables that are used by the game engine. All system variables start with the prefix `___`.
+So please avoid using this prefix in your variables.
+
+You can get all system variable keys from the `SYSTEM_RESERVED_STORAGE_KEYS` constant.
+
+![keyv-h2](/keyv.svg)
+
+</Accordion>
+
+<Accordion title="keyv" id="keyv">
+
+The entire storage system was developed using `Map`, a native JavaScript object, so you can use Keyv to interact with game storage.
+
+**What is Keyv?** Keyv is a simple key-value storage. It is a very easy-to-use system and very popular in the Node.js community. Keyv can be combined with other libraries, such as [Cacheable](https://cacheable.org/) (Caching for Node.js based on Keyv). You can learn more on the [Keyv website](https://keyv.org/).
+
+**How to use Keyv with Pixi’VN?** You can use Keyv with Pixi’VN by creating a new instance of Keyv and passing the storage object as a parameter.
+
+```typescript
+import { storage } from '@drincs/pixi-vn'
+import Keyv from 'keyv';
+
+const keyvStorage = new Keyv({ store: storage.storage });
+
+keyvStorage.get<string>("myValue").then((value) => {
+    console.log(value);
+});
+```
+
+</Accordion>
+
+<Accordion title="default_storage_variables" id="default-storage-variables">
+
+You can set the starting value of storage variables.
+
+These variables will have the following characteristics:
+
+- If they are removed or set to undefined or null, the value will automatically be set to the default value (so they can never be undefined or null).
+- Default values ​​will not be saved in saves, so you can change them from one version to another without any problems.
+
+You can set the default storage variables using the `storage.default` object.
+
+```typescript
+import { storage } from '@drincs/pixi-vn'
+
+storage.default = {
+    myVariable: 42,
+    anotherVariable: "Hello, world!"
+};
+```
+
+</Accordion>
+
+</Accordions>

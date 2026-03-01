@@ -1,0 +1,320 @@
+---
+title: ink 言語の統合
+description: Pixi’VN に統合された、分岐型ストーリー向けに設計されたスクリプト言語 ink を使って、インタラクティブなナラティブを作成できます。
+---
+
+import { InkExample } from "@/components/ink-examples";
+
+Pixi’VN を使用すると、分岐型ストーリー向けに設計されたスクリプト言語 **_ink_** を使って、インタラクティブなナラティブを記述できます。
+
+**_ink_ とは？** **_ink_** は、インタラクティブストーリー向けのシンプルなスクリプト言語で、80 Days、Heaven's Vault、Sorcery! などのゲームで使用されています！ 詳しくは [_ink_ 公式サイト](https://www.inklestudios.com/ink/) を参照してください。
+
+**_ink_ + Pixi’VN の統合**では、[inkjs](https://github.com/inkle/inkjs) と <DynamicLink href="/json">PixiVNJson</DynamicLink> を使用して **_ink_ コード** を解析し、Pixi’VN が解釈可能な JSON を生成します。 これにより、JavaScript/TypeScript と **_ink_** は同じストレージとキャンバスを共有し、JavaScript/TypeScript から **_ink_** の `knots`（または `labels`）を起動したり、その逆を行ったりできます。 ナレーションは **_ink_** で記述し、ミニゲームや高度なアニメーションは JavaScript/TypeScript で実装することで、両方の利点を活かせます。
+
+```ink title="ink/start.ink"
+=== start ===
+We arrived into London at 9.45pm exactly.
+
+* "There is not a moment to lose!"[] I declared.
+ -> hurry_outside
+
+* "Monsieur, let us savour this moment!"[] I declared.
+ My master clouted me firmly around the head and dragged me out of the door.
+ -> dragged_outside
+
+* [We hurried home] -> hurry_outside
+
+=== hurry_outside ===
+We hurried home to Savile Row -> as_fast_as_we_could
+
+=== dragged_outside ===
+He insisted that we hurried home to Savile Row
+-> as_fast_as_we_could
+
+=== as_fast_as_we_could ===
+<> as fast as we could.
+-> start
+```
+
+<InkExample />
+
+## なぜこれを使うのか？
+
+**JavaScript/TypeScript** で直接ナラティブを書くのは、特に初心者にとっては遅く複雑になりがちです。 **_ink_** は学習しやすく、記述も簡単です。
+
+新しい開発者は <DynamicLink href="/start#project-initialization">_ink_ テンプレート</DynamicLink> から始め、必要に応じて JavaScript/TypeScript を学びながら高度な機能に進むことができます。
+
+## インストール
+
+<Callout title="Templates" type="info">
+
+新しい Pixi’VN プロジェクトを開始しますか？ _ink_ がすでに含まれている <DynamicLink href="/start#project-initialization">テンプレート</DynamicLink> を使用してください。
+
+</Callout>
+
+既存の JavaScript プロジェクトに _ink_ パッケージをインストールするには、次のいずれかのコマンドを使用します：
+
+```sh tab="npm"
+npm install @drincs/pixi-vn @drincs/pixi-vn-ink
+```
+
+```sh tab="yarn"
+yarn add @drincs/pixi-vn @drincs/pixi-vn-ink
+```
+
+```sh tab="pnpm"
+pnpm add @drincs/pixi-vn @drincs/pixi-vn-ink
+```
+
+```sh tab="bun"
+bun add @drincs/pixi-vn @drincs/pixi-vn-ink
+```
+
+```sh tab="deno"
+deno install npm:@drincs/pixi-vn npm:@drincs/pixi-vn-ink
+```
+
+### 初期化
+
+インストール後、`importInkText()` を使用して **_ink_ スクリプト** を読み込みます：
+
+```typescript title="main.ts"
+import { importInkText } from '@drincs/pixi-vn-ink'
+
+const inkText = `
+=== start ===
+Hello
+-> END
+`
+
+importInkText([inkText, ...])
+```
+
+次に、<DynamicLink href="/start/labels#run-a-label">Pixi’VN の関数</DynamicLink> を使って **_ink_ の `knot`**（または `label`）を実行できます：
+
+```typescript title="main.ts"
+import { narration } from '@drincs/pixi-vn'
+
+narration.call(`start`, {})
+```
+
+<Accordions>
+
+<Accordion title="import_ink_files" id="import-ink-files">
+
+<Callout type="info">
+
+このガイドでは [Vite](https://vitejs.dev/) を使用していますが、同じロジックは他の環境にも適用できます。
+
+</Callout>
+
+`.ink` ファイルをインポートするには、テキストファイルとして扱うようにプロジェクトを設定する必要があります。
+
+手順は次のとおりです：
+
+- `ink.d.ts` で `*.ink` モジュールを宣言する。
+- `vite.config.ts` の `assetsInclude` に `.ink` を追加する。
+- `?raw` を付けてファイルをインポートし、テキスト内容を取得する。
+
+```ts tab="main.ts"
+import { importInkText } from '@drincs/pixi-vn-ink'
+import startLabel from './ink/start.ink?raw'
+
+importInkText([startLabel, ...])
+```
+
+```ts tab="vite.config.ts"
+export default defineConfig({
+  // ...
+  assetsInclude: ['**/*.ink'],
+})
+```
+
+```ts tab="ink.d.ts"
+declare module '*.ink' {
+    const value: string
+    export default value
+}
+```
+
+</Accordion>
+
+<Accordion title="import_ink_folder" id="import-ink-folder">
+
+<Callout type="info">
+
+このガイドでは [Vite](https://vitejs.dev/) を使用していますが、同じロジックは他の環境にも適用できます。
+
+</Callout>
+
+複数の `.ink` ファイルをインポートするには `import.meta.glob` を使用します：
+
+```ts tab="utils/ink-utility.ts"
+import { convertInkText, importInkText } from "@drincs/pixi-vn-ink";
+
+async function getInkText() {
+    const files = import.meta.glob<string>("../ink/*.ink", { query: "?raw", import: "default" });
+    return await Promise.all(
+        Object.values(files).map(async (importFile) => {
+            return await importFile();
+        })
+    );
+}
+
+export async function importAllInkLabels() {
+    let fileEntries = await getInkText();
+    await importInkText(fileEntries);
+}
+
+export async function convertInkToJson() {
+    let fileEntries = await getInkText();
+    return await Promise.all(fileEntries.map((data) => convertInkText(data)));
+}
+```
+
+```ts tab="vite.config.ts"
+export default defineConfig({
+  // ...
+  assetsInclude: ['**/*.ink'],
+})
+```
+
+</Accordion>
+
+<Accordion title="vite_js_plugin" id="vite-plugin">
+
+より良い開発体験のために、Vite プラグインを使用できます：
+
+```ts tab="vite.config.ts"
+import { defineConfig } from 'vite'
+import { vitePluginInk } from '@drincs/pixi-vn-ink/vite'
+export default defineConfig({
+  // ...
+  plugins: [
+    // other plugins...
+    vitePluginInk()
+  ]
+})
+```
+
+```ts tab="main.ts"
+import { setupInkHmrListener } from '@drincs/pixi-vn-ink/vite-listener'
+
+setupInkHmrListener()
+```
+
+```ts tab="utils/ink-utility.ts"
+async function getInkText() {
+    const files = import.meta.glob<string>("../ink/*.ink", { eager: true, import: "default" });
+    return await Promise.all(
+        Object.values(files).map(async (importFile) => {
+            return importFile;
+        })
+    );
+}
+```
+
+</Accordion>
+
+</Accordions>
+
+## 今後追加予定の機能
+
+これらの機能は現在開発中です。
+
+<Callout type="info">
+
+Issue にいいねやコメントをして、関心を示してください。
+
+</Callout>
+
+- [Functions and Game Queries](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#9-game-queries-and-functions) ([#11](https://github.com/DRincs-Productions/pixi-vn-ink/issues/11)):
+  - [User-created functions](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#5-functions) ([#32](https://github.com/DRincs-Productions/pixi-vn-ink/issues/32))
+  - `CHOICE_COUNT()`
+  - `TURNS()`
+  - `TURNS_SINCE()`
+  - `SEED_RANDOM()`
+- [`LIST`](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#1-basic-lists) ([#15](https://github.com/DRincs-Productions/pixi-vn-ink/issues/15))
+- [`Tunnels`](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#1-tunnels) ([#38](https://github.com/DRincs-Productions/pixi-vn-ink/issues/38))
+
+## Pixi’VN で無視される _ink_ 構文
+
+一部の _ink_ 構文は Pixi’VN では無視されます。 これらは **_ink_ スクリプト** 内で使用できます（例：Inky エディタでのテスト）が、Pixi’VN では処理されません。
+
+### INCLUDE
+
+`INCLUDE` は別の _ink_ ファイルを読み込むための _ink_ ステートメントです。 Pixi’VN では、代わりに `importInkText()` を使用して複数の _ink_ ファイルを読み込むため、`INCLUDE` は無視されます。
+
+### `knots` の外にあるナレーション
+
+`knots`（または `labels`）の外にあるナレーションは、変数を除いて無視されます。
+
+For example:
+
+```ink title="ink"
+VAR my_var = false // ✅ This will be handled (because it is a variable)
+Hello // ❌ This will be ignored  [!code warning]
+-> start // ❌ This will be ignored [!code warning]
+=== start === // ✅ This will be handled
+My name is John // ✅ This will be handled
+-> DONE // ✅ This will be handled
+```
+
+<Accordions>
+
+<Accordion title="ink_differences" id="ink-differences">
+
+- pixi-vn では「Threads」はサポートされていないため、`<-` シンボルは <DynamicLink href="/ink/labels#call">ノットを呼び出す</DynamicLink> ことに対応します。
+
+- このケースでは、：
+
+  ```ink title="ink"
+  { shuffle:
+    -  2 of Diamonds.
+      'You lose this time!' crowed the croupier.
+  }
+  ```
+
+    **ネイティブ _ink_** では 2 つの異なるダイアログが表示されますが、**Pixi’Vn _ink_** では 1 つのダイアログとして結合されます。
+
+    **In Pixi’VN _ink_** では、2 つの異なるダイアログは表示されず、次の 1 つのダイアログとして表示されます：`2 of Diamonds.\n\n'You lose this time!' crowed the croupier.`。 <DynamicLink href="/ink/markup#markdown-on-ink">Markdown</DynamicLink> では複数行として表示されます：
+
+  ```txt
+  2 of Diamonds.
+  'You lose this time!' crowed the croupier.
+  ```
+
+- `weave`（次の例では `shove`）が一度きりの選択肢に関連付けられており、`-> shove` で開かれた場合、その選択肢は無効化されません。 無効化するには、通常どおりその選択肢を選択する必要があります。
+
+    以下は例です：
+
+  ```ink title="ink"
+  -> start
+  === start ===
+  * [1] -> shove
+  * (shove) [2] 2
+  * {shove} [3] -> END
+  -  -> start
+  -> DONE
+  ```
+
+    選択肢 `1` を選んだ場合、2 回目に `start` が開かれるときの挙動は次のようになります：
+
+  - **native _ink_** を使用している場合、選択できるのは選択肢 `3` のみです。 選択肢 `2` は「一度きり」のため非表示になります。**native _ink_** は、すでに `-> shove` によってこの決定が行われたことを認識しているためです。
+  - **Pixi’VN _ink_** を使用している場合、選択肢 `2` または `3` を選択できます。 選択肢 `2` は非表示になりません。**Pixi’VN _ink_** は、`shove` が選択肢と関連付けられていることを認識できないためです。
+
+  **native _ink_** と **Pixi’VN _ink_** の両方で `start` に同じロジックを適用するには、次のように記述する必要があります：
+
+  ```ink title="ink"
+  -> start
+  === start ===
+  * [1] -> shove
+  * (shove) {!shove} [2] 2
+  * {shove} [3] -> END
+  -  -> start
+  -> DONE
+  ```
+
+</Accordion>
+
+</Accordions>

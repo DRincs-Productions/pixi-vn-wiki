@@ -1,0 +1,68 @@
+---
+title: Componenti del canvas
+description: Panoramica dei componenti canvas integrati e personalizzati in Pixi'VN, incluse le funzionalità di estensione e memoria.
+---
+
+Pixi’VN fornisce un set di componenti canvas. Questi componenti estendono i componenti [Pixi.js](https://pixijs.com/), aggiungendo varie funzionalità, come la possibilità di salvare il loro stato attuale.
+
+**Cosa sono i componenti canvas?** I componenti sono elementi costitutivi riutilizzabili per le app canvas, che consentono agli sviluppatori di app di creare controlli personalizzati da utilizzare all'interno di un'app o tra app utilizzando una libreria di componenti. I componenti possono utilizzare funzionalità avanzate, quali proprietà personalizzate, e abilitare capacità complesse.
+
+## Componenti di base
+
+I componenti disponibili sono:
+
+- `Sprite` corrisponde al componente [`PixiJS.Sprite`](https://pixijs.com/8.x/guides/components/sprites).
+- `Container` corrisponde al componente [`PixiJS.Container`](https://pixijs.com/8.x/guides/components/containers).
+- <DynamicLink href="/start/canvas-image">ImageSprite</DynamicLink> è un componente introdotto da Pixi’VN.
+- <DynamicLink href="/start/canvas-image-container">ImageContainer</DynamicLink> è un componente introdotto da Pixi’VN.
+- <DynamicLink href="/start/canvas-video">VideoSprite</DynamicLink> è un componente introdotto da Pixi’VN.
+- <DynamicLink href="/start/canvas-text">Text</DynamicLink> è un componente introdotto da Pixi’VN.
+
+## Componenti personalizzati
+
+È possibile creare componenti personalizzati estendendo i componenti di base. Per fare ciò, è necessario utilizzare il decorator `@canvasComponentDecorator`.
+
+`@canvasComponentDecorator` è un decorator che salva il componente canvas in memoria (<DynamicLink href="/faq#enable-typescript-decorators">Come abilitare i decorator in TypeScript?</DynamicLink>). Questa funzione ha i seguenti parametri:
+
+- `name`: L'ir utilizzato da Pixi'VN per fare riferimento a questa classe (deve essere univoco). Se non si passa l'id, verrà utilizzato come id il nome della classe.
+- `getInstance`: Una funzione che restituisce un'istanza del componente canvas. Questa funzione viene utilizzata quando lo stato del canvas viene reimpostato.
+- `copyProperty`: Una funzione che copia le proprietà del componente canvas. Questa funzione viene utilizzata quando si copiano le proprietà del componente canvas in un'altra istanza dello stesso componente canvas.
+
+È necessario sovrascrivere la proprietà `memory` per memorizzare le proprietà del componente personalizzato.
+In `get memory()`, è molto importante restituire la proprietà `className`; questa proprietà deve essere uguale all'id utilizzato nel decorator.
+
+Ad esempio, è possibile creare una classe `AlienTinting` che estende la classe `Sprite` per gestire la direzione e la velocità di ogni singolo alieno in un'animazione.
+
+```ts title="canvas/components/AlienTinting.ts"
+const ALIEN_TINTING_TEST_ID = "AlienTintingTest"
+@canvasComponentDecorator({
+    name: ALIEN_TINTING_TEST_ID,
+})
+class AlienTintingTest extends Sprite<IAlienTintingMemory> {
+    readonly pixivnId: string = CANVAS_SPINE_ID;
+    override get memory() {
+        return {
+            ...super.memory,
+            pixivnId: CANVAS_SPINE_ID,
+            direction: this.direction,
+            turningSpeed: this.turningSpeed,
+            speed: this.speed,
+        }
+    }
+    override async setMemory(memory: IAlienTintingMemory) {
+        await super.setMemory(memory)
+        this.direction = memory.direction
+        this.turningSpeed = memory.turningSpeed
+        this.speed = memory.speed
+    }
+    direction: number = 0
+    turningSpeed: number = 0
+    speed: number = 0
+    static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
+        let sprite = Sprite.from(source, skipCache)
+        let mySprite = new AlienTintingTest()
+        mySprite.texture = sprite.texture
+        return mySprite
+    }
+}
+```

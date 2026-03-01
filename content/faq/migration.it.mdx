@@ -1,0 +1,152 @@
+---
+title: Migration guide
+---
+
+## Migration from v1.4.x to v1.5.0
+
+In this update, the `pixi.js` dependency has been marked as **external** for non-CDN builds (for example, when using Vite.js or the official templates).
+
+When using a CDN, the version of `pixi.js` bundled with the library will continue to be used. This ensures compatibility, prevents known issues, and preserves the overall integrity of the library.
+
+**Why is `pixi.js` now external?** `pixi.js` does not support multiple instances. Making it external allows developers to safely integrate third-party libraries that are designed to work with `pixi.js`, without running into instance conflicts.
+
+In v1.5.4, the canvas resizing logic has also been changed. If you used an official template, it's recommended to modify the CSS as follows:
+
+```css title="src/index.css"
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@plugin "tailwindcss-motion";
+
+:root {
+  background-color: #242424;
+}
+
+html, /* [!code ++] */
+body { /* [!code ++] */
+  height: 100%; /* [!code ++] */
+} /* [!code ++] */
+
+body {
+  margin: 0;
+  min-height: 100vh; /* [!code ++] */
+  display: flex;
+  overflow: hidden;
+}
+```
+
+## Migration from v1.3.x to v1.4.0
+
+This document describes the changes that need to be made to your code to migrate from v1.3.x to v1.4.0.
+
+In this release, some functions for managing "navigation of the narrative" have been modified to allow for the easy implementation of rollback and rollforward. Specifically, it is now possible to execute multiple back and continue requests synchronously, and the system will internally queue them and calculate the delta to execute only the necessary processes. You can read more about this in the <DynamicLink href="/start/labels-flow#rollback-rollforward">Rollback and Rollforward</DynamicLink> section.
+
+For this reason it was necessary to modify the `stepHistory.back()` function and the `Game.init()` function. `stepHistory.back()` now requires a path navigation function rather than a `StepLabelProps` function. You can now define the path navigation function in `Game.init()`.
+
+```ts
+stepHistory.back((_path) => { // [!code --]
+    // TODO: navigate in the url path // [!code --]
+    // READ THIS: https://pixi-vn.web.app/start/interface.html#navigate-switch-between-ui-screens // [!code --]
+}) // [!code --]
+const gameProps = {}; // [!code ++]
+stepHistory.back(gameProps); // [!code ++]
+```
+
+```ts
+Game.init(body, {
+    height: 1080,
+    width: 1920,
+    backgroundColor: "#303030",
+    navigate: (_path) => { // [!code ++]
+        // TODO: navigate in the url path // [!code ++]
+    }, // [!code ++]
+}).then(() => {
+    // ...
+});
+```
+
+Some long-deprecated features have been removed in this release, including: `stepHistory.goBack`, `narration.goNext`, `PIXI`, `canvas.canvasWidth`, `canvas.canvasHeight`, `canvas.onEndOfTicker`, `FadeAlphaTicker`, `MoveTicker`, `RotateTicker`, `ZoomTicker`, `narration.canContinue`, `narration.callLabel`, `narration.jumpLabel`, `narration.choiceMenuOptions`, `storage.startingStorage`, `storage.setVariable`, `storage.getVariable` and `storage.removeVariable`.
+
+## Migration from v1.2.x to v1.3.0
+
+This document describes the changes that need to be made to your code to migrate from v1.2.x to v1.3.0.
+
+In this release, the canvas component animations have been revolutionized. The core animation function is now <DynamicLink href="/start/canvas-motion">`canvas.animate`</DynamicLink>, a function that combines PixiJS tickers and [`motion`](https://motion.dev/docs/animate). So the provided tickers preset (`FadeAlphaTicker`, `MoveTicker`, `RotateTicker`, `ZoomTicker`) has been deprecated.
+
+## Migration from v0.10.x to v1.0
+
+This document describes the changes that need to be made to your code to migrate from v0.10.x to v1.0.
+
+Being version 1.0.0 it is the first complete release of the library. It is a breaking change and the API has changed significantly. The fundamental change of this release was to split the entire engine into independent modules. This allows for a more modular and flexible design, making it easier to use the engine in different contexts. The size of packages has been reduced significantly (150 MB to 50 MB) and the engine is now more efficient and faster.
+
+The `Game` namespace object has been introduced for the which contains all the functionality that exploits multiple modules. This is the main entry point for the engine and is used to access all the functions of the engine.
+
+The `stepHistory` module has been introduced to manage the history of the game. Previously the entire management of the game's history was handled by `narration`.
+
+```ts
+clearAllGameDatas(); // [!code --]
+Game.clear(); // [!code ++]
+```
+
+```ts
+canvas // [!code --]
+    .initialize(body, { // [!code --]
+        height: 1080, // [!code --]
+        width: 1920, // [!code --]
+        backgroundColor: "#303030", // [!code --]
+    }) // [!code --]
+    .then(() => { // [!code --]
+        // Pixi.JS UI Layer // [!code --]
+        canvas.addLayer(CANVAS_UI_LAYER_NAME, new Container()); // [!code --]
+Game.init(body, { // [!code ++]
+    height: 1080, // [!code ++]
+    width: 1920, // [!code ++]
+    backgroundColor: "#303030", // [!code ++]
+}).then(() => { // [!code ++]
+    // Pixi.JS UI Layer // [!code ++]
+    canvas.addLayer(CANVAS_UI_LAYER_NAME, new Container()); // [!code ++]
+```
+
+```ts
+getSaveData(); // [!code --]
+Game.exportGameState(); // [!code ++]
+```
+
+```ts
+getSaveJson(); // [!code --]
+JSON.stringify(Game.exportGameState()); // [!code ++]
+```
+
+```ts
+loadSaveData(data, navigate); // [!code --]
+Game.restoreGameState(data, navigate); // [!code ++]
+```
+
+```ts
+loadSaveJson(data, navigate); // [!code --]
+Game.restoreGameState(JSON.parse(dataString) as GameState, navigate); // [!code ++]
+```
+
+```ts
+loadSaveJson(data, navigate); // [!code --]
+Game.restoreGameState(JSON.parse(dataString) as GameState, navigate); // [!code ++]
+```
+
+```ts
+jsonToSaveData(json); // [!code --]
+JSON.parse(json); // [!code ++]
+```
+
+```ts
+narration.canGoBack; // [!code --]
+stepHistory.canGoBack; // [!code ++]
+```
+
+```ts
+narration.back(); // [!code --]
+stepHistory.back(); // [!code ++]
+```
+
+```ts
+narration.narrativeHistory; // [!code --]
+stepHistory.narrativeHistory; // [!code ++]
+```

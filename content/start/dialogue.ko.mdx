@@ -1,0 +1,128 @@
+---
+title: Dialogue
+description: How to use, customize, and manage dialogue objects in Pixi’VN, including glue and UI integration.
+---
+
+import { CurrentDialogueExample, DialogueGlueExample } from "@/components/examples";
+
+<Callout title="UI screen" type="info">
+
+You can find the example of the narrative dialogue UI screen in the <DynamicLink href="/start/interface-examples#narrative-dialogue">interface examples</DynamicLink> section.
+
+</Callout>
+
+**What is dialogue?** A written composition in which two or more characters are represented as conversing.
+
+In Pixi’VN, `dialogue` is an object that contains information about _who_ and _what_ is currently being said. Its functionality can be broader, as it can also be used for other purposes, such as monologues, soliloquies, or to display a message to the player. For this reason, it is more appropriate to consider it as a text that can be linked to a <DynamicLink href="/start/character#use-characters-in-the-game">character</DynamicLink>.
+
+## Set
+
+To set the current dialogue, you can use `narration.dialogue`.
+
+```ts title="labels/startLabel.ts"
+import { narration, newLabel } from "@drincs/pixi-vn"
+import { eggHead } from "../values/characters"
+
+// What is a Label? https://pixi-vn.web.app/start/labels.html
+export const startLabel = newLabel("start_label",
+    [
+        () => {
+            // in this example, not exists a character with id 'Alice' // [!code focus]
+            // so when you get the current dialogue, the character is a fake character with the name 'Alice' // [!code focus]
+            narration.dialogue = { // [!code focus]
+                character: "Alice", // [!code focus]
+                text: "Hello, world!" // [!code focus]
+            } // [!code focus]
+        },
+        () => {
+            // in this example, exists a character with id 'egg-head' // [!code focus]
+            // so when you get the current dialogue, the character is the character with id 'egg-head' // [!code focus]
+            narration.dialogue = { // [!code focus]
+                character: 'egg-head', // [!code focus]
+                text: "Hello, world!" // [!code focus]
+            } // [!code focus]
+            // or better // [!code focus]
+            narration.dialogue = { // [!code focus]
+                character: eggHead, // [!code focus]
+                text: "Hello, world!" // [!code focus]
+            } // [!code focus]
+        },
+        // if don't want to set a character, you can set a string // [!code focus]
+        () => narration.dialogue = "Hello, world!", // [!code focus]
+    ],
+)
+```
+
+<CurrentDialogueExample />
+
+## Get
+
+To get the current dialogue, use `narration.dialogue`. The return value is a `DialogueInterface`.
+
+```typescript
+const currentDialogue: DialogueInterface = narration.dialogue;
+```
+
+## Delete
+
+To clear the current dialogue, set `narration.dialogue = undefined`.
+
+```typescript
+narration.dialogue = undefined;
+```
+
+## Custom class
+
+You can customize the dialogue interface by adding additional properties to the `DialogueInterface`. For example, you can add a `color` property to change the color of the text.
+
+To do this, "override" the `DialogueInterface` interface in your `.d.ts` file:
+
+```ts tab="pixi-vn.d.ts"
+declare module '@drincs/pixi-vn' {
+    interface DialogueInterface {
+        color?: string
+    }
+}
+```
+
+```ts tab="labels/startLabel.ts"
+narration.dialogue = {
+    character: "Alice",
+    text: "Hello, world!",
+    color: "#ff0000"
+}
+```
+
+## 기타 기능
+
+<Accordions>
+
+<Accordion title="glue" id="dialogue-glue">
+
+<Callout type="info">
+
+Dialogue glue is a feature originally created for **_ink_**, which was also introduced in Pixi’VN.
+
+</Callout>
+
+When "glue" is enabled, the next dialogue will be appended after the current dialogue.
+
+```ts title="labels/startLabel.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+
+const startLabel = newLabel("start", [
+    () => {
+        narration.dialogue = `Hello, my name is Alice and ...` // [!code focus]
+    },
+    () => {
+        narration.dialogGlue = true // [!code focus]
+        narration.dialogue = `I am a character in this game.` // [!code focus]
+    },
+])
+```
+
+<DialogueGlueExample />
+
+</Accordion>
+
+</Accordions>

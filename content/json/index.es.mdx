@@ -1,0 +1,85 @@
+---
+title: Pixi’VN + Json Integration
+---
+
+Pixi’VN can be integrated with JSON files to create a visual novel. This method is useful for:
+
+- Add a new narrative to Pixi’VN (It was used to create the integration with <DynamicLink href="/ink">**_ink_**</DynamicLink> and <DynamicLink href="/renpy">Ren'Py</DynamicLink>)
+- Create a external tool to create visual novels with Pixi’VN
+
+( In both these cases it is advisable to notify the developers of Pixi’VN to add the new feature to be helped )
+
+<Mermaid
+  chart='
+flowchart LR;
+    K@{ img: "/renpy.svg", label: "RenPy", pos: "b", w: 90, h: 90, constraint: "on" }---->Json;
+    H@{ img: "/ink.svg", label: "ink", pos: "b", w: 90, h: 90, constraint: "on" }---->Json;
+    I@{ img: "/twine.svg", label: "Twine", pos: "b", w: 90, h: 90, constraint: "on" }---->Json;
+    J@{ img: "/yarn-spinner.svg", label: "Yarn Spinner", pos: "b", w: 90, h: 90, constraint: "on" }---->Json;
+    Json@{ img: "/pixivn-json.svg", label: "Pixi’VN + Json", pos: "b", w: 140, h: 140, constraint: "on" }
+    Json===>PixiVN;
+    PixiVN@{ img: "/logo.webp", label: "Pixi’VN", pos: "b", w: 180, h: 180, constraint: "on" }
+classDef img fill:none,stroke:none,borderRadius:50px
+class Json,D,K,H,B,I,J,PixiVN img
+'
+/>
+
+## How use Pixi’VN + Json?
+
+First of all you need to install the following library:
+
+```sh tab="npm"
+npm install @drincs/pixi-vn-json
+```
+
+```sh tab="yarn"
+yarn add @drincs/pixi-vn-json
+```
+
+```sh tab="pnpm"
+pnpm add @drincs/pixi-vn-json
+```
+
+```sh tab="bun"
+bun add @drincs/pixi-vn-json
+```
+
+All you need to do to use this integration is create a object using the <DynamicLink href="/json/PixiVNJson">`PixiVNJson` Model</DynamicLink> and use the `importPixiVNJson()` function to import the object.
+
+```ts title="main.ts"
+import { PixiVNJson, importPixiVNJson} from '@drincs/pixi-vn-json';
+
+let obj: PixiVNJson = {
+    labels: {
+        back_in_london: [
+            {
+                dialogue: "We arrived into London at 9.45pm exactly.",
+            },
+            {
+                labelToOpen: {
+                    label: "hurry_home",
+                    type: "jump",
+                },
+            },
+        ],
+        hurry_home: [
+            {
+                dialogue: "We hurried home to Savile Row as fast as we could.",
+            },
+            {
+                end: "label_end",
+            },
+        ]
+    }
+}
+
+importPixiVNJson(obj);
+```
+
+After that you can run the `back_in_london` label with <DynamicLink href="/start/labels#run-a-label">Pixi’VN functions</DynamicLink>.
+
+```ts title="main.ts"
+import { narration } from '@drincs/pixi-vn'
+
+narration.call(`back_in_london`, {})
+```

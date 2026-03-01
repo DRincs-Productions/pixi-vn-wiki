@@ -1,0 +1,320 @@
+---
+title: ink 语言集成
+description: 通过与 Pixi’VN 集成的、专为分支故事设计的脚本语言 ink，可以编写交互式叙事内容。
+---
+
+import { InkExample } from "@/components/ink-examples";
+
+Pixi’VN 允许你使用 **_ink_** 编写交互式叙事内容，**_ink_** 是一种专为分支故事设计的脚本语言。
+
+**什么是 _ink_？** **_ink_** 是一种用于交互式故事的简洁脚本语言，被应用于 80 Days、Heaven's Vault 和 Sorcery! 等游戏中！ 更多信息请参阅 [_ink_ 官方网站](https://www.inklestudios.com/ink/)。
+
+**_ink_ + Pixi’VN 集成** 使用 [inkjs](https://github.com/inkle/inkjs) 和 <DynamicLink href="/json">PixiVNJson</DynamicLink> 来解析 **_ink_ 代码** 并生成 Pixi’VN 可解析的 JSON。 这意味着 JavaScript/TypeScript 与 **_ink_** 共享相同的存储和 canvas，你可以从 JavaScript/TypeScript 启动 **_ink_** 的 `knots`（或 `labels`），反之亦然。你可以同时享受两者的优势。 使用 **_ink_** 编写叙事内容，并使用 JavaScript/TypeScript 实现小游戏或高级动画。
+
+```ink title="ink/start.ink"
+=== start ===
+We arrived into London at 9.45pm exactly.
+
+* "There is not a moment to lose!"[] I declared.
+ -> hurry_outside
+
+* "Monsieur, let us savour this moment!"[] I declared.
+ My master clouted me firmly around the head and dragged me out of the door.
+ -> dragged_outside
+
+* [We hurried home] -> hurry_outside
+
+=== hurry_outside ===
+We hurried home to Savile Row -> as_fast_as_we_could
+
+=== dragged_outside ===
+He insisted that we hurried home to Savile Row
+-> as_fast_as_we_could
+
+=== as_fast_as_we_could ===
+<> as fast as we could.
+-> start
+```
+
+<InkExample />
+
+## Why?
+
+直接使用 **JavaScript/TypeScript** 编写叙事内容可能既缓慢又复杂，尤其是对初学者而言。 **_ink_** 更容易学习和编写。
+
+新开发者可以从 <DynamicLink href="/start#project-initialization">_ink_ 模板</DynamicLink> 开始，然后逐步学习 JavaScript/TypeScript 以实现高级功能。
+
+## 安装
+
+<Callout title="Templates" type="info">
+
+正在开始一个新的 Pixi’VN 项目？ 请使用已包含 _ink_ 的 <DynamicLink href="/start#project-initialization">模板</DynamicLink>。
+
+</Callout>
+
+要在现有的 JavaScript 项目中安装 _ink_ 包，请使用以下任一命令：
+
+```sh tab="npm"
+npm install @drincs/pixi-vn @drincs/pixi-vn-ink
+```
+
+```sh tab="yarn"
+yarn add @drincs/pixi-vn @drincs/pixi-vn-ink
+```
+
+```sh tab="pnpm"
+pnpm add @drincs/pixi-vn @drincs/pixi-vn-ink
+```
+
+```sh tab="bun"
+bun add @drincs/pixi-vn @drincs/pixi-vn-ink
+```
+
+```sh tab="deno"
+deno install npm:@drincs/pixi-vn npm:@drincs/pixi-vn-ink
+```
+
+### 初始化
+
+安装完成后，使用 `importInkText()` 来加载 **_ink_ 脚本**：
+
+```typescript title="main.ts"
+import { importInkText } from '@drincs/pixi-vn-ink'
+
+const inkText = `
+=== start ===
+Hello
+-> END
+`
+
+importInkText([inkText, ...])
+```
+
+随后，你可以使用 <DynamicLink href="/start/labels#run-a-label">Pixi’VN 的函数</DynamicLink> 来运行 **_ink_ `knot`**（或 `label`）：
+
+```typescript title="main.ts"
+import { narration } from '@drincs/pixi-vn'
+
+narration.call(`start`, {})
+```
+
+<Accordions>
+
+<Accordion title="import_ink_files" id="import-ink-files">
+
+<Callout type="info">
+
+本指南使用 [Vite](https://vitejs.dev/)，但相同的逻辑也适用于其他环境。
+
+</Callout>
+
+要导入 `.ink` 文件，你需要将项目配置为将其作为文本文件处理。
+
+具体步骤如下：
+
+- 在 `ink.d.ts` 中声明 `*.ink` 模块。
+- 在 `vite.config.ts` 的 `assetsInclude` 中添加 `.ink`。
+- 使用 `?raw` 导入文件以获取其文本内容。
+
+```ts tab="main.ts"
+import { importInkText } from '@drincs/pixi-vn-ink'
+import startLabel from './ink/start.ink?raw'
+
+importInkText([startLabel, ...])
+```
+
+```ts tab="vite.config.ts"
+export default defineConfig({
+  // ...
+  assetsInclude: ['**/*.ink'],
+})
+```
+
+```ts tab="ink.d.ts"
+declare module '*.ink' {
+    const value: string
+    export default value
+}
+```
+
+</Accordion>
+
+<Accordion title="import_ink_folder" id="import-ink-folder">
+
+<Callout type="info">
+
+本指南使用 [Vite](https://vitejs.dev/)，但相同的逻辑也适用于其他环境。
+
+</Callout>
+
+要导入多个 `.ink` 文件，请使用 `import.meta.glob`：
+
+```ts tab="utils/ink-utility.ts"
+import { convertInkText, importInkText } from "@drincs/pixi-vn-ink";
+
+async function getInkText() {
+    const files = import.meta.glob<string>("../ink/*.ink", { query: "?raw", import: "default" });
+    return await Promise.all(
+        Object.values(files).map(async (importFile) => {
+            return await importFile();
+        })
+    );
+}
+
+export async function importAllInkLabels() {
+    let fileEntries = await getInkText();
+    await importInkText(fileEntries);
+}
+
+export async function convertInkToJson() {
+    let fileEntries = await getInkText();
+    return await Promise.all(fileEntries.map((data) => convertInkText(data)));
+}
+```
+
+```ts tab="vite.config.ts"
+export default defineConfig({
+  // ...
+  assetsInclude: ['**/*.ink'],
+})
+```
+
+</Accordion>
+
+<Accordion title="vite_js_plugin" id="vite-plugin">
+
+为了获得更好的开发体验，可以使用 Vite 插件：
+
+```ts tab="vite.config.ts"
+import { defineConfig } from 'vite'
+import { vitePluginInk } from '@drincs/pixi-vn-ink/vite'
+export default defineConfig({
+  // ...
+  plugins: [
+    // other plugins...
+    vitePluginInk()
+  ]
+})
+```
+
+```ts tab="main.ts"
+import { setupInkHmrListener } from '@drincs/pixi-vn-ink/vite-listener'
+
+setupInkHmrListener()
+```
+
+```ts tab="utils/ink-utility.ts"
+async function getInkText() {
+    const files = import.meta.glob<string>("../ink/*.ink", { eager: true, import: "default" });
+    return await Promise.all(
+        Object.values(files).map(async (importFile) => {
+            return importFile;
+        })
+    );
+}
+```
+
+</Accordion>
+
+</Accordions>
+
+## 即将推出的功能
+
+这些功能目前正在开发中。
+
+<Callout type="info">
+
+通过点赞或评论 issue 来表达你的兴趣。
+
+</Callout>
+
+- [Functions and Game Queries](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#9-game-queries-and-functions) ([#11](https://github.com/DRincs-Productions/pixi-vn-ink/issues/11)):
+  - [User-created functions](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#5-functions) ([#32](https://github.com/DRincs-Productions/pixi-vn-ink/issues/32))
+  - `CHOICE_COUNT()`
+  - `TURNS()`
+  - `TURNS_SINCE()`
+  - `SEED_RANDOM()`
+- [`LIST`](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#1-basic-lists) ([#15](https://github.com/DRincs-Productions/pixi-vn-ink/issues/15))
+- [`Tunnels`](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#1-tunnels) ([#38](https://github.com/DRincs-Productions/pixi-vn-ink/issues/38))
+
+## Pixi’VN 忽略的 _ink_ 语法
+
+部分 _ink_ 语法会被 Pixi’VN 忽略。 你可以在 **_ink_ 脚本** 中使用它们（例如在 Inky 编辑器中测试），但 Pixi’VN 不会处理这些内容。
+
+### INCLUDE
+
+`INCLUDE` 是用于引入其他 _ink_ 文件的 _ink_ 语句。 在 Pixi’VN 中，应使用 `importInkText()` 来加载多个 _ink_ 文件，因此 `INCLUDE` 会被忽略。
+
+### `knots` 之外的叙事内容
+
+位于 `knots`（或 `labels`）之外的叙事内容会被忽略，变量除外。
+
+For example:
+
+```ink title="ink"
+VAR my_var = false // ✅ This will be handled (because it is a variable)
+Hello // ❌ This will be ignored  [!code warning]
+-> start // ❌ This will be ignored [!code warning]
+=== start === // ✅ This will be handled
+My name is John // ✅ This will be handled
+-> DONE // ✅ This will be handled
+```
+
+<Accordions>
+
+<Accordion title="ink_differences" id="ink-differences">
+
+- 由于 pixi-vn 不支持 “Threads”，符号 `<-` 对应于 <DynamicLink href="/ink/labels#call">调用 knot</DynamicLink>。
+
+- 在此情况下：
+
+  ```ink title="ink"
+  { shuffle:
+    -  2 of Diamonds.
+      'You lose this time!' crowed the croupier.
+  }
+  ```
+
+    **原生 _ink_** 会显示两个不同的对话，而 **Pixi’Vn _ink_** 会将它们合并为一个对话。
+
+  - 在 **Pixi’VN _ink_** 中，你不会看到两个不同的对话，而是看到以下合并的对话：`2 of Diamonds.\n\n'You lose this time!' crowed the croupier.`。 在 <DynamicLink href="/ink/markup#markdown-on-ink">Markdown</DynamicLink> 中将以多行形式显示：
+
+  ```txt
+  2 of Diamonds.
+  'You lose this time!' crowed the croupier.
+  ```
+
+- 如果 `weave`（在以下示例中为 `shove`）附加在一次性选择（one time choice）上，并且通过 `-> shove` 打开，它不会使该一次性选择失效。 要使其失效，必须像平常一样选择该选项。
+
+    下面是一个示例：
+
+  ```ink title="ink"
+  -> start
+  === start ===
+  * [1] -> shove
+  * (shove) [2] 2
+  * {shove} [3] -> END
+  -  -> start
+  -> DONE
+  ```
+
+    如果你选择选项 `1`，第二次打开 `start` 时的情况如下：
+
+  - 如果使用 **native _ink_**，你只能选择选项 `3`。 选项 `2` 会被隐藏，因为作为一次性选择，**native _ink_** 会知道你已经通过 `-> shove` 做出了这个决定。
+  - 如果使用 **Pixi’VN _ink_**，你可以选择选项 `2` 或 `3`。 选项 `2` 不会被隐藏，因为 **Pixi’VN _ink_** 并不知道 `shove` 与某个选择关联。
+
+  要在 **native _ink_** 和 **Pixi’VN _ink_** 中获得相同的 `start` 逻辑，需要写如下代码：
+
+  ```ink title="ink"
+  -> start
+  === start ===
+  * [1] -> shove
+  * (shove) {!shove} [2] 2
+  * {shove} [3] -> END
+  -  -> start
+  -> DONE
+  ```
+
+</Accordion>
+
+</Accordions>

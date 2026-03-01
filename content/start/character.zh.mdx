@@ -1,0 +1,316 @@
+---
+title: 角色
+description: 如何在 Pixi’VN 中定义、使用和自定义角色，包括存储、情感和自定义属性。
+---
+
+**什么是 `characters`？** `characters` 是出现在视觉小说中的角色。 在 Pixi’VN 中，角色是使用 `CharacterBaseModel` 类或 [自定义类](#custom-class) 创建的。
+
+## 初始化
+
+要初始化一个角色，请创建 `CharacterBaseModel` 类的新实例（或您的 [自定义类](#custom-class)），并在游戏初始化时将其添加到游戏角色字典中。
+
+<Callout type="info">
+
+It is recommended to import the instances at project startup, see the `src/main.ts` file.
+
+</Callout>
+
+要创建 `CharacterBaseModel` 的新实例，您需要以下参数：
+
+- `id`: A unique identifier (string). 用于在游戏中引用角色（必须是唯一的）。 如果您想创建一个 [带有“情感”的角色，您可以传递一个对象](#character-emotions)。
+- `props`：一个包含角色属性的对象：
+  - `name`：角色的名字。
+  - `surname`（可选）：角色的姓氏。
+  - `age`（可选）：角色的年龄。
+  - `icon`（可选）：角色的图标图片 URL。
+  - `color`（可选）：角色的颜色。
+
+```ts tab="values/characters.ts"
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
+
+export const liam = new CharacterBaseModel('liam', {
+    name: 'Liam',
+    surname: 'Smith',
+    age: 25,
+    icon: "https://example.com/liam.png",
+    color: "#9e2e12"
+});
+
+export const emma = new CharacterBaseModel('emma', {
+    name: 'Emma',
+    surname: 'Johnson',
+    age: 23,
+    icon: "https://example.com/emma.png",
+    color: "#9e2e12"
+});
+
+RegisteredCharacters.add([liam, emma]);
+```
+
+```ts tab="src/main.ts"
+import "./values/characters";
+
+// ...
+```
+
+`RegisteredCharacters.add` 是 **必需的**，用于在游戏中保存角色。
+
+您还可以创建一个函数来加载角色。 重要的是，在游戏中使用角色之前至少需要调用一次，否则它们将无法使用。
+
+## Get
+
+要通过 `id` 获取角色，请使用 `RegisteredCharacters.get` 函数。
+
+```typescript
+import { RegisteredCharacters } from "@drincs/pixi-vn";
+
+const liam = RegisteredCharacters.get('liam');
+```
+
+## 获取所有
+
+要获取所有角色，请使用 `RegisteredCharacters.values` 函数。
+
+```typescript
+import { RegisteredCharacters } from "@drincs/pixi-vn";
+
+const characters = RegisteredCharacters.values();
+```
+
+## 使用
+
+<Callout title="ink" type="info">
+
+此方法可以与 _ink_ 语法一起使用。 查看更多<DynamicLink href="/ink/character#use">这里</DynamicLink>。
+
+</Callout>
+
+您可以使用游戏角色，例如，将其 <DynamicLink href="/start/dialogue#set-the-current-dialogue">链接到当前对话</DynamicLink>。 您可以使用角色的 `id` 或角色的实例，但建议使用实例。
+
+```ts title="values/characters.ts"
+export const liam = new CharacterBaseModel('liam_id', {
+    name: 'Liam',
+    surname: 'Smith',
+    age: 25,
+    icon: "https://example.com/liam.png",
+    color: "#9e2e12"
+});
+RegisteredCharacters.add([liam]);
+```
+
+```typescript
+narration.dialogue = { character: liam, text: "Hello" }
+// or
+narration.dialogue = { character: "liam_id", text: "Hello" }
+```
+
+## 编辑
+
+<Callout title="ink" type="info">
+
+此方法可以与 _ink_ 语法一起使用。 查看更多<DynamicLink href="/ink/character#edit">这里</DynamicLink>。
+
+</Callout>
+
+`CharacterBaseModel` 是一个 <DynamicLink href="/start/stored-classes">存储类</DynamicLink>，这意味着它的属性保存在 <DynamicLink href="/start/storage">游戏存储</DynamicLink> 中。
+
+如果角色的名字在游戏中被更改，新名字将保存在游戏存储中并与其 `id` 关联。
+
+如果 **角色的 `id` 在不同版本之间更改**，系统将 **不** 将与之前的 `id` 关联的数据迁移到新的 `id`。
+
+存储在游戏存储中的 `CharacterBaseModel` 的属性包括：
+
+- `name`：角色的名字。
+- `surname`：角色的姓氏。
+- `age`：角色的年龄。
+
+要获取实例化类时使用的属性，您可以使用：
+
+- `defaultName`：角色的名字。
+- `defaultSurname`：角色的姓氏。
+- `defaultAge`：角色的年龄。
+
+这里是 `CharacterBaseModel` 类的简化实现，以便更好地理解存储在游戏存储中的属性：
+
+```typescript title="CharacterBaseModel.ts"
+export default class CharacterBaseModel extends StoredClassModel implements CharacterBaseModelProps {
+    constructor(id: string, props: CharacterBaseModelProps) {
+        super(
+            // ...
+        )
+        this.defaultName = props.name
+        this.icon = props.icon
+        // ...
+    }
+
+    // name property is stored in the game storage
+    private defaultName: string = ""
+    get name(): string {
+        return this.getStorageProperty<string>("name") || this.defaultName
+    }
+    set name(value: string) {
+        this.setStorageProperty<string>("name", value)
+    }
+
+    // icon property is not stored in the game storage
+    icon: string = ""
+
+    // ...
+}
+```
+
+## 角色情感
+
+<Callout title="ink" type="info">
+
+此方法可以与 _ink_ 语法一起使用。 查看更多<DynamicLink href="/ink/character#character-emotions">这里</DynamicLink>。
+
+</Callout>
+
+通常来说，拥有多个类型的同一角色是很有用的。 例如，一个角色 "Alice" 和与她的情感状态相关的子类型，如 "愤怒的Alice"。 角色和子类型具有相同的特征，除了一个或多个属性，例如图标。
+
+使用Pixi’VN，您可以通过传递一个对象而不是id来创建一个 "带有情感的角色"，具有以下属性：
+
+- `id`: 已存在角色的id。
+- `emotion`: 角色的子类（例如角色的情感）。
+
+```ts title="values/characters.ts"
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
+
+export const alice = new CharacterBaseModel('alice', {
+    name: 'Alice',
+    icon: "https://example.com/alice.png",
+    color: "#9e2e12"
+});
+
+export const angryAlice = new CharacterBaseModel({ id: 'alice', emotion: 'angry' }, {
+    icon: "https://example.com/angryAlice.png",
+});
+
+RegisteredCharacters.add([alice, angryAlice]);
+```
+
+```typescript
+console.log(alice.name); // Alice
+
+alice.name = "Eleonora";
+console.log(alice.name); // Eleonora
+console.log(angryAlice.name); // Eleonora
+
+angryAlice.name = "Angry Eleonora";
+console.log(alice.name); // Eleonora
+console.log(angryAlice.name); // Angry Eleonora
+```
+
+## 自定义类
+
+<Callout title="Templates" type="info">
+
+在所有模板中，`Character`类已在文件`models/Character.ts`中定义。 您可以直接使用它或修改它以满足您的需求。
+
+</Callout>
+
+建议创建您自己的类 `Character`，该类扩展 `CharacterStoredClass` 并 "重写" 接口 `CharacterInterface` 以添加、编辑或删除属性或方法。
+
+例如，如果您想创建一个类 `Character`，您必须 "重写" 接口 `CharacterInterface` 以使用您的属性或方法。 （参见文件 `pixi-vn.d.ts`）
+
+现在您可以创建一个扩展 `CharacterStoredClass` 并实现 `CharacterInterface` 的类 `Character`。 （有关如何在TypeScript中创建类的更多信息，请阅读[官方文档](https://www.typescriptlang.org/docs/handbook/2/classes.html)）
+
+要创建一个在游戏存储中存储其值的属性，您可以创建[获取器/设置器](https://www.typescriptlang.org/docs/handbook/2/classes.html#getters--setters)，并使用 `this.getStorageProperty()` / `this.setStorageProperty()` 方法。 （参见文件 `Character.ts`）
+
+```ts tab="models/Character.ts"
+import { CharacterInterface, CharacterStoredClass } from "@drincs/pixi-vn";
+
+export class Character extends CharacterStoredClass implements CharacterInterface {
+    constructor(id: string | { id: string, emotion: string }, props: CharacterProps) {
+        super(typeof id === "string" ? id : id.id, typeof id === "string" ? "" : id.emotion)
+        this._icon = props.icon
+        this._color = props.color
+        this.defaultName = props.name
+        this.defaultSurname = props.surname
+        this.defaultAge = props.age
+    }
+
+    // Not stored properties
+    
+    readonly icon?: string;
+    readonly color?: string | undefined;
+
+    // Stored properties
+
+    private defaultName?: string
+    get name(): string {
+        return this.getStorageProperty<string>("name") || this.defaultName || this.id
+    }
+    set name(value: string | undefined) {
+        this.setStorageProperty<string>("name", value)
+    }
+    private defaultSurname?: string
+    get surname(): string | undefined {
+        return this.getStorageProperty<string>("surname") || this.defaultSurname
+    }
+    set surname(value: string | undefined) {
+        this.setStorageProperty<string>("surname", value)
+    }
+    private defaultAge?: number | undefined
+    get age(): number | undefined {
+        return this.getStorageProperty<number>("age") || this.defaultAge
+    }
+    set age(value: number | undefined) {
+        this.setStorageProperty<number>("age", value)
+    }
+}
+
+interface CharacterProps {
+    /**
+     * The name of the character.
+     */
+    name?: string;
+    /**
+     * The surname of the character.
+     */
+    surname?: string;
+    /**
+     * The age of the character.
+     */
+    age?: number;
+    /**
+     * The icon of the character.
+     */
+    icon?: string;
+    /**
+     * The color of the character.
+     */
+    color?: string;
+}
+```
+
+```ts tab="pixi-vn.d.ts"
+declare module '@drincs/pixi-vn' {
+    interface CharacterInterface {
+        /**
+         * The name of the character.
+         * If you set undefined, it will return the default name.
+         */
+        name: string;
+        /**
+         * The surname of the character.
+         * If you set undefined, it will return the default surname.
+         */
+        surname?: string;
+        /**
+         * The age of the character.
+         * If you set undefined, it will return the default age.
+         */
+        age?: number;
+        /**
+         * The icon of the character.
+         */
+        readonly icon?: string;
+        /**
+         * The color of the character.
+         */
+        readonly color?: string;
+    }
+}
+```

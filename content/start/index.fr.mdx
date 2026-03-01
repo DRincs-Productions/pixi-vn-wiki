@@ -1,0 +1,219 @@
+---
+title: Démarrage rapide
+description: Bien démarrer avec Pixi’VN
+---
+
+Vous pouvez commencer à utiliser Pixi’VN en [initialisant un nouveau projet](#project-initialization) ou en [installant le package](#installation) dans un projet existant.
+
+## Prérequis
+
+Avant de commencer, assurez-vous d’avoir installé les outils suivants:
+
+- [Node.js](https://nodejs.org/) version 18 ou supérieure.
+- Un éditeur de texte prenant en charge TypeScript, tel que:
+  - [Visual Studio Code](https://code.visualstudio.com/)
+  - [Cursor](https://www.cursor.com/)
+  - [VSCodium](https://vscodium.com/)
+- (Recommandé) [Git](https://git-scm.com/)
+  - Un [compte GitHub](https://github.com/)
+
+## Initialisation du projet
+
+Pour démarrer un nouveau projet avec un modèle Pixi’VN, exécutez la commande suivante:
+
+```sh tab="npm"
+npm create pixi-vn@latest
+```
+
+```sh tab="yarn"
+yarn create pixi-vn
+```
+
+```sh tab="pnpm"
+pnpm create pixi-vn
+```
+
+```sh tab="bun"
+bun create pixi-vn
+```
+
+```sh tab="deno"
+deno init --npm pixi-vn
+```
+
+Vous pouvez consulter la liste des modèles disponibles et des démonstrations interactives <DynamicLink href="/start/templates">ici</DynamicLink>.
+
+Une fois le projet initialisé, ouvrez le répertoire du projet avec votre éditeur de texte (VSCode est recommandé) et commencez à développer.
+
+Tous les modèles incluent un fichier `README.md` contenant plus d’informations sur le projet.
+
+## Installation
+
+Pour installer le package Pixi’VN dans un projet JavaScript existant, exécutez l’une des commandes suivantes:
+
+```sh tab="npm"
+npm install @drincs/pixi-vn
+```
+
+```sh tab="yarn"
+yarn add @drincs/pixi-vn
+```
+
+```sh tab="pnpm"
+pnpm add @drincs/pixi-vn
+```
+
+```sh tab="bun"
+bun add @drincs/pixi-vn
+```
+
+```sh tab="deno"
+deno install npm:@drincs/pixi-vn
+```
+
+<Accordions>
+
+<Accordion title="cdn_version" id="cdn-installation">
+
+Vous pouvez également utiliser la version CDN de ce plugin:
+
+```html tab="script tag" title="index.html"
+<script src="https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@<version>/+esm"></script>
+```
+
+```html tab="map import" title="index.html"
+<script type="importmap">
+  { "imports": {
+      "@drincs/pixi-vn@<version>":        "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn/+esm"
+  } }
+</script>
+```
+
+```js tab="js import" title="index.js"
+import pixivn from "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@<version>/+esm";
+```
+
+<iframe src="https://codepen.io/BlackRam-oss/embed/oNrqgNd?default-tab=js%2Cresult"
+  height="300"
+  style={{
+    width: "100%",
+  }}
+  title="Pixi’VN"
+  loading="lazy"
+  allowFullScreen={true}
+/>
+
+</Accordion>
+
+<Accordion title="vite_js_plugin" id="vite-plugin">
+
+Pour une meilleure expérience de développement, utilisez le plugin Vite.
+
+Ce plugin fournit les fonctionnalités suivantes:
+
+- Points d’accès pour gérer les personnages, les `labels` et le manifeste des ressources.
+  - `GET /pixi-vn/characters` - Récupère la liste des personnages enregistrés.
+  - `POST /pixi-vn/characters` - Met à jour la liste des personnages.
+  - `GET /pixi-vn/labels` - Récupère la liste des `labels` enregistrées\`.
+  - `POST /pixi-vn/labels` - Met à jour la liste des `labels`.
+  - `GET /pixi-vn/assets/manifest` - Récupère le manifeste des ressources.
+  - `POST /pixi-vn/assets/manifest` - Met à jour le manifeste.
+
+```ts tab="vite.config.ts"
+import { defineConfig } from 'vite'
+import { vitePluginPixivn } from "@drincs/pixi-vn/vite";
+export default defineConfig({
+  // ...
+  plugins: [
+    // other plugins...
+    vitePluginPixivn()
+  ]
+})
+```
+
+```ts tab="main.ts"
+import { setupPixivnViteData } from "@drincs/pixi-vn/vite-listener"; // [!code focus]
+
+await Promise.all([import("./values"), import("./labels")]);
+await Promise.all([initializeIndexedDB(), defineAssets(), useI18n()]);
+setupPixivnViteData(); // [!code focus]
+```
+
+</Accordion>
+
+</Accordions>
+
+### Initialisation
+
+Avant d’utiliser le moteur Pixi’VN, vous devez initialiser le jeu. Vous pouvez le faire en appelant la méthode `Game.init`.
+
+Cette fonction accepte les paramètres suivants:
+
+- `element` : L’élément HTML auquel le canvas sera ajouté.
+- `options`: Équivalent aux options que vous pouvez utiliser lors de l’initialisation d’une application [PixiJS](https://pixijs.com/8.x/guides/basics#creating-an-application). De plus, il prend en charge les options suivantes:
+  - `id`: L’ID à attribuer à l’élément canvas.
+  - `resizeMode`: Le mode de redimensionnement à utiliser. Valeurs possibles:
+    - `none`: Pas de redimensionnement.
+    - `contain`: Le canvas sera redimensionné pour s’adapter à l’élément parent tout en conservant son rapport d’aspect. (par défaut)
+- `devtoolsOptions` : Options pour <DynamicLink href="/start/canvas#use-pixijs-devtools-with-pixivn">PixiJS Devtools</DynamicLink>.
+
+```ts title="src/main.tsx"
+import { Game } from "@drincs/pixi-vn";
+
+// Canvas setup with PIXI
+const body = document.body
+if (!body) {
+    throw new Error('body element not found')
+}
+
+Game.init(body, {
+    height: 1080,
+    width: 1920,
+    backgroundColor: "#303030",
+}).then(() => {
+    // ...
+});
+
+// read more here: https://pixi-vn.web.app/start/other-narrative-features.html#how-manage-the-end-of-the-game
+Game.onEnd(async (props) => {
+    Game.clear();
+    props.navigate("/");
+});
+
+Game.onError((type, error, { notify }) => {
+    notify("allert_error_occurred");
+});
+```
+
+```html title="index.html"
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
+```
+
+```css title="styles.css"
+:root {
+  background-color: #242424;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  overflow: hidden;
+}
+```

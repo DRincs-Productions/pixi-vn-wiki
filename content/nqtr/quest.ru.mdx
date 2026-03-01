@@ -1,0 +1,262 @@
+---
+title: Quests
+---
+
+The quest system is a way to create and manage quests in your game. Quests can have multiple stages, and players can complete them to earn rewards or progress in the story.
+
+## Инициализация
+
+To initialize a `quest`, create a new instance of the `QuestBaseModel` class (or your [custom class](#custom-class)) and add it to the game quest dictionary when the game is initialized.
+
+<Callout type="info">
+
+It is recommended to import the instances at project startup, see the `src/main.ts` file.
+
+</Callout>
+
+To create a new instance of `QuestBaseModel`, you need the following parameters:
+
+```ts tab="values/aliceQuest.ts"
+import { QuestBaseModel, RegisteredQuests, StageBaseModel } from "@drincs/nqtr";
+import { orderProduct, takeProduct } from "../quests";
+import { mcRoom, terrace } from "../rooms";
+
+export const aliceQuest = new QuestBaseModel(
+    "aliceQuest",
+    [
+        // stages
+        new StageBaseModel("talk_alice1", {
+            name: "Talk to Alice",
+            description: "Talk to Alice on the terrace",
+        }),
+        new StageBaseModel("order_products", {
+            onStart: () => {
+                mcRoom.addActivity(orderProduct);
+            },
+            name: "Order products",
+            description: "Order the products with your PC",
+        }),
+        new StageBaseModel("take_products", {
+            onStart: (_, { notify }) => {
+                terrace.addActivity(takeProduct);
+                notify("You can take the products on the Terrace");
+            },
+            name: "Take products",
+            description: "Take products on the Terrace",
+            requestDescriptionToStart: "Wait for the products you ordered to arrive (2 day)",
+            deltaDateRequired: 2,
+        }),
+        new StageBaseModel("talk_alice2", {
+            name: "Talk to Alice",
+            description: "Talk to Alice on the terrace",
+        }),
+    ],
+    {
+        // props
+        name: "Help Alice",
+        description:
+            'To learn more about how the repo works, Talk to Alice. \nGoing when she is there will automatically start an "Event" (see aliceQuest.tsx to learn more). \nAfter that an action will be added to open the pc, in MC room. \n\n(during the quest you can talk to Alice and you will see her talking during the quests of the same Quest)',
+        image: "alice_terrace0A",
+        onStart: (quest, { notify, uiTransition }) => {
+            notify(uiTransition("notify_quest_is_started", { quest: quest.name }));
+        },
+        onNextStage: (stage, { notify, uiTransition }) => {
+            notify(uiTransition("notify_quest_is_updated", { quest: stage.name }));
+        },
+    }
+);
+
+RegisteredQuests.add(aliceQuest);
+```
+
+```ts tab="src/main.ts"
+import "./values/aliceQuest";
+
+// ...
+```
+
+`RegisteredQuests.add` is **required** to save the `quests` in the game.
+
+You can also create a function to load `quests`. The important thing is that it is called at least once before the `quests` are used in the game, otherwise they will not be available.
+
+## Start
+
+To start a `quest`, you can use the `start` method of the Quest class. This method will set the current stage to the first stage of the quest and trigger the `onStart` action defined in the quest. Эта функция принимает следующие параметры:
+
+- `props`: the properties that will be passed to `onStart`. Its interface corresponds to <DynamicLink href="/nqtr#onrunprops">`OnRunProps`</DynamicLink>.
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+import { newLabel } from "@drincs/pixi-vn";
+import { aliceQuest } from "../values/quests";
+
+const startLabel = newLabel("start", [
+    async (props) => {
+        await aliceQuest.start(props); // [!code focus]
+    },
+]);
+export default startLabel;
+```
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+//  {aliceQuest} the id of the quest
+# start quest {aliceQuest}
+```
+
+## Continue
+
+To go to the next stage of a `quest`, you can use the `continue` method of the Quest class. This method will set the current stage to the next stage of the quest and trigger the `onNextStage` action defined in the quest. Эта функция принимает следующие параметры:
+
+- `props`: the properties that will be passed to `onNextStage`. Its interface corresponds to <DynamicLink href="/nqtr#onrunprops">`OnRunProps`</DynamicLink>.
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+import { newLabel } from "@drincs/pixi-vn";
+import { aliceQuest } from "../values/quests";
+
+const startLabel = newLabel("start", [
+    async (props) => {
+        await aliceQuest.continue(props); // [!code focus]
+    },
+]);
+export default startLabel;
+```
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+//  {aliceQuest} the id of the quest
+# continue quest {aliceQuest}
+```
+
+<Accordions>
+
+<Accordion title="go_next_only_if_is_completed" id="go-next-only-if-is-completed">
+
+To go to the next stage of a `quest` only if the current stage is completed, you can use the `advanceIfCompleted` method of the Quest class. This method will check if the current stage is completed and then set the current stage to the next stage of the quest and trigger the `onNextStage` action defined in the quest. Эта функция принимает следующие параметры:
+
+- `props`: the properties that will be passed to `onNextStage`. Its interface corresponds to <DynamicLink href="/nqtr#onrunprops">`OnRunProps`</DynamicLink>.
+
+```ts tab="labels/startLabel.ts"
+import { newLabel } from "@drincs/pixi-vn";
+import { aliceQuest } from "../values/quests";
+
+const startLabel = newLabel("start", [
+    async (props) => {
+        await aliceQuest.advanceIfCompleted(props); // [!code focus]
+    },
+]);
+export default startLabel;
+```
+
+</Accordion>
+
+</Accordions>
+
+## Get
+
+To get a `quest` by its `id`, use the `RegisteredQuests.get` function.
+
+```ts
+import { RegisteredQuests } from "@drincs/nqtr";
+
+const aliceQuest = RegisteredQuests.get('aliceQuest');
+```
+
+## Получить все
+
+To get all `quests`, use the `RegisteredQuests.values` function.
+
+```ts
+import { RegisteredQuests } from "@drincs/nqtr";
+
+const quests = RegisteredQuests.values();
+```
+
+## Пользовательский класс
+
+<Callout title="Templates" type="info">
+
+In all templates, the `Quest` class is already defined in the file `models/nqtr/Quest.ts`. Вы можете использовать это напрямую или изменить его в соответствии с вашими потребностями.
+
+</Callout>
+
+It is recommended to create your own class `Quest` that extends `QuestStoredClass` and "override" the interface `QuestInterface` to add, edit, or remove properties or methods.
+
+For example, if you want to create a class `Quest`, you must "override" the interface `QuestInterface` to use your properties or methods. (See the file `nqtr.d.ts`)
+
+Now you can create a class `Quest` that extends `QuestStoredClass` and implements the `QuestInterface`. (Для получения дополнительной информации о том, как создать класс в TypeScript, прочитайте [официальную документацию](https://www.typescriptlang.org/docs/handbook/2/classes.html))
+
+To create a property that stores its value in the game storage, you can create [Getters/Setters](https://www.typescriptlang.org/docs/handbook/2/classes.html#getters--setters) and use the `this.getStorageProperty()` / `this.setStorageProperty()` methods. (See the file `Quest.ts`)
+
+```ts tab="models/nqtr/Quest.ts"
+import { QuestInterface, QuestStoredClass, QuestStoredClassProps, StageInterface } from "@drincs/nqtr";
+
+export default class Quest extends QuestStoredClass implements QuestInterface {
+    constructor(
+        id: string,
+        _stages: StageInterface[],
+        props: {
+            name?: string;
+            description?: string;
+            image?: string;
+            inDevelopment?: boolean;
+        } & QuestStoredClassProps
+    ) {
+        super(id, _stages, props);
+        this.name = props.name || "";
+        this.description = props.description || "";
+        this.image = props.image;
+        this.inDevelopment = props.inDevelopment || false;
+    }
+    readonly name: string;
+    readonly description: string;
+    readonly image?: string;
+    readonly inDevelopment: boolean;
+}
+```
+
+```ts tab="nqtr.d.ts"
+declare module "@drincs/nqtr" {
+    interface QuestInterface {
+        /**
+         * The name of the quest.
+         */
+        readonly name: string;
+        /**
+         * The description of the quest.
+         */
+        readonly description: string;
+        /**
+         * The image of the quest.
+         */
+        readonly image?: string;
+        /**
+         * If the quest is in development.
+         */
+        readonly inDevelopment: boolean;
+    }
+}
+```
+
+## FAQ
+
+<Accordions>
+
+<Accordion title="fail_quest" id="fail-quest">
+
+To fail a quest, you can use the `failed` property of the `QuestBaseModel` class. This property is a boolean that indicates whether the quest has been failed or not. You can set it to `true` to fail the quest.
+
+```ts tab="labels/startLabel.ts"
+import { newLabel } from "@drincs/pixi-vn";
+import { aliceQuest } from "../values/quests";
+
+const startLabel = newLabel("start", [
+    async (props) => {
+        aliceQuest.failed = true; // [!code focus]
+    },
+]);
+export default startLabel;
+```
+
+</Accordion>
+
+</Accordions>

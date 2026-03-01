@@ -1,0 +1,203 @@
+---
+title: Assets
+description: Panoramica delle tipologie di asset e delle opzioni di archiviazione (locale o online) in Pixi'VN, con esempi di utilizzo.
+---
+
+**Cosa sono gli assets?** Gli assets sono tutti i file che non sono codice, come immagini, suoni e video.
+
+È possibile utilizzare asset salvati localmente nel progetto oppure online (per la seconda opzione, è necessario assicurarsi che il servizio cloud utilizzato consenta le _richieste CORS_). Se i tuoi asset sono online, il gioco richiederà una connessione Internet. Se non c'è connessione, dovresti avvisare l'utente e bloccare il gioco.
+
+Se stai creando una visual novel, è consigliabile conservare localmente gli asset utilizzati di frequente. Per gli asset utilizzati una sola volta nel gioco, è meglio pubblicarli online.
+
+Per caricare e manipolare assets (immagini, gif, video, ecc.) sarà necessario utilizzare `Assets`. `Assets` è una classe con molte funzionalità e proviene dalla libreria PixiJS. Per maggiori informazioni, leggere [qui](https://pixijs.com/8.x/guides/components/assets). È inoltre molto importante leggere questa documentazione per <DynamicLink href="/start/assets-management">organizzare al meglio il caricamento delle risorse</DynamicLink>.
+
+Principalmente hai due possibilità per salvare i tuoi asset: localmente o online.
+
+## Assets del progetto
+
+Per salvare e utilizzare le risorse in locale, puoi usare qualsiasi cartella: non ci sono restrizioni. Tuttavia, si consiglia di utilizzare la cartella `assets`. All'interno di questa cartella puoi creare delle sottocartelle per organizzare meglio i tuoi assets.
+
+Ecco un esempio di come importare e caricare una risorsa nel tuo progetto:
+
+```ts title="utils/assets.ts"
+import { Assets } from "@drincs/pixi-vn";
+import bg01hallway from "../assets/images/bg01-hallway.webp";
+
+Assets.add({
+    alias: "bg01-hallway",
+    src: bg01hallway,
+});
+```
+
+<Accordions>
+
+<Accordion title="pixijs_assetpack" id="pixijs-assetpack">
+
+AssetPack è uno strumento per ottimizzare gli assets locali per il web. Può essere utilizzato per trasformare, combinare e comprimere gli assets.
+
+Se vuoi utilizzare AssetPack, puoi trovare la documentazione [qui](https://pixijs.io/assetpack).
+
+</Accordion>
+
+</Accordions>
+
+## Hosting degli assets
+
+Puoi salvare i tuoi assets online. Questa è una buona opzione se vuoi risparmiare spazio sul tuo computer. Puoi utilizzare qualsiasi servizio cloud che ti consenta di caricare file e generare un URL pubblico (CORS abilitato).
+
+Ecco un esempio di come importare e caricare una risorsa nel tuo progetto:
+
+```ts title="utils/assets.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+Assets.add({
+    alias: "bg01-hallway",
+    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/bg01-hallway.webp",
+});
+```
+
+Puoi salvare i tuoi assets come preferisci, in totale libertà. Se intendi salvare i tuoi assets online, ecco alcune opzioni:
+
+<Accordions>
+
+<Accordion title="github" id="github">
+
+Puoi utilizzare Github per ospitare i tuoi assets. Puoi utilizzare il raw link del file nel tuo progetto. Il collegamento sarà nel seguente formato:
+
+```text
+https://raw.githubusercontent.com/[repository]/raw/refs/heads/main/[file path]
+```
+
+- **Prezzo**: Completamente gratuito.
+- **Limiti di spazio**: Nessun limite di spazio, ma ogni singolo file non deve superare i 100 MB.
+- **Tipo di file**: puoi caricare qualsiasi tipo di file.
+- **Traffico**: La velocità non è delle migliori.
+- **Modifica risorse**: Puoi modificare il file mantenendo lo stesso URL.
+
+</Accordion>
+
+<Accordion title="image_hosting" id="image-hosting">
+
+L'hosting di immagini è un servizio che consente di caricare immagini. Ci sono molti siti per caricare immagini gratuitamente, ad esempio [imgbb](https://imgbb.com/), [imgix](https://www.imgix.com/), [imgur](https://imgur.com/). Puoi usare il link dell'immagine nel tuo progetto.
+
+- **Prezzo**: Completamente gratuito, ma è possibile acquistare ulteriori funzionalità.
+- **Limiti di spazio**: Nessun limite di spazio, ma ogni singolo file può avere una dimensione massima.
+- **Tipo di file**: Puoi caricare solo immagini.
+- **Traffico**: La velocità è buona.
+- **Modifica risorse**: Non è possibile modificare il file mantenendo lo stesso URL.
+
+</Accordion>
+
+<Accordion title="cloud_storage" id="Cloud-storage">
+
+Il cloud storage è un servizio che consente di caricare file online.
+
+- **Prezzo**: Di solito a pagamento o con una versione gratuita con dei limiti.
+- **Limiti di spazio**: Costo mensile basato sullo spazio utilizzato (solitamente gratuito se non si supera una certa soglia).
+- **Tipo di file**: puoi caricare qualsiasi tipo di file.
+- **Traffico**: La velocità è buona.
+- **Modifica risorse**: Puoi modificare il file mantenendo lo stesso URL.
+
+Ecco un elenco di alcuni dei servizi di cloud storage più popolari:
+
+- ![firebase-text](/firebase.svg) **Firebase Storage** è un servizio cloud molto facile da usare. Firebase offre due piani: Spark (gratuito) e Blaze (a pagamento). Puoi trovare maggiori informazioni [qui](https://firebase.google.com/pricing).
+  **Risoluzione del problema CORS di Firebase Storage**:
+  - Installa [gcloud CLI](https://cloud.google.com/sdk/docs/install)
+  - Leggi questa [documentazione](https://medium.com/@we.viavek/setting-cors-in-firebase-19a2cce2fe28) per risolvere il problema CORS.
+- ![aws-text](/aws.svg) **Amazon S3** è un servizio cloud. Rispetto ai suoi concorrenti, ha molte impostazioni, ma potrebbe essere più difficile da usare. Per utilizzare Amazon S3 è previsto un piano di pagamento. Puoi trovare maggiori informazioni [qui](https://aws.amazon.com/s3/pricing/).
+- ![supabase-text](/supabase.svg) **Supabase** è un'alternativa open source a Firebase. Supabase offre due piani: gratuito e a pagamento. Puoi trovare maggiori informazioni [qui](https://supabase.io/pricing).
+- **Convex** è un servizio cloud che consente di archiviare e fornire contenuti generati dagli utenti, come foto, video o altri file. Convex offre due piani: gratuito e a consumo. Puoi trovare maggiori informazioni [qui](https://www.convex.dev/pricing).
+
+</Accordion>
+
+</Accordions>
+
+## Altre funzionalità
+
+<Accordions>
+
+<Accordion title="caching_assets" id="caching-assets">
+
+<Callout title="Templates" type="info">
+
+In tutti i modelli è incluso un service worker per memorizzare nella cache le risorse esterne (immagini, suoni, video, ecc.) utilizzate nel gioco. Ciò migliora le prestazioni e riduce i tempi di caricamento per i giocatori.
+
+</Callout>
+
+Per le risorse ospitate online, il service worker le memorizza nella cache locale sul dispositivo dell'utente dopo il primo download. Ciò significa che le richieste successive per la stessa risorsa verranno gestite dalla cache, con tempi di caricamento più rapidi e un utilizzo ridotto dei dati.
+
+```js tab="public/service-worker.js"
+const CACHE_NAME = "external-assets-v1";
+const MAX_AGE_DAYS = 7;
+const MAX_AGE_MS = MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
+
+const lastUsed = {};
+
+// The fetch event handler below implements a simple cache-for-host strategy:
+// - It only attempts to cache responses for requests whose hostname is explicitly allowed in the switch below.
+// - Cached entries are kept in the "external-assets-v1" cache and tracked via `lastUsed` timestamps.
+// - If a cached response exists and is not older than MAX_AGE_DAYS, it is served directly.
+// - Otherwise the service worker fetches from the network, caches the successful response, and returns it.
+// - If the network fails and a cached response exists, the cached response is returned as a fallback.
+// NOTE: Add the hostnames of external asset providers you want to cache (CDNs, raw asset hosts, etc.) in the switch below.
+self.addEventListener("fetch", (event) => {
+    const request = event.request;
+    const url = new URL(request.url);
+
+    switch (url.hostname) {
+        case "raw.githubusercontent.com":
+            break;
+        // Add asset hostnames here to enable caching for them.
+        // Examples:
+        // case "raw.githubusercontent.com":
+        // case "cdn.jsdelivr.net":
+        // case "your.cdn.domain.com":
+        //     break;
+        default:
+            return;
+    }
+
+    event.respondWith(
+        (async () => {
+            const cache = await caches.open(CACHE_NAME);
+            const now = Date.now();
+            const cached = await cache.match(request);
+
+            if (cached && lastUsed[url.href]) {
+                const age = now - lastUsed[url.href];
+                if (age < MAX_AGE_MS) {
+                    lastUsed[url.href] = now;
+                    return cached;
+                }
+                await cache.delete(request);
+                delete lastUsed[url.href];
+            }
+
+            try {
+                const response = await fetch(request);
+                if (response && response.type === "cors" && response.status < 400) {
+                    await cache.put(request, response.clone());
+                    lastUsed[url.href] = now;
+                }
+                return response;
+            } catch (err) {
+                if (cached) return cached;
+                return fetch(request);
+            }
+        })()
+    );
+});
+```
+
+```ts tab="main.ts"
+// Register service worker
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js").catch(console.error);
+    });
+}
+```
+
+</Accordion>
+
+</Accordions>

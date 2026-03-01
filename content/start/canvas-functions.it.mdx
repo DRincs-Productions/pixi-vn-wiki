@@ -1,0 +1,274 @@
+---
+title: Funzioni dei componenti
+description: Funzioni per aggiungere, trovare, rimuovere e gestire gli eventi sui componenti canvas in Pixi'VN.
+---
+
+import { AddCanvasComponents, GetCanvasComponents, RemoveCanvasComponents, RemoveAllCanvasComponents, AddListenerGivenEvent } from "@/components/examples";
+
+## Aggiungi
+
+Per aggiungere un componente al canvas di gioco, puoi usare `canvas.add`.
+Questa funzione ha i seguenti parametri:
+
+- `alias`: L'<DynamicLink href="/start/canvas-alias">alias</DynamicLink> per identificare il componente.
+- `component`: Il componente da aggiungere.
+
+```ts tab="labels/startLabel.ts"
+import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        const sprite = new Sprite();
+        const texture = await Assets.load("egg_head");
+        sprite.texture = texture;
+        canvas.add("sprite", sprite); // [!code focus]
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<AddCanvasComponents />
+
+## Ottieni
+
+Per ottenere un componente dal canvas di gioco, puoi usare `canvas.find`. Se il componente non esiste, restituirà `undefined`.
+Questa funzione ha i seguenti parametri:
+
+- `alias`: L'<DynamicLink href="/start/canvas-alias">alias</DynamicLink> per identificare il componente.
+
+```ts tab="labels/startLabel.ts"
+import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        const sprite = new Sprite();
+        const texture = await Assets.load("egg_head");
+        sprite.texture = texture;
+        canvas.add("sprite", sprite);
+    },
+    () => {
+        const sprite = canvas.find("sprite"); // [!code focus]
+        if (sprite) {
+            sprite.x = 100;
+            sprite.y = 100;
+        }
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<GetCanvasComponents />
+
+## Rimuovi
+
+Per rimuovere un componente dal canvas di gioco, puoi usare `canvas.remove`.
+Questa funzione ha i seguenti parametri:
+
+- `alias`: L'<DynamicLink href="/start/canvas-alias">alias</DynamicLink> per identificare il componente.
+
+```ts tab="labels/startLabel.ts"
+import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        const sprite = new Sprite();
+        const texture = await Assets.load("egg_head");
+        sprite.texture = texture;
+        canvas.add("sprite", sprite);
+    },
+    () => {
+        canvas.remove("sprite"); // [!code focus]
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<RemoveCanvasComponents />
+
+## Rimuovi tutto
+
+Per rimuovere tutti i componenti dal canvas di gioco, puoi usare `canvas.removeAll`.
+
+```ts tab="labels/startLabel.ts"
+import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        const texture = await Assets.load("egg_head");
+        for (let i = 0; i < 3; i++) {
+            const sprite = new Sprite();
+            sprite.texture = texture;
+            sprite.x = i * 150;
+            canvas.add(`sprite${i}`, sprite);
+        }
+    },
+    () => {
+        canvas.removeAll(); // [!code focus]
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<RemoveAllCanvasComponents />
+
+## Aggiungere un listener a un evento
+
+<Callout type="info">
+
+Se possibile, prova a utilizzare <DynamicLink href="/start/interface">HTML e PixiJS UI</DynamicLink> per aggiungere pulsanti o altri elementi con eventi.
+
+</Callout>
+
+In Pixi'VN, rispetto a PixiJS, è possibile utilizzare un [listener con il metodo `on`](https://pixijs.com/8.x/examples/events/click), ma se non si utilizza il decoratore `@eventDecorator`, l'evento non verrà registrato nel sistema di eventi di Pixi'VN, quindi se si carica un salvataggio in cui è stato utilizzato quell'evento, questo andrà perso.
+
+`@eventDecorator` è un decorator che salva l'evento in memoria (<DynamicLink href="/faq#enable-typescript-decorators">Come abilitare i decorator in TypeScript?</DynamicLink>). Questa funzione ha i seguenti parametri:
+
+- `name`: L'ir utilizzato da Pixi'VN per fare riferimento a questa funzione (deve essere univoco). Se non si passa l'id, verrà utilizzato come id il nome della funzione.
+
+```ts tab="canvas/events.ts"
+import { eventDecorator, FederatedEvent, Sprite } from "@drincs/pixi-vn";
+
+export default class Events {
+    @eventDecorator()
+    static buttonEvent(event: FederatedEvent, sprite: Sprite): void {
+        switch (event.type) {
+            case "pointerdown":
+            sprite.scale.x *= 1.25;
+            sprite.scale.y *= 1.25;
+            break;
+        }
+    }
+}
+```
+
+```ts tab="labels/startLabel.ts"
+import { newLabel, showImage } from "@drincs/pixi-vn";
+import Events from "../canvas/events";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        const bunny = await showImage("bunny", "bunny", {
+            align: 0.5,
+            anchor: 0.5,
+        });
+        // Opt-in to interactivity
+        bunny.eventMode = "static";
+        // Shows hand cursor
+        bunny.cursor = "pointer";
+        // Pointers normalize touch and mouse (good for mobile and desktop)
+        bunny.on("pointerdown", Events.buttonEvent);
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [{ alias: "bunny", src: "https://pixijs.com/assets/bunny.png" }],
+        },
+    ],
+};
+export default manifest;
+```
+
+<AddListenerGivenEvent />
+
+<Comments>
+TODO ### access to PIXI.Application
+</Comments>

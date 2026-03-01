@@ -1,0 +1,76 @@
+---
+title: Assets
+---
+
+As explained in more detail <DynamicLink href="/start/assets-management">here</DynamicLink>, it is recommended to initialize the asset matrix at project start and load the assets and think about when the assets should be loaded.
+
+On ink you have less control than in Javascript/Typescript over how and when to load assets. On **_ink_**, pixi-vn provides a single function that <DynamicLink href="/start/assets-management#load-assets-before-a-label-starts">load assets before a label starts</DynamicLink>. To do this, you need to use the following syntax:
+
+`#` + `[operation]` + `[assets or bundle]` + `[list of URL/path of the image]`
+
+- `#`: It is a special character used by **_ink_ syntax** for use a special script.
+- `[operation]`: It is the operation that you want to do. The available operations are:
+  - `load`: It loads with await the assets or bundle (`Assets.load` or `Assets.loadBundle`).
+  - `lazyload`: It loads the assets or bundle in the background (`Assets.backgroundLoad` or `Assets.backgroundLoadBundle`).
+- `[assets or bundle]`: It is the type of asset that you want to load. The available types are:
+  - `assets`: It loads the assets.
+  - `bundle`: It loads the bundle.
+- `[list of URL/path of the image]`: It is the list of URL/path of the images that you want to show. If you have initialized the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink>, you can use the alias of the texture. Keep in mind that to write `https://` in **_ink_** you must use `https:\/\/` because the `//` is considered a comment in **_ink_**.
+
+```ink tab="ink/start.ink"
+=== start ===
+# lazyload bundle main_menu start
+# load assets eggHead flowerTop my_video
+# show image eggHead
+# show image flowerTop
+# show video my_video
+# pause
+-> start
+```
+
+```ts tab="utils/defineAssets.ts"
+import { Assets } from "@drincs/pixi-vn"
+
+export async function defineAssets() {
+    // manifest
+    await Assets.init({ manifest });
+    // single asset
+    Assets.add({ alias: 'eggHead', src: "https://pixijs.com/assets/eggHead.png" })
+    Assets.add({ alias: 'flowerTop', src: "https://pixijs.com/assets/flowerTop.png" })
+    Assets.add({ alias: "my_video", src: "https://pixijs.com/assets/video.mp4" });
+}
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        // screens
+        {
+            name: "main_menu",
+            assets: [
+                {
+                    alias: "background_main_menu",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/main-menu.png",
+                },
+            ],
+        },
+        // labels
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "bg01-hallway",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/bg01-hallway.webp",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```

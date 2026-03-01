@@ -1,0 +1,203 @@
+---
+title: Proprietà per il posizionamento
+description: Panoramica delle proprietà di posizionamento in Pixi'VN, inclusi pixel, percentuale, anchor, pivot e align.
+---
+
+import { PositionwithpercentageExample, AlignExample } from "@/components/examples";
+
+<Callout title="References and citations" type="info">
+
+La maggior parte dei testi e delle immagini presenti in questa pagina sono stati copiati da Position Properties – [Pos e Anchor](https://feniksdev.com/renpy-position-properties-pos-and-anchor/) e [align, xycenter e offset](https://feniksdev.com/renpy-position-properties-align-xycenter-and-offset/). In queste due pagine Feniks ha spiegato molto bene le proprietà del posizionamento di Ren'Py, comuni a molte altri canvas, tra cui Pixi'VN.
+
+</Callout>
+
+Prima di addentrarci nelle diverse proprietà di posizionamento, tieni presente che Pixi'VN considera il valore predefinito per tutte le proprietà di posizione `{ x: 0, y: 0 }`, che corrisponde all'angolo in alto a sinistra dell'elemento che stai posizionando.
+
+I numeri positivi spostano l'elemento verso destra e verso il basso. Quindi, un elemento nella posizione `{ x: 200, y: 300 }` nel gioco si troverà a 200 pixel dal bordo sinistro dello schermo e a 300 pixel dal bordo superiore dello schermo. I numeri negativi spostano l'elemento verso sinistra e verso l'alto rispetto alla posizione iniziale.
+
+[Posizione](#position-pixel) e [anchor](#anchor-and-pivot) sono le proprietà principali che si utilizzano per spostare gli elementi sullo schermo. È importante capire come funzionano, perché la maggior parte delle altre proprietà di posizionamento agiscono come una combinazione di queste due.
+
+## Posizione (pixel)
+
+La posizione viene utilizzata per posizionare il componente utilizzando unità pixel.
+
+Puoi modificarlo con queste proprietà:
+
+- `x`: sposta il componente da sinistra a destra (lungo l'asse x)
+- `y`: sposta il componente dall'alto verso il basso (lungo l'asse y)
+- `position`: un oggetto `{ x: number, y: number }`. È anche possibile impostare sia x che y sullo stesso valore, ad esempio `component.position = 200`.
+
+## Anchor e pivot
+
+Il pivot è uno offset, espresso in pixel, dall'angolo in alto a sinistra del componente. Se hai un componente la cui texture è 100px x 50px e vuoi impostare il punto pivot al centro dell'immagine, devi impostare il pivot su (50, 25), ovvero metà della larghezza e metà dell'altezza.
+
+Anchors sono specificate in percentuale, da 0,0 a 1,0, in ogni dimensione. Ha la stessa utilità del pivot, ma per dedurre il punto in cui si trova calcola la percentuale dell'altezza e della larghezza della texture. Ad esempio, per ruotare attorno al punto centrale di una texture utilizzando degli anchors, dovresti impostare l'anchor del componente su (0,5, 0,5) - 50% in larghezza e altezza. Rispetto ai Pivot, gli Anchor sono più facili da usare.
+
+Puoi modificarlo con queste proprietà:
+
+- `anchor`: un oggetto `{ x: number, y: number }`. È anche possibile impostare sia x che y sullo stesso valore, ad esempio `conponent.anchor = 0.5`.
+- `pivot`: è un oggetto che corrisponde a `{ x: number, y: number }`.
+
+---
+
+**Cos'è esattamente un'anchor/pivot?** Pensiamo a qualcosa con cui potresti avere più familiarità. Invece di posizionare un elemento su uno schermo, stai cercando di fissare una foto su una bacheca di sughero. Hai tre elementi:
+
+- una bacheca di sughero
+- una puntina da disegno
+- una fotografia
+
+Supponiamo che 1mm equivalga a 1 pixel sullo schermo di un computer.
+
+![17351596389764883495402859713640](https://github.com/user-attachments/assets/becfa6ac-1156-49ad-8ceb-17b06627be7c)
+
+- Il pannello di sughero è lo schermo, ovvero il contenitore in cui stai cercando di posizionare l'elemento.
+- La fotografia è l'elemento.
+- Il punto in cui posizioni la puntina sulla foto è il anchor/pivot della fotografia.
+- Il punto in cui si inserisce lo spillo sulla bacheca di sughero corrisponde alla posizione della fotografia.
+
+Di default, in Pixi'VN, la puntina da disegno inizia sempre nell'angolo in alto a sinistra della foto, per così dire. Se si desidera che l'angolo in alto a sinistra della foto si trovi a 200mm dal lato sinistro della bacheca di sughero, si posizionerà a x 200. Se si desidera anche che l'angolo in alto a sinistra si trovi a 300mm dalla parte superiore della tavola, lo si posizionerà a y 300.
+
+![17351597056618553068745888144175](https://github.com/user-attachments/assets/c6955336-1c30-4518-8f05-edd950a1227e)
+
+Cosa succede se si desidera che il centro della foto abbia dimensioni pari a 200mm x 300mm?
+
+Ciò significa che devi spostare la posizione in cui si trova la puntina rispetto alla foto. La puntina rimarrà nel punto (200, 300) sulla bacheca di sughero: dovrai solo centrare la foto attorno a quel punto. Ciò significa che è necessario modificare l'anchor/pivot della foto.
+
+Per impostare il punto di ancoraggio della foto al centro della foto, puoi usare l'anchor (0,5, 0,5) o il pivot (100, 150)
+
+## Posizione con percentuale
+
+Pixi’VN introduce la possibilità di posizionare un componente in base alla percentuale. Il suo funzionamento è molto simile a quello dell'html.
+
+In pratica, la percentuale verrà moltiplicata per l'altezza o la larghezza del componente padre per calcolare la posizione in pixel.
+
+Puoi modificarlo con queste proprietà:
+
+- `percentageX`: per spostare le cose da sinistra a destra (lungo l'asse x)
+- `percentageY`: per spostare gli oggetti dall'alto verso il basso (lungo l'asse y).
+- `percentagePosition`: un oggetto `{ x: number, y: number }`. È anche possibile impostare sia x che y sullo stesso valore, ad esempio `conponent.align = 0.5`.
+
+```ts tab="labels/startLabel.ts"
+import { newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await showImage("egg_head", "egg_head", {
+            percentagePosition: 0.5,
+            anchor: 0.5,
+        });
+        await showImage("flower_top", "flower_top", {
+            percentagePosition: 0,
+        });
+        await showImage("panda", "panda", {
+            percentageX: 1,
+            percentageY: 0,
+            anchor: { x: 1, y: 0 },
+        });
+        await showImage("skully", "skully", {
+            percentageX: 0,
+            percentageY: 1,
+            anchor: { x: 0, y: 1 },
+        });
+        await showImage("helmlok", "helmlok", {
+            percentagePosition: 1,
+            anchor: 1,
+        });
+        await showImage("bunny", "bunny", {
+            percentageX: 0.5,
+            percentageY: 1,
+            anchor: { x: 0.5, y: 1 },
+        });
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                { alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" },
+                { alias: "flower_top", src: "https://pixijs.com/assets/flowerTop.png" },
+                { alias: "panda", src: "https://pixijs.com/assets/panda.png" },
+                { alias: "skully", src: "https://pixijs.com/assets/skully.png" },
+                { alias: "helmlok", src: "https://pixijs.com/assets/helmlok.png" },
+                { alias: "bunny", src: "https://pixijs.com/assets/bunny.png" },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<PositionwithpercentageExample />
+
+## Align
+
+Finora abbiamo visto metodi di posizionamento influenzati da [anchor/pivot](#anchor-and-pivot). Lo svantaggio di questi metodi è che se ad esempio si vuole aggiungere il componente al centro dello schermo, bisognerà prima impostare l'ancoraggio a 0,5 e poi impostare la posizione a metà della larghezza e dell'altezza dello schermo. È qui che entra in gioco la proprietà align.
+
+Align è una funzionalità creata originariamente per **_Ren'Py_**, introdotta anche in Pixi'VN. Align combina [position](#position-pixel) e [anchor/pivot](#anchor-and-pivot) per offrirti un modo più intuitivo per posizionare i tuoi componenti all'inizio, al centro o alla fine dello schermo.
+
+Gli align sono specificati in percentuale, da 0,0 a 1,0, in ogni dimensione. Ad esempio, se si utilizza 0,25 come percentuale, il componente verrà posizionato al 25% dello schermo con l'ancoraggio a 0,25.
+
+Il calcolo utilizzato per calcolare la posizione è il seguente:
+
+```ts
+myComponent.x = (align * (fatherComponent.width - myComponent.width)) + myComponent.pivot + (myComponent.anchor * myComponent.width)
+myComponent.y = (align * (fatherComponent.height - myComponent.height)) + myComponent.pivot + (myComponent.anchor * myComponent.height)
+```
+
+Puoi modificarlo con queste proprietà:
+
+- `xAlign`: per spostare le cose da sinistra a destra (lungo l'asse x)
+- `yAlign`: per spostare gli oggetti dall'alto verso il basso (lungo l'asse y).
+- `align`: un oggetto `{ x: number, y: number }`. È anche possibile impostare sia x che y sullo stesso valore, ad esempio `conponent.align = 0.5`.
+
+```ts tab="labels/startLabel.ts"
+import { newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await showImage("egg_head", "egg_head", { align: 0.5 });
+        await showImage("flower_top", "flower_top", { align: 0 });
+        await showImage("panda", "panda", { xAlign: 1, yAlign: 0 });
+        await showImage("skully", "skully", { xAlign: 0, yAlign: 1 });
+        await showImage("helmlok", "helmlok", { align: 1 });
+        await showImage("bunny", "bunny", { xAlign: 0.5, yAlign: 1 });
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                { alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" },
+                { alias: "flower_top", src: "https://pixijs.com/assets/flowerTop.png" },
+                { alias: "panda", src: "https://pixijs.com/assets/panda.png" },
+                { alias: "skully", src: "https://pixijs.com/assets/skully.png" },
+                { alias: "helmlok", src: "https://pixijs.com/assets/helmlok.png" },
+                { alias: "bunny", src: "https://pixijs.com/assets/bunny.png" },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<AlignExample />

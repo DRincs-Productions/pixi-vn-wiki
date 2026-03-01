@@ -1,0 +1,150 @@
+---
+title: Altre caratteristiche narrative
+description: Copre ulteriori funzionalità narrative di Pixi'VN, tra cui la gestione della fine del gioco, la gestione degli errori e la generazione di numeri casuali.
+---
+
+<Accordions>
+
+<Accordion title="managing_the_end_of_the_game" id="managing-the-end-of-the-game">
+
+Quando tutti i `passaggi` di tutte le `etichette` saranno stati eseguiti, il gioco si fermerà. Lo sviluppatore è responsabile della gestione del finale del gioco, poiché le visual novel possono avere diverse strategie di conclusione:
+
+- Il gioco termina quando tutti gli `steps` sono stati eseguiti.
+- Il gioco non ha fine; se tutti i passaggi vengono completati, verrà avviata un'altra `label` oppure il giocatore dovrà interagire con un'interfaccia che potenzialmente può avviare un'altra `label`.
+- Il gioco termina quando il giocatore raggiunge un punto specifico, ad esempio a causa di game over.
+
+Per gestire la fine della partita, impostare `Game.onEnd`. Questa funzione viene chiamata al termine del gioco e ha la stessa firma di un `step`.
+
+Ad esempio, per terminare il gioco e passare alla schermata finale:
+
+```ts title="main.ts"
+import { Game } from '@drincs/pixi-vn'
+
+Game.onEnd(async (props) => {
+    props.navigate("/end")
+})
+```
+
+Se il gioco non ha fine e deve riavviarsi o andare in loop:
+
+```ts title="labels/startLabel.ts"
+export const startLabel = newLabel("start_label_id",
+    () => {
+        return [
+            // ...
+        ]
+    }
+)
+```
+
+```ts title="main.ts"
+import { Game } from '@drincs/pixi-vn'
+
+Game.onEnd(async (props) => {
+    narration.call(startLabel, props)
+})
+```
+
+</Accordion>
+
+<Accordion title="handling_step_errors" id="handling-step-errors">
+
+Se si verifica un errore in un `passaggio`, il gioco registra un errore sulla console e interrompe l'esecuzione dei passaggi successivi. Lo sviluppatore dovrebbe gestire gli errori impostando `Game.onError`.
+
+Ad esempio, per inviare una notifica quando si verifica un errore:
+
+```ts title="main.ts"
+import { Game } from '@drincs/pixi-vn'
+
+Game.onError((type, error, { notify }) => {
+    notify("An error occurred")
+    // Optionally send the error to GlitchTip, Sentry, etc.
+})
+```
+
+</Accordion>
+
+<Accordion title="random_number_generation" id="random-number-generation">
+
+Pixi’VN include una funzione integrata per generare numeri casuali. Utilizza `narration.getRandomNumber()` con i seguenti parametri:
+
+- `min`: Il valore minimo.
+- `max`: Il valore massimo.
+- `options` (Opzionale):
+  - `onceonly`: Se `true`, il numero verrà generato una sola volta per lo `step` corrente della `label` (predefinito: `false`). Nota: `min` e `max` influenzano la memorizzazione dei numeri già generati.
+
+</Accordion>
+
+<Accordion title="check_if_the_label_has_already_been_completed" id="check-if-the-label-has-already-been-completed">
+
+Per verificare se un'etichetta è già stata completata, utilizzare la funzione `narration.isLabelAlreadyCompleted`.
+Questa funzione ha i seguenti parametri:
+
+- `label`: L'<DynamicLink href="/start/labels">`etichetta`</DynamicLink> da controllare.
+
+```typescript
+const isLabelCompleted = narration.isLabelAlreadyCompleted(startLabel)
+const isLabelCompleted = narration.isLabelAlreadyCompleted("labelid")
+```
+
+</Accordion>
+
+<Accordion title="check_if_current_step_is_already_been_opened" id="check-if-current-step-is-already-been-opened">
+
+Per verificare se lo `step` corrente è già stato aperto, utilizzare `narration.isCurrentStepAlreadyOpened`.
+
+```typescript
+const isCurrentStepOpened = narration.isCurrentStepAlreadyOpened;
+```
+
+</Accordion>
+
+<Accordion title="counter_of_execution_times_of_the_current_step" id="counter-of-execution-times-of-the-current-step">
+
+Per ottenere il conteggio delle esecuzioni per lo `step` corrente, utilizzare `narration.currentStepTimesCounter`. **Importante:** Il contatore viene incrementato solo se viene eseguito `narration.currentStepTimesCounter`.
+
+```ts title="labels/startLabel.ts"
+export const label = newLabel("id",
+    () => {
+        if (narration.currentStepTimesCounter === 0) { // ✅ will be incremented
+            // ...
+        } else {
+            // ...
+        }
+    }
+)
+```
+
+```ts title="labels/startLabel.ts"
+export const label = newLabel("id",
+    () => {
+        if (narration.currentStepTimesCounter === 0) { // ✅ will be incremented
+            // ...
+        } else if (narration.currentStepTimesCounter === 1) { // ✅ Not incremented again in this step
+            // ...
+        }
+    }
+)
+```
+
+```ts title="labels/startLabel.ts"
+export const label = newLabel("id",
+    () => {
+        if (flag) {
+            if (narration.currentStepTimesCounter === 1) { // ❌ Only incremented if "flag" is true
+                // ...
+            }
+        }
+    }
+)
+```
+
+Per reimpostare il contatore di esecuzione per il `step` corrente, impostare `narration.currentStepTimesCounter = 0`.
+
+```typescript
+narration.currentStepTimesCounter = 0;
+```
+
+</Accordion>
+
+</Accordions>
