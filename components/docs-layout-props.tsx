@@ -6,6 +6,7 @@ import {
     ArrowBigUpDash,
     BookOpenText,
     Boxes,
+    Brain,
     CircleQuestionMark,
     Crop,
     Database,
@@ -71,7 +72,7 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                     },
                 ],
             },
-            { type: "page", name: "llms.txt", url: `/llms-full.txt`, icon: <User /> },
+            { type: "page", name: "llms.txt", url: `/llms-full.txt`, icon: <Brain /> },
             {
                 type: "folder",
                 name: t("make-your-first"),
