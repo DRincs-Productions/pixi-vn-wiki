@@ -98,13 +98,21 @@ export const bed = new Activity(
 Additionally, when the `sprite` property is available, it is possible to define a graphical element as a PixiJS element.
 
 ```ts
+import { Assets, Sprite, Texture } from "@drincs/pixi-vn/pixi.js";
+
 export const mcHome = new Location("mc_home", mainMap, {
     name: "MC Home",
-    sprite: (location, { navigate }) => { // [!code focus]
-        const icon = new ImageSprite( // [!code focus]
-            { xAlign: 0.3, yAlign: 0.2, height: 120, width: 120, eventMode: "static", cursor: "pointer" }, // [!code focus]
-            "icon_location_home" // [!code focus]
-        ); // [!code focus]
+    sprite: async (location, { navigate }) => { // [!code focus]
+        const texture = await Assets.load<Texture>("icon_location_home"); // [!code focus]
+        const icon = new Sprite({ // [!code focus]
+            texture, // [!code focus]
+            x: 300, // [!code focus]
+            y: 200, // [!code focus]
+            height: 120, // [!code focus]
+            width: 120, // [!code focus]
+            eventMode: "static", // [!code focus]
+            cursor: "pointer", // [!code focus]
+        }); // [!code focus]
         icon.on("pointerdown", () => { // [!code focus]
             const entrance = location.entrance; // [!code focus]
             if (entrance) { // [!code focus]
@@ -112,7 +120,6 @@ export const mcHome = new Location("mc_home", mainMap, {
                 navigate(NAVIGATION_ROUTE); // [!code focus]
             } // [!code focus]
         }); // [!code focus]
-        icon.load(); // [!code focus]
         return icon; // [!code focus]
     }, // [!code focus]
 });
@@ -159,18 +166,24 @@ RegisteredRooms.add([mcRoom]);
 
 ```ts title="values/locations.ts"
 import { navigator, RegisteredLocations } from "@drincs/nqtr";
-import { ImageSprite } from "@drincs/pixi-vn";
+import { Assets, Sprite, Texture } from "@drincs/pixi-vn/pixi.js";
 import { NAVIGATION_ROUTE } from "../constans";
 import Location from "../models/nqtr/Location";
 import { mainMap } from "./maps";
 
 export const mcHome = new Location("mc_home", mainMap, {
     name: "MC Home",
-    sprite: (location, { navigate }) => {
-        const icon = new ImageSprite(
-            { xAlign: 0.3, yAlign: 0.2, height: 120, width: 120, eventMode: "static", cursor: "pointer" },
-            "icon_location_home",
-        );
+    sprite: async (location, { navigate }) => {
+        const texture = await Assets.load<Texture>("icon_location_home");
+        const icon = new Sprite({
+            texture,
+            x: 300,
+            y: 200,
+            height: 120,
+            width: 120,
+            eventMode: "static",
+            cursor: "pointer",
+        });
         icon.on("pointerdown", () => {
             const entrance = location.entrance;
             if (entrance) {
@@ -178,7 +191,6 @@ export const mcHome = new Location("mc_home", mainMap, {
                 navigate(NAVIGATION_ROUTE);
             }
         });
-        icon.load();
         return icon;
     },
 });
