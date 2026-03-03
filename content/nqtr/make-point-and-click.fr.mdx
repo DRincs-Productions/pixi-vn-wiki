@@ -61,11 +61,12 @@ Usually, it is possible to define a graphical element as a React element.
 ```tsx
 export const bed = new Activity(
     "bed",
-    async (_, event) => {
+    async (_, props) => {
+        await props.navigate(NARRATION_ROUTE);
         if (timeTracker.nowIsBetween(5, 22)) {
-            await navigateAndJumpToLabel(napLabel, NARRATION_ROUTE, event);
+            await narration.jump(napLabel, props);
         } else {
-            await navigateAndJumpToLabel(sleepLabel, NARRATION_ROUTE, event);
+            await narration.jump(sleepLabel, props);
         }
     },
     {
@@ -337,37 +338,25 @@ For example:
 
 ```ts tab="values/activities.tsx"
 import { RegisteredActivities, timeTracker } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
 import BedIcon from "@mui/icons-material/Bed";
 import NqtrRoundIconButton from "../components/NqtrRoundIconButton";
 import { NARRATION_ROUTE } from "../constans";
-import { navigateAndJumpToLabel } from "../labels/label-utility";
 import { napLabel, sleepLabel } from "../labels/sleepNapLabels";
 import Activity from "../models/nqtr/Activity";
 
 export const bed = new Activity(
     "bed",
-    async (_, event) => {
+    async (_, props) => {
+        await props.navigate(NARRATION_ROUTE);
         if (timeTracker.nowIsBetween(5, 22)) {
-            await navigateAndJumpToLabel(napLabel, NARRATION_ROUTE, event);
+            await narration.jump(napLabel, props);
         } else {
-            await navigateAndJumpToLabel(sleepLabel, NARRATION_ROUTE, event);
+            await narration.jump(sleepLabel, props);
         }
     },
     {
         name: "bed",
-        sprite: (activity, { navigate }) => {
-            const icon = new ImageSprite(
-                { xAlign: 0.5, yAlign: 0.5, height: 100, width: 100, eventMode: "static", cursor: "pointer" },
-                "icon_activity_bed",
-            );
-            icon.on("pointerdown", () => {
-                activity.run({ navigate }).then(() => {
-                    // Invalidate interface data if necessary
-                });
-            });
-            icon.load();
-            return icon;
-        },
         icon: (activity, props) => {
             return (
                 <NqtrRoundIconButton
