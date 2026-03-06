@@ -332,7 +332,7 @@ You can find more detailed documentation about these elements <DynamicLink href=
 
 </Callout>
 
-A fundamental element in Point & Click Adventures is interactive elements, which allow the player to interact with the environment and progress the story. In NQTR, these elements are represented by `Activity`. `Activity` are elements that can be executed by the player and can have different consequences depending on the context in which they are performed.
+A fundamental element in Point & Click Adventures is interactive elements, which allow the player to interact with the environment and progress the story. In NQTR, these elements are represented by `activity`. `activity` are elements that can be executed by the player and can have different consequences depending on the context in which they are performed.
 
 Ad esempio:
 
@@ -382,4 +382,34 @@ export const bed = new Activity(
 );
 
 RegisteredActivities.add([bed]);
+```
+
+<Callout type="info">
+
+Activities are connected to rooms in a many-to-many relationship, meaning that an activity can be present in multiple rooms and a room can contain multiple activities.
+
+</Callout>
+
+To use them, you must link them to a `room` [through the `activities` property](#navigation-and-map). This way, when the player is in that room, they will be able to see the activity and interact with it.
+
+Alternatively, during the narrative session, it is possible to add an activity to a room using the `addActivity` function.
+
+Ad esempio:
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+== start ==
+# add activity bed in mc_room
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+import { newLabel, showImageContainer } from "@drincs/pixi-vn";
+import { bed } from "../activities";
+import { mcRoom } from "../rooms";
+
+const startLabel = newLabel("start", [
+    async () => {
+        mcRoom.addActivity(bed); // [!code focus]
+    },
+]);
+export default startLabel;
 ```
