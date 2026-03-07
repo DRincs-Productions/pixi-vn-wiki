@@ -1,0 +1,61 @@
+---
+title: Canvas (WebGL)
+description: 概述Pixi'VN如何使用PixiJS进行渲染，Pixi'VN与PixiJS之间的区别，以及如何与画布交互和使用调试工具。
+---
+
+Pixi'VN使用[PixiJS]https://pixijs.com/8.x/guides/basics/what-pixijs-is)进行渲染。 您可以使用Pixi'VN API将图像、文本和动画添加到PixiJS画布（或者更准确地说，添加到2D WebGL渲染引擎）中。
+
+<Callout title="ink" type="info">
+
+此方法可以与 _ink_ 语法一起使用。 查看更多请点击<DynamicLink href="/ink/canvas">这里</DynamicLink>。
+
+</Callout>
+
+![pixijs-h2](/pixijs.svg)
+
+## 什么是PixiJS？
+
+PixiJS 是可用于网络的最快、最轻量级的2D库，适用于所有设备，允许您使用WebGL和WebGPU创建丰富的交互式图形和跨平台应用程序。 它快速、灵活、易于使用。 PixiJS 被用于[《Good Pizza Great Pizza》](https://www.goodpizzagreatpizza.com/) 与[《The Enchanted Cave 2》](https://store.steampowered.com/app/368610/The_Enchanted_Cave_2/)等游戏。
+
+你可以在[PixiJS官网](https://www.pixijs.com/)上了解更多关于 PixiJS 的信息。
+
+## Pixi'VN与PixiJS之间的区别
+
+<Callout type="info">
+
+PixiJS并非设计用于支持多实例。 因此，在非CDN构建中，`pixi.js`被视为**外部依赖项**。
+
+如果您使用Vite.js或类似的构建工具，可以直接安装并使用`pixi.js`包。 然而，在基于CDN的环境（如 CodePen）中并不支持此方法。
+
+如果您在使用Pixi'VN时需要直接访问PixiJS，建议使用@drincs/pixi-vn/pixi.js子模块。 该子模块暴露了Pixi'VN内部所使用的PixiJS应用程序实例，确保完全兼容并避免了多实例问题。
+
+```ts
+import { Graphics } from "@drincs/pixi-vn/pixi.js";
+```
+
+这在<DynamicLink href="/start/interface#adding-pixijs-ui-layers">使用PixiJS创建UI层</DynamicLink>或<DynamicLink href="/start/minigames">制作小游戏</DynamicLink>时会非常有用。
+
+</Callout>
+
+Pixi'VN提供了一个名为`canvas`的API对象来与其PixiJS应用程序交互。 你无需单独安装pixi.js，Pixi'VN的功能与PixiJS并不完全相同。 虽然不推荐这么做，但你可以使用`canvas.app`来直接访问Pixi'VN所使用的PixiJS应用程序。
+
+Pixi'VN中的渲染与PixiJS非常相似，但存在以下区别：
+
+- 添加到画布的所有组件都会链接到你选择的<DynamicLink href="/start/canvas-alias">别名<DynamicLink href="/start/canvas-alias">。
+   该别名将会用于标识和操作该组件。
+- Pixi'VN会在每一<DynamicLink href="/start/labels">`步骤`</DynamicLink>中保存当前画布状态。
+  **注意： **只有链接到别名的组件才会被保存。 如果你直接将组件添加到`PixiJS.Application`，它们将不会被包含在保存的状态中。
+- Pixi'VN提供了<DynamicLink href="/start/canvas-functions">多种函数</DynamicLink>来添加、移除、查找和操作画布中的组件。
+- Pixi'VN提供了自定义组件，其中一些与PixiJS组件相对应，而另一些则添加了新功能。
+- 计时器(Tickers)由Pixi'VN管理。 如果使用PixiJS计时器，则其状态将不会被保存。
+- 如果要添加事件监听器并在存档中保存其状态，建议阅读<DynamicLink href="/start/canvas-functions#add-a-listener-for-a-given-event">此处</DynamicLink>。
+
+## 将PixiJS DevTools与Pixi'VN结合使用
+
+[**PixiJS DevTools**](https://pixijs.io/devtools/)是一个[Chrome扩展程序](https://chromewebstore.google.com/detail/pixijs-devtools/dlkffcaaoccbofklocbjcmppahjjboce)，允许您检查和调试PixiJS应用程序（译者注：出于众所周知的原因，中国大陆开发者可以通过[Github](https://github.com/pixijs/devtools/releases)下载本插件）。 你可以用它来查看显示列表、检查纹理，并调试你的PixiJS应用程序。 PixiJS DevTools可与Pixi'VN配合使用，允许你检查画布。
+
+![devtools](/devtool-properties.gif)
+
+安装 PixiJS DevTools后，打开 Chrome 开发者工具（F12）并转到 `PixiJS` 标签页。
+
+![image](/devtool-info.png)

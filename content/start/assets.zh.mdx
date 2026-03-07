@@ -1,0 +1,202 @@
+---
+title: 资源
+description: Pixi'VN 中的资源类型与存储方式（本地或在线）概述及使用示例。
+---
+
+**什么是资源？**资源是指一切非代码的文件，如图片、音频和视频。
+
+你既可以使用项目中保存在本地的资源，也可以使用在线资源。若选择在线资源，你需要确保你使用的云服务支持CORS（跨域资源共享）请求。 如果使用在线资源，你的游戏将会需要网络连接。 如果缺少网络连接，你应该及时通知用户，并阻止游戏运行。
+
+如果你正在制作的是视觉小说，建议将频繁使用的资源存储在本地。 而对于那些在游戏中仅使用一次的资源，则更适合发布在线上。
+
+要加载和操作资源（如图片、动图、视频等）， 需要使用 `Assets`。 `Assets`来自PixiJS库，是一个具有功能丰富的类。 如要了解更多信息，请参阅[此处](https://pixijs.com/8.x/guides/components/assets)。 我们强烈建议你阅读这份文档，以便于更好地<DynamicLink href="/start/assets-management">组织资源的上传工作</DynamicLink>。
+
+你主要有两种存储资源的选择：本地或在线。
+
+## 本地资源
+
+要在本地保存与使用资源，您可以使用任意文件夹，没有限制。 不过，建议使用`assets`文件夹。 在该文件夹内，你可以创建子文件夹，来更好地组织资源。
+
+以下是如何在项目中导入及加载资源的示例：
+
+```ts title="utils/assets.ts"
+import { Assets } from "@drincs/pixi-vn";
+import bg01hallway from "../assets/images/bg01-hallway.webp";
+
+Assets.add({
+    alias: "bg01-hallway",
+    src: bg01hallway,
+});
+```
+
+<Accordions>
+
+<Accordion title="pixijs_assetpack" id="pixijs-assetpack">
+
+AssetPack是一个用于优化本地网络资源的工具。 它可以用来转换、合并和压缩资源。
+
+如果你想要使用 AssetPack，可以在此处查阅[文档](https://pixijs.io/assetpack)。
+
+</Accordion>
+
+</Accordions>
+
+## 资源托管
+
+你可以将你的资源保存在线上。 如果您想要节省电脑空间的话，这是一个不错的选择。 你可以使用任何允许上传文件并生成公开 URL（需启用 CORS）的云服务。
+
+以下是如何在项目中导入及加载资源的示例：
+
+```ts title="utils/assets.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+Assets.add({
+    alias: "bg01-hallway",
+    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/bg01-hallway.webp",
+});
+```
+
+你可以随心所欲、完全自由地按照自己的喜好保存资源。 如果你计划将资源保存在线上，这里有一些可选方案：
+
+<Accordions>
+
+<Accordion title="github" id="github">
+
+您可以使用 Github来托管你的资源。 您可以在项目中使用文件的原始链接。 链接格式如下：
+
+```text
+https://raw.githubusercontent.com/[repository]/raw/refs/heads/main/[file path]
+```
+
+- **价格**：完全免费。
+- **空间限制**：无空间限制，但每个文件不得超过 100 MB。
+- **文件类型**：您可以上传任何类型的文件。
+- **流量与速度**： 速度表现并非最优。
+- **编辑资源**： 可以在保持相同URL的情况下编辑文件。
+
+</Accordion>
+
+<Accordion title="image_hosting" id="image-hosting">
+
+图片托管服务是一种允许您上传图片的服务。 有许多网站可以免费上传图片，例如[imgbb](https://imgbb.com/)、[imgix](https://www.imgix.com/)、[imgur](https://imgur.com/)（译者注：由于众所周知的原因，后两者已经被河蟹了）。 你可以在项目中使用这些图片的链接。
+
+- **价格**： 完全免费，但你可以通过付费获取更多功能。
+- **空间限制**：无空间限制，但单个文件可能有最大大小限制。
+- **文件类型**：仅支持上传图片。
+- **流量与速度**： 速度良好。
+- **编辑资源**：无法在保持同一URL的情况下编辑文件。
+
+</Accordion>
+
+<Accordion title="cloud_storage" id="Cloud-storage">
+
+云存储是一种允许您在线存储文件的服务。
+
+- **价格**： 通常需要付费，或提供带有容量限制的免费版本。
+- **空间限制**：根据使用的存储空间按月计费（通常来说在一定额度内是免费的）。
+- **文件类型**：您可以上传任何类型的文件。
+- **流量与速度**： 速度良好。
+- **编辑资源**： 可以在保持相同URL的情况下编辑文件。
+
+以下是一些常用的云存储服务列表（译者注：Firebase Storage是谷歌旗下的服务，所以你懂的）：
+
+- ![firebase-text](/firebase.svg)**Firebase Storage**是一项非常易于使用的云服务。 Firebase提供两种套餐：Spark（免费）和 Blaze（按需付费）。 你可以在[这里](https://firebase.google.com/pricing)查看更多信息。\*\*解决 Firebase Storage 的 CORS 问题\*\*：
+  - 安装[gcloud CLI](https://cloud.google.com/sdk/docs/install)
+  - 阅读这份[文档](https://medium.com/@we.viavek/setting-cors-in-firebase-19a2cce2fe28)来解决CORS问题。
+- ![aws-text](/aws.svg) **Amazon S3**是一项云服务。 与同类产品相比，它的设置项非常丰富，但使用起来可能也更加复杂。 Amazon S3采用付费套餐。 你可以在[这里](https://aws.amazon.com/s3/pricing/)查看更多信息。
+- ![supabase-text](/supabase.svg) **Supabase**是一个开源的Firebase替代方案。 Supabase 提供两种套餐：免费版和按需付费版。 你可以在[这里](https://supabase.io/pricing)查看更多信息。
+- **Convex**是一项云服务，允许您存储和提供用户生成的内容，例如照片、视频或其他文件。 Convex 有两种方案：免费和按需付费。 你可以在[这里](https://www.convex.dev/pricing)查看更多信息。
+
+</Accordion>
+
+</Accordions>
+
+## 其他叙事功能
+
+<Accordions>
+
+<Accordion title="caching_assets" id="caching-assets">
+
+<Callout title="Templates" type="info">
+
+在所有模板中，都包含了一个服务工作线程（service worker），用于缓存游戏中用到的外部资源（如图片、音频、视频等） 。 这样可以提升性能，缩短玩家的加载时间。
+
+</Callout>
+
+对于托管在线的资源，服务工作线程会在用户首次下载后将其缓存到本地设备中。 这意味着，再次请求同一资源时，会直接从缓存中读取，从而加快加载速度，减少数据流量消耗。
+
+```js tab="public/service-worker.js"
+const CACHE_NAME = "external-assets-v1";
+const MAX_AGE_DAYS = 7;
+const MAX_AGE_MS = MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
+
+const lastUsed = {};
+
+// The fetch event handler below implements a simple cache-for-host strategy:
+// - It only attempts to cache responses for requests whose hostname is explicitly allowed in the switch below.
+// - Cached entries are kept in the "external-assets-v1" cache and tracked via `lastUsed` timestamps.
+// - If a cached response exists and is not older than MAX_AGE_DAYS, it is served directly.
+// - Otherwise the service worker fetches from the network, caches the successful response, and returns it.
+// - If the network fails and a cached response exists, the cached response is returned as a fallback.
+// NOTE: Add the hostnames of external asset providers you want to cache (CDNs, raw asset hosts, etc.) in the switch below.
+self.addEventListener("fetch", (event) => {
+    const request = event.request;
+    const url = new URL(request.url);
+
+    switch (url.hostname) {
+        case "raw.githubusercontent.com":
+            break;
+        // Add asset hostnames here to enable caching for them.
+        // Examples:
+        // case "raw.githubusercontent.com":
+        // case "cdn.jsdelivr.net":
+        // case "your.cdn.domain.com":
+        //     break;
+        default:
+            return;
+    }
+
+    event.respondWith(
+        (async () => {
+            const cache = await caches.open(CACHE_NAME);
+            const now = Date.now();
+            const cached = await cache.match(request);
+
+            if (cached && lastUsed[url.href]) {
+                const age = now - lastUsed[url.href];
+                if (age < MAX_AGE_MS) {
+                    lastUsed[url.href] = now;
+                    return cached;
+                }
+                await cache.delete(request);
+                delete lastUsed[url.href];
+            }
+
+            try {
+                const response = await fetch(request);
+                if (response && response.type === "cors" && response.status < 400) {
+                    await cache.put(request, response.clone());
+                    lastUsed[url.href] = now;
+                }
+                return response;
+            } catch (err) {
+                if (cached) return cached;
+                return fetch(request);
+            }
+        })()
+    );
+});
+```
+
+```ts tab="main.ts"
+// Register service worker
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js").catch(console.error);
+    });
+}
+```
+
+</Accordion>
+
+</Accordions>

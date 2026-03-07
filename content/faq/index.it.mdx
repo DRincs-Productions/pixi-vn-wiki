@@ -1,0 +1,259 @@
+---
+title: Domande frequenti
+description: Domande frequenti su Pixi'VN
+---
+
+Alcune domande comuni che potresti incontrare.
+
+<Accordions>
+
+<Accordion title="enable_typescript_decorators" id="enable-typescript-decorators">
+
+In Pixi'VN, in alcune funzionalità avanzate, è necessario utilizzare i decorator.
+
+Per impostazione predefinita, TypeScript non abilita l'uso dei decorator. Per abilitare l'uso dei decorator in TypeScript, è necessario aggiungere la seguente configurazione al file `tsconfig.json`:
+
+```json title="tsconfig.json"
+{
+    "compilerOptions": {
+        // ...
+        "experimentalDecorators": true
+    }
+}
+```
+
+</Accordion>
+
+<Accordion title="skip_auto" id="skip-auto">
+
+In a visual novel, it's very useful to be able to "skip," accelerate, or skip multiple `steps`, or automatically advance to the next `step` after a period of time.
+
+The suggested implementation for this feature is to create the following function:
+
+```tsx title="React example"
+const [skipEnabled, setSkipEnabled] = useState<boolean>(false)
+const [autoEnabled, setAutoEnabled] = useState<boolean>(false)
+const [recheckSkipAuto, setRecheckSkipAuto] = useState<number>(0)
+
+useEffect(() => {
+    if (skipEnabled || autoEnabled) {
+        nextOnClick()
+    }
+}, [skipEnabled, recheckSkipAuto, autoEnabled])
+
+function nextOnClick() {
+    narration.continue({})
+        .then(() => {
+            if (skipEnabled) {
+                setTimeout(() => {
+                    setRecheckSkipAuto((p) => p + 1)
+                }, 0.2);
+            }
+            else if (autoEnabled) {
+                setTimeout(() => {
+                    setRecheckSkipAuto((p) => p + 1)
+                }, 2);
+            }
+        })
+        .catch((e) => {
+            // ...
+        })
+}
+
+// Button for enable skip and auto ...
+```
+
+</Accordion>
+
+<Accordion title="link_character_to_image" id="link-character-to-image">
+
+Collegare un personaggio a un'immagine da aggiungere al canvas è una caratteristica comune nelle visual novel. Può essere utile, ad esempio, per mostrare l'espressione del personaggio.
+
+Per fare ciò, è sufficiente creare un <DynamicLink href="/start/character#custom-class">personaggio personalizzato</DynamicLink> o modificare quello esistente (è già presente nei modelli).
+Consiglio di aggiungere un array di stringhe contenenti i link/alias delle immagini che compongono il personaggio (corpo, testa...) e di utilizzare un <DynamicLink href="/start/canvas-image-container">ImageContainer</DynamicLink> quando è necessario visualizzare il personaggio.
+
+Ad esempio:
+
+```ts tab="models/Character.ts"
+import { CharacterInterface, CharacterStoredClass } from "@drincs/pixi-vn";
+
+export class Character extends CharacterStoredClass implements CharacterInterface {
+    constructor(id: string | { id: string, emotion: string }, props: CharacterProps) {
+        // ...
+        this.images = props.images ?? []
+    }
+    
+    // other properties...
+
+    readonly images: string[] = []
+}
+
+interface CharacterProps {
+    // other properties...
+    images?: string[] // is optional
+}
+```
+
+```ts tab="pixi-vn.d.ts"
+declare module '@drincs/pixi-vn' {
+    interface CharacterInterface {
+        // other properties...
+        readonly images: string[]
+    }
+}
+```
+
+Now you can use the `images` property to show the character on the canvas.
+
+```ts tab="labels/startLabel.ts"
+import { newLabel, showImageContainer } from "@drincs/pixi-vn";
+import { alice } from "../values/characters";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await showImageContainer("alice", alice.images, { // [!code focus]
+            xAlign: 0.5, // [!code focus]
+            yAlign: 1, // [!code focus]
+        }); // [!code focus]
+    },
+]);
+```
+
+```ts tab="values/characters.ts"
+import { Character } from "../models/Character";
+
+const alice = new Character('alice_id', {
+    // other properties...
+    images: ['alice-body', 'alice-head', 'alice-eyes']
+})
+RegisteredCharacters.add(alice)
+```
+
+**If you are using _ink_**:
+
+You can create a <DynamicLink href="/ink/hashtag">custom hashtag command</DynamicLink> to use this feature.
+For example you can add a script with the following syntax and convert it to a <DynamicLink href="/ink/canvas#show-a-image-container-in-ink">show imagecontainer script</DynamicLink>:
+
+```ink title="ink"
+# show character {character id} {parameters}
+```
+
+```ts tab="utils/ink-utility.ts"
+import { HashtagCommands } from '@drincs/pixi-vn-ink'
+import { getCharacterById } from '@drincs/pixi-vn'
+
+HashtagCommands.add((script, convertListStringToObj) => {
+    // ...
+    if (script[0] === "show" && script[1] === "character" && script.length > 2) {
+        let character = getCharacterById(script[2])
+        if (character) {
+            console.error('Character not found')
+            return false 
+        }
+        let characterId: string = script[2].split('@')[0] // to remove the emotion
+        let oltherProps: string = script.slice(3).join(' ')
+        let images = character.images.join(' ')
+        let newScript: string = `show imagecontainer ${characterId} [${images}] ${oltherProps}`
+        return newScript
+    }
+    return false
+})
+```
+
+```ink tab="ink/start.ink"
+=== start ===
+# show character alice xAlign 0.8 yAlign 1 with dissolve
+-> DONE
+```
+
+</Accordion>
+
+<Accordion title="hotkeys" id="hotkeys">
+
+I suggest the following hotkeys:
+
+- `Space` or `Enter`: Continue the dialogue.
+- `Keep Space` or `Keep Enter`: Skip the dialogue.
+- `Alt` + `S`: Quick save the game.
+- `Alt` + `L`: Quick load the game.
+- `Alt` + `H`: Open the history modal.
+- `Esc`: Open the settings modal.
+- `Alt` + `V`: Hide the UI (Show only the canvas).
+
+Why not use the `Ctrl` key? Because it is used by the browser for many shortcuts, and it is better to avoid conflicts.
+
+</Accordion>
+
+<Accordion title="keymaps_events" id="keymaps-events">
+
+To attach events to keymaps is useful to allow hotkeys.
+
+Ad esempio:
+
+```ts title="EventInterceptor.ts"
+import { useEffect } from 'react';
+
+export default function EventInterceptor() {
+    useEffect(() => {
+        window.addEventListener('keydown', onkeydown);
+
+        return () => {
+            window.removeEventListener('keydown', onkeydown);
+        };
+    }, []);
+
+    function onkeydown(event: KeyboardEvent) {
+        if (event.code == 'Enter' || event.code == 'Space') {
+            nextStep((prev) => prev + 1)
+        }
+        else if (event.code == 'Escape') {
+            setOpenSettings((prev) => !prev)
+        }
+        else if (event.code == 'KeyH') {
+            setOpenHistory((prev) => !prev)
+        }
+    }
+
+    return null
+}
+```
+
+</Accordion>
+
+<Accordion title="license" id="license">
+
+Pixi’VN è rilasciato sotto la **GNU Lesser General Public License v2.1 (LGPL 2.1)**.\
+This license is designed for _libraries_, making it a great fit for a game engine like this.
+
+Here’s what it means in simple, practical terms — even if you’re not an expert in licenses.
+
+**What You Can Freely Do**
+
+If you use Pixi’VN in your own project — for example, to create a game, a visual novel, or a tool — **you have almost no restrictions**.
+
+You can:
+
+- **Use Pixi’VN in free or commercial projects**: You can sell your game, publish it on Steam, itch.io, mobile stores, etc.
+- **Keep your game’s source code private**: You are **not** required to open-source your project.
+- **Use Pixi’VN without giving credit**: You are _not_ required to mention Pixi’VN anywhere.\
+  (Though we always appreciate it!)
+- **Install and use the library from npm without limitations**: Normal dependency usage is fully allowed.
+
+**When Restrictions Apply**
+
+The LGPL only matters **if you modify Pixi’VN itself**, meaning:
+
+- you create a _fork_ of the engine,
+- you change its source code,
+- or you distribute a modified version of the library.
+
+In that case:
+
+- **Your modifications to Pixi’VN must remain open source**: If you change the engine and distribute your version, you must publish your modifications.
+- **You must keep the same license (LGPL 2.1)**: Modified versions of the library must remain under LGPL.
+
+> These conditions apply **only to the engine**, _not_ to your game.
+
+</Accordion>
+
+</Accordions>

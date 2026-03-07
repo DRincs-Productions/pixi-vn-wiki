@@ -1,0 +1,320 @@
+---
+title: Интеграция языка ink
+description: Pixi’VN позволяет создавать интерактивные нарративы с использованием ink — языка сценариев, разработанного для разветвлённых историй и интегрированного с Pixi’VN.
+---
+
+import { InkExample } from "@/components/ink-examples";
+
+Pixi’VN позволяет писать интерактивные нарративы с использованием **_ink_** — скриптового языка, созданного для ветвящихся историй.
+
+**Что такое _ink_?** **_ink_** — это простой скриптовый язык для интерактивных историй, используемый в таких играх, как 80 Days, Heaven's Vault и Sorcery! Подробнее см. на [официальном сайте _ink_](https://www.inklestudios.com/ink/).
+
+**Интеграция _ink_ + Pixi’VN** использует [inkjs](https://github.com/inkle/inkjs) и <DynamicLink href="/json">PixiVNJson</DynamicLink> для разбора **_ink_ кода** и генерации JSON, который может интерпретировать Pixi’VN. Это означает, что JavaScript/TypeScript и **_ink_** используют общее хранилище и canvas, и вы можете запускать **_ink_** `knots` (или `labels`) из JavaScript/TypeScript и наоборот. Вы получаете лучшее из двух миров: написание повествования в **_ink_** и использование JavaScript/TypeScript для мини-игр или продвинутых анимаций.
+
+```ink title="ink/start.ink"
+=== start ===
+We arrived into London at 9.45pm exactly.
+
+* "There is not a moment to lose!"[] I declared.
+ -> hurry_outside
+
+* "Monsieur, let us savour this moment!"[] I declared.
+ My master clouted me firmly around the head and dragged me out of the door.
+ -> dragged_outside
+
+* [We hurried home] -> hurry_outside
+
+=== hurry_outside ===
+We hurried home to Savile Row -> as_fast_as_we_could
+
+=== dragged_outside ===
+He insisted that we hurried home to Savile Row
+-> as_fast_as_we_could
+
+=== as_fast_as_we_could ===
+<> as fast as we could.
+-> start
+```
+
+<InkExample />
+
+## Why?
+
+Написание нарратива напрямую на **JavaScript/TypeScript** может быть медленным и сложным, особенно для новичков. **_ink_** гораздо проще в изучении и использовании.
+
+Новые разработчики могут начать с <DynamicLink href="/start#project-initialization">шаблона _ink_</DynamicLink>, а затем постепенно изучать JavaScript/TypeScript для продвинутых возможностей.
+
+## Установка
+
+<Callout title="Templates" type="info">
+
+Начинаете новый проект Pixi’VN? Используйте <DynamicLink href="/start#project-initialization">шаблон</DynamicLink>, который уже включает _ink_.
+
+</Callout>
+
+Чтобы установить пакет _ink_ в существующий JavaScript-проект, используйте одну из следующих команд:
+
+```sh tab="npm"
+npm install @drincs/pixi-vn @drincs/pixi-vn-ink
+```
+
+```sh tab="yarn"
+yarn add @drincs/pixi-vn @drincs/pixi-vn-ink
+```
+
+```sh tab="pnpm"
+pnpm add @drincs/pixi-vn @drincs/pixi-vn-ink
+```
+
+```sh tab="bun"
+bun add @drincs/pixi-vn @drincs/pixi-vn-ink
+```
+
+```sh tab="deno"
+deno install npm:@drincs/pixi-vn npm:@drincs/pixi-vn-ink
+```
+
+### Инициализация
+
+После установки используйте `importInkText()` для загрузки **_ink_ скрипта**:
+
+```typescript title="main.ts"
+import { importInkText } from '@drincs/pixi-vn-ink'
+
+const inkText = `
+=== start ===
+Hello
+-> END
+`
+
+importInkText([inkText, ...])
+```
+
+Теперь вы можете запускать **_ink_ `knot`** (или `label`) с помощью <DynamicLink href="/start/labels#run-a-label">функций Pixi’VN</DynamicLink>:
+
+```typescript title="main.ts"
+import { narration } from '@drincs/pixi-vn'
+
+narration.call(`start`, {})
+```
+
+<Accordions>
+
+<Accordion title="import_ink_files" id="import-ink-files">
+
+<Callout type="info">
+
+В этом руководстве используется [Vite](https://vitejs.dev/), но та же логика применима и в других средах.
+
+</Callout>
+
+Чтобы импортировать файлы `.ink`, необходимо настроить проект для работы с ними как с текстовыми файлами.
+
+Ниже приведены шаги для этого:
+
+- Объявить модуль `*.ink` в `ink.d.ts`.
+- Добавить `.ink` в `assetsInclude` в `vite.config.ts`.
+- Импортировать файл с `?raw`, чтобы получить его текстовое содержимое.
+
+```ts tab="main.ts"
+import { importInkText } from '@drincs/pixi-vn-ink'
+import startLabel from './ink/start.ink?raw'
+
+importInkText([startLabel, ...])
+```
+
+```ts tab="vite.config.ts"
+export default defineConfig({
+  // ...
+  assetsInclude: ['**/*.ink'],
+})
+```
+
+```ts tab="ink.d.ts"
+declare module '*.ink' {
+    const value: string
+    export default value
+}
+```
+
+</Accordion>
+
+<Accordion title="import_ink_folder" id="import-ink-folder">
+
+<Callout type="info">
+
+В этом руководстве используется [Vite](https://vitejs.dev/), но та же логика применима и в других средах.
+
+</Callout>
+
+Чтобы импортировать несколько файлов `.ink`, используйте `import.meta.glob`:
+
+```ts tab="utils/ink-utility.ts"
+import { convertInkText, importInkText } from "@drincs/pixi-vn-ink";
+
+async function getInkText() {
+    const files = import.meta.glob<string>("../ink/*.ink", { query: "?raw", import: "default" });
+    return await Promise.all(
+        Object.values(files).map(async (importFile) => {
+            return await importFile();
+        })
+    );
+}
+
+export async function importAllInkLabels() {
+    let fileEntries = await getInkText();
+    await importInkText(fileEntries);
+}
+
+export async function convertInkToJson() {
+    let fileEntries = await getInkText();
+    return await Promise.all(fileEntries.map((data) => convertInkText(data)));
+}
+```
+
+```ts tab="vite.config.ts"
+export default defineConfig({
+  // ...
+  assetsInclude: ['**/*.ink'],
+})
+```
+
+</Accordion>
+
+<Accordion title="vite_js_plugin" id="vite-plugin">
+
+Для лучшего опыта разработки используйте плагин Vite:
+
+```ts tab="vite.config.ts"
+import { defineConfig } from 'vite'
+import { vitePluginInk } from '@drincs/pixi-vn-ink/vite'
+export default defineConfig({
+  // ...
+  plugins: [
+    // other plugins...
+    vitePluginInk()
+  ]
+})
+```
+
+```ts tab="main.ts"
+import { setupInkHmrListener } from '@drincs/pixi-vn-ink/vite-listener'
+
+setupInkHmrListener()
+```
+
+```ts tab="utils/ink-utility.ts"
+async function getInkText() {
+    const files = import.meta.glob<string>("../ink/*.ink", { eager: true, import: "default" });
+    return await Promise.all(
+        Object.values(files).map(async (importFile) => {
+            return importFile;
+        })
+    );
+}
+```
+
+</Accordion>
+
+</Accordions>
+
+## Будущие функции
+
+Эти функции находятся в разработке.
+
+<Callout type="info">
+
+Покажите свою заинтересованность, поставив лайк или оставив комментарий в issue.
+
+</Callout>
+
+- [Functions and Game Queries](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#9-game-queries-and-functions) ([#11](https://github.com/DRincs-Productions/pixi-vn-ink/issues/11)):
+  - [User-created functions](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#5-functions) ([#32](https://github.com/DRincs-Productions/pixi-vn-ink/issues/32))
+  - `CHOICE_COUNT()`
+  - `TURNS()`
+  - `TURNS_SINCE()`
+  - `SEED_RANDOM()`
+- [`LIST`](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#1-basic-lists) ([#15](https://github.com/DRincs-Productions/pixi-vn-ink/issues/15))
+- [`Tunnels`](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#1-tunnels) ([#38](https://github.com/DRincs-Productions/pixi-vn-ink/issues/38))
+
+## Синтаксис _ink_, игнорируемый Pixi’VN
+
+Некоторый синтаксис _ink_ игнорируется Pixi’VN. Вы можете использовать его в **_ink_ скрипте** (например, для тестирования в редакторе Inky), но Pixi’VN его проигнорирует.
+
+### INCLUDE
+
+`INCLUDE` — это оператор _ink_ для подключения другого _ink_ файла. В Pixi’VN следует использовать `importInkText()` для загрузки нескольких _ink_ файлов, поэтому `INCLUDE` игнорируется.
+
+### Нарратив вне `knots`
+
+Нарратив вне `knots` (или `labels`) игнорируется, за исключением переменных.
+
+For example:
+
+```ink title="ink"
+VAR my_var = false // ✅ This will be handled (because it is a variable)
+Hello // ❌ This will be ignored  [!code warning]
+-> start // ❌ This will be ignored [!code warning]
+=== start === // ✅ This will be handled
+My name is John // ✅ This will be handled
+-> DONE // ✅ This will be handled
+```
+
+<Accordions>
+
+<Accordion title="ink_differences" id="ink-differences">
+
+- Поскольку «Threads» не поддерживаются в pixi-vn, символ `<-` соответствует <DynamicLink href="/ink/labels#call">вызову узла</DynamicLink>.
+
+- в этом случае:
+
+  ```ink title="ink"
+  { shuffle:
+    -  2 of Diamonds.
+      'You lose this time!' crowed the croupier.
+  }
+  ```
+
+    **нативный _ink_** отображает два разных диалога, тогда как **Pixi’Vn _ink_** объединяет их в один.
+
+    **В Pixi’VN _ink_** вы не увидите два разных диалога, а следующий диалог: `2 of Diamonds.\n\n'You lose this time!' crowed the croupier.`. В <DynamicLink href="/ink/markup#markdown-on-ink">Markdown</DynamicLink> он будет отображён в несколько строк:
+
+  ```txt
+  2 of Diamonds.
+  'You lose this time!' crowed the croupier.
+  ```
+
+- если `weave` (в следующем примере — `shove`) привязан к one time choice и открывается с помощью `-> shove`, эта one time choice не будет инвалидирована. Чтобы инвалидировать её, необходимо выбрать соответствующий вариант обычным способом.
+
+    Ниже приведён пример:
+
+  ```ink title="ink"
+  -> start
+  === start ===
+  * [1] -> shove
+  * (shove) [2] 2
+  * {shove} [3] -> END
+  -  -> start
+  -> DONE
+  ```
+
+    Если вы выберете вариант `1`, то при повторном открытии `start` поведение будет следующим:
+
+  - при использовании **native _ink_** доступен только вариант `3`. Вариант `2` будет скрыт, так как для one time choice **native _ink_** понимает, что это решение уже было принято через `-> shove`.
+  - при использовании **Pixi’VN _ink_** можно выбрать вариант `2` или `3`. Вариант `2` не скрывается, потому что **Pixi’VN _ink_** не знает, что `shove` связан с выбором.
+
+  Чтобы получить одинаковую логику для `start` как в **native _ink_**, так и в **Pixi’VN _ink_**, необходимо написать следующий код:
+
+  ```ink title="ink"
+  -> start
+  === start ===
+  * [1] -> shove
+  * (shove) {!shove} [2] 2
+  * {shove} [3] -> END
+  -  -> start
+  -> DONE
+  ```
+
+</Accordion>
+
+</Accordions>

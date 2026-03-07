@@ -1,0 +1,88 @@
+---
+title: Input prompt
+description: Explains how to prompt the player for input in Pixi'VN, including usage, retrieval, and removal of input requests.
+---
+
+import { InputPrompt } from "@/components/examples";
+
+<Callout title="UI screen" type="info">
+
+You can find an example of the input prompt dialog UI in the <DynamicLink href="/start/interface-examples#input-prompt">interface examples</DynamicLink> section.
+
+</Callout>
+
+<Callout title="ink" type="info">
+
+このメソッドは _ink_ の構文でも使用できます。 See more <DynamicLink href="/ink/input">here</DynamicLink>.
+
+</Callout>
+
+In visual novels, you may need to ask the player to enter text, numbers, dates, or other values.
+
+Pixi’VN provides functions to handle input prompts. The developer can require the player to enter a value (the game will not continue until a value is provided), while the <DynamicLink href="/start/interface">UI</DynamicLink> is responsible for displaying the prompt.
+
+## Request
+
+To prompt the player for input, use the `narration.requestInput()` function.
+この関数は以下のパラメータを持ちます：
+
+- `props`: An object with input prompt properties:
+  - `type` (Optional): The type of input prompt (string).
+- `defaultValue` (Optional): The default value to display in the input field.
+
+```ts title="labels/startLabel.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    () => {
+        narration.dialogue = "Hello";
+    },
+    () => {
+        narration.dialogue = "What is your name?";
+        narration.requestInput({ type: "string" });
+    },
+    () => {
+        narration.dialogue = `My name is ${narration.inputValue}`;
+    },
+    () => {
+        narration.dialogue = "How old are you?";
+        narration.requestInput({ type: "number" }, 18);
+    },
+    () => {
+        narration.dialogue = `I am ${narration.inputValue} years old`;
+    },
+    () => {
+        narration.dialogue = "Describe who you are:";
+        narration.requestInput({ type: "html textarea" });
+    },
+    () => {
+        narration.dialogue = `${narration.inputValue}`;
+    },
+    () => {
+        narration.dialogue = "Restart";
+    },
+]);
+```
+
+<InputPrompt />
+
+## Get
+
+To get input prompt information, use:
+
+- `narration.isRequiredInput`: Returns `true` if the player must enter a value.
+- `narration.inputType`: Returns the type of input prompt requested.
+
+```typescript
+if (narration.isRequiredInput) {
+    openInputModal(narration.inputType)
+}
+```
+
+## Remove
+
+To remove the input prompt request, use `narration.removeInputRequest()`.
+
+```typescript
+narration.removeInputRequest()
+```

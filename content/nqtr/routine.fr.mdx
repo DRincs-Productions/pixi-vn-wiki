@@ -1,0 +1,375 @@
+---
+title: Routine
+---
+
+## Initialisation
+
+To initialize a `commitment`, create a new instance of the `CommitmentBaseModel` class (or your [custom class](#custom-class)) and add it to the game commitment dictionary when the game is initialized.
+
+<Callout type="info">
+
+It is recommended to import the instances at project startup, see the `src/main.ts` file.
+
+</Callout>
+
+To create a new instance of `CommitmentBaseModel`, you need the following parameters:
+
+- `id`: A unique identifier (string). Used to reference the `commitment` in the game (must be unique).
+- `character`: The character or characters that are in the commitment and so in the room. It can be a single character or an array of characters.
+- `room`: The room where the commitment is. It must be an instance of `RoomInterface`.
+- `props`: An object with the commitment's properties:
+  - `name`: The name of the commitment (Optional).
+  - `image`: The image of the commitment (Optional). It can be a string with the path to the image or a function that returns a `ContainerChild` (Optional).
+  - `icon`: The React icon of the commitment (Optional). It can be a React element or a function that returns a React element (Optional).
+  - `onRun`: A function that is called when the commitment is run. It receives two parameters:
+    - The `commitment` instance itself.
+    - `event`: The event that triggered the run. It is an instance of `OnRunEvent<CommitmentInterface>`, which contains methods to navigate to other routes, jump to labels, and more.
+  - `disabled`: Whether the commitment is disabled. It can be a boolean or a function that returns a boolean (optional, default is `false`). If it is disabled, this commitment will not be taken into consideration, so the characters will not be in the room, but will be busy with other commitments.
+  - `hidden`: Whether the commitment is hidden. It can be a boolean or a function that returns a boolean (optional, default is `false`). If it is hidden, the commitment will not be displayed in the UI.
+  - `priority`: The priority of the commitment. The higher the number, the higher the priority (optional, default is `0`).
+  - `executionType`: The execution type of the commitment. It can be "automatic" or "interaction". If it is "automatic", the `onRun` function will be called automatically when the player is in the room. If it is "interaction", the player must interact with the character to run the `onRun` function (optional, default is "interaction").
+  - `dateScheduling`: Used to schedule what date it will be added and removed. It is an instance of `DateSchedulingInterface` (Optional).
+  - `timeSlot`: The time slot in which the commitment will be active. It is an instance of `TimeSchedulingInterface` (Optional).
+
+```ts tab="values/routine.ts"
+import { CommitmentBaseModel, RegisteredCommitments } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { NARRATION_ROUTE } from "../constans";
+import { TALK_SLEEP_LABEL_KEY } from "../labels/variousActionsLabelKeys";
+import { aliceTalkMenuLabel } from "../labels/variousActionsLabels";
+import { alice } from "./characters";
+import { aliceRoom, classRoom, terrace } from "./rooms";
+
+const aliceSleep = new CommitmentBaseModel("alice_sleep", alice, aliceRoom, {
+    priority: 1,
+    timeSlot: {
+        from: 20,
+        to: 10,
+    },
+    onRun: (_, event) => {
+        event.navigate(NARRATION_ROUTE);
+        narration.jump(TALK_SLEEP_LABEL_KEY, event);
+    },
+});
+
+const aliceGoSchool = new CommitmentBaseModel("alice_go_school", alice, classRoom, {
+    timeSlot: {
+        from: 8,
+        to: 14,
+    },
+    priority: 2,
+});
+
+const aliceSmokes = new CommitmentBaseModel("alice_smokes", alice, terrace, {
+    timeSlot: {
+        from: 10,
+        to: 20,
+    },
+    onRun: (_, event) => {
+        event.navigate(NARRATION_ROUTE);
+        narration.jump(aliceTalkMenuLabel, event);
+    },
+});
+
+RegisteredCommitments.add([aliceSleep, aliceGoSchool, aliceSmokes]);
+```
+
+```ts tab="src/main.ts"
+import "./values/routine";
+
+// ...
+```
+
+`RegisteredCommitments.add` is **required** to save the `commitments` in the game.
+
+You can also create a function to load `commitments`. The important thing is that it is called at least once before the `commitments` are used in the game, otherwise they will not be available.
+
+## Add
+
+Initializing a commitment will not add it to the game. To do this, you'll need to use one of the following methods:
+
+### During game initialization
+
+You can add a commitment to your routine during game initialization. This is useful for tasks that should always be present in the game, such as daily routines of characters.
+
+```ts tab="utils/nqtr-utility.ts"
+import { routine } from "@drincs/nqtr";
+import { aliceGoSchool, aliceSleep } from "../values/routine";
+
+export function initializeNQTR() {
+    // ...
+
+    routine.fixedRoutine = [aliceSleep, aliceGoSchool]; // [!code focus]
+}
+```
+
+```ts tab="values/routine.ts"
+import { CommitmentBaseModel, RegisteredCommitments } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { NARRATION_ROUTE } from "../constans";
+import { TALK_SLEEP_LABEL_KEY } from "../labels/variousActionsLabelKeys";
+import { alice } from "./characters";
+import { aliceRoom, classRoom } from "./rooms";
+
+export const aliceSleep = new CommitmentBaseModel("alice_sleep", alice, aliceRoom, {
+    priority: 1,
+    timeSlot: {
+        from: 20,
+        to: 10,
+    },
+    onRun: (_, event) => {
+        event.navigate(NARRATION_ROUTE);
+        narration.jump(TALK_SLEEP_LABEL_KEY, event);
+    },
+});
+
+export const aliceGoSchool = new CommitmentBaseModel("alice_go_school", alice, classRoom, {
+    timeSlot: {
+        from: 8,
+        to: 14,
+    },
+    priority: 2,
+});
+
+RegisteredCommitments.add([aliceSleep, aliceGoSchool]);
+```
+
+### During the game
+
+You can also add a commitment to your routine during gameplay. This feature is useful if you want to temporarily add a commitment. The list of tasks added this way will be included in your game saves.
+
+To add a commitment to your routine during gameplay, you can use the `routine.add` method.
+
+```ts tab="Typescript" title="index.ts" groupId="narrative_language"
+import { aliceSmokes } from "../routine";
+import { routine } from "@drincs/nqtr";
+
+routine.add(aliceSmokes);
+```
+
+```ink tab="ink" title="index.ink"
+// {alice_smokes} is the id of the commitment
+# add routine {alice_smokes}
+```
+
+```ts tab="values/routine.ts"
+import { CommitmentBaseModel, RegisteredCommitments } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { NARRATION_ROUTE } from "../constans";
+import { aliceTalkMenuLabel } from "../labels/variousActionsLabels";
+import { alice } from "./characters";
+import { terrace } from "./rooms";
+
+const aliceSmokes = new CommitmentBaseModel("alice_smokes", alice, terrace, {
+    timeSlot: {
+        from: 10,
+        to: 20,
+    },
+    onRun: (_, event) => {
+        event.navigate(NARRATION_ROUTE);
+        narration.jump(aliceTalkMenuLabel, event);
+    },
+});
+
+RegisteredCommitments.add([aliceSmokes]);
+```
+
+## Remove
+
+To remove a commitment from your routine, you can use the `routine.remove` method. This will remove the commitment from the game and it will not be saved in the game saves.
+
+```ts tab="Typescript" title="index.ts" groupId="narrative_language"
+import { aliceSmokes } from "../routine";
+import { routine } from "@drincs/nqtr";
+
+routine.remove(aliceSmokes);
+```
+
+```ink tab="ink" title="index.ink" groupId="narrative_language"
+// {alice_smokes} is the id of the commitment
+# remove routine {alice_smokes}
+```
+
+```ts tab="values/routine.ts"
+import { CommitmentBaseModel, RegisteredCommitments } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { NARRATION_ROUTE } from "../constans";
+import { aliceTalkMenuLabel } from "../labels/variousActionsLabels";
+import { alice } from "./characters";
+import { terrace } from "./rooms";
+
+const aliceSmokes = new CommitmentBaseModel("alice_smokes", alice, terrace, {
+    timeSlot: {
+        from: 10,
+        to: 20,
+    },
+    onRun: (_, event) => {
+        event.navigate(NARRATION_ROUTE);
+        narration.jump(aliceTalkMenuLabel, event);
+    },
+});
+
+RegisteredCommitments.add([aliceSmokes]);
+```
+
+## Get
+
+To get a `commitment` by its `id`, use the `RegisteredCommitments.get` function.
+
+```ts
+import { RegisteredCommitments } from "@drincs/nqtr";
+
+const aliceWorks = RegisteredCommitments.get('alice_works');
+```
+
+## Get all
+
+To get all `commitments`, use the `RegisteredCommitments.values` function.
+
+```ts
+import { RegisteredCommitments } from "@drincs/nqtr";
+
+const commitments = RegisteredCommitments.values();
+```
+
+## Custom class
+
+<Callout title="Templates" type="info">
+
+In all templates, the `Commitment` class is already defined in the file `models/nqtr/Commitment.ts`. You can use it directly or modify it to suit your needs.
+
+</Callout>
+
+It is recommended to create your own class `Commitment` that extends `CommitmentStoredClass` and "override" the interface `CommitmentInterface` to add, edit, or remove properties or methods.
+
+For example, if you want to create a class `Commitment`, you must "override" the interface `CommitmentInterface` to use your properties or methods. (See the file `nqtr.d.ts`)
+
+Now you can create a class `Commitment` that extends `CommitmentStoredClass` and implements the `CommitmentInterface`. (For more information on how to create a class in TypeScript, read [the official documentation](https://www.typescriptlang.org/docs/handbook/2/classes.html))
+
+To create a property that stores its value in the game storage, you can create [Getters/Setters](https://www.typescriptlang.org/docs/handbook/2/classes.html#getters--setters) and use the `this.getStorageProperty()` / `this.setStorageProperty()` methods. (See the file `Commitment.ts`)
+
+```ts tab="models/nqtr/Commitment.ts"
+import {
+    CommitmentInterface,
+    CommitmentStoredClass,
+    CommitmentStoredClassProps,
+    OnRunEvent,
+    OnRunProps,
+    RoomInterface,
+} from "@drincs/nqtr";
+import { CharacterInterface } from "@drincs/pixi-vn";
+import { ReactElement } from "react";
+
+export default class Commitment extends CommitmentStoredClass implements CommitmentInterface {
+    constructor(
+        id: string,
+        characters: CharacterInterface | CharacterInterface[],
+        room: RoomInterface,
+        props: {
+            name?: string;
+            image?: string | ContainerChild | ((props: Commitment, runProps: OnRunProps) => ContainerChild);
+            background?: string | ContainerChild | ((props: Commitment, runProps: OnRunProps) => ContainerChild);
+            icon?: ReactElement | ((props: Commitment, runProps: OnRunProps) => ReactElement);
+            onRun?: OnRunEvent<CommitmentInterface>;
+            disabled?: boolean | (() => boolean);
+            hidden?: boolean | (() => boolean);
+        } & CommitmentStoredClassProps
+    ) {
+        characters = Array.isArray(characters) ? characters : [characters];
+        super(id, characters, room, props.onRun, props);
+        this.name = props.name || "";
+        this._image = props.image;
+        this._background = props.background;
+        this._icon = props.icon;
+        this._defaultDisabled = props.disabled || false;
+        this._defaultHidden = props.hidden || false;
+    }
+    readonly name: string;
+    private readonly _image?: string | ContainerChild | ((props: Commitment, runProps: OnRunProps) => ContainerChild);
+    get sprite(): string | ContainerChild | ((props: OnRunProps) => ContainerChild) | undefined {
+        const image = this._image;
+        if (typeof image === "function") {
+            return (runProps: OnRunProps) => image(this, runProps);
+        }
+        return image;
+    }
+    private readonly _background?: string | ContainerChild | ((props: Commitment, runProps: OnRunProps) => ContainerChild);
+    get background(): string | ContainerChild | ((props: OnRunProps) => ContainerChild) | undefined {
+        const background = this._background;
+        if (typeof background === "function") {
+            return (runProps: OnRunProps) => background(this, runProps);
+        }
+        return background;
+    }
+    private readonly _icon?: ReactElement | ((props: Commitment, runProps: OnRunProps) => ReactElement);
+    get icon(): ReactElement | ((props: OnRunProps) => ReactElement) | undefined {
+        const icon = this._icon;
+        if (typeof icon === "function") {
+            return (runProps: OnRunProps) => icon(this, runProps);
+        }
+        return icon;
+    }
+    private _defaultDisabled: boolean | (() => boolean) = false;
+    get disabled(): boolean {
+        let value = this.getStorageProperty<boolean>("disabled") || this._defaultDisabled;
+        if (typeof value === "function") {
+            return value();
+        }
+        return value;
+    }
+    set disabled(value: boolean) {
+        this.setStorageProperty("disabled", value);
+    }
+    private _defaultHidden: boolean | (() => boolean) = false;
+    get hidden(): boolean {
+        let value = this.getStorageProperty<boolean>("hidden") || this._defaultHidden;
+        if (typeof value === "function") {
+            return value();
+        }
+        return value;
+    }
+    set hidden(value: boolean) {
+        this.setStorageProperty("hidden", value);
+    }
+    override get isActive(): boolean {
+        if (this.hidden) {
+            return false;
+        }
+        return super.isActive;
+    }
+}
+```
+
+```ts tab="nqtr.d.ts"
+import { ReactElement } from "react";
+import { ContainerChild } from "@drincs/pixi-vn";
+
+declare module "@drincs/nqtr" {
+    interface CommitmentInterface {
+        /**
+         * The name of the commitment.
+         */
+        readonly name: string;
+        /**
+         * The sprite of the commitment.
+         */
+        readonly sprite?: string | ContainerChild | ((props: OnRunProps) => ContainerChild);
+        /**
+         * The background of the commitment.
+         */
+        readonly background?: string | ContainerChild | ((props: OnRunProps) => ContainerChild);
+        /**
+         * The React icon of the commitment.
+         */
+        readonly icon?: ReactElement | ((props: OnRunProps) => ReactElement);
+        /**
+         * Whether is disabled.
+         */
+        disabled: boolean;
+        /**
+         * Whether is hidden.
+         */
+        hidden: boolean;
+    }
+}
+```
