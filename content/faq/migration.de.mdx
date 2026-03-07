@@ -2,7 +2,9 @@
 title: Migration guide
 ---
 
-## Migration from v1.4.x to v1.5.0
+## pixi-vn
+
+### Migration from v1.4.x to v1.5.0
 
 In this update, the `pixi.js` dependency has been marked as **external** for non-CDN builds (for example, when using Vite.js or the official templates).
 
@@ -34,7 +36,7 @@ body {
 }
 ```
 
-## Migration from v1.3.x to v1.4.0
+### Migration from v1.3.x to v1.4.0
 
 This document describes the changes that need to be made to your code to migrate from v1.3.x to v1.4.0.
 
@@ -66,13 +68,13 @@ Game.init(body, {
 
 Some long-deprecated features have been removed in this release, including: `stepHistory.goBack`, `narration.goNext`, `PIXI`, `canvas.canvasWidth`, `canvas.canvasHeight`, `canvas.onEndOfTicker`, `FadeAlphaTicker`, `MoveTicker`, `RotateTicker`, `ZoomTicker`, `narration.canContinue`, `narration.callLabel`, `narration.jumpLabel`, `narration.choiceMenuOptions`, `storage.startingStorage`, `storage.setVariable`, `storage.getVariable` and `storage.removeVariable`.
 
-## Migration from v1.2.x to v1.3.0
+### Migration from v1.2.x to v1.3.0
 
 This document describes the changes that need to be made to your code to migrate from v1.2.x to v1.3.0.
 
 In this release, the canvas component animations have been revolutionized. The core animation function is now <DynamicLink href="/start/canvas-motion">`canvas.animate`</DynamicLink>, a function that combines PixiJS tickers and [`motion`](https://motion.dev/docs/animate). So the provided tickers preset (`FadeAlphaTicker`, `MoveTicker`, `RotateTicker`, `ZoomTicker`) has been deprecated.
 
-## Migration from v0.10.x to v1.0
+### Migration from v0.10.x to v1.0
 
 This document describes the changes that need to be made to your code to migrate from v0.10.x to v1.0.
 
@@ -149,4 +151,122 @@ stepHistory.back(); // [!code ++]
 ```ts
 narration.narrativeHistory; // [!code --]
 stepHistory.narrativeHistory; // [!code ++]
+```
+
+## nqtr
+
+### Migration from v0.7.x to v0.8.0 (nqtr)
+
+This document describes the changes that need to be made to your code to migrate from v0.7.x to v0.8.0.
+
+In this release, the way to link a `commitment` to a `room` has been changed. You can now define its routine directly inside the `room`. Therefore, instead of passing the `room` in the `commitment` constructor, you can define the routine directly in the `room` constructor.
+
+This change was made to simplify the management of routines and to make the relationship between `commitment` and `room` clearer.
+
+```ts title="models/nqtr/Commitment.ts"
+export default class Commitment extends CommitmentStoredClass implements CommitmentInterface {
+    constructor(
+        id: string,
+        characters: CharacterInterface | CharacterInterface[],
+        room: RoomInterface, // [!code --]
+        props: {
+            name?: string;
+            image?: PixiUIParam<Commitment>;
+            background?: PixiUIParam<Commitment>;
+            icon?: ReactUIParam<Commitment>;
+            onRun?: OnRunEvent<CommitmentInterface>;
+            disabled?: boolean | (() => boolean);
+            hidden?: boolean | (() => boolean);
+        } & CommitmentStoredClassProps,
+    ) {
+        characters = Array.isArray(characters) ? characters : [characters];
+        super(id, characters, room, props.onRun, props); // [!code --]
+        super(id, characters, props.onRun, props); // [!code ++]
+        this.name = props.name || "";
+        this._image = props.image;
+        this._background = props.background;
+        this._icon = props.icon;
+        this._defaultDisabled = props.disabled || false;
+        this._defaultHidden = props.hidden || false;
+    }
+    // ...
+    override get isActive(): boolean { // [!code --]
+    override isActive(options?: ActiveScheduling): boolean { // [!code ++]
+        if (this.hidden) {
+            return false;
+        }
+        return super.isActive; // [!code --]
+        return super.isActive(options); // [!code ++]
+    }
+}
+```
+
+```ts title="models/nqtr/Room.ts"
+export default class Room extends RoomStoredClass implements RoomInterface {
+    constructor(
+        id: string,
+        location: LocationInterface,
+        props: {
+            name: string;
+            disabled?: boolean | (() => boolean);
+            hidden?: boolean | (() => boolean);
+            background: PixiUIParam<Room>;
+            activities?: ActivityInterface[];
+            routine?: CommitmentInterface[]; // [!code ++]
+            isEntrance?: boolean;
+        },
+    ) {
+        super(id, location, props.activities); // [!code --]
+        super(id, location, { // [!code ++]
+            activities: props.activities || [], // [!code ++]
+            routine: props.routine || [], // [!code ++]
+        }); // [!code ++]
+        this.name = props.name;
+        this._defaultDisabled = props.disabled || false;
+        this._defaultHidden = props.hidden || false;
+        this._background = props.background;
+        this.isEntrance = props.isEntrance || false;
+    }
+    // ...
+}
+```
+
+```ts title="models/nqtr/Activity.ts"
+export default class Activity extends ActivityStoredClass implements ActivityInterface {
+    // ...
+    override get isActive(): boolean { // [!code --]
+    override isActive(options?: ActiveScheduling): boolean { // [!code ++]
+        if (this.hidden) {
+            return false;
+        }
+        return super.isActive; // [!code --]
+        return super.isActive(options); // [!code ++]
+    }
+}
+```
+
+```ts title="values/routine.tsx"
+const aliceSleep = new Commitment("alice_sleep", alice, aliceRoom, { // [!code --]
+const aliceSleep = new Commitment("alice_sleep", alice, { // [!code ++]
+    priority: 1,
+    timeSlot: {
+        from: 20,
+        to: 10,
+    },
+    // ...
+});
+
+// ...
+
+export const fixedRoutine = [aliceSleep, ...]; // [!code --]
+
+RegisteredCommitments.add(fixedRoutine); // [!code --]
+RegisteredCommitments.add([aliceSleep, ...]);  // [!code ++]
+```
+
+```ts title="utils/nqtr-utility.ts"
+export function initializeNQTR() {
+    // ...
+    routine.fixedRoutine = fixedRoutine; // [!code --]
+}
 ```
