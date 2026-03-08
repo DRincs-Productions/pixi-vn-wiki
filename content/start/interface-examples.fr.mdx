@@ -1,5 +1,6 @@
 ---
 title: UI screen examples
+description: Provides UI screen examples for Pixi’VN, showing React and Vue components, and demonstrating hooks (e.g. useQueryDialogue, useQueryChoiceMenuOptions, useQueryCanGoNext) and integration with narration for choices, next/back, input prompts, and history.
 ---
 
 <Callout type="info" name="AI">
@@ -39,7 +40,6 @@ export default function NarrationScreen() {
             }}
         >
             <div style={{ flex: 1, minHeight: 0 }}>
-                {/* READ THIS: https://pixi-vn.web.app/start/choices.html#how-to-create-the-choice-menu-ui-screen */}
                 <ChoiceMenu />
             </div>
             {text && (
@@ -89,6 +89,46 @@ export default function NarrationScreen() {
         </div>
     );
 }
+```
+
+```vue tab="Vue"
+<template>
+    <div style="position: absolute; display: flex; flex-direction: column; height: 100%; width: 100%;">
+        <div style="flex: 1; min-height: 0;">
+            <ChoiceMenu />
+        </div>
+        <div
+            v-if="text"
+            style="flex: 0 0 auto; height: 30%; min-height: 0; pointer-events: auto; background-color: white; display: flex; flex-direction: column; overflow: hidden;"
+        >
+            <b v-if="character && (character.name || character.surname)">{{ character?.name || '' }} {{ character?.surname || '' }}</b>
+            <div style="display: flex; flex-direction: row; height: 100%; min-height: 0; overflow: hidden;">
+                <img
+                    v-if="character && character.icon"
+                    :src="character.icon"
+                    loading="lazy"
+                    alt=""
+                    style="max-width: 30%; height: auto; object-fit: contain; display: block;"
+                />
+                <div style="flex: 1; min-height: 0; overflow: auto; height: 100%;">
+                    <Markdown v-if="text" :source="text" />
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script setup>
+import { computed } from 'vue'
+import Markdown from 'vue3-markdown-it'
+import { useQueryDialogue } from '../hooks/useQueryInterface'
+import ChoiceMenu from './ChoiceMenu.vue'
+
+const { data } = useQueryDialogue()
+const text = computed(() => data.value?.text)
+const character = computed(() => data.value?.character)
+</script>
+
 ```
 
 ```ts tab="hooks/useQueryInterface.ts"
@@ -166,6 +206,45 @@ export default function ChoiceMenu() {
         </div>
     );
 }
+```
+
+```vue tab="Vue"
+<template>
+    <div
+        :style="{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%',
+            height: '100%',
+            overflow: 'auto',
+            gap: '8px',
+            maxHeight: '100%',
+            margin: 0,
+        }"
+        :pointer-events="menu.length > 0 ? 'auto' : 'none'">
+        <button
+            v-for="(item, index) in menu"
+            :key="'choice-' + index"
+            :style="{ justifyContent: 'center', alignItems: 'center' }"
+            @click="selectChoice(item)"
+        >
+            {{ item.text }}
+        </button>
+    </div>
+</template>
+
+<script setup>
+import { computed } from 'vue'
+import useNarrationFunctions from '../hooks/useNarrationFunctions'
+import { useQueryChoiceMenuOptions } from '../hooks/useQueryInterface'
+
+const { data } = useQueryChoiceMenuOptions()
+const menu = computed(() => data.value || [])
+const { selectChoice } = useNarrationFunctions()
+</script>
+
 ```
 
 ```ts tab="hooks/useQueryInterface.ts"
@@ -252,6 +331,38 @@ export default function NextButton() {
 }
 ```
 
+```vue tab="Vue"
+<template>
+    <button
+        v-if="canGoNext"
+        :disabled="loading"
+        :style="{ width: '40px', height: '20px', pointerEvents: 'auto' }"
+        @click="handleClick"
+    >
+        Next
+    </button>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue'
+import useNarrationFunctions from '../hooks/useNarrationFunctions'
+import { useQueryCanGoNext } from '../hooks/useQueryInterface'
+
+const { data } = useQueryCanGoNext()
+const canGoNext = computed(() => data.value ?? false)
+const loading = ref(false)
+const { goNext } = useNarrationFunctions()
+
+function handleClick() {
+    loading.value = true
+    goNext()
+        .then(() => (loading.value = false))
+        .catch(() => (loading.value = false))
+}
+</script>
+
+```
+
 ```ts tab="hooks/useQueryInterface.ts"
 import { narration } from "@drincs/pixi-vn";
 import { useQuery } from "@tanstack/react-query";
@@ -335,6 +446,38 @@ export default function BackButton() {
         </button>
     );
 }
+```
+
+```vue tab="Vue"
+<template>
+    <button
+        v-if="canGoBack"
+        :disabled="loading"
+        :style="{ width: '40px', height: '20px', pointerEvents: 'auto' }"
+        @click="handleClick"
+    >
+        Back
+    </button>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue'
+import useNarrationFunctions from '../hooks/useNarrationFunctions'
+import { useQueryCanGoBack } from '../hooks/useQueryInterface'
+
+const { data } = useQueryCanGoBack()
+const canGoBack = computed(() => data.value ?? false)
+const loading = ref(false)
+const { goBack } = useNarrationFunctions()
+
+function handleClick() {
+    loading.value = true
+    goBack()
+        .then(() => (loading.value = false))
+        .catch(() => (loading.value = false))
+}
+</script>
+
 ```
 
 ```ts tab="hooks/useQueryInterface.ts"
@@ -432,6 +575,48 @@ export default function TextInput() {
         </dialog>
     );
 }
+```
+
+```vue tab="Vue"
+<template>
+    <dialog :open="open" style="pointer-events: auto;">
+        <p>{{ text }}</p>
+        <input
+            v-if="open"
+            :value="currentValue || ''"
+            @input="onInput"
+        />
+        <button @click="confirm">Confirm</button>
+    </dialog>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue'
+import { useQueryClient } from '@tanstack/vue-query'
+import { narration } from '@drincs/pixi-vn'
+import { INTERFACE_DATA_USE_QUEY_KEY, useQueryDialogue, useQueryInputValue } from '../../hooks/useQueryInterface'
+
+const { data: dialogueData } = useQueryDialogue()
+const text = computed(() => dialogueData.value?.text)
+
+const { data: inputData } = useQueryInputValue()
+const open = computed(() => inputData.value?.isRequired ?? false)
+const currentValue = computed(() => inputData.value?.currentValue)
+
+const tempValue = ref(undefined)
+const queryClient = useQueryClient()
+
+function onInput(e) {
+    tempValue.value = e.target?.value
+}
+
+function confirm() {
+    narration.inputValue = tempValue.value ?? currentValue.value
+    tempValue.value = undefined
+    queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] })
+}
+</script>
+
 ```
 
 ```ts tab="hooks/useQueryInterface.ts"
@@ -595,6 +780,48 @@ export default function HistoryScreen() {
         </dialog>
     );
 }
+```
+
+```vue tab="Vue"
+<template>
+    <dialog open style="height: 80%;">
+        <div
+            style="display:flex;flex:1;min-height:0;padding:0 16px;overflow-y:scroll;flex-direction:column-reverse;pointer-events:auto;height:80%;"
+        >
+            <div v-for="(item, index) in data" :key="'history' + index" style="margin-bottom: 12px;">
+                <div style="display:flex;gap:12px;align-items:center;">
+                    <img :src="item.icon" loading="lazy" alt="" style="vertical-align:middle;max-width:50px;max-height:50px;border-radius:50%;" />
+                    <div style="flex:1;">
+                        <div>{{ item.character }}</div>
+                        <div />
+                        <div>{{ item.text }}</div>
+                    </div>
+                </div>
+                <div style="display:flex;gap:8px;margin-top:8px;">
+                    <div style="flex:1;">
+                        <template v-if="item.choices">
+                            <template v-for="(choice, i) in item.choices" :key="'choice-' + i">
+                                <span v-if="!choice.hidden" :style="choice.isResponse ? responseStyle : choiceStyle">{{ choice.text }}</span>
+                            </template>
+                        </template>
+                        <div v-if="item.inputValue" :style="inputStyle">{{ item.inputValue.toString() }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </dialog>
+</template>
+
+<script setup>
+import { computed } from 'vue'
+import { useQueryNarrativeHistory } from '../use_query/useQueryInterface'
+
+const { data } = useQueryNarrativeHistory()
+const responseStyle = { display: 'inline-block', padding: '5px 5px', fontSize: '12px', borderRadius: '25px', backgroundColor: '#21ff3e' }
+const choiceStyle = { display: 'inline-block', padding: '5px 5px', fontSize: '12px', borderRadius: '25px', backgroundColor: '#bcfdff' }
+const inputStyle = { display: 'inline-block', padding: '5px 5px', fontSize: '12px', borderRadius: '25px', backgroundColor: '#b0c2b2' }
+</script>
+
 ```
 
 ```ts tab="hooks/useQueryInterface.ts"
