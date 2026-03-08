@@ -219,7 +219,7 @@ export default function NarrationScreen() {
       }}
     >
       <div style={{ flex: 1, minHeight: 0 }}>
-        {/* READ THIS: https://pixi-vn.web.app/start/choices.html#how-to-create-the-choice-menu-ui-screen */}
+        {/* READ THIS: https://pixi-vn.web.app/start/interface-examples#choice-menu */}
         <ChoiceMenu />
       </div>
       {text && (
