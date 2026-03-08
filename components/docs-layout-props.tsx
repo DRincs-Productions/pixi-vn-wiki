@@ -343,34 +343,34 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
             },
             {
                 type: "folder",
-                name: "User Interface (UI)",
+                name: t("interface"),
                 icon: <Crop />,
                 index: {
                     type: "page",
-                    name: "User Interface (UI)",
+                    name: t("interface"),
                     url: `${preUrl}/start/interface`,
                 },
                 children: [
                     {
                         type: "folder",
-                        name: "JavaScript Frameworks",
+                        name: t("javascript-frameworks"),
                         defaultOpen: true,
                         children: [
                             {
                                 type: "page",
-                                name: "React",
+                                name: t("interface-react"),
                                 url: `${preUrl}/start/interface-react`,
                                 icon: <Image width={16} height={16} src='/react.svg' alt='React' />,
                             },
                             {
                                 type: "page",
-                                name: "Vue",
+                                name: t("interface-vue"),
                                 url: `${preUrl}/start/interface-vue`,
                                 icon: <Image width={16} height={16} src='/vue.svg' alt='Vue' />,
                             },
                             {
                                 type: "page",
-                                name: "PixiJS",
+                                name: t("interface-pixijs"),
                                 url: `${preUrl}/start/interface-pixijs`,
                                 icon: <Image width={16} height={16} src='/pixijs.svg' alt='PixiJS' />,
                             },
@@ -378,63 +378,68 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                     },
                     {
                         type: "page",
-                        name: "UI screen examples",
+                        name: t("interface-examples"),
                         url: `${preUrl}/start/interface-examples`,
                     },
                     {
                         type: "page",
-                        name: "Navigate/switch between UI screens",
+                        name: t("interface-navigate"),
                         url: `${preUrl}/start/interface-navigate`,
                     },
                     {
                         type: "page",
-                        name: "Connect the UI with the storage",
+                        name: t("interface-font"),
+                        url: `${preUrl}/start/interface-font`,
+                    },
+                    {
+                        type: "page",
+                        name: t("interface-connect-storage"),
                         url: `${preUrl}/start/interface-connect-storage`,
                     },
                 ],
             },
             {
                 type: "page",
-                name: "Minigames",
+                name: t("minigames"),
                 icon: <Gamepad2 />,
                 url: `${preUrl}/start/minigames`,
             },
             {
                 type: "page",
-                name: "Save and load",
+                name: t("save"),
                 icon: <Save />,
                 url: `${preUrl}/start/save`,
             },
             {
                 type: "folder",
-                name: "Distribution",
+                name: t("distribution"),
                 icon: <Rocket />,
                 index: {
                     type: "page",
-                    name: "Distribution",
+                    name: t("distribution"),
                     url: `${preUrl}/start/distribution`,
                 },
                 children: [
                     {
                         type: "folder",
-                        name: "Website distribution",
+                        name: t("distribution-website"),
                         defaultOpen: true,
                         index: {
                             type: "page",
-                            name: "Website distribution",
+                            name: t("distribution-website"),
                             url: `${preUrl}/start/distribution-website`,
                         },
                         children: [
                             {
                                 type: "page",
-                                name: "itch.io",
+                                name: t("distribution-itchio"),
                                 url: `${preUrl}/start/distribution-itchio`,
                             },
                         ],
                     },
                     {
                         type: "page",
-                        name: "Desktop & mobile devices",
+                        name: t("distribution-desktop-mobile"),
                         url: `${preUrl}/start/distribution-desktop-mobile`,
                     },
                 ],
