@@ -49,7 +49,7 @@ export function LLMCopyButton({
                     color: "secondary",
                     size: "sm",
                     className: "gap-2 [&_svg]:size-3.5 [&_svg]:text-fd-muted-foreground",
-                })
+                }),
             )}
             onClick={onClick}
         >
@@ -60,7 +60,7 @@ export function LLMCopyButton({
 }
 
 const optionVariants = cva(
-    "text-sm p-2 rounded-lg inline-flex items-center gap-2 hover:text-fd-accent-foreground hover:bg-fd-accent [&_svg]:size-4"
+    "text-sm p-2 rounded-lg inline-flex items-center gap-2 hover:text-fd-accent-foreground hover:bg-fd-accent [&_svg]:size-4",
 );
 
 export function ViewOptions({
@@ -194,7 +194,7 @@ export function ViewOptions({
                         color: "secondary",
                         size: "sm",
                         className: "gap-2",
-                    })
+                    }),
                 )}
             >
                 Open
@@ -222,6 +222,10 @@ export function ViewOptions({
 export function TranslateButton({ lang, folther }: { lang?: string; folther: string }) {
     const t = useTranslations("common");
 
+    if (lang == "zh") {
+        lang = "zh-cn";
+    }
+
     return (
         <a
             target='_blank'
@@ -231,7 +235,7 @@ export function TranslateButton({ lang, folther }: { lang?: string; folther: str
                     variant: "secondary",
                     size: "xs",
                     className: "gap-1.5 not-prose padding-6 padding-x-2",
-                })
+                }),
             )}
             href={
                 lang
@@ -255,7 +259,7 @@ export function PatreonButton() {
                     variant: "secondary",
                     size: "xs",
                     className: "gap-1.5 not-prose padding-6 padding-x-2",
-                })
+                }),
             )}
             href={`https://www.patreon.com/cw/pixi_vn`}
         >
@@ -278,7 +282,7 @@ export function ChatGPTButton({ markdownUrl }: { markdownUrl: string }) {
                     variant: "secondary",
                     size: "xs",
                     className: "gap-1.5 not-prose padding-6 padding-x-2",
-                })
+                }),
             )}
             href={`https://chatgpt.com/?${new URLSearchParams({
                 hints: "search",
