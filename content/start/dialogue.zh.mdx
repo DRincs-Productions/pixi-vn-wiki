@@ -1,0 +1,128 @@
+---
+title: 对话
+description: 如何使用、自定义和管理Pixi'VN中的对话对象，包括粘合功能和 UI 集成。
+---
+
+import { CurrentDialogueExample, DialogueGlueExample } from "@/components/examples";
+
+<Callout title="UI screen" type="info">
+
+您可以在<DynamicLink href="/start/interface-examples#narrative-dialogue">界面示例</DynamicLink>部分找到叙事对话 UI 屏幕的示例。
+
+</Callout>
+
+**什么是对话（dialogue）？ **一种书面创作形式，其中两个或多个角色进行交谈。
+
+在Pixi'VN中，对话框是一个包含当前发言角色和发言内容信息的对象。 它的功能可以更加广泛，也可以用于其他用途，例如独白、自言自语或向玩家显示消息。 因此，将其视为可以链接到<DynamicLink href="/start/character#use-characters-in-the-game">角色</DynamicLink>的文本更为合适。
+
+## Set
+
+要设置当前对话，你可以使用`narration.dialogue`。
+
+```ts title="labels/startLabel.ts"
+import { narration, newLabel } from "@drincs/pixi-vn"
+import { eggHead } from "../values/characters"
+
+// What is a Label? https://pixi-vn.web.app/start/labels.html
+export const startLabel = newLabel("start_label",
+    [
+        () => {
+            // in this example, not exists a character with id 'Alice' // [!code focus]
+            // so when you get the current dialogue, the character is a fake character with the name 'Alice' // [!code focus]
+            narration.dialogue = { // [!code focus]
+                character: "Alice", // [!code focus]
+                text: "Hello, world!" // [!code focus]
+            } // [!code focus]
+        },
+        () => {
+            // in this example, exists a character with id 'egg-head' // [!code focus]
+            // so when you get the current dialogue, the character is the character with id 'egg-head' // [!code focus]
+            narration.dialogue = { // [!code focus]
+                character: 'egg-head', // [!code focus]
+                text: "Hello, world!" // [!code focus]
+            } // [!code focus]
+            // or better // [!code focus]
+            narration.dialogue = { // [!code focus]
+                character: eggHead, // [!code focus]
+                text: "Hello, world!" // [!code focus]
+            } // [!code focus]
+        },
+        // if don't want to set a character, you can set a string // [!code focus]
+        () => narration.dialogue = "Hello, world!", // [!code focus]
+    ],
+)
+```
+
+<CurrentDialogueExample />
+
+## Get
+
+要获取当前对话框，使用`narration.dialogue`。 返回值是一个`DialogueInterface`对象。
+
+```typescript
+const currentDialogue: DialogueInterface = narration.dialogue;
+```
+
+## 清除
+
+要清除当前对话，设置`narration.dialogue = undefined`。
+
+```typescript
+narration.dialogue = undefined;
+```
+
+## 自定义类
+
+你可以通过向`DialogueInterface`添加额外属性来自定义对话框接口。 例如，可以添加一个`color`属性来更改文本颜色。
+
+为此，请在您的`.d.ts`文件中“重写”`DialogueInterface`接口：
+
+```ts tab="pixi-vn.d.ts"
+declare module '@drincs/pixi-vn' {
+    interface DialogueInterface {
+        color?: string
+    }
+}
+```
+
+```ts tab="labels/startLabel.ts"
+narration.dialogue = {
+    character: "Alice",
+    text: "Hello, world!",
+    color: "#ff0000"
+}
+```
+
+## 其他叙事功能
+
+<Accordions>
+
+<Accordion title="glue" id="dialogue-glue">
+
+<Callout type="info">
+
+对话框粘合（Dialogue glue）最初是一项为**_ink_**创建的功能，后来也被引入到了Pixi'VN中。
+
+</Callout>
+
+当启用“粘合”时，下一段对话将追加在当前对话之后。
+
+```ts title="labels/startLabel.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+
+const startLabel = newLabel("start", [
+    () => {
+        narration.dialogue = `Hello, my name is Alice and ...` // [!code focus]
+    },
+    () => {
+        narration.dialogGlue = true // [!code focus]
+        narration.dialogue = `I am a character in this game.` // [!code focus]
+    },
+])
+```
+
+<DialogueGlueExample />
+
+</Accordion>
+
+</Accordions>
