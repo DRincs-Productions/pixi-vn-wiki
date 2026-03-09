@@ -206,17 +206,17 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
             },
             {
                 type: "folder",
-                name: "Assets",
+                name: t("assets"),
                 icon: <Boxes />,
                 index: {
                     type: "page",
-                    name: "Assets",
+                    name: t("assets"),
                     url: `${preUrl}/start/assets`,
                 },
                 children: [
                     {
                         type: "page",
-                        name: "Assets management",
+                        name: t("assets-management"),
                         url: `${preUrl}/start/assets-management`,
                     },
                 ],
@@ -537,7 +537,7 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
             { type: "page", name: t("storage"), icon: <Database />, url: `${preUrl}/ink/storage` },
             { type: "page", name: t("canvas"), icon: <ImageIcon />, url: `${preUrl}/ink/canvas` },
             { type: "page", name: t("sound"), url: `${preUrl}/ink/sound` },
-            { type: "page", name: "Assets management", url: `${preUrl}/ink/assets` },
+            { type: "page", icon: <Boxes />, name: t("assets"), url: `${preUrl}/start/assets` },
             { type: "page", name: "Text replacement", url: `${preUrl}/ink/replacement` },
             { type: "page", name: "Custom Hashtag Command", url: `${preUrl}/ink/hashtag` },
         ],
