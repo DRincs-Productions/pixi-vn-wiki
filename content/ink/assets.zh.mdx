@@ -1,0 +1,76 @@
+---
+title: 资源
+---
+
+如<DynamicLink href="/start/assets-management">前文</DynamicLink>所述，建议在项目启动时就初始化资源矩阵，并规划好资源加载的时机。
+
+相比于JavaScript/TypeScript，ink 对资源加载的控制能力较弱。 在 ink 中，pixi-vn 提供了一个简单的方法：在标签开始前加载资源。使用方法如下： To do this, you need to use the following syntax:
+
+`#` + `[操作类型]` + `[资源或资源包]` + `[图片URL/路径列表]`
+
+- `#`：ink语法的特殊字符，用于执行特殊脚本。
+- `[操作类型]`：要执行的操作。 可用的操作有：
+  - `load`：使用 await 方式加载资源或资源包（对应`Assets.load`或`Assets.loadBundle`）。
+  - `lazyload`：在后台静默加载资源或资源包（对应`Assets.backgroundLoad`或 `Assets.backgroundLoadBundle`）。
+- `[资源类型]`：你要加载的资源类型。 可用的类型有：
+  - `assets`：加载assets。
+  - `bundle`：加载bundle。
+- `[图片URL/路径列表]`：图片的URL或路径列表。 如果你已经初始化了<DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">资源矩阵</DynamicLink>，你可以使用纹理的别名。 特别注意：在**_ink_**中写`https://`时，必须写成`https:\/\/`，因为`//`在**_ink_**中会被视为注释开头。
+
+```ink tab="ink/start.ink"
+=== start ===
+# lazyload bundle main_menu start
+# load assets eggHead flowerTop my_video
+# show image eggHead
+# show image flowerTop
+# show video my_video
+# pause
+-> start
+```
+
+```ts tab="utils/defineAssets.ts"
+import { Assets } from "@drincs/pixi-vn"
+
+export async function defineAssets() {
+    // manifest
+    await Assets.init({ manifest });
+    // single asset
+    Assets.add({ alias: 'eggHead', src: "https://pixijs.com/assets/eggHead.png" })
+    Assets.add({ alias: 'flowerTop', src: "https://pixijs.com/assets/flowerTop.png" })
+    Assets.add({ alias: "my_video", src: "https://pixijs.com/assets/video.mp4" });
+}
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ *游戏资源清单文件。
+ *想了解更多关于清单的内容，可以参考这里：https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        // screens
+        {
+            name: "main_menu",
+            assets: [
+                {
+                    alias: "background_main_menu",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/main-menu.png",
+                },
+            ],
+        },
+        // labels
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "bg01-hallway",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/bg01-hallway.webp",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
