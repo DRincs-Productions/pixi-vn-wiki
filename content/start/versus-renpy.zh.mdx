@@ -1,0 +1,154 @@
+---
+title: Ren'Py vs Pixi’VN
+description: 对比Ren'Py和Pixi'VN两款视觉小说开发引擎——涵盖语言、UI、性能及灵活性等方面。
+---
+
+import { PerformanceExample } from "@/components/examples";
+
+鉴于Ren'Py目前是最广泛使用的视觉小说引擎之一，对其进行对比是很有必要的。
+
+<Callout title="Templates" type="info">
+
+本对比由Pixi'VN团队制作，力求客观。 如果你对此持有异议或认为还应对比其他功能，请发起[新的讨论](https://github.com/DRincs-Productions/pixi-vn/discussions/categories/wiki)。
+
+</Callout>
+
+**什么是Ren'py？**
+
+Ren'Py是一款视觉小说引擎，全球数千名创作者用它结合文字、图像和声音，制作可在电脑和移动设备上运行的交互式故事。 这些作品既可以是视觉小说，也可以是生活模拟游戏。
+
+- 编程语言：`Ren'Py语言`。一种让你即使没有太多编程知识也能快速开发视觉小说的编程语言。 它基于Python。
+- 画布（canvas）库： [`Pygame_sdl2`](https://github.com/renpy/pygame_sdl2)，这是使用 SDL2 和相关库对Pygame API的重新实现。 虽然它最初旨在于支持多种应用，但现在主要用作Ren'Py的基础技术。
+- 工作原理：Ren'Py是一个完整的视觉小说引擎/框架，负责处理创建项目、执行、分发等几乎所有环节。
+
+## 编程语言对比
+
+Ren'Py使用其自有的Ren'Py语言，它是Python的一个超集。 你可以在其中使用Python语句。
+
+Pixi'VN使用JavaScript/TypeScript，这两种功能强大且十分流行的编程语言。 编写叙事时，你可以直接使用JavaScript/TypeScript，也可以选择一种或多种可用的叙事语言。
+
+| 编程语言对比    | Ren'Py                                                        | Pixi’VN                                                              |
+| --------- | ------------------------------------------------------------- | -------------------------------------------------------------------- |
+| 上手难度      | 面向无编程基础的用户                                                    | 使用模板可快速上手，但随着进度推进及新功能集成，你需要学习一些JavaScript/TypeScript、NodeJS和npm的基础知识 |
+| 是否支持类型检查？ | ❌（使用Python虽可定义类型，但Ren'Py编译器并不会进行类型检查。 且大部分原生Ren'Py代码也不会使用类型。） | ✅                                                                    |
+| 是否支持调试器？  | ❌                                                             | ✅                                                                    |
+| 包/库管理器    | ❌                                                             | npm                                                                  |
+| 叙事语言      | Ren'Py语言及Python语句                                             | JavaScript/TypeScript及多种叙事语言（包括 Ren'Py 语言）                           |
+| 小游戏实现     | 可使用Ren'Py创作者定义的可视组件(CDD)                                      | 可使用PixiJS或安装其他库                                                      |
+| UI实现      | 可使用Ren'Py screens                                             | 可使用PixiJS、React、Vue等                                                 |
+| UI组件      | Ren'Py提供的组件，通常基于图像                                            | 取决于UI框架，可使用任何组件库（如Material-UI、Bootstrap、PixiJS UI等）                  |
+
+### 叙事编写
+
+使用Ren'Py编写叙事时，您需要使用`Ren'Py语言`。 这种语言简单易学。 其基于Python，并支持Python语句。
+
+使用Pixi'VN时，您可以使用JavaScript/TypeScript编写叙事。 此外，还可以使用数种叙事语言（理论上你可以通过<DynamicLink href="/json">PixiVNJson</DynamicLink>集成任何的叙事语言）。
+
+Ren'Py示例：
+
+```renpy title="start.rpy"
+label start:
+    "Hello, world!"
+    "This is a Pixi’VN tutorial."
+    "I hope you enjoy it!"
+```
+
+Pixi'VN示例：
+
+```typescript title="startLabel.ts"
+const startLabel = newLabel("start_label_id", [
+    () => narration.dialogue = "Hello, world!",
+    () => narration.dialogue = "This is a Pixi’VN tutorial.",
+    () => narration.dialogue = "I hope you enjoy it!"
+])
+```
+
+```ink title="start.ink"
+=== start
+Hello, world!
+This is a Pixi’VN tutorial.
+I hope you enjoy it!
+->DONE
+```
+
+### 小游戏实现
+
+在 Ren'Py 中，要创建带有复杂机制/动画的小游戏，你需要使用[` 创作者定义的可视组件（CDD）`](https://doc.renpy.cn/zh-CN/cdd.html)。 这是很有必要的，否则可能会出现性能问题。 通过CDD，你可以在渲染循环中创建/控制一个或多个图形元素。
+但 CDD 不够直观，使用复杂， 示例稀少，开发者也不算多。 事实上，绝大多数Ren'Py小游戏并没有复杂的逻辑与动画。
+
+在Pixi'VN中，您可以使用PixiJS创建小游戏。 PixiJS是一款功能强大的库，支持创建复杂的动画和机制。 其文档和示例详尽，且拥有庞大的开发者社区。
+
+您可以尝试体验一些Ren'Py和PixiJS的小游戏以了解差异：
+
+- [Ren'Py小游戏](https://itch.io/game-assets/free/tag-minigames/tag-renpy)
+- [PixiJS小游戏](https://github.com/pixijs/open-games)
+- [PixiJS教程](https://pixijs.com/8.x/tutorials)
+
+### UI实现
+
+使用 Ren'Py 来创建用户界面，你可以使用 `screens` 和 `styles` 。 推荐的实现方式是绘制一系列图像，并通过图形组件将其添加到画布中。 但这些图形组件有限且不够直观。
+
+在 Pixi'VN 中，除了使用 PixiJS 组件外，您还可以使用React、Vue等系统，并安装 Material-UI、Bootstrap等组件库。 这让你能够以卓越的性能创建更复杂的 UI 界面。
+
+## 性能与项目体积
+
+在选择框架时，性能和项目大小是需要考虑的重要因素。
+
+**所使用的画布（canvas）库：**
+
+- [`Pygame_sdl2`](https://github.com/renpy/pygame_sdl2)：性能欠佳。 你可以在 Ren'Py中插入大量移动图形进行测试。
+- PixiJS：基于现代系统，性能卓越。 你可以直接通过下面的示例测试：
+
+<PerformanceExample />
+
+**UI性能：**
+
+- Ren'Py的UI基于画布（canvas）组件，使用项目内的图像。
+- 使用 Pixi'VN，您可以使用以其性能和可用性著称的HTML和/或JavaScript框架，也可以直接使用画布（canvas）。 HTML/JavaScript组件不一定基于图像，这有助于减小项目体积。
+
+**项目大小：**
+
+- Ren'Py的整个UI都依赖于“实体图片资源”，导致项目体积非常庞大。
+- Pixi'VN是一个库，不决定项目的体积。但如果您使用[vite](https://vitejs.dev/) 等工具，项目体积将非常轻量。
+
+## 多平台分发
+
+Ren'Py 直接负责将游戏分发到各种设备上。
+
+Pixi'VN 不处理分发事宜。 你可以使用各种框架（如 Tauri、Electron、Cordova 等） 将项目分发到多个平台。 Pixi'VN 提供的模板中已经包含了必要的分发配置。
+
+| 多平台分发                                 | Ren'Py                          | Pixi’VN                                    |
+| ------------------------------------- | ------------------------------- | ------------------------------------------ |
+| 易用性                                   | **非常简单**。 您可以使用 Ren'Py UI 创建分发包 | 对于经验不足的用户来说，配置多平台项目可能**比较困难**。 使用模板可简化此步骤。 |
+| 包配置                                   | 基础功能                            | 非常完善（您可以选择包是需要安装还是无需安装即可运行）                |
+| 通过GitHub Actions或GitLab Pipeline自动化部署 | ❌                               | ✅                                          |
+| 系统通知                                  | ❌                               | ✅                                          |
+| 使用已连接设备（相机、闪光灯等）                      | ❌                               | ✅                                          |
+| 基于设备类型的UI缩放                           | ✅                               | ✅                                          |
+| 适配屏幕尺寸的UI缩放                           | ❌                               | ✅                                          |
+| Windows/Linux/Mac OS                  | ✅ (使用Ren'Py)                    | ✅ (使用Tauri, Electron, Cordova等)            |
+| Android/iOS                           | ✅ (使用Ren'Py)                    | ✅ (使用Ionic或Cordova)                        |
+| Web                                   | ✅ (测试版)                         | ✅ (原生支持)                                   |
+| Xbox/PlayStation/Nintendo Switch      | ✅ (使用 Sen'py)                   | 仅Xbox支持UWP                                 |
+
+## 开发可能性
+
+Ren'Py是一个专为创建视觉小说而设计的引擎。 通过Python添加超出常规视觉小说开发的复杂功能非常困难，并且Ren'Py团队也不推荐这样做。 它并没有包/库管理器。
+
+Pixi'VN是一个[npm](https://www.npmjs.com/)库，允许你创建视觉小说。 你也可以在一个并非原生用于视觉小说的项目中使用这个库。 [npm](https://www.npmjs.com/)是JavaScript的包管理器，也是全球最大的软件注册表。
+
+## 生命力与内部开发维护难度
+
+Ren'Py诞生于 2004 年，并且至今仍在使用。 它是一个非常稳定和成熟的项目。
+Ren'Py不仅包含视觉小说库的开发，还包含`Ren'Py语言`和`Pygame_sdl2`的开发。 由于Ren'Py还负责项目在各设备上的分发，因此需要不断更新系统以适配支持的操作系统的最新变化。
+
+这意味着保持Ren'Py的更新是一个持续且非常复杂的过程，涉及多种类型的编程（解析、图形等）。
+
+Pixi'VN诞生于2024年。 它是一个非常年轻的项目。
+Pixi'VN只是一个库，使用PixiJS作为画布（canvas）。 它提供视觉小说所需的功能，但不处理其他任何事务。
+
+这意味着保持Pixi'VN持续更新是一个非常简单的过程，一旦达到稳定版本，它就无需为了兼容最新设备而频繁更新。
+
+## 结论
+
+总之，如果您懂面向对象编程，并希望创建功能丰富、包含小游戏、UI 非常复杂的视觉小说，您应该使用Pixi'VN。 如果你不是程序员，希望快速创建自己的视觉小说，并愿意随着时间的推移学习一些今后可以复用的知识，那么Pixi'VN也值得考虑。 如果你想要一个统一的框架来处理所有事情，而无需自己决定使用哪些库，那么 Pixi'VN可能不适合你——Ren'Py 是一个不错的选择。 如果你想要的是一个无代码框架，那么目前Ren'Py和Pixi'VN都不适合你。
