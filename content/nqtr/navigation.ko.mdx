@@ -62,8 +62,9 @@ To create a new instance of `MapBaseModel`, you need the following parameters:
 
 ```ts tab="values/rooms.ts"
 import { RegisteredRooms, RoomBaseModel } from "@drincs/nqtr";
-import { bed } from "./activity";
+import { bed } from "./activities";
 import { mcHome } from "./locations";
+import { aliceSleep, aliceSmokes } from "./routine";
 
 export const mcRoom = new RoomBaseModel("mc_room", mcHome, {
     name: "MC room",
@@ -74,6 +75,7 @@ export const mcRoom = new RoomBaseModel("mc_room", mcHome, {
 export const aliceRoom = new RoomBaseModel("alice_room", mcHome, {
     name: "Alice room",
     image: "location_aliceroom",
+    routine: [aliceSleep],
 });
 
 export const annRoom = new RoomBaseModel("ann_room", mcHome, {
@@ -94,13 +96,14 @@ export const lounge = new RoomBaseModel("lounge", mcHome, {
 export const terrace = new RoomBaseModel("terrace", mcHome, {
     name: "Terrace",
     image: "location_terrace",
+    routine: [aliceSmokes],
 });
 
 RegisteredRooms.add([mcRoom, aliceRoom, annRoom, bathroom, lounge, terrace]);
 ```
 
 ```ts tab="values/locations.ts"
-import { LocationBaseModel, RegisteredLocations } from "@drincs/nqtr";
+import { LocationBaseModel, navigator, RegisteredLocations } from "@drincs/nqtr";
 import { mainMap } from "./maps";
 
 export const mcHome = new LocationBaseModel("mc_home", mainMap, {
@@ -241,7 +244,15 @@ Now you can create a class `Room` / `Location` / `Map` that extends `RoomStoredC
 To create a property that stores its value in the game storage, you can create [Getters/Setters](https://www.typescriptlang.org/docs/handbook/2/classes.html#getters--setters) and use the `this.getStorageProperty()` / `this.setStorageProperty()` methods. (See the file `Room.ts` / `Location.ts` / `Map.ts`)
 
 ```ts tab="models/nqtr/Room.ts"
-import { ActivityInterface, LocationInterface, OnRunProps, RoomInterface, RoomStoredClass } from "@drincs/nqtr";
+import {
+    ActivityInterface,
+    CommitmentInterface,
+    LocationInterface,
+    OnRunProps,
+    RoomInterface,
+    RoomStoredClass,
+} from "@drincs/nqtr";
+import { PixiUIParam, PixiUIProp } from "./ui-elements";
 
 export default class Room extends RoomStoredClass implements RoomInterface {
     constructor(
@@ -251,12 +262,16 @@ export default class Room extends RoomStoredClass implements RoomInterface {
             name: string;
             disabled?: boolean | (() => boolean);
             hidden?: boolean | (() => boolean);
-            background: string | ContainerChild | ((props: Room, runProps: OnRunProps) => ContainerChild);
+            background: PixiUIParam<Room>;
             activities?: ActivityInterface[];
+            routine?: CommitmentInterface[];
             isEntrance?: boolean;
-        }
+        },
     ) {
-        super(id, location, props.activities);
+        super(id, location, {
+            activities: props.activities || [],
+            routine: props.routine || [],
+        });
         this.name = props.name;
         this._defaultDisabled = props.disabled || false;
         this._defaultHidden = props.hidden || false;
@@ -264,8 +279,8 @@ export default class Room extends RoomStoredClass implements RoomInterface {
         this.isEntrance = props.isEntrance || false;
     }
     readonly name: string;
-    private readonly _background: string | ContainerChild | ((props: Room, runProps: OnRunProps) => ContainerChild);
-    get background(): string | ContainerChild | ((props: OnRunProps) => ContainerChild) {
+    private readonly _background: PixiUIParam<Room>;
+    get background(): PixiUIProp {
         const background = this._background;
         if (typeof background === "function") {
             return (runProps: OnRunProps) => background(this, runProps);
@@ -307,7 +322,7 @@ import {
     OnRunProps,
     RoomInterface,
 } from "@drincs/nqtr";
-import { ContainerChild } from "@drincs/pixi-vn";
+import { PixiUIParam, PixiUIProp } from "./ui-elements";
 
 export default class Location extends LocationStoredClass implements LocationInterface {
     constructor(
@@ -318,8 +333,8 @@ export default class Location extends LocationStoredClass implements LocationInt
             name: string;
             disabled?: boolean | (() => boolean);
             hidden?: boolean | (() => boolean);
-            sprite: ContainerChild | ((props: Location, runProps: OnRunProps) => ContainerChild);
-        }
+            sprite: PixiUIParam<Location>;
+        },
     ) {
         super(id, map, props.activities);
         this.name = props.name;
@@ -328,8 +343,8 @@ export default class Location extends LocationStoredClass implements LocationInt
         this._sprite = props.sprite;
     }
     readonly name: string;
-    private readonly _sprite: ContainerChild | ((props: Location, runProps: OnRunProps) => ContainerChild);
-    get sprite(): ContainerChild | ((props: OnRunProps) => ContainerChild) {
+    private readonly _sprite: PixiUIParam<Location>;
+    get sprite(): PixiUIProp {
         let sprite = this._sprite;
         if (typeof sprite === "function") {
             return (runProps: OnRunProps) => sprite(this, runProps);
@@ -372,6 +387,7 @@ export default class Location extends LocationStoredClass implements LocationInt
 
 ```ts tab="models/nqtr/Map.ts"
 import { ActivityInterface, LocationInterface, MapInterface, MapStoredClass, OnRunProps } from "@drincs/nqtr";
+import { PixiUIParam, PixiUIProp } from "./ui-elements";
 
 export default class Map extends MapStoredClass implements MapInterface {
     constructor(
@@ -379,16 +395,16 @@ export default class Map extends MapStoredClass implements MapInterface {
         props: {
             activities?: ActivityInterface[];
             name: string;
-            background: string | ContainerChild | ((props: Map, runProps: OnRunProps) => ContainerChild);
-        }
+            background: PixiUIParam<Map>;
+        },
     ) {
         super(id, props.activities);
         this.name = props.name;
         this._background = props.background;
     }
     readonly name: string;
-    private readonly _background: string | ContainerChild | ((props: Map, runProps: OnRunProps) => ContainerChild);
-    get background(): string | ContainerChild | ((props: OnRunProps) => ContainerChild) {
+    private readonly _background: PixiUIParam<Map>;
+    get background(): PixiUIProp {
         const background = this._background;
         if (typeof background === "function") {
             return (runProps: OnRunProps) => background(this, runProps);
@@ -402,7 +418,7 @@ export default class Map extends MapStoredClass implements MapInterface {
 ```
 
 ```ts tab="nqtr.d.ts"
-import { ContainerChild } from "@drincs/pixi-vn";
+import { PixiUIProp } from "./models/nqtr/ui-elements";
 
 declare module "@drincs/nqtr" {
     interface RoomInterface {
@@ -414,7 +430,7 @@ declare module "@drincs/nqtr" {
         /**
          * The background of the room.
          */
-        readonly background: string | ContainerChild | ((props: OnRunProps) => ContainerChild);
+        readonly background: PixiUIProp;
         /**
          * Whether is disabled.
          */
@@ -445,7 +461,7 @@ declare module "@drincs/nqtr" {
         /**
          * The sprite of the location.
          */
-        readonly sprite: ContainerChild | ((props: OnRunProps) => ContainerChild);
+        readonly sprite: PixiUIProp;
         /**
          * The entrance room of the location.
          */
@@ -459,7 +475,7 @@ declare module "@drincs/nqtr" {
         /**
          * The background of the map.
          */
-        readonly background: string | ContainerChild | ((props: OnRunProps) => ContainerChild);
+        readonly background: PixiUIProp;
     }
 }
 ```
