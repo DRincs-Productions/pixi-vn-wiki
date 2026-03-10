@@ -37,21 +37,20 @@ import { NARRATION_ROUTE } from "../constans";
 import { TALK_SLEEP_LABEL_KEY } from "../labels/variousActionsLabelKeys";
 import { aliceTalkMenuLabel } from "../labels/variousActionsLabels";
 import { alice } from "./characters";
-import { aliceRoom, classRoom, terrace } from "./rooms";
 
-const aliceSleep = new CommitmentBaseModel("alice_sleep", alice, aliceRoom, {
+export const aliceSleep = new CommitmentBaseModel("alice_sleep", alice, {
     priority: 1,
     timeSlot: {
         from: 20,
         to: 10,
     },
-    onRun: (_, event) => {
-        event.navigate(NARRATION_ROUTE);
-        narration.jump(TALK_SLEEP_LABEL_KEY, event);
+    onRun: async (_, event) => {
+        await event.navigate(NARRATION_ROUTE);
+        await narration.jump(TALK_SLEEP_LABEL_KEY, event);
     },
 });
 
-const aliceGoSchool = new CommitmentBaseModel("alice_go_school", alice, classRoom, {
+export const aliceGoSchool = new CommitmentBaseModel("alice_go_school", alice, {
     timeSlot: {
         from: 8,
         to: 14,
@@ -59,14 +58,14 @@ const aliceGoSchool = new CommitmentBaseModel("alice_go_school", alice, classRoo
     priority: 2,
 });
 
-const aliceSmokes = new CommitmentBaseModel("alice_smokes", alice, terrace, {
+export const aliceSmokes = new CommitmentBaseModel("alice_smokes", alice, {
     timeSlot: {
         from: 10,
         to: 20,
     },
-    onRun: (_, event) => {
-        event.navigate(NARRATION_ROUTE);
-        narration.jump(aliceTalkMenuLabel, event);
+    onRun: async (_, event) => {
+        await event.navigate(NARRATION_ROUTE);
+        await narration.jump(aliceTalkMenuLabel, event);
     },
 });
 
@@ -83,23 +82,28 @@ import "./values/routine";
 
 You can also create a function to load `commitments`. The important thing is that it is called at least once before the `commitments` are used in the game, otherwise they will not be available.
 
-## Add
+## Ссылка
 
-Initializing a commitment will not add it to the game. To do this, you'll need to use one of the following methods:
+For an `commitment` to be linked to a `room`, the `room` must be included in the `Commitment` instance. The relationship between a `commitment` and a `room` is one-to-many, meaning that a `rooms` can be linked to multiple `commitments`, but a `commitment` can only be linked to one `room` (a character cannot be in two places at the same time).
+
+There are two ways to do this:
 
 ### During game initialization
 
-You can add a commitment to your routine during game initialization. This is useful for tasks that should always be present in the game, such as daily routines of characters.
+For a `commitment` to be available to the player, it must be linked to a `room`.
 
-```ts tab="utils/nqtr-utility.ts"
-import { routine } from "@drincs/nqtr";
-import { aliceGoSchool, aliceSleep } from "../values/routine";
+```ts tab="values/rooms.ts"
+import { RegisteredRooms, RoomBaseModel } from "@drincs/nqtr";
+import { mcHome } from "./locations";
+import { aliceSleep } from "./routine";
 
-export function initializeNQTR() {
-    // ...
+export const aliceRoom = new RoomBaseModel("alice_room", mcHome, {
+    name: "Alice room",
+    background: "location_aliceroom",
+    routine: [aliceSleep], // [!code ++]
+});
 
-    routine.fixedRoutine = [aliceSleep, aliceGoSchool]; // [!code focus]
-}
+RegisteredRooms.add([aliceRoom]);
 ```
 
 ```ts tab="values/routine.ts"
@@ -108,47 +112,45 @@ import { narration } from "@drincs/pixi-vn";
 import { NARRATION_ROUTE } from "../constans";
 import { TALK_SLEEP_LABEL_KEY } from "../labels/variousActionsLabelKeys";
 import { alice } from "./characters";
-import { aliceRoom, classRoom } from "./rooms";
 
-export const aliceSleep = new CommitmentBaseModel("alice_sleep", alice, aliceRoom, {
+export const aliceSleep = new CommitmentBaseModel("alice_sleep", alice, {
     priority: 1,
     timeSlot: {
         from: 20,
         to: 10,
     },
-    onRun: (_, event) => {
-        event.navigate(NARRATION_ROUTE);
-        narration.jump(TALK_SLEEP_LABEL_KEY, event);
+    onRun: async (_, event) => {
+        await event.navigate(NARRATION_ROUTE);
+        await narration.jump(TALK_SLEEP_LABEL_KEY, event);
     },
 });
 
-export const aliceGoSchool = new CommitmentBaseModel("alice_go_school", alice, classRoom, {
-    timeSlot: {
-        from: 8,
-        to: 14,
-    },
-    priority: 2,
-});
-
-RegisteredCommitments.add([aliceSleep, aliceGoSchool]);
+RegisteredCommitments.add([aliceSleep]);
 ```
 
 ### В ходе игры
 
-You can also add a commitment to your routine during gameplay. This feature is useful if you want to temporarily add a commitment. The list of tasks added this way will be included in your game saves.
+You can also link a commitment to a room during the game. This feature is useful if you want to temporarily add a commitment. The list of routine added this way will be included in your game saves.
 
-To add a commitment to your routine during gameplay, you can use the `routine.add` method.
+To link a commitment to a room during the game, you can use the `addCommitment` method.
 
-```ts tab="Typescript" title="index.ts" groupId="narrative_language"
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+import { newLabel, showImageContainer } from "@drincs/pixi-vn";
 import { aliceSmokes } from "../routine";
-import { routine } from "@drincs/nqtr";
+import { terrace } from "../rooms";
 
-routine.add(aliceSmokes);
+const startLabel = newLabel("start", [
+    async () => {
+        terrace.addCommitment(aliceSmokes); // [!code focus]
+    },
+]);
+export default startLabel;
 ```
 
-```ink tab="ink" title="index.ink"
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+== start ==
 // {alice_smokes} is the id of the commitment
-# add routine {alice_smokes}
+# add routine {alice_smokes} in terrace
 ```
 
 ```ts tab="values/routine.ts"
@@ -157,23 +159,22 @@ import { narration } from "@drincs/pixi-vn";
 import { NARRATION_ROUTE } from "../constans";
 import { aliceTalkMenuLabel } from "../labels/variousActionsLabels";
 import { alice } from "./characters";
-import { terrace } from "./rooms";
 
-const aliceSmokes = new CommitmentBaseModel("alice_smokes", alice, terrace, {
+export const aliceSmokes = new CommitmentBaseModel("alice_smokes", alice, {
     timeSlot: {
         from: 10,
         to: 20,
     },
-    onRun: (_, event) => {
-        event.navigate(NARRATION_ROUTE);
-        narration.jump(aliceTalkMenuLabel, event);
+    onRun: async (_, event) => {
+        await event.navigate(NARRATION_ROUTE);
+        await narration.jump(aliceTalkMenuLabel, event);
     },
 });
 
 RegisteredCommitments.add([aliceSmokes]);
 ```
 
-## Remove
+## Unlink
 
 To remove a commitment from your routine, you can use the `routine.remove` method. This will remove the commitment from the game and it will not be saved in the game saves.
 
