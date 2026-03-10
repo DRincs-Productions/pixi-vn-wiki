@@ -176,7 +176,11 @@ RegisteredCommitments.add([aliceSmokes]);
 
 ## Unlink
 
-To remove a commitment from your routine, you can use the `routine.remove` method. This will remove the commitment from the game and it will not be saved in the game saves.
+To detach a `commitment` from a `room`, you must first consider how it was linked.
+
+If it was linked during the game initialization, it cannot be removed. However, you can add another `commitment` with the same character at the same time slot, so the character will be occupied with the new `commitment` and therefore will no longer be present in the previous `room`. By default, priority is given to the `commitment` added during gameplay over the one added during initialization, but this behavior can be modified using the `priority` property.
+
+If it was linked during gameplay, it can be removed using the `removeCommitment` method.
 
 ```ts tab="Typescript" title="index.ts" groupId="narrative_language"
 import { aliceSmokes } from "../routine";
@@ -250,33 +254,33 @@ To create a property that stores its value in the game storage, you can create [
 
 ```ts tab="models/nqtr/Commitment.ts"
 import {
+    ActiveScheduling,
     CommitmentInterface,
     CommitmentStoredClass,
     CommitmentStoredClassProps,
+    OnRunAsyncFunction,
     OnRunEvent,
     OnRunProps,
-    RoomInterface,
 } from "@drincs/nqtr";
 import { CharacterInterface } from "@drincs/pixi-vn";
-import { ReactElement } from "react";
+import { PixiUIParam, PixiUIProp, ReactUIParam, ReactUIProp } from "./ui-elements";
 
 export default class Commitment extends CommitmentStoredClass implements CommitmentInterface {
     constructor(
         id: string,
         characters: CharacterInterface | CharacterInterface[],
-        room: RoomInterface,
         props: {
             name?: string;
-            image?: string | ContainerChild | ((props: Commitment, runProps: OnRunProps) => ContainerChild);
-            background?: string | ContainerChild | ((props: Commitment, runProps: OnRunProps) => ContainerChild);
-            icon?: ReactElement | ((props: Commitment, runProps: OnRunProps) => ReactElement);
+            image?: PixiUIParam<Commitment>;
+            background?: PixiUIParam<Commitment>;
+            icon?: ReactUIParam<Commitment>;
             onRun?: OnRunEvent<CommitmentInterface>;
             disabled?: boolean | (() => boolean);
             hidden?: boolean | (() => boolean);
-        } & CommitmentStoredClassProps
+        } & CommitmentStoredClassProps,
     ) {
         characters = Array.isArray(characters) ? characters : [characters];
-        super(id, characters, room, props.onRun, props);
+        super(id, characters, props.onRun, props);
         this.name = props.name || "";
         this._image = props.image;
         this._background = props.background;
@@ -285,24 +289,24 @@ export default class Commitment extends CommitmentStoredClass implements Commitm
         this._defaultHidden = props.hidden || false;
     }
     readonly name: string;
-    private readonly _image?: string | ContainerChild | ((props: Commitment, runProps: OnRunProps) => ContainerChild);
-    get sprite(): string | ContainerChild | ((props: OnRunProps) => ContainerChild) | undefined {
+    private readonly _image?: PixiUIParam<Commitment>;
+    get sprite(): PixiUIProp | undefined {
         const image = this._image;
         if (typeof image === "function") {
             return (runProps: OnRunProps) => image(this, runProps);
         }
         return image;
     }
-    private readonly _background?: string | ContainerChild | ((props: Commitment, runProps: OnRunProps) => ContainerChild);
-    get background(): string | ContainerChild | ((props: OnRunProps) => ContainerChild) | undefined {
+    private readonly _background?: PixiUIParam<Commitment>;
+    get background(): PixiUIProp | undefined {
         const background = this._background;
         if (typeof background === "function") {
             return (runProps: OnRunProps) => background(this, runProps);
         }
         return background;
     }
-    private readonly _icon?: ReactElement | ((props: Commitment, runProps: OnRunProps) => ReactElement);
-    get icon(): ReactElement | ((props: OnRunProps) => ReactElement) | undefined {
+    private readonly _icon?: ReactUIParam<Commitment>;
+    get icon(): ReactUIProp | undefined {
         const icon = this._icon;
         if (typeof icon === "function") {
             return (runProps: OnRunProps) => icon(this, runProps);
@@ -331,11 +335,17 @@ export default class Commitment extends CommitmentStoredClass implements Commitm
     set hidden(value: boolean) {
         this.setStorageProperty("hidden", value);
     }
-    override get isActive(): boolean {
+    override isActive(options?: ActiveScheduling): boolean {
         if (this.hidden) {
             return false;
         }
-        return super.isActive;
+        return super.isActive(options);
+    }
+    override get run(): OnRunAsyncFunction {
+        return async (runProps: OnRunProps) => {
+            await runProps.invalidateInterfaceData(200);
+            return await super.run(runProps);
+        };
     }
 }
 ```
@@ -353,15 +363,15 @@ declare module "@drincs/nqtr" {
         /**
          * The sprite of the commitment.
          */
-        readonly sprite?: string | ContainerChild | ((props: OnRunProps) => ContainerChild);
+        readonly sprite?: PixiUIProp;
         /**
          * The background of the commitment.
          */
-        readonly background?: string | ContainerChild | ((props: OnRunProps) => ContainerChild);
+        readonly background?: PixiUIProp;
         /**
          * The React icon of the commitment.
          */
-        readonly icon?: ReactElement | ((props: OnRunProps) => ReactElement);
+        readonly icon?: ReactUIProp;
         /**
          * Whether is disabled.
          */
