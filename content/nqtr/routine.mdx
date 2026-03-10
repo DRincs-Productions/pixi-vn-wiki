@@ -130,20 +130,27 @@ RegisteredCommitments.add([aliceSleep]);
 
 ### During the game
 
-You can also add a commitment to your routine during gameplay. This feature is useful if you want to temporarily add a commitment. The list of tasks added this way will be included in your game saves.
+You can also link a commitment to a room during the game. This feature is useful if you want to temporarily add a commitment. The list of routine added this way will be included in your game saves.
 
-To add a commitment to your routine during gameplay, you can use the `routine.add` method.
+To link a commitment to a room during the game, you can use the `addCommitment` method.
 
-```ts tab="Typescript" title="index.ts" groupId="narrative_language"
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+import { newLabel, showImageContainer } from "@drincs/pixi-vn";
 import { aliceSmokes } from "../routine";
-import { routine } from "@drincs/nqtr";
+import { terrace } from "../rooms";
 
-routine.add(aliceSmokes);
+const startLabel = newLabel("start", [
+    async () => {
+        terrace.addCommitment(aliceSmokes); // [!code focus]
+    },
+]);
+export default startLabel;
 ```
 
-```ink tab="ink" title="index.ink"
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+== start ==
 // {alice_smokes} is the id of the commitment
-# add routine {alice_smokes}
+# add routine {alice_smokes} in terrace
 ```
 
 ```ts tab="values/routine.ts"
@@ -152,9 +159,8 @@ import { narration } from "@drincs/pixi-vn";
 import { NARRATION_ROUTE } from "../constans";
 import { aliceTalkMenuLabel } from "../labels/variousActionsLabels";
 import { alice } from "./characters";
-import { terrace } from "./rooms";
 
-const aliceSmokes = new CommitmentBaseModel("alice_smokes", alice, terrace, {
+export const aliceSmokes = new CommitmentBaseModel("alice_smokes", alice, {
     timeSlot: {
         from: 10,
         to: 20,
