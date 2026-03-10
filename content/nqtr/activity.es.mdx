@@ -31,12 +31,14 @@ To create a new instance of `ActivityBaseModel`, you need the following paramete
 ```ts tab="values/activities.ts"
 import { ActivityBaseModel, RegisteredActivities, timeTracker } from "@drincs/nqtr";
 import { narration } from "@drincs/pixi-vn";
+import { NARRATION_ROUTE } from "../constans";
 import { napLabel, sleepLabel } from "../labels/sleepNapLabels";
-import { orderProductLabel, takeKeyLabel } from "../labels/variousActionsLabels";
+import { ORDER_PRODUCT_LABEL_KEY, TAKE_KEY_LABEL_KEY } from "../labels/variousActionsLabelKeys";
 
 export const bed = new ActivityBaseModel(
     "bed",
     async (_, props) => {
+        await props.navigate(NARRATION_ROUTE);
         if (timeTracker.nowIsBetween(5, 22)) {
             await narration.jump(napLabel, props);
         } else {
@@ -45,23 +47,29 @@ export const bed = new ActivityBaseModel(
     },
     {
         name: "bed",
-    }
+    },
 );
 
 export const orderProduct = new ActivityBaseModel(
     "order_product",
-    async (_, props) => await narration.jump(orderProductLabel, props),
+    async (_, props) => {
+        await props.navigate(NARRATION_ROUTE);
+        await narration.jump(ORDER_PRODUCT_LABEL_KEY, props);
+    },
     {
         name: "order_product",
-    }
+    },
 );
 
-export const takeProduct = new ActivityBaseModel(
+export const takeProduct = new Activity(
     "take_product",
-    async (_, props) => await narration.jump(takeKeyLabel, props),
+    async (_, props) => {
+        await props.navigate(NARRATION_ROUTE);
+        await narration.jump(TAKE_KEY_LABEL_KEY, props);
+    },
     {
         name: "take_product",
-    }
+    },
 );
 
 RegisteredActivities.add([bed, orderProduct, takeProduct]);
@@ -79,7 +87,9 @@ You can also create a function to load `activities`. The important thing is that
 
 ## Link
 
-To link an activity to a <DynamicLink href="/nqtr/navigation">navigation element</DynamicLink>, you have two options:
+For an `activity` to be available to the player, it must be linked to a <DynamicLink href="/nqtr/navigation">navigation element</DynamicLink>. The relationship between an `activity` and a navigation element is many-to-many, meaning that an `activity` can be linked to multiple navigation elements and a navigation element can have multiple `activities` associated with it.
+
+There are two ways to do this:
 
 ### During game initialization
 
@@ -93,7 +103,7 @@ import { mcHome } from "./locations";
 export const mcRoom = new RoomBaseModel("mc_room", mcHome, {
     name: "MC room",
     image: "location_myroom",
-    activities: [bed],
+    activities: [bed], // [!code ++]
 });
 
 RegisteredRooms.add([mcRoom]);
@@ -255,8 +265,16 @@ Now you can create a class `Activity` that extends `ActivityStoredClass` and imp
 To create a property that stores its value in the game storage, you can create [Getters/Setters](https://www.typescriptlang.org/docs/handbook/2/classes.html#getters--setters) and use the `this.getStorageProperty()` / `this.setStorageProperty()` methods. (See the file `Activity.ts`)
 
 ```ts tab="models/nqtr/Activity.ts"
-import { ActivityInterface, ActivityStoredClass, ActivityStoredClassProps, OnRunEvent, OnRunProps } from "@drincs/nqtr";
-import { ReactElement } from "react";
+import {
+    ActiveScheduling,
+    ActivityInterface,
+    ActivityStoredClass,
+    ActivityStoredClassProps,
+    OnRunEvent,
+    OnRunProps,
+} from "@drincs/nqtr";
+import { PixiUIParam, PixiUIProp, ReactUIParam, ReactUIProp } from "./ui-elements";
+import { OnRunAsyncFunction } from "@drincs/nqtr";
 
 export default class Activity extends ActivityStoredClass implements ActivityInterface {
     constructor(
@@ -264,11 +282,11 @@ export default class Activity extends ActivityStoredClass implements ActivityInt
         onRun: OnRunEvent<ActivityInterface>,
         props: {
             name?: string;
-            sprite?: string | ContainerChild | ((props: Activity, runProps: OnRunProps) => ContainerChild);
-            icon?: ReactElement | ((props: Activity, runProps: OnRunProps) => ReactElement);
+            sprite?: PixiUIParam<Activity>;
+            icon?: ReactUIParam<Activity>;
             disabled?: boolean | (() => boolean);
             hidden?: boolean | (() => boolean);
-        } & ActivityStoredClassProps
+        } & ActivityStoredClassProps,
     ) {
         super(id, onRun, props);
         this.name = props.name || "";
@@ -278,16 +296,16 @@ export default class Activity extends ActivityStoredClass implements ActivityInt
         this._defaultHidden = props.hidden || false;
     }
     readonly name: string;
-    private readonly _sprite?: string | ContainerChild | ((props: Activity, runProps: OnRunProps) => ContainerChild);
-    get sprite(): string | ContainerChild | ((props: OnRunProps) => ContainerChild) | undefined {
+    private readonly _sprite?: PixiUIParam<Activity>;
+    get sprite(): PixiUIProp | undefined {
         const sprite = this._sprite;
         if (typeof sprite === "function") {
             return (runProps: OnRunProps) => sprite(this, runProps);
         }
         return sprite;
     }
-    private readonly _icon?: ReactElement | ((props: Activity, runProps: OnRunProps) => ReactElement);
-    get icon(): ReactElement | ((props: OnRunProps) => ReactElement) | undefined {
+    private readonly _icon?: ReactUIParam<Activity>;
+    get icon(): ReactUIProp | undefined {
         const icon = this._icon;
         if (typeof icon === "function") {
             return (runProps: OnRunProps) => icon(this, runProps);
@@ -316,18 +334,24 @@ export default class Activity extends ActivityStoredClass implements ActivityInt
     set hidden(value: boolean) {
         this.setStorageProperty("hidden", value);
     }
-    override get isActive(): boolean {
+    override isActive(options?: ActiveScheduling): boolean {
         if (this.hidden) {
             return false;
         }
-        return super.isActive;
+        return super.isActive(options);
+    }
+    override get run(): OnRunAsyncFunction {
+        return async (runProps: OnRunProps) => {
+            await runProps.invalidateInterfaceData(200);
+            return await super.run(runProps);
+        };
     }
 }
 ```
 
 ```ts tab="nqtr.d.ts"
-import { ReactElement } from "react";
-import { ContainerChild } from "@drincs/pixi-vn";
+import { StepLabelProps } from "@drincs/pixi-vn";
+import { PixiUIProp, ReactUIProp } from "./models/nqtr/ui-elements";
 
 declare module "@drincs/nqtr" {
     interface ActivityInterface {
@@ -346,11 +370,11 @@ declare module "@drincs/nqtr" {
         /**
          * The sprite of the activity.
          */
-        readonly sprite?: string | ContainerChild | ((props: OnRunProps) => ContainerChild);
+        readonly sprite?: PixiUIProp;
         /**
          * The React icon of the activity.
          */
-        readonly icon?: ReactElement | ((props: OnRunProps) => ReactElement);
+        readonly icon?: ReactUIProp;
     }
 }
 ```
