@@ -259,4 +259,53 @@ export default startLabel;
 
 </Accordion>
 
+<Accordion title="queries" id="queries">
+
+To query the state of a quest, you can use the following properties and methods:
+
+`currentStageIndex`: the index of the current stage of the quest. It starts at `0` and goes up to `stages.length - 1`. If the quest is completed, it will be equal to `stages.length`.
+
+* `started`: a boolean that indicates whether the quest has been started or not.
+* `completed`: a boolean that indicates whether the quest has been completed or not.
+* `failed`: a boolean that indicates whether the quest has been failed or not.
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+import { newLabel } from "@drincs/pixi-vn";
+import { aliceQuest } from "../values/quests";
+
+const startLabel = newLabel("start", [
+    async () => {
+        await showImage(BACKGROUND_ID, "alice_terrace0At");
+        narration.dialogue = { character: alice, text: "Hi, what do you want to talk about?" };
+        let optionsMenu: StoredChoiceInterface[] = [];
+        if (aliceQuest.started) { // [!code focus]
+            optionsMenu.push(newChoiceOption("Quest started", startLabel, {}));
+        }
+        if (aliceQuest.completed) { // [!code focus]
+            optionsMenu.push(newChoiceOption("Quest completed", startLabel, {}));
+        }
+        if (aliceQuest.failed) { // [!code focus]
+            optionsMenu.push(newChoiceOption("Quest failed", startLabel, {}));
+        }
+        narration.choices = [...optionsMenu, newCloseChoiceOption("Cancel")];
+    },
+]);
+export default startLabel;
+```
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+//  {aliceQuest} the id of the quest
++ {aliceQuest_started} Quest started
+    -> start
++ {aliceQuest_completed} Quest completed
+    -> start
++ {aliceQuest_failed} Quest failed
+    -> start
++ Cancel
+    -> DONE
+```
+
+</Accordion>
+
 </Accordions>
