@@ -157,6 +157,35 @@ stepHistory.narrativeHistory; // [!code ++]
 
 ### Migration from v0.7.x to v0.8.0 (nqtr)
 
+<Callout title="ink" type="error">
+
+This version does not support save files created with previous versions if temporary `commitment` were used (i.e., if they were added using `routine.add`).
+
+To make the saves compatible, you need to modify the save file (remember that it is a JSON) by changing the `___nqtr-temporary_commitment___` variable from an array of strings (a list of `commitment` IDs) to an object with keys corresponding to the `commitment` IDs and values corresponding to an object containing `id` and `roomId` (the latter is required to identify the link between the `commitment` and the `room`).
+
+```json title="save.json"
+{
+    // ...
+    "___nqtr-temporary_commitment___": [ // [!code --]
+        "alice_sleep", // [!code --]
+        "alice_eat", // [!code --]
+    ], // [!code --]
+    "___nqtr-temporary_commitment___": { // [!code ++]
+        "alice_sleep": { // [!code ++]
+            "id": "alice_sleep", // [!code ++]
+            "roomId": "alice_room" // [!code ++]
+        }, // [!code ++]
+        "alice_eat": { // [!code ++]
+            "id": "alice_eat", // [!code ++]
+            "roomId": "alice_room" // [!code ++]
+        }, // [!code ++]
+    }, // [!code ++]
+    // ...
+}
+```
+
+</Callout>
+
 This document describes the changes that need to be made to your code to migrate from v0.7.x to v0.8.0.
 
 In this release, the way to link a `commitment` to a `room` has been changed. You can now define its routine directly inside the `room`. Therefore, instead of passing the `room` in the `commitment` constructor, you can define the routine directly in the `room` constructor.
