@@ -517,17 +517,20 @@ export default async function showWithDissolve(
     alias: string,
     component: ImageSprite,
     props: AnimationOptions = {},
-    priority?: UPDATE_PRIORITY
+    priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
     let { completeOnContinue = true, ...options } = props;
     // check if the alias is already exist // [!code ++]
     let oldComponentAlias: string | undefined = undefined; // [!code ++]
-    if (canvas.find(alias)) { // [!code ++]
+    let oldComponent = canvas.find(alias); // [!code ++]
+    if (oldComponent) { // [!code ++]
         oldComponentAlias = alias + "_temp_disolve"; // [!code ++]
         canvas.editAlias(alias, oldComponentAlias); // [!code ++]
     } // [!code ++]
     // add the new component and transfer the properties of the old component to the new component
-    canvas.add(alias, component)
+    canvas.add(alias, component);
+    oldComponent &&
+        oldComponent.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1); // [!code ++]
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias); // [!code ++]
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate"); // [!code ++]
     // edit the properties of the new component
@@ -542,7 +545,7 @@ export default async function showWithDissolve(
             ...options,
             completeOnContinue,
         },
-        priority
+        priority,
     );
     // load the image if the image is not loaded
     if (component.haveEmptyTexture) {
@@ -569,18 +572,21 @@ export default async function showWithDissolve(
     alias: string,
     component: ImageSprite,
     props: AnimationOptions = {},
-    priority?: UPDATE_PRIORITY
+    priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
     let { completeOnContinue = true, ...options } = props;
-    let res: string[] = []; // [!code ++]
     // check if the alias is already exist // [!code ++]
-    if (!canvas.find(alias)) { // [!code ++]
+    let oldComponentAlias: string | undefined = undefined; // [!code ++]
+    let oldComponent = canvas.find(alias); // [!code ++]
+    if (oldComponent) { // [!code ++]
         return showWithDissolve(alias, component, props, priority); // [!code ++]
     } // [!code ++]
     let oldComponentAlias = alias + "_temp_fade"; // [!code ++]
     canvas.editAlias(alias, oldComponentAlias); // [!code ++]
     // add the new component and transfer the properties of the old component to the new component // [!code ++]
     canvas.add(alias, component);
+    oldComponent &&
+        oldComponent.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1); // [!code ++]
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias); // [!code ++]
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate"); // [!code ++]
     // edit the properties of the new component
@@ -595,7 +601,7 @@ export default async function showWithDissolve(
             ...options,
             completeOnContinue,
         },
-        priority
+        priority,
     );
     if (id) { // [!code ++]
         // pause the ticker // [!code ++]
