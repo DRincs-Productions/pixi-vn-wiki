@@ -462,13 +462,14 @@ Creating your own transition is simple: use <DynamicLink href="/start/canvas-mot
 To help you get started, here is a simplified version of [`showWithDissolve`](#dissolve):
 
 ```ts title="canvas/transitions/showWithDissolve.ts"
-import { AnimationOptions, canvas, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn";
+import { canvas, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn";
+import { AnimationOptions } from "@drincs/pixi-vn/motion";
 
 export default async function showWithDissolve(
     alias: string,
     component: ImageSprite,
     props: AnimationOptions = {},
-    priority?: UPDATE_PRIORITY
+    priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
     let { completeOnContinue = true, ...options } = props;
     // add the new component
@@ -485,7 +486,7 @@ export default async function showWithDissolve(
             ...options,
             completeOnContinue,
         },
-        priority
+        priority,
     );
     // load the image if the image is not loaded
     if (component.haveEmptyTexture) {
@@ -509,23 +510,27 @@ If a component with the same alias already exists, you can let it be replaced, o
 To remove the previous component when the new component's transition is complete, use the <DynamicLink href="/start/canvas-motion">`aliasToRemoveAfter` property</DynamicLink>.
 
 ```ts title="canvas/transitions/showWithDissolve.ts"
-import { AnimationOptions, canvas, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn";
+import { canvas, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn";
+import { AnimationOptions } from "@drincs/pixi-vn/motion";
 
 export default async function showWithDissolve(
     alias: string,
     component: ImageSprite,
     props: AnimationOptions = {},
-    priority?: UPDATE_PRIORITY
+    priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
     let { completeOnContinue = true, ...options } = props;
     // check if the alias is already exist // [!code ++]
     let oldComponentAlias: string | undefined = undefined; // [!code ++]
-    if (canvas.find(alias)) { // [!code ++]
+    let oldComponent = canvas.find(alias); // [!code ++]
+    if (oldComponent) { // [!code ++]
         oldComponentAlias = alias + "_temp_disolve"; // [!code ++]
         canvas.editAlias(alias, oldComponentAlias); // [!code ++]
     } // [!code ++]
     // add the new component and transfer the properties of the old component to the new component
-    canvas.add(alias, component)
+    canvas.add(alias, component);
+    oldComponent &&
+        oldComponent.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1); // [!code ++]
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias); // [!code ++]
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate"); // [!code ++]
     // edit the properties of the new component
@@ -540,7 +545,7 @@ export default async function showWithDissolve(
             ...options,
             completeOnContinue,
         },
-        priority
+        priority,
     );
     // load the image if the image is not loaded
     if (component.haveEmptyTexture) {
@@ -560,24 +565,28 @@ export default async function showWithDissolve(
 To remove the previous component with a transition, run another animation with <DynamicLink href="/start/canvas-motion">`canvas.animate`</DynamicLink> and use the <DynamicLink href="/start/canvas-motion">`tickerIdToResume` property</DynamicLink>.
 
 ```ts title="canvas/transitions/showWithFade.ts"
-import { AnimationOptions, canvas, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn";
+import { canvas, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn";
+import { AnimationOptions } from "@drincs/pixi-vn/motion";
 
 export default async function showWithDissolve(
     alias: string,
     component: ImageSprite,
     props: AnimationOptions = {},
-    priority?: UPDATE_PRIORITY
+    priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
     let { completeOnContinue = true, ...options } = props;
-    let res: string[] = []; // [!code ++]
     // check if the alias is already exist // [!code ++]
-    if (!canvas.find(alias)) { // [!code ++]
+    let oldComponentAlias: string | undefined = undefined; // [!code ++]
+    let oldComponent = canvas.find(alias); // [!code ++]
+    if (oldComponent) { // [!code ++]
         return showWithDissolve(alias, component, props, priority); // [!code ++]
     } // [!code ++]
     let oldComponentAlias = alias + "_temp_fade"; // [!code ++]
     canvas.editAlias(alias, oldComponentAlias); // [!code ++]
     // add the new component and transfer the properties of the old component to the new component // [!code ++]
     canvas.add(alias, component);
+    oldComponent &&
+        oldComponent.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1); // [!code ++]
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias); // [!code ++]
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate"); // [!code ++]
     // edit the properties of the new component
@@ -592,7 +601,7 @@ export default async function showWithDissolve(
             ...options,
             completeOnContinue,
         },
-        priority
+        priority,
     );
     if (id) { // [!code ++]
         // pause the ticker // [!code ++]
