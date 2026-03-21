@@ -1,0 +1,113 @@
+---
+title: 存储
+description: 如何在Pixi’VN存储、检索与管理持久化及临时变量，包括Keyv集成。
+---
+
+**什么是游戏存储？** 游戏存储是一个可以保存你希望在不同游戏会话之间保留的变量的地方。
+
+必须要明确的是，如果变量没能保存在游戏内存中，那么当你<DynamicLink href="/start/save#load">加载存档</DynamicLink>或<DynamicLink href="/start/labels-flow#go-back">返回</DynamicLink>的时候，引擎将会无法处理这些变量。
+
+此外，在游戏存档中，你可以保存除了类（class）与函数（function）之外的任何类型的变量（因为它们无法转换为JSON），例如：字符串（string）、数字（`number`）、布尔值（`boolean`）、对象（`object`）、数组（`array`），等等。 如果你想保存“标志”（flags，布尔值），建议使用<DynamicLink href="/start/flags">flags</DynamicLink>功能，一个相当高性能的标志管理系统。
+
+<Callout title="ink" type="info">
+
+此方法可以与_ink_语法一起使用。 在<DynamicLink href="/ink/storage">这里</DynamicLink>查看更多。
+
+</Callout>
+
+## 设置
+
+要在游戏存储中设置变量，请使用`storage.set`。 该函数具有以下参数：
+
+- `name`：要设置的变量名称。
+- `value`：要设置的变量的值。
+
+```typescript
+import { storage } from '@drincs/pixi-vn'
+
+storage.set("myVariable", 42);
+```
+
+## 获取
+
+要从游戏存储中获取变量，请使用`storage.get`。 该函数具有以下参数：
+
+- `name`：要获取的变量名称。
+
+```typescript
+import { storage } from '@drincs/pixi-vn'
+
+const myVariable = storage.get("myVariable");
+```
+
+## 移除
+
+要从游戏存储中移除变量，请使用`storage.remove`。 该函数具有以下参数：
+
+- `name`：要移除的变量名称。
+
+```typescript
+import { storage } from '@drincs/pixi-vn'
+
+storage.remove("myVariable");
+```
+
+## 其他功能
+
+<Accordions>
+
+<Accordion title="system_variables" id="system-variables">
+
+在游戏存储中，有一些系统变量被游戏引擎使用。 所有的系统变量都以 ___ 前缀开头。
+因此，请避免在变量中使用此前缀。
+
+可以从SYSTEM_RESERVED_STORAGE_KEYS常量中获取所有系统变量的键名。
+
+![keyv-h2](/keyv.svg)
+
+</Accordion>
+
+<Accordion title="keyv" id="keyv">
+
+整个存储系统是使用`Map`（一种原生 JavaScript 对象）开发的，因此您可以使用Keyv与游戏存储进行交互。
+
+**什么是 Keyv？** Keyv是一个简单的键值存储。 它是个非常易于使用的系统，并且在Node.js社区中十分流行。 Keyv可以与其他库结合使用，例如[Cacheable](https://cacheable.org/)（基于Keyv的 Node.js 缓存库）。 你可以在[Keyv官网](https://keyv.org/)上了解更多信息。
+
+**如何在Pixi’VN中使用Keyv？** 你可以创建一个新的Keyv实例，并将storage对象作为参数传递。
+
+```typescript
+import { storage } from '@drincs/pixi-vn'
+import Keyv from 'keyv';
+
+const keyvStorage = new Keyv({ store: storage.storage });
+
+keyvStorage.get<string>("myValue").then((value) => {
+    console.log(value);
+});
+```
+
+</Accordion>
+
+<Accordion title="default_storage_variables" id="default-storage-variables">
+
+你可以设置存储变量的初始值。
+
+这些变量将会具有以下特性：
+
+- 如果它们被移除或设置为undefined或null，则该值将会被自动重置为默认值（因此它们永远都不会是undefined或null）。
+- 默认值不会被保存在存档中，所以你可以毫无问题地在不同版本之间更改它们。
+
+你可以使用storage.default对象来设置默认存储变量。
+
+```typescript
+import { storage } from '@drincs/pixi-vn'
+
+storage.default = {
+    myVariable: 42,
+    anotherVariable: "你好，世界！"
+};
+```
+
+</Accordion>
+
+</Accordions>

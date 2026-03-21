@@ -1,0 +1,219 @@
+---
+title: 快速开始
+description: 开始使用 Pixi’VN
+---
+
+您可以通过[初始化一个新项目](#project-initialization)或在现有项目中[安装该包](#installation)来开始使用 Pixi’VN。
+
+## 前提条件
+
+在开始之前，您必须安装以下工具：
+
+- [Node.js](https://nodejs.org/) 版本 18 或更高。
+- 支持 TypeScript 的文本编辑器，例如：
+  - [Visual Studio Code](https://code.visualstudio.com/)
+  - [Cursor](https://www.cursor.com/)
+  - [VSCodium](https://vscodium.com/)
+- （推荐）[Git](https://git-scm.com/)
+  - 一个 [GitHub 账号](https://github.com/)
+
+## 项目初始化
+
+如果您想从一个新项目开始，可以使用以下命令来通过 Pixi’VN 模板初始化项目：
+
+```sh tab="npm"
+npm create pixi-vn@latest
+```
+
+```sh tab="yarn"
+yarn create pixi-vn
+```
+
+```sh tab="pnpm"
+pnpm create pixi-vn
+```
+
+```sh tab="bun"
+bun create pixi-vn
+```
+
+```sh tab="deno"
+deno init --npm pixi-vn
+```
+
+您可以在 <DynamicLink href="/start/templates">此处</DynamicLink> 查看可用模板和交互式演示。
+
+项目初始化完成后，使用您的文本编辑器（推荐 VSCode）打开项目目录并开始开发。
+
+所有模板都包含一个 `README.md` 文件，其中包含有关项目的更多信息。
+
+## 安装
+
+要在现有的 JavaScript 项目中安装 Pixi’VN 包，请使用以下任一命令：
+
+```sh tab="npm"
+npm install @drincs/pixi-vn
+```
+
+```sh tab="yarn"
+yarn add @drincs/pixi-vn
+```
+
+```sh tab="pnpm"
+pnpm add @drincs/pixi-vn
+```
+
+```sh tab="bun"
+bun add @drincs/pixi-vn
+```
+
+```sh tab="deno"
+deno install npm:@drincs/pixi-vn
+```
+
+<Accordions>
+
+<Accordion title="cdn_version" id="cdn-installation">
+
+您还可以使用此插件的 CDN 版本：
+
+```html tab="script tag" title="index.html"
+<script src="https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@<version>/+esm"></script>
+```
+
+```html tab="map import" title="index.html"
+<script type="importmap">
+  { "imports": {
+      "@drincs/pixi-vn@<version>":        "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn/+esm"
+  } }
+</script>
+```
+
+```js tab="js import" title="index.js"
+import pixivn from "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@<version>/+esm";
+```
+
+<iframe src="https://codepen.io/BlackRam-oss/embed/oNrqgNd?default-tab=js%2Cresult"
+  height="300"
+  style={{
+    width: "100%",
+  }}
+  title="Pixi’VN"
+  loading="lazy"
+  allowFullScreen={true}
+/>
+
+</Accordion>
+
+<Accordion title="vite_js_plugin" id="vite-plugin">
+
+为了获得更好的开发体验，请使用 Vite 插件。
+
+此插件提供以下功能：
+
+- 用于管理角色、`labels` 和资源清单的端点。
+  - `GET /pixi-vn/characters` - 获取已注册的角色列表。
+  - `POST /pixi-vn/characters` - 更新角色列表。
+  - 获取已注册的 labels 列表。
+  - `POST /pixi-vn/labels` - 更新已注册的 `labels` 列表。
+  - `GET /pixi-vn/assets/manifest` - 获取资源清单。
+  - `POST /pixi-vn/assets/manifest` - 更新资源清单。
+
+```ts tab="vite.config.ts"
+import { defineConfig } from 'vite'
+import { vitePluginPixivn } from "@drincs/pixi-vn/vite";
+export default defineConfig({
+  // ...
+  plugins: [
+    // other plugins...
+    vitePluginPixivn()
+  ]
+})
+```
+
+```ts tab="main.ts"
+import { setupPixivnViteData } from "@drincs/pixi-vn/vite-listener"; // [!code focus]
+
+await Promise.all([import("./values"), import("./labels")]);
+await Promise.all([initializeIndexedDB(), defineAssets(), useI18n()]);
+setupPixivnViteData(); // [!code focus]
+```
+
+</Accordion>
+
+</Accordions>
+
+### 初始化
+
+在使用 Pixi’VN 引擎之前，必须初始化游戏。 您可以通过调用 `Game.init` 方法来实现。
+
+该函数具有以下参数：
+
+- `element`: 要附加 canvas 的 HTML 元素。
+- `options`: 与初始化 [PixiJS 应用程序](https://pixijs.com/8.x/guides/basics#creating-an-application) 时使用的选项相同。 此外，还支持以下选项：
+  - `id`：分配给 canvas 元素的 ID。
+  - `resizeMode`：使用的调整大小模式。 可能的值：
+    - `none`：不调整大小。
+    - `contain`：canvas 将调整大小以适应父元素，同时保持宽高比。 （默认）
+- `devtoolsOptions`: 与初始化 <DynamicLink href="/start/canvas#use-pixijs-devtools-with-pixivn">PixiJS Devtools</DynamicLink> 时使用的选项相同。
+
+```ts title="src/main.tsx"
+import { Game } from "@drincs/pixi-vn";
+
+// Canvas setup with PIXI
+const body = document.body
+if (!body) {
+    throw new Error('body element not found')
+}
+
+Game.init(body, {
+    height: 1080,
+    width: 1920,
+    backgroundColor: "#303030",
+}).then(() => {
+    // ...
+});
+
+// read more here: https://pixi-vn.web.app/start/other-narrative-features.html#how-manage-the-end-of-the-game
+Game.onEnd(async (props) => {
+    Game.clear();
+    props.navigate("/");
+});
+
+Game.onError((type, error, { notify }) => {
+    notify("allert_error_occurred");
+});
+```
+
+```html title="index.html"
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
+```
+
+```css title="styles.css"
+:root {
+  background-color: #242424;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  overflow: hidden;
+}
+```

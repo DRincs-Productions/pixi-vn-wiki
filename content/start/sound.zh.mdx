@@ -1,0 +1,96 @@
+---
+title: 声音与音乐
+---
+
+声音模块是对[PixiJS Sound](https://github.com/pixijs/sound)库的封装。 其提供了一个简单的接口，用于播放声音，并且会在每一个<DynamicLink href="/start/labels">步骤（step）</DynamicLink>中自动保存当前状态。
+
+## 添加和播放
+
+创建声音很简单。 你也可以直接使用PIXI.sound库的方法（`add`,`play`）来添加和播放声音。
+
+```typescript
+import { sound } from '@drincs/pixi-vn'
+
+// 示例1：创建简单声音，并循环播放
+sound.add('bird', 'resources/bird.mp3');
+sound.play('bird', {
+    loop: true,
+});
+
+// 示例2：与上面是一样的，但使用声音对象
+let s = sound.add('bird', 'resources/bird.mp3');
+s.play({
+    loop: true,
+});
+
+// 示例3：创建时配置循环属性，然后播放
+let s = sound.add('bird', {
+    url: 'resources/bird.mp3',
+    loop: true,
+});
+s.play();
+```
+
+## 暂停和恢复
+
+你可以暂停与恢复某个声音的播放。
+
+```typescript
+import { sound } from '@drincs/pixi-vn'
+
+let s = sound.add('bird', 'resources/bird.mp3');
+s.play();
+s.pause();
+s.resume();
+```
+
+## 停止
+
+你可以停止声音播放。
+
+```typescript
+import { sound } from '@drincs/pixi-vn'
+
+let s = sound.add('bird', 'resources/bird.mp3');
+s.play();
+s.stop();
+```
+
+## 音量
+
+可以在创建对象时通过构造函数初始设置音量。
+
+```typescript
+import { sound } from '@drincs/pixi-vn'
+
+let s = sound.add('bird', {
+    url: 'resources/bird.mp3',
+    volume: 0.5,  // 初始音量 50%
+});
+s.play();
+```
+
+也可以通过修改`volume`属性来动态设置音量：
+
+```typescript
+import { sound } from '@drincs/pixi-vn'
+
+let s = sound.add('bird', 'resources/bird.mp3');
+s.volume = 0.5;
+s.play();
+```
+
+## 音频滤镜
+
+你可以为声音添加音频滤镜（效果器）。
+
+```typescript
+import { sound, filters } from '@drincs/pixi-vn'
+
+let s = sound.add('bird', 'resources/bird.mp3');
+s.filters =  [
+    new filters.StereoFilter(),
+    new filters.ReverbFilter(9, 2)
+]
+s.play();
+```
