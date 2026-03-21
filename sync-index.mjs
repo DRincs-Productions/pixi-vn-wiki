@@ -11,8 +11,10 @@ export async function updateSearchIndexes() {
     }
 
     const content = await fs.readFile(".next/server/app/static.json.body");
-    const toString = content.toString().replace(/\/en\//g, "/");
-    const records = JSON.parse(toString);
+    const allRecords = JSON.parse(content.toString());
+    const records = allRecords
+        .filter((record) => record.url?.startsWith("/en/"))
+        .map((record) => ({ ...record, url: record.url.replace(/^\/en\//, "/") }));
 
     const manager = new CloudManager({ api_key: apiKey });
 
