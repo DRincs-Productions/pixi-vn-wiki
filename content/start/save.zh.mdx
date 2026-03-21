@@ -1,29 +1,29 @@
 ---
-title: Save and load
-description: This page explains how to implement saving and loading game progress in Pixi’VN, including file export, IndexedDB usage, and auto-save strategies for browser games.
+title: 存档与读档
+description: 介绍如何在 Pixi'VN 中实现游戏进度保存与加载，涵盖文件导出、IndexedDB使用，以及网页游戏的自动存档策略。
 ---
 
 <Callout type="info" title="Templates">
 
-The `createGameSave` and `loadSave` functions are already implemented in all templates. See `utils/save-utility.ts`.
+所有官方模板均已内置`createGameSave`与`loadSave`函数。 具体实现可参考`utils/save-utility.ts`。
 
 </Callout>
 
-Saving and loading is a core feature that lets players save their progress and continue later. This is essential for visual novels, allowing players to resume the story from where they left off.
+存档与读档是视觉小说的核心功能之一——它让玩家能随时保存进度，并在之后继续体验故事。 对于篇幅较长、分支丰富的作品而言，这一功能几乎是必不可少的。
 
-## Create
+## 创建存档
 
-To create a save, use `Game.exportGameState()`. This returns an object with the game data, which you can store in a file or database.
+要创建新的存档，使用`Game.exportGameState()`。 该方法会返回一个包含当前游戏状态的对象，你可将其保存为文件或写入数据库。
 
-Tip: Add extra info to your save file, such as the save name, creation date, and a screenshot of the current game state.
+实用建议：为存档文件添加额外信息，如存档名称、创建时间，以及当前游戏画面的截图，能显著提升玩家的管理体验。
 
 <Callout title="Templates" type="info">
 
-To generate an image, use `canvas.extractImage()`. This returns a base64 string of the current canvas, which you can use as a screenshot.
+要生成缩略图，使用`canvas.extractImage()`。 它会返回当前画布的 base64 字符串，可直接用作存档预览图。
 
 </Callout>
 
-For example:
+例如：
 
 ```ts tab="utils/save-utility.ts"
 import { Game } from "@drincs/pixi-vn";
@@ -53,14 +53,14 @@ export default interface GameSaveData {
 }
 ```
 
-## Load
+## 读取存档
 
-To load a save, use `Game.restoreGameState`. 该函数具有以下参数：
+要加载存档时，使用`Game.restoreGameState()`。 该函数具有以下参数：
 
-- `saveData`: The save data object to restore the game state.
-- `navigate`: <DynamicLink href="/start/interface-navigate">A function to navigate to a specific route</DynamicLink> after loading the save.
+- `saveData`：要恢复的存档数据对象。
+- `navigate`：加载完成后跳转至<DynamicLink href="/start/interface-navigate">指定路由的函数</DynamicLink>。
 
-For example:
+例如：
 
 ```ts tab="utils/save-utility.ts"
 import { Game } from "@drincs/pixi-vn";
@@ -79,9 +79,9 @@ export async function loadSave(saveData: GameSaveData, navigate: NavigateFunctio
 
 <Accordion title="generate_file" id="generate-file">
 
-You can export the save data to a file for backup or sharing.
+你可以将存档数据导出为JSON文件，方便玩家备份或分享进度。
 
-For example:
+例如：
 
 ```ts tab="utils/save-utility.ts"
 import { NavigateFunction } from "react-router-dom";
@@ -135,9 +135,9 @@ export function loadGameSaveFromFile(navigate: NavigateFunction, afterLoad?: () 
 
 <Accordion title="indexeddb" id="indexeddb">
 
-**What is IndexedDB?** IndexedDB is a browser API for storing large amounts of structured data, including files/blobs. It lets you save and load game states efficiently.
+什么是**IndexedDB**？IndexedDB 是一种浏览器原生提供的 API，用于在本地存储大量结构化数据——包括文件、二进制大对象（Blobs）等。借助它，你可以高效地保存与读取游戏状态，无需依赖服务器，特别适合网页游戏的离线存档、进度持久化等场景 。
 
-For example:
+例如：
 
 ```ts tab="utils/save-utility.ts"
 import { canvas } from "@drincs/pixi-vn";
@@ -401,9 +401,9 @@ export async function getListFromIndexDB<T extends {}>(
 
 Since it is possible to create browser games, the problem of losing the last state of the game after accidentally closing the browser is common.
 
-To prevent this, you can generate a timely save when closing the game and automatically load it when you reopen it.
+为避免这一问题，你可以在游戏即将关闭时自动触发一次临时存档，并在玩家重新打开游戏时自动加载该存档，实现「无感续玩」。
 
-For example:
+例如：
 
 ```ts tab="hooks/useClosePageDetector.ts"
 import { useQueryClient } from "@tanstack/react-query";
