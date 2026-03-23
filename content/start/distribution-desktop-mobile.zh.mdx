@@ -1,33 +1,34 @@
 ---
-title: Desktop & mobile devices
-description: Learn how to distribute your game for desktop and mobile platforms using Tauri and GitHub Actions.
+title: 桌面与移动设备分发
+description: 学习如何使用Tauri 和 GitHub Actions将游戏分发到桌面和移动平台。
 ---
 
-There are several ways to distribute your game for desktop and mobile platforms. Common choices include [Tauri](https://v2.tauri.app/), [Ionic](https://ionicframework.com/), [Electron](https://www.electronjs.org/), [NW.js](https://nwjs.io/), and [React Native for Windows + Mac](https://microsoft.github.io/react-native-windows/).
+将游戏分发到桌面和移动平台有多种方式。 常见选择包括Tauri、Ionic、Electron、NW.js以及适用于Windows + Mac 的 React Native。
 
-If you don't want to manage a heavily customized native project, consider using the <DynamicLink href="/start#project-initialization">multi-device templates</DynamicLink>. Those templates include Tauri so you can develop a web app and also build desktop and mobile apps from the same codebase.
+如果你不想管理高度定制的原生项目，推荐使用多设备模板（multi-device templates）。
+ 这些模板已集成Tauri，允许你基于同一套代码库开发Web应用，并构建桌面与移动应用。
 
 ![tauri-h2](/tauri.svg)
 
 ## Tauri
 
-Tauri is a framework for building desktop and mobile applications with web technologies. It leverages **Rust** to produce secure, lightweight, and fast native binaries, while a WebView renders your HTML, CSS, and JavaScript.
+Tauri是一个使用Web技术构建桌面和移动应用的框架。 它利用**Rust**生成安全、轻量且快速的原生二进制文件，同时通过WebView渲染你的 HTML、CSS 和 JavaScript。
 
-Learn more on the [Tauri website](https://v2.tauri.app/).
+更多信息请参阅[Tauri官网](https://v2.tauri.app/)。
 
-## Distributing your game with Tauri
+## 使用Tauri分发游戏
 
-Creating releases manually for every platform is difficult: it requires many tools to be installed, and building iOS apps requires a Mac. For these reasons, manual release generation is generally not recommended.
+手动为每个平台创建发布版本非常困难：这么做需要安装大量工具，且构建iOS应用必须使用Mac设备。 因此，通常不建议手动生成发布版本。
 
-Tauri supports using GitHub Actions to automate release builds. GitHub Actions runs jobs on virtual machines (runners) that you configure with YAML workflow files. In a workflow you define the events that trigger the pipeline (for example, pushing a tag) and the list of commands the runner should execute.
+Tauri 支持使用GitHub Actions自动化构建发布版本。 GitHub Actions在你配置的虚拟机（Runner）上运行任务，并通过YAML工作流文件定义流程。 在工作流中，你可以定义触发管道的事件（例如推送标签）以及Runner应执行的命令列表。
 
 <Callout title="Mobile" type="warn">
 
-Currently, mobile builds via GitHub Actions are experimental.
+目前，通过GitHub Actions构建移动设备版本仍处于实验阶段。
 
 </Callout>
 
-The <DynamicLink href="/start#project-initialization">multi-device templates</DynamicLink> include the file `/.github/workflows/tauri.yml`. That workflow builds release artifacts (installation packages) for multiple operating systems.
+<DynamicLink href="/start#project-initialization">多设备模板</DynamicLink>已包含`/.github/workflows/tauri.yml`文件。 该工作流会为多个操作系统构建发布产物（安装包）。
 
 ```yml title=".github/workflows/tauri.yml"
 # https://tauri.app/distribute/pipelines/github/
@@ -118,15 +119,15 @@ jobs:
           mobile: ${{ matrix.mobile || null }}
 ```
 
-To trigger this workflow you need a GitHub repository for your project and a Git tag that starts with `v`. For example:
+要触发此工作流，你需要为项目创建 GitHub 仓库，并推送一个以`v`开头的 Git 标签。例如： For example:
 
 ```bash
 git tag v1.0.0
 git push origin v1.0.0
 ```
 
-You can follow the workflow runs in the repository's Actions tab.
+你可以在仓库的Actions标签页中跟踪工作流运行情况。
 
 ![Actions section](https://github.com/user-attachments/assets/b39055a9-02a7-472b-930f-daf0a9c6c78b)
 
-At the end of a successful run a GitHub Release will be created. Read more about GitHub Releases [here](https://docs.github.com/en/repositories/releasing-projects-on-github/viewing-your-repositorys-releases-and-tags).
+工作流运行成功后，将自动创建一个GitHub Release。 更多关于GitHub Releases的信息，请参阅[GitHub 官方文档](https://docs.github.com/en/repositories/releasing-projects-on-github/viewing-your-repositorys-releases-and-tags)。
