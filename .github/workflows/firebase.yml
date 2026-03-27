@@ -25,6 +25,14 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
+    - name: npm install
+      run: npm install
+    - name: Build (EN only, for Orama sync)
+      run: NODE_OPTIONS=--max-old-space-size=6096 npm run build
+    - name: Sync Orama search index
+      run: node sync-index.mjs
+      env:
+        ORAMA_PRIVATE_API_KEY: ${{ secrets.ORAMA_PRIVATE_API_KEY }}
     - name: Add crowdin files
       # Merge l10n_main branch into main branch
       run: |
@@ -33,10 +41,8 @@ jobs:
         git checkout main
         git fetch origin l10n_main
         git merge origin/l10n_main --no-edit --allow-unrelated-histories -X ours
-    - name: npm install and build
-      run: |
-        npm install
-        NODE_OPTIONS=--max-old-space-size=6096 npm run build && npm run export
+    - name: Build and export (with all languages, for deployment)
+      run: NODE_OPTIONS=--max-old-space-size=6096 npm run build && npm run export
     - name: Archive Build
       uses: actions/upload-artifact@v4
       with:
@@ -50,7 +56,3 @@ jobs:
         firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PIXI_VN }}
         projectId: pixi-vn
         channelId: live # prod
-    - name: Sync Orama search index
-      run: node sync-index.mjs
-      env:
-        ORAMA_PRIVATE_API_KEY: ${{ secrets.ORAMA_PRIVATE_API_KEY }}
