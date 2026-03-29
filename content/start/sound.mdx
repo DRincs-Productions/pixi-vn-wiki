@@ -69,7 +69,7 @@ Inoltre è consigliato definire i `channels` subito dopo la inizializzazione del
 
 `background` (Optional): è un booleano, puoi usarlo per definire i `channels` pensati per souni di background come musiche o suoni ambientali. A differenza degli altri suoni non verranno stoppati da uno `step` narrativo all'altro.
 
-```ts tab="main.ts"
+```ts title="main.ts"
 import { Game, sound } from "@drincs/pixi-vn";
 
 Game.init(body, {
@@ -134,7 +134,7 @@ Esistono vari modi per mettere in pausa singoli o più `media`.
 ```ts
 import { sound } from "@drincs/pixi-vn";
 
-const bgmMedia = sound.find("bgm");
+const bgmMedia = sound.find("bgm_cheerful");
 if (bgmMedia) bgmMedia.paused = true;
 // ...
 if (bgmMedia) bgmMedia.paused = false;
@@ -148,11 +148,22 @@ if (bgmMedia) bgmMedia.paused = false;
 import { sound } from "@drincs/pixi-vn";
 
 sound.findChannel("sfx").pauseAll();
+sound.findChannel("sfx").resumeAll();
 ```
 
 </Accordion>
 
 <Accordion title="sound_manager" id="sound-manager-pause">
+
+```ts
+import { sound } from "@drincs/pixi-vn";
+
+sound.pause("bgm_cheerful")
+sound.pauseAll()
+
+sound.resume("bgm_cheerful")
+sound.resumeAll()
+```
 
 </Accordion>
 
@@ -172,17 +183,55 @@ Solo e settaggi dei `media` verranno salvati nei salvataggi di gioco.
 
 <Accordion title="sound_media" id="media-edit">
 
+```ts
+import { sound } from "@drincs/pixi-vn";
+
+const bgmMedia = sound.find("bgm_cheerful");
+if (bgmMedia) bgmMedia.volume = 90
+```
+
 </Accordion>
 
 <Accordion title="sound_channel" id="channel-edit">
+
+```ts
+import { sound } from "@drincs/pixi-vn";
+
+sound.findChannel("sfx").volume = 90
+```
 
 </Accordion>
 
 <Accordion title="sound_manager" id="sound-manager-edit">
 
+```ts
+import { sound } from "@drincs/pixi-vn";
+
+sound.volumeAll = 90
+```
+
 </Accordion>
 
 <Accordion title="sound_asset" id="asset-edit">
+
+```ts title="utils/assets-utility.ts"
+import { Assets, sound } from "@drincs/pixi-vn";
+import manifest from "../assets/manifest";
+
+/**
+ * Define all the assets that will be used in the game.
+ * This function will be called before the game starts.
+ * You can read more about assets management in the documentation: https://pixi-vn.web.app/start/assets-management.html
+ */
+export async function defineAssets() {
+    await Assets.init({ manifest });
+
+    // The audio bundle will be loaded in the background, so it will be available when needed, but it won't block the game start. // [!code focus]
+    sound.backgroundLoadBundle(AUDIO_BUNDLE_NAME).then(() => { // [!code focus]
+        sound.edit("bgm_cheerful", { volume: 90 }); // [!code focus]
+    }); // [!code focus]
+}
+```
 
 </Accordion>
 
@@ -202,13 +251,33 @@ I filtri sono elementi che personalizzano in modo complesso i suoni.
 
 <Accordion title="sound_media" id="media-edit">
 
+```ts
+import { sound, filters } from "@drincs/pixi-vn";
+
+await sound.play("sfx_whoosh", { filters: [new filters.ReverbFilter()] });
+```
+
 </Accordion>
 
 <Accordion title="sound_channel" id="channel-edit">
 
+```ts
+import { sound, filters } from "@drincs/pixi-vn";
+
+sound.addChannel("bgm", {
+    filters: [new filters.ReverbFilter()],
+});
+```
+
 </Accordion>
 
 <Accordion title="sound_manager" id="sound-manager-edit">
+
+```ts
+import { sound, filters } from "@drincs/pixi-vn";
+
+sound.filtersAll = [new filters.ReverbFilter()];
+```
 
 </Accordion>
 
