@@ -4,6 +4,61 @@ title: Migration guide
 
 ## pixi-vn
 
+### Migration from v1.5.x to v1.6.0
+
+In questa versione è stata rivisto da zero l'impianto musicale perchè era molto limitante. In questa nuova versione è stata aggiunta il componente `channel` e si è suddiviso il sistema in quattro elementi che adenpiono ad un lavoro specifico, e non come prima che potevano essere usati in più modi creando instabilita nel sistema (`sound` (manager), `channels`, `media`, sound `assets`).
+
+```ts
+import { sound } from '@drincs/pixi-vn'
+
+sound.add('bird', 'resources/bird.mp3'); // [!code --]
+sound.play('bird', {
+    loop: true,
+});
+
+let s = sound.add('bird', 'resources/bird.mp3'); // [!code --]
+s.play({ // [!code --]
+sound.play('bird', { // [!code ++]
+    loop: true,
+});
+
+let s = sound.add('bird', { // [!code --]
+    url: 'resources/bird.mp3', // [!code --]
+    loop: true, // [!code --]
+}); // [!code --]
+s.play(); // [!code --]
+sound.play('bird', { // [!code ++]
+    loop: true, // [!code ++]
+}); // [!code ++]
+
+s.play(); // [!code --]
+sound.play('bird'); // [!code ++]
+s.pause(); // [!code --]
+sound.pause('bird'); // [!code ++]
+s.resume(); // [!code --]
+sound.resume('bird'); // [!code ++]
+s.stop(); // [!code --]
+sound.stop('bird'); // [!code ++]
+```
+
+è stato migliorato ancke il sistema di keyword dello storage, sfruttando la l'uso comune per la nomenclatura delle key usando `:` come separatore, e aggiungendo la possibilità di usare un prefisso per identificare meglio le chiavi (ad esempio `character:alice:friendship`).
+
+Infine è stana migliorata la gestione degli errori, aggiungendo la possibilità di gestire gli errori aggiungendo degli handler specifici.
+
+```ts title="main.ts"
+import { Game, drawCanvasErrorHandler } from '@drincs/pixi-vn'
+
+Game.addOnError(drawCanvasErrorHandler()); // [!code ++]
+
+Game.onError((type, error, { notify, uiTransition }) => { // [!code --]
+    notify(uiTransition("allert_error_occurred"), { variant: "error" }); // [!code --]
+    console.error(`Error occurred: ${type}`, error); // [!code --]
+Game.addOnError((error, { notify, uiTransition }) => { // [!code ++]
+    notify && uiTransition && notify(uiTransition("allert_error_occurred"), { variant: "error" }); // [!code ++]
+    console.error(`Error occurred`, error); // [!code ++]
+});
+```
+
 ### Migration from v1.4.x to v1.5.0
 
 In this update, the `pixi.js` dependency has been marked as **external** for non-CDN builds (for example, when using Vite.js or the official templates).
