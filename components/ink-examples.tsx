@@ -29,7 +29,7 @@ He insisted that we hurried home to Savile Row
 === as_fast_as_we_could ===
 <> as fast as we could.
 -> start\`;`,
-                "index.tsx": `import { Assets, Container, Game, canvas, narration } from "@drincs/pixi-vn";
+                "index.tsx": `import { Assets, Container, Game, canvas, narration, sound } from "@drincs/pixi-vn";
 import { importInkText } from "@drincs/pixi-vn-ink";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
@@ -57,6 +57,11 @@ Game.init(body, {
   // Pixi.JS UI Layer
   canvas.addLayer("ui", new Container());
 
+  // Sound setup
+  sound.addChannel("bgm", { background: true });
+  sound.addChannel("sfx");
+  sound.defaultChannelAlias = "sfx";
+
   // React setup with ReactDOM
   const root = document.getElementById("root");
   if (!root) {
@@ -72,7 +77,7 @@ Game.init(body, {
 
   Game.onEnd(async () => {
     Game.clear();
-    await narration.jump("start", {});
+    await Game.start("start", {});
   });
   Game.onLoadingLabel(async (_stepId, { id }) => await Assets.backgroundLoadBundle(id));
 
@@ -93,7 +98,7 @@ Game.init(body, {
     importInkText([startLabel]).then(() => {
       initializeInk();
       Game.clear();
-      narration.call("start", {}).then(() => {
+      Game.start("start", {}).then(() => {
         reactRoot.render(
           <QueryClientProvider client={queryClient}>
             <App />
@@ -139,7 +144,7 @@ export function initializeInk() {
             }}
             previewHeight={previewHeight}
             dependencies={{
-                "@drincs/pixi-vn-ink": "^0.12.2",
+                "@drincs/pixi-vn-ink": "^0.13.1",
             }}
         />
     );

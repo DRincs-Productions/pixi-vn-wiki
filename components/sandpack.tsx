@@ -16,7 +16,7 @@ export function ReactTemplate({
             template='react-ts'
             customSetup={{
                 dependencies: {
-                    "@drincs/pixi-vn": "^1.5.19",
+                    "@drincs/pixi-vn": "^1.16.1",
                     "@tanstack/react-query": "^5.85.2",
                     "react-markdown": "^8.0.0",
                     "rehype-raw": "^7.0.0",
@@ -458,7 +458,7 @@ export async function defineAssets() {
   await Assets.init({ manifest });
 }`;
 
-const index = `import { Assets, Container, Game, canvas, narration } from "@drincs/pixi-vn";
+const index = `import { Assets, Container, Game, canvas, sound } from "@drincs/pixi-vn";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
 import App from "./App";
@@ -483,6 +483,11 @@ Game.init(body, {
   // Pixi.JS UI Layer
   canvas.addLayer("ui", new Container());
 
+  // Sound setup
+  sound.addChannel("bgm", { background: true });
+  sound.addChannel("sfx");
+  sound.defaultChannelAlias = "sfx";
+
   // React setup with ReactDOM
   const root = document.getElementById("root");
   if (!root) {
@@ -498,7 +503,7 @@ Game.init(body, {
 
   Game.onEnd(async () => {
     Game.clear();
-    await narration.jump(startLabel, {});
+    await Game.start(startLabel, {});
   });
   Game.onLoadingLabel(async (_stepId, { id }) => await Assets.backgroundLoadBundle(id));
 
@@ -517,7 +522,7 @@ Game.init(body, {
 
   defineAssets().then(() => {
     Game.clear();
-    narration.call(startLabel, {}).then(() => {
+    Game.start(startLabel, {}).then(() => {
       reactRoot.render(
         <QueryClientProvider client={queryClient}>
           <App />
