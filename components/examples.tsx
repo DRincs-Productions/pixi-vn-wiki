@@ -1993,3 +1993,53 @@ export default function ChoiceMenu() {
         />
     );
 }
+
+export function SoundExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "labels/startLabel.ts": `import { narration, newLabel, sound } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+  async () => {
+    await sound.play("sfx_whoosh", { delay: 0.1 });
+    await sound.play("bgm_cheerful", { loop: true, channel: "bgm" });
+    narration.dialogue = "Hello, I'm a cheerful background music that will loop forever until you stop me.";
+  },
+  () => {
+    sound.pause("bgm_cheerful");
+    narration.dialogue = "I'm paused, but I can be resumed.";
+  },
+  () => {
+    sound.resume("bgm_cheerful");
+    narration.dialogue = "I'm back!";
+  },
+]);`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "audio",
+      assets: [
+        {
+          alias: "bgm_cheerful",
+          src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/audio/bgm_cheerful.wav",
+        },
+        {
+          alias: "sfx_whoosh",
+          src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/audio/sfx_whoosh.wav",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
