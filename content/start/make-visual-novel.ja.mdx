@@ -907,29 +907,134 @@ const startLabel = newLabel("start", [
 export default startLabel;
 ```
 
-<Comments>
+## Sounds and music
 
-## Add music and sound effects
+To add sounds and music to your visual novel, you can use the `sound` utility. You can find more information about how to use it <DynamicLink href="/start/sound">here</DynamicLink>.
 
-This page is under construction.
+The first step is to define the audio assets in the `manifest`. Then, you can load them in the background at the start of the game, so they will be available when needed without blocking the game start.
 
-:::tabs
+```ts tab="utils/assets-utility.ts"
+import { Assets, sound } from "@drincs/pixi-vn";
+import manifest from "../assets/manifest";
 
-== ink example
+/**
+ * Define all the assets that will be used in the game.
+ * This function will be called before the game starts.
+ * You can read more about assets management in the documentation: https://pixi-vn.web.app/start/assets-management.html
+ */
+export async function defineAssets() {
+    await Assets.init({ manifest });
 
-```ink title="ink"
-
+    // The audio bundle will be loaded in the background, so it will be available when needed, but it won't block the game start. // [!code focus]
+    sound.backgroundLoadBundle("audio"); // [!code focus]
+}
 ```
 
-== Typescript example
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
 
-```ts
-
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "audio",
+            assets: [
+                {
+                    alias: "bgm_cheerful",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/audio/bgm_cheerful.wav",
+                },
+                {
+                    alias: "sfx_whoosh",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/audio/sfx_whoosh.wav",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
 ```
 
-::: -->
+You can also define sound channels to manage different types of sounds (e.g., BGM, SFX) and control their volume, pause, resume, etc. It is recommended to define the channels at the start of the game, for example in the `then` callback of the `Game.init` function.
 
-</Comments>
+Into this example, I define two channels: one for the background music (BGM) and one for the sound effects (SFX). I also set the `defaultChannelAlias` to the SFX channel, so if I don't specify a channel when playing a sound, it will be played in the SFX channel by default. To define the background channel, I set the `background` property to `true`, so unlike the other channels the sounds will not be stopped at the end of each narrative `step`, but they will continue until they are paused or stopped.
+
+```ts title="main.ts"
+import { Game, sound } from "@drincs/pixi-vn";
+import {
+    BGM_CHANNEL_NAME,
+    SFX_CHANNEL_NAME,
+} from "./constans";
+
+Game.init(body, {
+    // ...
+}).then(() => {
+    sound.addChannel(BGM_CHANNEL_NAME, { background: true });
+    sound.addChannel(SFX_CHANNEL_NAME);
+    sound.defaultChannelAlias = SFX_CHANNEL_NAME;
+});
+```
+
+Finally, you can play the sounds and music in the `labels` using the `sound.play` function. You can also use channels to manage different types of sounds (e.g., BGM, SFX) and control their volume, pause, resume, etc.
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    async () => {
+        await showImage("bg", "bg01-hallway");
+        await sound.play("sfx_whoosh", { channel: SFX_CHANNEL_NAME, delay: 0.1 });
+        await moveIn( "james", { value: ["m01-body", "m01-eyes-smile", "m01-mouth-neutral01"], options: { xAlign: 0.5, yAlign: 1 }, });
+        narration.dialogue = { character: james, text: `You're my roommate's replacement, huh?` };
+    },
+    async () => {
+        await sound.play("bgm_cheerful", { channel: BGM_CHANNEL_NAME, loop: true });
+        await showImageContainer("james", ["m01-body", "m01-eyes-grin", "m01-mouth-smile01"]);
+        narration.dialogue = {
+            character: james,
+            text: `Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you'll be fine!`,
+        };
+    },
+    async () => {
+        await showImageContainer("james", ["m01-body", "m01-eyes-smile", "m01-mouth-grin00"]);
+        narration.dialogue = { character: mc, text: `...` };
+    },
+    // ...
+    async () => {
+        sound.pauseAll();
+        await showImageContainer("steph", ["fm02-body", "fm02-eyes-smile", "fm02-mouth-smile00"]);
+        await sound.play("sfx_whoosh", { channel: SFX_CHANNEL_NAME, delay: 0.1 });
+        moveOut("james", { direction: "right", ease: "circInOut", type: "spring", duration: 0.5, delay: 0.05 });
+        moveOut("sly", { direction: "right", ease: "anticipate", duration: 0.5 });
+        moveOut("steph", { direction: "left", ease: "easeInOut", duration: 0.5, delay: 0.1 });
+        narration.dialogue = `You want continue to the next part?`;
+        narration.choices = [
+            newChoiceOption("Yes, I want to continue", secondPart, {}, { type: "jump" }),
+            newCloseChoiceOption("No, I want to stop here"),
+        ];
+    },
+]);
+export default startLabel;
+
+const secondPart = newLabel("second_part", [
+    async ({ t }) => {
+        narration.dialogue = undefined;
+        const text = new Text({
+            text: t(`(A few minutes later...)`),
+        });
+        await showWithFade("bg", text);
+        text.align = 0.5;
+    },
+    async () => {
+        sound.resumeAll();
+        await showWithFade("bg", "bg02-dorm");
+        await sound.play("sfx_whoosh", { channel: SFX_CHANNEL_NAME, delay: 0.4 });
+        // ...
+        narration.dialogue = `She enters my room before I'VE even had a chance to.`;
+    },
+    // ...
+]);
+```
 
 ## 結論
 
