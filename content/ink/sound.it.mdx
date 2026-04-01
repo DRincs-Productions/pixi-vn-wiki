@@ -15,8 +15,65 @@ The **_ink_ + Pixi’VN integration** introduces a "# script" that allows you to
   - `resume`: Resume a sound. (Read more [here](#pause-and-resume))
   - `stop`: Stop a sound. (Read more [here](#stop))
   - `edit`: Edit a sound. (Per saperne di più [qui](#edit))
+- `component type`: il tipo di componente. Tipi disponibili:
+  - `sound`: to play, pause, resume, stop or edit a sound.
+  - `channel`: to run an operation on a channel.
 - `alias`: The alias to identify the sound. Utilizza le doppie virgolette se l'alias contiene spazi.
 - `parameters` (Opzionale): un elenco di coppie proprietà/valore separate da spazi. Se un valore contiene spazi, racchiuderlo tra virgolette doppie. Se un valore è un oggetto, passa un JSON valido ed esegui l'escape delle parentesi graffe per **_ink_** (ad esempio `\{ "placeholder": "Enter your name", "maxLength": 20 \}`).
+
+```ink tab="ink/start.ink"
+# play sound sfx_whoosh delay 0.1
+# play sound bgm_cheerful loop true channel bgm
+Hello, I'm a cheerful background music that will loop forever until you stop me.
+# pause sound bgm_cheerful
+I'm paused, but I can be resumed.
+# resume sound bgm_cheerful
+I'm back!
+```
+
+```ts tab="utils/assets-utility.ts"
+import { Assets, sound } from "@drincs/pixi-vn";
+import manifest from "../assets/manifest";
+
+/**
+ * Define all the assets that will be used in the game.
+ * This function will be called before the game starts.
+ * You can read more about assets management in the documentation: https://pixi-vn.web.app/start/assets-management.html
+ */
+export async function defineAssets() {
+    await Assets.init({ manifest });
+
+    // The audio bundle will be loaded in the background, so it will be available when needed, but it won't block the game start. // [!code focus]
+    sound.backgroundLoadBundle("audio"); // [!code focus]
+}
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "audio",
+            assets: [
+                {
+                    alias: "bgm_cheerful",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/audio/bgm_cheerful.wav",
+                },
+                {
+                    alias: "sfx_whoosh",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/audio/sfx_whoosh.wav",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
 
 <Sandbox
   template="nqflhd"
@@ -34,32 +91,75 @@ You can use the `play` to play a sound in **_ink_**. Per fare ciò, è necessari
 - `[parameters] (Optional)`: In the `parameters` you must include the properties of `SoundPlayOptions` that you want to set. The `parameters` must be set as follows: `parameterName` + `SPACE` + `value`. If the `value` is a string and includes spaces, you must use double quotes.
 
 ```ink tab="ink/start.ink"
-# play sound bird
-Now the bird is singing.
-# play sound bird volume 100
-Now the bird is singing louder.
+# play sound sfx_whoosh
+Now the sfx_whoosh is singing.
+# play sound sfx_whoosh volume 100
+Now the sfx_whoosh is singing louder.
 ```
 
-```ts tab="utils/defineAssets.ts"
-import { sound } from "@drincs/pixi-vn";
+```ts tab="utils/assets-utility.ts"
+import { Assets, sound } from "@drincs/pixi-vn";
+import manifest from "../assets/manifest";
 
+/**
+ * Define all the assets that will be used in the game.
+ * This function will be called before the game starts.
+ * You can read more about assets management in the documentation: https://pixi-vn.web.app/start/assets-management.html
+ */
 export async function defineAssets() {
-    sound.add('bird', 'https://pixijs.io/sound/examples/resources/bird.mp3');
+    await Assets.init({ manifest });
+
+    // The audio bundle will be loaded in the background, so it will be available when needed, but it won't block the game start. // [!code focus]
+    sound.backgroundLoadBundle("audio"); // [!code focus]
 }
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "audio",
+            assets: [
+                {
+                    alias: "bgm_cheerful",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/audio/bgm_cheerful.wav",
+                },
+                {
+                    alias: "sfx_whoosh",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/audio/sfx_whoosh.wav",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
 ```
 
 ## Pause and resume
 
-To pause a sound in **_ink_**, you can use the `pause` operation. Per fare ciò, è necessario utilizzare la seguente sintassi:
+To pause a sound or a channel in **_ink_**, you can use the `pause` operation. Per fare ciò, è necessario utilizzare la seguente sintassi:
 
 ```ink title="ink"
-# pause sound {alias}
+# pause {component type} {alias}
 ```
 
-To resume a sound in **_ink_**, you can use the `resume` operation. Per fare ciò, è necessario utilizzare la seguente sintassi:
+To resume a sound or a channel in **_ink_**, you can use the `resume` operation. Per fare ciò, è necessario utilizzare la seguente sintassi:
 
 ```ink title="ink"
-# resume sound {alias}
+# resume {component type} {alias}
+```
+
+To pause or resume all sounds, you can use the following syntax:
+
+```ink title="ink"
+# pause all sounds
+# resume all sounds
 ```
 
 ## Stop
@@ -79,6 +179,6 @@ To edit a sound in **_ink_**, you can use the `edit` operation. Per fare ciò, �
 ```
 
 ```ink title="ink"
-# edit sound bird volume 50
-# edit sound bird loop true
+# edit sound bgm_cheerful volume 50
+# edit sound bgm_cheerful loop false
 ```
