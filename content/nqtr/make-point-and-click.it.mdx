@@ -2,12 +2,6 @@
 title: Crea la tua prima Avventura Punta & Clicca
 ---
 
-<Callout title="This page is under construction" type="warn">
-
-This documentation is still being written.
-
-</Callout>
-
 <Callout type="warn">
 
 Prima di proseguire, è importante considerare che questa pagina presuppone i concetti spiegati in <DynamicLink href="/start/make-visual-novel">"Crea la tua prima Visual Novel"</DynamicLink> e che tutte le funzionalità descritte in quella pagina possono essere applicate anche qui. Inoltre, è essenziale possedere una conoscenza intermedia di JS/TS (come funzioni, classi, interfacce e utilizzo di file `.d.ts`).
@@ -396,12 +390,12 @@ Alternatively, during the narrative session, it is possible to add an activity t
 
 Ad esempio:
 
-```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+```ink tab="ink" groupId="narrative_language"
 == start ==
 # add activity bed in mc_room
 ```
 
-```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+```ts tab="Typescript" groupId="narrative_language"
 import { newLabel, showImageContainer } from "@drincs/pixi-vn";
 import { bed } from "../activities";
 import { mcRoom } from "../rooms";
@@ -416,14 +410,63 @@ export default startLabel;
 
 ## Routine
 
+<Callout type="info">
+
+You can find more detailed documentation about these elements <DynamicLink href="/nqtr/routine">here</DynamicLink>.
+
+</Callout>
+
 `Routine` refers to the set of elements that make up the daily routine of non-player characters (NPC).
 
 The routine is composed of `commitment`, which represent a character’s obligation to perform a specific activity at a certain moment of the day. These commitments are very similar to `activity`, as they represent an activity that the character performs.
 
 Ad esempio:
 
-```ts tab="values/commitments.ts"
+```ts tab="values/routine.tsx"
+import { RegisteredCommitments } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
+import NqtrRoundIconButton from "../components/NqtrRoundIconButton";
+import { NARRATION_ROUTE } from "../constans";
+import { TALK_SLEEP_LABEL_KEY } from "../labels/variousActionsLabelKeys";
+import Commitment from "../models/nqtr/Commitment";
+import { alice } from "./characters";
 
+export const aliceSleep = new Commitment("alice_sleep", alice, {
+    priority: 1,
+    timeSlot: {
+        from: 20,
+        to: 10,
+    },
+    background: "alice_roomsleep0A",
+    icon: (commitment, props) => {
+        return (
+            <NqtrRoundIconButton
+                disabled={commitment.disabled}
+                onClick={() => {
+                    if (commitment.run) {
+                        commitment.run(props);
+                    }
+                }}
+                ariaLabel={commitment.name}
+                variant='solid'
+                color='primary'
+            >
+                <QuestionAnswerIcon
+                    sx={{
+                        fontSize: { sx: "1.5rem", sm: "2rem", md: "2.5rem", lg: "3rem", xl: "3.5rem" },
+                    }}
+                />
+            </NqtrRoundIconButton>
+        );
+    },
+    onRun: async (_, event) => {
+        await event.navigate(NARRATION_ROUTE);
+        await narration.jump(TALK_SLEEP_LABEL_KEY, event);
+    },
+});
+
+RegisteredCommitments.add([aliceSleep]);
 ```
 
 <Callout type="info">
@@ -431,3 +474,301 @@ Ad esempio:
 Commitments are linked to rooms in a one-to-many relationship, meaning that a room can have multiple commitments, but a commitment is present in only one room (a character cannot be in multiple rooms at the same time).
 
 </Callout>
+
+To use them, you need to link them to a `room` [through the `commitments` property](#navigation-and-map). This will also set the NPC positions, as the position of a commitment is deduced from the room it is linked to. When the player is in that room, they will see the active commitments and be able to interact with them.
+
+Alternatively, during the narrative session, it is possible to add a commitment to a room using the `addCommitment` function.
+
+Ad esempio:
+
+```ink tab="ink" groupId="narrative_language"
+== start ==
+# add routine alice_sleep in alice_room
+```
+
+```ts tab="Typescript" groupId="narrative_language"
+import { newLabel } from "@drincs/pixi-vn";
+import { aliceSleep } from "../routine";
+import { aliceRoom } from "../rooms";
+
+const startLabel = newLabel("start", [
+    async () => {
+        aliceRoom.addCommitment(aliceSleep); // [!code focus]
+    },
+]);
+export default startLabel;
+```
+
+## Quests
+
+<Callout type="info">
+
+You can find more detailed documentation about these elements <DynamicLink href="/nqtr/quest">here</DynamicLink>.
+
+</Callout>
+
+`Quest` represent an objective or a series of objectives that the player can complete during the game. Quests are composed of `stage`, which represent the different phases of a quest. Each stage has a specific objective and can be completed in different ways depending on the player's choices.
+
+Ad esempio:
+
+```ts tab="values/quests/aliceQuest.tsx"
+import { RegisteredCommitments, RegisteredQuests, routine } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { NARRATION_ROUTE } from "../../constans";
+import { TALK_ALICE_QUEST_KEY } from "../../labels/variousActionsLabelKeys";
+import TimeSlotsImage from "../../models/TimeSlotsImage";
+import Commitment from "../../models/nqtr/Commitment";
+import Quest from "../../models/nqtr/Quest";
+import Stage from "../../models/nqtr/Stage";
+import { orderProduct, takeProduct } from "../activities";
+import { alice } from "../characters";
+import { mcRoom, terrace } from "../rooms";
+
+export const aliceQuest = new Quest(
+    "aliceQuest",
+    [
+        // stages
+        new Stage("talk_alice1", {
+            onStart: () => {
+                terrace.addCommitment(aliceQuest_talk);
+            },
+            name: "Talk to Alice",
+            description: "Talk to Alice on the terrace",
+        }),
+        new Stage("order_products", {
+            onStart: () => {
+                mcRoom.addActivity(orderProduct);
+            },
+            name: "Order products",
+            description: "Order the products with your PC",
+        }),
+        new Stage("take_products", {
+            onStart: (_, { notify }) => {
+                terrace.addActivity(takeProduct);
+                notify("You can take the products on the Terrace");
+            },
+            name: "Take products",
+            description: "Take products on the Terrace",
+            requestDescriptionToStart: "Wait for the products you ordered to arrive (2 day)",
+            deltaDateRequired: 2,
+        }),
+        new Stage("talk_alice2", {
+            name: "Talk to Alice",
+            description: "Talk to Alice on the terrace",
+        }),
+    ],
+    {
+        // props
+        name: "Help Alice",
+        description:
+            'To learn more about how the repo works, Talk to Alice. \nGoing when she is there will automatically start an "Event" (see aliceQuest.tsx to learn more). \nAfter that an action will be added to open the pc, in MC room. \n\n(during the quest you can talk to Alice and you will see her talking during the quests of the same Quest)',
+        image: "alice_terrace0A",
+        onStart: (quest, { notify, uiTransition }) => {
+            notify(uiTransition("notify_quest_is_started", { quest: quest.name }));
+        },
+        onContinue: (stage, { notify, uiTransition }) => {
+            notify(uiTransition("notify_quest_is_updated", { quest: stage.name }));
+        },
+    },
+);
+
+RegisteredQuests.add(aliceQuest);
+
+const aliceQuest_talk = new Commitment("alice_quest_talk", alice, {
+    timeSlot: {
+        from: 10,
+        to: 20,
+    },
+    image: new TimeSlotsImage("alice_terrace0A"),
+    executionType: "automatic",
+    priority: 1,
+    onRun: async (_, props) => {
+        await props.navigate(NARRATION_ROUTE);
+        await narration.jump(TALK_ALICE_QUEST_KEY, props);
+        routine.remove(aliceQuest_talk);
+    },
+});
+
+RegisteredCommitments.add(aliceQuest_talk);
+```
+
+To start a quest, you need to call the `start` function on the quest itself. This will begin the first stage of the quest, allowing the player to start completing its objectives.
+
+Ad esempio:
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+== start ==
+# start quest aliceQuest
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+import { newLabel } from "@drincs/pixi-vn";
+import { aliceQuest } from "../values/quests";
+
+const startLabel = newLabel("start", [
+    async (props) => {
+        await aliceQuest.start(props); // [!code focus]
+    },
+]);
+export default startLabel;
+```
+
+To continue a quest that has already been started, you need to call the `continue` function on the quest itself. This will complete the current stage of the quest and move on to the next one.
+
+Ad esempio:
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+== start ==
+# continue quest aliceQuest
+```
+
+```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+import { newLabel } from "@drincs/pixi-vn";
+import { aliceQuest } from "../values/quests";
+
+const startLabel = newLabel("start", [
+    async (props) => {
+        await aliceQuest.continue(props); // [!code focus]
+    },
+]);
+export default startLabel;
+```
+
+During gameplay or narrative sequences, it is very useful to perform checks on the state of a quest, such as verifying whether a quest has been completed or if a specific stage has been reached. To do this, you can use various query functions available in the `Quest` class, such as `completed` or `failed`.
+
+<Callout type="info">
+
+You can find a complete list of query functions in the `Quest` class documentation <DynamicLink href="/nqrt/quest#queries">here</DynamicLink>.
+
+</Callout>
+
+Ad esempio:
+
+```ink tab="ink" title="ink/variousActionsLabels.ink" groupId="narrative_language"
+=== talkAliceQuest ===
+# show image background alice_terrace0At
+{ aliceQuest_currentStageIndex:
+- 0:  -> talkAliceQuest0
+- 1:  -> talkAliceQuest1
+- 2:  -> talkAliceQuest2
+- else: alice: Thanks for the book.
+}
+-> DONE
+
+= talkAliceQuest0
+alice: Hi, can you order me a new book from pc?
+mc: Ok
+alice: Thanks
+# continue quest aliceQuest
+-> DONE
+
+= talkAliceQuest1
+mc: What book do you want me to order?
+alice: For me it is the same.
+-> DONE
+
+= talkAliceQuest2
+mc: I ordered the Book, hope you enjoy it.
+alice: Great, when it arrives remember to bring it to me.
+-> DONE
+
+= talkAliceQuest3
+mc: Here's your book.
+alice: Thank you, I can finally read something new.
+# continue quest aliceQuest
+-> DONE
+```
+
+```ts tab="Typescript" title="labels/variousActionsLabels.ts" groupId="narrative_language"
+import { newLabel } from "@drincs/pixi-vn";
+import { aliceQuest } from "../values/quests";
+
+export const talkAliceQuest = newLabel(
+    TALK_ALICE_QUEST_KEY,
+    () => {
+        if (aliceQuest.currentStageIndex == 0) {
+            return [
+                async () => {
+                    narration.dialogue = { character: alice, text: "Hi, can you order me a new book from pc?" };
+                },
+                () => {
+                    narration.dialogue = { character: mc, text: "Ok" };
+                },
+                () => {
+                    narration.dialogue = { character: alice, text: "Thanks" };
+                },
+                (props) => {
+                    aliceQuest.continue(props);
+                    narration.continue(props);
+                },
+            ];
+        } else if (aliceQuest.currentStageIndex == 1) {
+            return [
+                async () => {
+                    narration.dialogue = { character: mc, text: "What book do you want me to order?" };
+                },
+                () => {
+                    narration.dialogue = { character: alice, text: "For me it is the same." };
+                },
+            ];
+        } else if (aliceQuest.currentStageIndex == 2) {
+            return [
+                async () => {
+                    narration.dialogue = { character: mc, text: "I ordered the Book, hope you enjoy it." };
+                },
+                () => {
+                    narration.dialogue = {
+                        character: alice,
+                        text: "Great, when it arrives remember to bring it to me.",
+                    };
+                },
+            ];
+        } else if (aliceQuest.currentStageIndex == 3) {
+            return [
+                async () => {
+                    narration.dialogue = { character: mc, text: "Here's your book." };
+                },
+                () => {
+                    narration.dialogue = { character: alice, text: "Thank you, I can finally read something new." };
+                },
+                (props) => {
+                    aliceQuest.continue(props);
+                    narration.continue(props);
+                },
+            ];
+        }
+        return [
+            () => {
+                narration.dialogue = { character: alice, text: "Thanks for the book." };
+            },
+        ];
+    },
+    {
+        onStepStart: async (stepIndex) => {
+            if (stepIndex == 0) {
+                await showImage(BACKGROUND_ID, "alice_terrace0At");
+            }
+        },
+    },
+);
+```
+
+## Conclusione
+
+Now you know the basics for creating a Point & Click Adventure with Pixi’VN and NQTR. So far, we have only looked at the components provided by the template, but it is possible to create custom components to adapt them to the needs of your game. If you have some experience with JS/TS, I’m confident that by modifying the `.d.ts` files and creating classes that implement NQTR interfaces, you will be able to create custom components quickly and easily.
+
+Make me proud by creating an amazing Point & Click Adventure with Pixi’VN and NQTR! 🚀
+
+Now, you can try a small Point & Click Adventure created with the template to see in practice how the components work and interact with each other.
+
+<iframe src="https://nqtr-react-template.firebaseapp.com/"
+    title="Point & Click Adventure Demo"
+    style={{
+        width: "100%",
+        height: "400px",
+        border: "0",
+        borderRadius: "4px",
+        overflow: "hidden",
+    }}
+    allowFullScreen={true}
+></iframe>
