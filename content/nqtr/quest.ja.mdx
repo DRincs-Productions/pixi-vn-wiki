@@ -60,7 +60,7 @@ export const aliceQuest = new QuestBaseModel(
         onStart: (quest, { notify, uiTransition }) => {
             notify(uiTransition("notify_quest_is_started", { quest: quest.name }));
         },
-        onNextStage: (stage, { notify, uiTransition }) => {
+        onContinue: (stage, { notify, uiTransition }) => {
             notify(uiTransition("notify_quest_is_updated", { quest: stage.name }));
         },
     }
@@ -69,7 +69,7 @@ export const aliceQuest = new QuestBaseModel(
 RegisteredQuests.add(aliceQuest);
 ```
 
-```ts tab="src/main.ts"
+```ts tab="main.ts"
 import "./values/aliceQuest";
 
 // ...
@@ -105,9 +105,9 @@ export default startLabel;
 
 ## Continue
 
-To go to the next stage of a `quest`, you can use the `continue` method of the Quest class. This method will set the current stage to the next stage of the quest and trigger the `onNextStage` action defined in the quest. この関数は以下のパラメータを持ちます：
+To go to the next stage of a `quest`, you can use the `continue` method of the Quest class. This method will set the current stage to the next stage of the quest and trigger the `onContinue` action defined in the quest. この関数は以下のパラメータを持ちます：
 
-- `props`: the properties that will be passed to `onNextStage`. Its interface corresponds to <DynamicLink href="/nqtr#onrunprops">`OnRunProps`</DynamicLink>.
+- `props`: the properties that will be passed to `onContinue`. Its interface corresponds to <DynamicLink href="/nqtr#onrunprops">`OnRunProps`</DynamicLink>.
 
 ```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
 import { newLabel } from "@drincs/pixi-vn";
@@ -131,9 +131,9 @@ export default startLabel;
 
 <Accordion title="go_next_only_if_is_completed" id="go-next-only-if-is-completed">
 
-To go to the next stage of a `quest` only if the current stage is completed, you can use the `advanceIfCompleted` method of the Quest class. This method will check if the current stage is completed and then set the current stage to the next stage of the quest and trigger the `onNextStage` action defined in the quest. この関数は以下のパラメータを持ちます：
+To go to the next stage of a `quest` only if the current stage is completed, you can use the `advanceIfCompleted` method of the Quest class. This method will check if the current stage is completed and then set the current stage to the next stage of the quest and trigger the `onContinue` action defined in the quest. この関数は以下のパラメータを持ちます：
 
-- `props`: the properties that will be passed to `onNextStage`. Its interface corresponds to <DynamicLink href="/nqtr#onrunprops">`OnRunProps`</DynamicLink>.
+- `props`: the properties that will be passed to `onContinue`. Its interface corresponds to <DynamicLink href="/nqtr#onrunprops">`OnRunProps`</DynamicLink>.
 
 ```ts tab="labels/startLabel.ts"
 import { newLabel } from "@drincs/pixi-vn";
@@ -287,6 +287,9 @@ const startLabel = newLabel("start", [
         if (aliceQuest.failed) { // [!code focus]
             optionsMenu.push(newChoiceOption("Quest failed", startLabel, {}));
         }
+        if (aliceQuest.currentStageIndex === 3) { // [!code focus]
+            optionsMenu.push(newChoiceOption("Quest not started", startLabel, {}));
+        }
         narration.choices = [...optionsMenu, newCloseChoiceOption("Cancel")];
     },
 ]);
@@ -301,6 +304,8 @@ export default startLabel;
 + {aliceQuest_completed} Quest completed
     -> start
 + {aliceQuest_failed} Quest failed
+    -> start
++ {aliceQuest_currentStageIndex == 3} Quest not started
     -> start
 + Cancel
     -> DONE
