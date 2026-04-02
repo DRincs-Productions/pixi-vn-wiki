@@ -663,3 +663,45 @@ export default manifest;`,
         />
     );
 }
+
+export function SoundExample() {
+    return (
+        <ReactTemplate
+            files={{
+                "ink/start.ts": `export const startLabel = \`=== start ===
+# play sound sfx_whoosh delay 0.1
+# play sound bgm_cheerful loop true channel bgm
+Hello, I'm a cheerful background music that will loop forever until you stop me.
+# pause sound bgm_cheerful
+I'm paused, but I can be resumed.
+# resume sound bgm_cheerful
+I'm back!
+-> DONE\`;`,
+                "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+  bundles: [
+    {
+      name: "audio",
+      assets: [
+        {
+          alias: "bgm_cheerful",
+          src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/audio/bgm_cheerful.wav",
+        },
+        {
+          alias: "sfx_whoosh",
+          src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/audio/sfx_whoosh.wav",
+        },
+      ],
+    },
+  ],
+};
+export default manifest;`,
+            }}
+        />
+    );
+}
