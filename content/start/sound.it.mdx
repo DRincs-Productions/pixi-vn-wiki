@@ -12,6 +12,12 @@ The entire audio system has been revised in version 1.6.0.
 
 The sound module is a wrapper around the [PixiJS Sound](https://github.com/pixijs/sound) library. It provides a simple interface for playing sounds and saves the current state at each <DynamicLink href="/start/labels">`step`</DynamicLink>.
 
+<Callout title="ink" type="info">
+
+È possibile utilizzare questo metodo con la sintassi _ink_. See more <DynamicLink href="/ink/sound">here</DynamicLink>.
+
+</Callout>
+
 It is composed of the following elements, which will be referenced later:
 
 - `sound` (manager) is the controller of the entire audio system. It is used to manage `channels`, start and control musical `media`, and retrieve information or modify sound `assets`. You can set values to adjust the overall audio level. These settings are not stored in save files and are mainly intended for game settings.
@@ -147,6 +153,15 @@ Questa funzione ha i seguenti parametri:
 - `alias`: The alias to identify the `media`.
 - `soundUrl` (Optional): The URL or path. If you have initialized the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink>, you can use the alias of the sound. Se non si specifica l'URL, verrà utilizzato l'alias come URL.
 - `options` (Optional): The options for the `media`.
+  - `delay`: The delay before the sound starts, in seconds.
+  - `loop`: Override default loop, default to the Sound's loop setting.
+  - `speed`: Override default speed, default to the Sound's speed setting.
+  - `volume`: Override default volume, default to the Sound's volume setting.
+  - `start`: Start time offset in seconds.
+  - `end`: End time in seconds.
+  - `muted`: If sound instance is muted by default.
+  - `filters`: Filters that apply to play. Only supported with WebAudio.
+  - `channel`: The alias of the `channel` to which the `media` will be assigned. If not specified, it will be assigned to `sound.defaultChannelAlias`.
 
 <Accordions>
 
@@ -282,6 +297,43 @@ export async function defineAssets() {
         sound.edit("bgm_cheerful", { volume: 90 }); // [!code focus]
     }); // [!code focus]
 }
+```
+
+</Accordion>
+
+</Accordions>
+
+## Stop
+
+To stop a sound, you can use the `stop` function.
+
+<Accordions>
+
+<Accordion title="sound_media" id="media-stop">
+
+```ts
+import { sound } from "@drincs/pixi-vn";
+
+sound.find("bgm_cheerful")?.stop();
+```
+
+</Accordion>
+
+<Accordion title="sound_channel" id="channel-stop">
+
+```ts
+import { sound } from "@drincs/pixi-vn";
+sound.findChannel("sfx").stopAll();
+```
+
+</Accordion>
+
+<Accordion title="sound_manager" id="sound-manager-stop">
+
+```ts
+import { sound } from "@drincs/pixi-vn";
+sound.stop("bgm_cheerful");
+sound.stopAll();
 ```
 
 </Accordion>
