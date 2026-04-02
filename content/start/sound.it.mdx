@@ -2,6 +2,8 @@
 title: Sounds and music
 ---
 
+import { SoundExample } from "@/components/examples";
+
 <Callout type="warn">
 
 The entire audio system has been revised in version 1.6.0.
@@ -16,6 +18,55 @@ It is composed of the following elements, which will be referenced later:
 - `channels` is a sub-level of the sound manager and can be seen as a container. It is used to contain, start, and manage musical `media`. You can set values to affect only the contained media. These settings are not stored in save files and are mainly intended for game settings.
 - `media` are instances of a sound that has been started. You can set values that apply only to themselves. All settings applied to them are saved in the game save. These settings are mainly intended to be modified during gameplay. They are contained within a `channel` in a one-to-many relationship. Each media has a unique `alias`.
 - `assets` (sound assets), as the name suggests, are the assets used during the game to play sounds. You can set values to influence all media that use this asset. These settings are not saved and are mainly intended to be configured during game initialization when loading assets.
+
+```ts tab="labels/startLabel.ts"
+import { narration, newLabel, sound } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await sound.play("sfx_whoosh", { delay: 0.1 });
+        await sound.play("bgm_cheerful", { loop: true, channel: "bgm" });
+        narration.dialogue = "Hello, I'm a cheerful background music that will loop forever until you stop me.";
+    },
+    () => {
+        sound.pause("bgm_cheerful");
+        narration.dialogue = "I'm paused, but I can be resumed.";
+    },
+    () => {
+        sound.resume("bgm_cheerful");
+        narration.dialogue = "I'm back!";
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "audio",
+            assets: [
+                {
+                    alias: "bgm_cheerful",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/audio/bgm_cheerful.wav",
+                },
+                {
+                    alias: "sfx_whoosh",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/audio/sfx_whoosh.wav",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<SoundExample />
 
 ## Inizializzare
 
