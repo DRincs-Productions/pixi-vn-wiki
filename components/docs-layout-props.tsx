@@ -1,6 +1,7 @@
 import { faqSource, inkSource, jsonSource, nqtrSource, renpySource, source } from "@/lib/source";
 import { Image } from "fumadocs-core/framework";
-import { DocsLayoutProps, LinkItemType } from "fumadocs-ui/layouts/docs";
+import { DocsLayoutProps } from "fumadocs-ui/layouts/docs";
+import { LinkItemType } from "fumadocs-ui/layouts/shared";
 import {
     Album,
     ArrowBigUpDash,
