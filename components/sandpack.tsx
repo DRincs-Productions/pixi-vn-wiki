@@ -18,6 +18,7 @@ export function ReactTemplate({
                 dependencies: {
                     "@drincs/pixi-vn": "^1.6.3",
                     "@tanstack/react-query": "^5.85.2",
+                    "pixi.js": "^8.17.1",
                     "react-markdown": "^8.0.0",
                     "rehype-raw": "^7.0.0",
                     "remark-gfm": "^4.0.1",
