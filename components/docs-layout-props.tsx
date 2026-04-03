@@ -1,3 +1,4 @@
+import { routing } from "@/i18n/routing";
 import { faqSource, inkSource, jsonSource, nqtrSource, renpySource, source } from "@/lib/source";
 import { Image } from "fumadocs-core/framework";
 import { DocsLayoutProps } from "fumadocs-ui/layouts/docs";
@@ -29,7 +30,7 @@ import { ReactNode } from "react";
 
 export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
     const preUrl = lang ? `/${lang}` : "";
-    const t = await getTranslations("layout");
+    const t = await getTranslations({ locale: lang ?? routing.defaultLocale, namespace: "layout" });
     return {
         ...source.pageTree,
         name: "Pixi’VN",
@@ -451,7 +452,7 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
 
 export async function renpyTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
     const preUrl = lang ? `/${lang}` : "";
-    const t = await getTranslations("layout");
+    const t = await getTranslations({ locale: lang ?? routing.defaultLocale, namespace: "layout" });
     return {
         ...renpySource.pageTree,
         name: "Ren’Py",
@@ -472,7 +473,7 @@ export async function renpyTree(lang?: string): Promise<DocsLayoutProps["tree"]>
 
 export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
     const preUrl = lang ? `/${lang}` : "";
-    const t = await getTranslations("layout");
+    const t = await getTranslations({ locale: lang ?? routing.defaultLocale, namespace: "layout" });
     return {
         ...inkSource.pageTree,
         name: "ink",
@@ -547,7 +548,7 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
 
 export async function faqTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
     const preUrl = lang ? `/${lang}` : "";
-    const t = await getTranslations("layout");
+    const t = await getTranslations({ locale: lang ?? routing.defaultLocale, namespace: "layout" });
     return {
         ...faqSource.pageTree,
         name: "FAQ",
@@ -570,7 +571,7 @@ export async function faqTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
 
 export async function homeLinks(lang?: string): Promise<LinkItemType[]> {
     const preUrl = lang ? `/${lang}` : "";
-    const t = await getTranslations("layout");
+    const t = await getTranslations({ locale: lang ?? routing.defaultLocale, namespace: "layout" });
     return [
         {
             type: "menu",
@@ -615,7 +616,7 @@ export async function homeLinks(lang?: string): Promise<LinkItemType[]> {
 
 export async function nqtrTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
     const preUrl = lang ? `/${lang}` : "";
-    const t = await getTranslations("layout");
+    const t = await getTranslations({ locale: lang ?? routing.defaultLocale, namespace: "layout" });
     return {
         ...nqtrSource.pageTree,
         name: "Navigation Quest Time Routine (NQTR)",
@@ -697,7 +698,7 @@ export async function nqtrTree(lang?: string): Promise<DocsLayoutProps["tree"]> 
 
 export async function jsonTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
     const preUrl = lang ? `/${lang}` : "";
-    const t = await getTranslations("layout");
+    const t = await getTranslations({ locale: lang ?? routing.defaultLocale, namespace: "layout" });
     return {
         ...jsonSource.pageTree,
         name: "Pixi’VN Json",

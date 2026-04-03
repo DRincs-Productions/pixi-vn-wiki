@@ -1,4 +1,5 @@
 import { getMDXComponents } from "@/components/mdx";
+import { routing } from "@/i18n/routing";
 import { faqSource, getPageMarkdownUrl, inkSource, jsonSource, nqtrSource, renpySource, source } from "@/lib/source";
 import {
     DocsBody,
@@ -53,8 +54,12 @@ export default async function MDXPage({
         default:
             notFound();
     }
+    // If a localized page is missing, fall back to the base (source) page.
+    if (!page && pageBase) {
+        page = pageBase;
+    }
     if (!page || !pageBase) notFound();
-    const t = await getTranslations("common");
+    const t = await getTranslations({ locale: lang ?? routing.defaultLocale, namespace: "common" });
 
     const MDX = page.data.body;
     const markdownUrl = getPageMarkdownUrl(page).url;
