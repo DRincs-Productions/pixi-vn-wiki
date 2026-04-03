@@ -1,0 +1,133 @@
+---
+title: 桌面与移动设备分发
+description: 学习如何使用Tauri 和 GitHub Actions将游戏分发到桌面和移动平台。
+---
+
+将游戏分发到桌面和移动平台有多种方式。 常见选择包括Tauri、Ionic、Electron、NW.js以及适用于Windows + Mac 的 React Native。
+
+如果你不想管理高度定制的原生项目，推荐使用多设备模板（multi-device templates）。
+ 这些模板已集成Tauri，允许你基于同一套代码库开发Web应用，并构建桌面与移动应用。
+
+![tauri-h2](/tauri.svg)
+
+## Tauri
+
+Tauri是一个使用Web技术构建桌面和移动应用的框架。 它利用**Rust**生成安全、轻量且快速的原生二进制文件，同时通过WebView渲染你的 HTML、CSS 和 JavaScript。
+
+更多信息请参阅[Tauri官网](https://v2.tauri.app/)。
+
+## 使用Tauri分发游戏
+
+手动为每个平台创建发布版本非常困难：这么做需要安装大量工具，且构建iOS应用必须使用Mac设备。 因此，通常不建议手动生成发布版本。
+
+Tauri 支持使用GitHub Actions自动化构建发布版本。 GitHub Actions在你配置的虚拟机（Runner）上运行任务，并通过YAML工作流文件定义流程。 在工作流中，你可以定义触发管道的事件（例如推送标签）以及Runner应执行的命令列表。
+
+<Callout title="Mobile" type="warn">
+
+目前，通过GitHub Actions构建移动设备版本仍处于实验阶段。
+
+</Callout>
+
+<DynamicLink href="/start#project-initialization">多设备模板</DynamicLink>已包含`/.github/workflows/tauri.yml`文件。 该工作流会为多个操作系统构建发布产物（安装包）。
+
+```yml title=".github/workflows/tauri.yml"
+# https://tauri.app/distribute/pipelines/github/
+name: 'publish'
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish-tauri:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'macos-latest' # for Arm based macs (M1 and above).
+            args: '--target aarch64-apple-darwin'
+          - platform: 'macos-latest' # for Intel based macs.
+            args: '--target x86_64-apple-darwin'
+          - platform: 'ubuntu-22.04'
+            args: ''
+          - platform: 'windows-latest'
+            args: ''
+          - platform: 'macos-latest' # iOS
+            args: '--target x86_64-apple-darwin'
+            mobile: "ios"
+          - platform: 'ubuntu-22.04' # Android
+            args: ''
+            mobile: "android"
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04' # This must match the platform value defined above.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: setup node
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+
+      - name: Update Java (only for Android builds)
+        if: matrix.mobile == 'android'
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: setup Android SDK (only for Android builds)
+        if: matrix.mobile == 'android'
+        uses: android-actions/setup-android@v3
+
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable # Set this to dtolnay/rust-toolchain@nightly
+        with:
+          # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: install frontend dependencies
+        # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
+        run: yarn install # change this to npm or pnpm depending on which one you use.
+
+      - name: Upload Tauri icons
+        run: npm run tauri icon public/pwa-512x512.png
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
+          releaseName: 'App v__VERSION__'
+          releaseBody: 'See the assets to download this version and install.'
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}
+          mobile: ${{ matrix.mobile || null }}
+```
+
+要触发此工作流，你需要为项目创建 GitHub 仓库，并推送一个以`v`开头的 Git 标签。例如： For example:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+你可以在仓库的Actions标签页中跟踪工作流运行情况。
+
+![Actions section](https://github.com/user-attachments/assets/b39055a9-02a7-472b-930f-daf0a9c6c78b)
+
+工作流运行成功后，将自动创建一个GitHub Release。 更多关于GitHub Releases的信息，请参阅[GitHub 官方文档](https://docs.github.com/en/repositories/releasing-projects-on-github/viewing-your-repositorys-releases-and-tags)。
