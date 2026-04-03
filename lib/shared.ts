@@ -1,4 +1,4 @@
-export const appName = "My App";
+export const appName = "Pixi’VN";
 export const startRoute = "/start";
 export const inkRoute = "/ink";
 export const jsonRoute = "/json";
