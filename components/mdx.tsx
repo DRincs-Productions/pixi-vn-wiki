@@ -7,8 +7,7 @@ import defaultMdxComponents from "fumadocs-ui/mdx";
 import * as icons from "lucide-react";
 import type { MDXComponents } from "mdx/types";
 
-// use this function to get MDX components, you will need it for rendering MDX
-export function getMDXComponents(components?: MDXComponents): MDXComponents {
+export function getMDXComponents(components?: MDXComponents) {
     return {
         ...(icons as unknown as MDXComponents),
         ...defaultMdxComponents,
@@ -44,5 +43,11 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
         Comments: () => null,
         DynamicLink,
         ...components,
-    };
+    } satisfies MDXComponents;
+}
+
+export const useMDXComponents = getMDXComponents;
+
+declare global {
+    type MDXProvidedComponents = ReturnType<typeof getMDXComponents>;
 }
