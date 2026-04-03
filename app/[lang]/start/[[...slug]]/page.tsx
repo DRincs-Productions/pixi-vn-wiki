@@ -20,11 +20,5 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     const page = source.getPage(slug, lang);
     if (!page) notFound();
 
-    return createMetadata(
-        {
-            title: `Pixi'VN - ${page.data.title}`,
-            description: page.data.description,
-        },
-        { slug: slug ? ["start", ...slug].join("/") : "", lang },
-    );
+    return createMetadata({}, { slug: slug, lang });
 }
