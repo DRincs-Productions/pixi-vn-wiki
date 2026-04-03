@@ -1,0 +1,90 @@
+---
+title: Sito web
+description: Questa pagina spiega come distribuire il tuo gioco Pixi'VN come sito web, incluse le opzioni di hosting, i passaggi di distribuzione e l'abilitazione delle funzionalità PWA per l'installazione.
+---
+
+Il tuo gioco Pixi'VN può essere distribuito come sito web, consentendo ai giocatori di accedervi direttamente tramite i loro browser web. Si tratta di un ottimo modo per raggiungere un pubblico più vasto, poiché non sono richiesti download o installazioni.\
+Per fare ciò, devi [ospitare il gioco su un server](#hosting-and-deploying).
+
+## Hosting e distribuzione
+
+Puoi utilizzare vari servizi di hosting come [Firebase](https://firebase.google.com/), [Vercel](https://vercel.com/) o [Netlify](https://www.netlify.com/). Queste piattaforme offrono piani gratuiti e hanno procedure di configurazione simili.
+
+<Accordions>
+
+<Accordion title="firebase" id="firebase">
+
+Questa guida utilizza Firebase come esempio di hosting.\
+Firebase offre funzionalità aggiuntive come l'hosting del database e l'autenticazione ed è un prodotto Google affidabile.
+
+1. [Crea un progetto Firebase](https://console.firebase.google.com/) se non l'hai già fatto.
+2. Installa la CLI di Firebase:
+
+```bash
+npm install -g firebase-tools
+```
+
+1. Accedi al tuo account Google (se è la prima volta):
+
+```bash
+firebase login
+```
+
+1. Inizializza Firebase nella directory del tuo progetto:
+
+```bash
+firebase init
+```
+
+Seguire le istruzioni della CLI:
+
+- **Funzionalità**: Scegli `Hosting: Configure files for Firebase Hosting and (optionally) set up GitHub Action deploys`.
+- **Progetto predefinito**: seleziona il tuo progetto Firebase.
+- **Vite codebase rilevato**: Inserisci `no`.
+- **Utilizzi un framework web?**: Inserisci `no`.
+- **Cartella pubblica**: immettere `dist`.
+- **Applicazione single-page?**: Inserisci `yes` (garantisce il funzionamento del routing e del deep linking).
+- **Sovrascrivere dist/index.html?**: Inserire `no`.
+- **Impostare le distribuzioni GitHub?**: Inserisci `no` (facoltativo).
+
+Verrà generato un file di configurazione `firebase.json`.
+
+Esempio `firebase.json`:
+
+```json title="firebase.json"
+{
+  "hosting": {
+    "public": "dist",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
+```
+
+Per maggiori dettagli, consultare la [documentazione di Firebase](https://firebase.google.com/docs/hosting/full-config#section-firebase-json).
+
+Per distribuire la tua app:
+
+```bash
+npm run build
+firebase deploy
+```
+
+</Accordion>
+
+</Accordions>
+
+## Abilita "Aggiungi alla schermata iniziale" (plugin PWA)
+
+![image](/pwa-plugin.png)
+
+Abilitando l'installazione come "applicazione browser" gli utenti potranno utilizzare il tuo gioco come app autonoma sul proprio dispositivo.
+
+Se utilizzi [Vite js](https://vitejs.dev/) come strumento di compilazione, puoi aggiungere il [PWA Vite Plugin](https://vite-pwa-org.netlify.app/). Guarda questo [esempio](https://vite-pwa-org.netlify.app/guide/pwa-minimal-requirements.html#web-app-manifest).
+
+Altrimenti, crea un file `manifest.json` in base ai requisiti del tuo framework.
