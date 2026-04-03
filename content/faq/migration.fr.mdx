@@ -1,0 +1,382 @@
+---
+title: Migration guide
+---
+
+## pixi-vn
+
+### Migration from v1.5.x to v1.6.0
+
+In this version, the audio system has been completely redesigned, as the previous implementation was very limiting. In this new version, the `channel` component has been introduced, and the system has been divided into four elements, each responsible for a specific role, unlike before where they could be used in multiple ways, leading to instability (`sound` (manager), `channels`, `media`, sound `assets`).
+
+```ts
+import { sound } from '@drincs/pixi-vn'
+
+sound.add('bird', 'resources/bird.mp3'); // [!code --]
+sound.play('bird', {
+    loop: true,
+});
+
+let s = sound.add('bird', 'resources/bird.mp3'); // [!code --]
+s.play({ // [!code --]
+sound.play('bird', { // [!code ++]
+    loop: true,
+});
+
+let s = sound.add('bird', { // [!code --]
+    url: 'resources/bird.mp3', // [!code --]
+    loop: true, // [!code --]
+}); // [!code --]
+s.play(); // [!code --]
+sound.play('bird', { // [!code ++]
+    loop: true, // [!code ++]
+}); // [!code ++]
+
+s.play(); // [!code --]
+sound.play('bird'); // [!code ++]
+s.pause(); // [!code --]
+sound.pause('bird'); // [!code ++]
+s.resume(); // [!code --]
+sound.resume('bird'); // [!code ++]
+s.stop(); // [!code --]
+sound.stop('bird'); // [!code ++]
+```
+
+Also, to have a cleaner start to the game, `Game.start` has been added. `Game.start` has the same functionality as `narration.call`, but in the future if I need to add some processes before starting the narration, I can do it without breaking changes. For now, it is just an alias for `narration.call`, but it is recommended to use `Game.start` instead of `narration.call` to start the game.
+
+```ts
+Game.clear(); // [!code --]
+narration.call("start", gameProps) // [!code --]
+Game.start("start", gameProps) // [!code ++]
+```
+
+The storage keyword system has also been improved by adopting a common naming convention using `:` as a separator, and by adding the ability to use prefixes to better identify keys (for example `character:alice:friendship`). This change was made to improve the cache management of storage and to make it easier to identify the type of data stored. (This change does not affect the API and will not cause any issues with existing saves).
+
+Finally, error handling has been improved by adding the ability to manage errors through specific handlers.
+
+```ts title="main.ts"
+import { Game, drawCanvasErrorHandler } from '@drincs/pixi-vn'
+
+Game.addOnError(drawCanvasErrorHandler()); // [!code ++]
+
+Game.onError((type, error, { notify, uiTransition }) => { // [!code --]
+    notify(uiTransition("allert_error_occurred"), { variant: "error" }); // [!code --]
+    console.error(`Error occurred: ${type}`, error); // [!code --]
+Game.addOnError((error, { notify, uiTransition }) => { // [!code ++]
+    notify && uiTransition && notify(uiTransition("allert_error_occurred"), { variant: "error" }); // [!code ++]
+    console.error(`Error occurred`, error); // [!code ++]
+});
+```
+
+### Migration from v1.4.x to v1.5.0
+
+In this update, the `pixi.js` dependency has been marked as **external** for non-CDN builds (for example, when using Vite.js or the official templates).
+
+When using a CDN, the version of `pixi.js` bundled with the library will continue to be used. This ensures compatibility, prevents known issues, and preserves the overall integrity of the library.
+
+**Why is `pixi.js` now external?** `pixi.js` does not support multiple instances. Making it external allows developers to safely integrate third-party libraries that are designed to work with `pixi.js`, without running into instance conflicts.
+
+In v1.5.4, the canvas resizing logic has also been changed. If you used an official template, it's recommended to modify the CSS as follows:
+
+```css title="src/index.css"
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@plugin "tailwindcss-motion";
+
+:root {
+  background-color: #242424;
+}
+
+html, /* [!code ++] */
+body { /* [!code ++] */
+  height: 100%; /* [!code ++] */
+} /* [!code ++] */
+
+body {
+  margin: 0;
+  min-height: 100vh; /* [!code ++] */
+  display: flex;
+  overflow: hidden;
+}
+```
+
+### Migration from v1.3.x to v1.4.0
+
+This document describes the changes that need to be made to your code to migrate from v1.3.x to v1.4.0.
+
+In this release, some functions for managing "navigation of the narrative" have been modified to allow for the easy implementation of rollback and rollforward. Specifically, it is now possible to execute multiple back and continue requests synchronously, and the system will internally queue them and calculate the delta to execute only the necessary processes. You can read more about this in the <DynamicLink href="/start/labels-flow#rollback-rollforward">Rollback and Rollforward</DynamicLink> section.
+
+For this reason it was necessary to modify the `stepHistory.back()` function and the `Game.init()` function. `stepHistory.back()` now requires a path navigation function rather than a `StepLabelProps` function. You can now define the path navigation function in `Game.init()`.
+
+```ts
+stepHistory.back((_path) => { // [!code --]
+    // TODO: navigate in the url path // [!code --]
+    // READ THIS: https://pixi-vn.web.app/start/interface.html#navigate-switch-between-ui-screens // [!code --]
+}) // [!code --]
+const gameProps = {}; // [!code ++]
+stepHistory.back(gameProps); // [!code ++]
+```
+
+```ts
+Game.init(body, {
+    height: 1080,
+    width: 1920,
+    backgroundColor: "#303030",
+    navigate: (_path) => { // [!code ++]
+        // TODO: navigate in the url path // [!code ++]
+    }, // [!code ++]
+}).then(() => {
+    // ...
+});
+```
+
+Some long-deprecated features have been removed in this release, including: `stepHistory.goBack`, `narration.goNext`, `PIXI`, `canvas.canvasWidth`, `canvas.canvasHeight`, `canvas.onEndOfTicker`, `FadeAlphaTicker`, `MoveTicker`, `RotateTicker`, `ZoomTicker`, `narration.canContinue`, `narration.callLabel`, `narration.jumpLabel`, `narration.choiceMenuOptions`, `storage.startingStorage`, `storage.setVariable`, `storage.getVariable` and `storage.removeVariable`.
+
+### Migration from v1.2.x to v1.3.0
+
+This document describes the changes that need to be made to your code to migrate from v1.2.x to v1.3.0.
+
+In this release, the canvas component animations have been revolutionized. The core animation function is now <DynamicLink href="/start/canvas-motion">`canvas.animate`</DynamicLink>, a function that combines PixiJS tickers and [`motion`](https://motion.dev/docs/animate). So the provided tickers preset (`FadeAlphaTicker`, `MoveTicker`, `RotateTicker`, `ZoomTicker`) has been deprecated.
+
+### Migration from v0.10.x to v1.0
+
+This document describes the changes that need to be made to your code to migrate from v0.10.x to v1.0.
+
+Being version 1.0.0 it is the first complete release of the library. It is a breaking change and the API has changed significantly. The fundamental change of this release was to split the entire engine into independent modules. This allows for a more modular and flexible design, making it easier to use the engine in different contexts. The size of packages has been reduced significantly (150 MB to 50 MB) and the engine is now more efficient and faster.
+
+The `Game` namespace object has been introduced for the which contains all the functionality that exploits multiple modules. This is the main entry point for the engine and is used to access all the functions of the engine.
+
+The `stepHistory` module has been introduced to manage the history of the game. Previously the entire management of the game's history was handled by `narration`.
+
+```ts
+clearAllGameDatas(); // [!code --]
+Game.clear(); // [!code ++]
+```
+
+```ts
+canvas // [!code --]
+    .initialize(body, { // [!code --]
+        height: 1080, // [!code --]
+        width: 1920, // [!code --]
+        backgroundColor: "#303030", // [!code --]
+    }) // [!code --]
+    .then(() => { // [!code --]
+        // Pixi.JS UI Layer // [!code --]
+        canvas.addLayer(CANVAS_UI_LAYER_NAME, new Container()); // [!code --]
+Game.init(body, { // [!code ++]
+    height: 1080, // [!code ++]
+    width: 1920, // [!code ++]
+    backgroundColor: "#303030", // [!code ++]
+}).then(() => { // [!code ++]
+    // Pixi.JS UI Layer // [!code ++]
+    canvas.addLayer(CANVAS_UI_LAYER_NAME, new Container()); // [!code ++]
+```
+
+```ts
+getSaveData(); // [!code --]
+Game.exportGameState(); // [!code ++]
+```
+
+```ts
+getSaveJson(); // [!code --]
+JSON.stringify(Game.exportGameState()); // [!code ++]
+```
+
+```ts
+loadSaveData(data, navigate); // [!code --]
+Game.restoreGameState(data, navigate); // [!code ++]
+```
+
+```ts
+loadSaveJson(data, navigate); // [!code --]
+Game.restoreGameState(JSON.parse(dataString) as GameState, navigate); // [!code ++]
+```
+
+```ts
+loadSaveJson(data, navigate); // [!code --]
+Game.restoreGameState(JSON.parse(dataString) as GameState, navigate); // [!code ++]
+```
+
+```ts
+jsonToSaveData(json); // [!code --]
+JSON.parse(json); // [!code ++]
+```
+
+```ts
+narration.canGoBack; // [!code --]
+stepHistory.canGoBack; // [!code ++]
+```
+
+```ts
+narration.back(); // [!code --]
+stepHistory.back(); // [!code ++]
+```
+
+```ts
+narration.narrativeHistory; // [!code --]
+stepHistory.narrativeHistory; // [!code ++]
+```
+
+## nqtr
+
+### Migration from v0.7.x to v0.8.0 (nqtr)
+
+<Callout title="ink" type="error">
+
+This version does not support save files created with previous versions if temporary `commitment` were used (i.e., if they were added using `routine.add`).
+
+To make the saves compatible, you need to modify the save file (remember that it is a JSON) by changing the `___nqtr-temporary_commitment___` variable from an array of strings (a list of `commitment` IDs) to an object with keys corresponding to the `commitment` IDs and values corresponding to an object containing `id` and `roomId` (the latter is required to identify the link between the `commitment` and the `room`).
+
+```json title="save.json"
+{
+    // ...
+    "___nqtr-temporary_commitment___": [ // [!code --]
+        "alice_sleep", // [!code --]
+        "alice_eat", // [!code --]
+    ], // [!code --]
+    "___nqtr-temporary_commitment___": { // [!code ++]
+        "alice_sleep": { // [!code ++]
+            "id": "alice_sleep", // [!code ++]
+            "roomId": "alice_room" // [!code ++]
+        }, // [!code ++]
+        "alice_eat": { // [!code ++]
+            "id": "alice_eat", // [!code ++]
+            "roomId": "alice_room" // [!code ++]
+        }, // [!code ++]
+    }, // [!code ++]
+    // ...
+}
+```
+
+</Callout>
+
+This document describes the changes that need to be made to your code to migrate from v0.7.x to v0.8.0.
+
+In this release, the way to link a `commitment` to a `room` has been changed. You can now define its routine directly inside the `room`. Therefore, instead of passing the `room` in the `commitment` constructor, you can define the routine directly in the `room` constructor.
+
+This change was made to simplify the management of routines and to make the relationship between `commitment` and `room` clearer.
+
+```ts title="models/nqtr/Commitment.ts"
+export default class Commitment extends CommitmentStoredClass implements CommitmentInterface {
+    constructor(
+        id: string,
+        characters: CharacterInterface | CharacterInterface[],
+        room: RoomInterface, // [!code --]
+        props: {
+            name?: string;
+            image?: PixiUIParam<Commitment>;
+            background?: PixiUIParam<Commitment>;
+            icon?: ReactUIParam<Commitment>;
+            onRun?: OnRunEvent<CommitmentInterface>;
+            disabled?: boolean | (() => boolean);
+            hidden?: boolean | (() => boolean);
+        } & CommitmentStoredClassProps,
+    ) {
+        characters = Array.isArray(characters) ? characters : [characters];
+        super(id, characters, room, props.onRun, props); // [!code --]
+        super(id, characters, props.onRun, props); // [!code ++]
+        this.name = props.name || "";
+        this._image = props.image;
+        this._background = props.background;
+        this._icon = props.icon;
+        this._defaultDisabled = props.disabled || false;
+        this._defaultHidden = props.hidden || false;
+    }
+    // ...
+    override get isActive(): boolean { // [!code --]
+    override isActive(options?: ActiveScheduling): boolean { // [!code ++]
+        if (this.hidden) {
+            return false;
+        }
+        return super.isActive; // [!code --]
+        return super.isActive(options); // [!code ++]
+    }
+}
+```
+
+```ts title="models/nqtr/Room.ts"
+export default class Room extends RoomStoredClass implements RoomInterface {
+    constructor(
+        id: string,
+        location: LocationInterface,
+        props: {
+            name: string;
+            disabled?: boolean | (() => boolean);
+            hidden?: boolean | (() => boolean);
+            background: PixiUIParam<Room>;
+            activities?: ActivityInterface[];
+            routine?: CommitmentInterface[]; // [!code ++]
+            isEntrance?: boolean;
+        },
+    ) {
+        super(id, location, props.activities); // [!code --]
+        super(id, location, { // [!code ++]
+            activities: props.activities || [], // [!code ++]
+            routine: props.routine || [], // [!code ++]
+        }); // [!code ++]
+        this.name = props.name;
+        this._defaultDisabled = props.disabled || false;
+        this._defaultHidden = props.hidden || false;
+        this._background = props.background;
+        this.isEntrance = props.isEntrance || false;
+    }
+    // ...
+}
+```
+
+```ts title="models/nqtr/Activity.ts"
+export default class Activity extends ActivityStoredClass implements ActivityInterface {
+    // ...
+    override get isActive(): boolean { // [!code --]
+    override isActive(options?: ActiveScheduling): boolean { // [!code ++]
+        if (this.hidden) {
+            return false;
+        }
+        return super.isActive; // [!code --]
+        return super.isActive(options); // [!code ++]
+    }
+}
+```
+
+```tsx title="values/routine.tsx"
+const aliceSleep = new Commitment("alice_sleep", alice, aliceRoom, { // [!code --]
+const aliceSleep = new Commitment("alice_sleep", alice, { // [!code ++]
+    priority: 1,
+    timeSlot: {
+        from: 20,
+        to: 10,
+    },
+    // ...
+});
+
+// ...
+
+export const fixedRoutine = [aliceSleep, ...]; // [!code --]
+
+RegisteredCommitments.add(fixedRoutine); // [!code --]
+RegisteredCommitments.add([aliceSleep, ...]);  // [!code ++]
+```
+
+```ts title="utils/nqtr-utility.ts"
+export function initializeNQTR() {
+    // ...
+    routine.fixedRoutine = fixedRoutine; // [!code --]
+}
+```
+
+```tsx title="values/rooms.tsx"
+export const aliceRoom = new Room("alice_room", mcHome, {
+    name: "Alice room",
+    background: new TimeSlotsImage({
+        morning: "location_aliceroom-0",
+        afternoon: "location_aliceroom-1",
+        evening: "location_aliceroom-2",
+        night: "location_aliceroom-3",
+    }),
+    routine: [aliceSleep], // [!code ++]
+});
+```
+
+```ts
+routine.add(aliceSleep); // [!code --]
+aliceRoom.addCommitment(aliceSleep); // [!code ++]
+```
