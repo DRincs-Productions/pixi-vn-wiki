@@ -64,7 +64,7 @@ export const inkDocs = defineDocs({
     // Specifies the directory where your docs are located
     dir: "content/ink",
     docs: {
-        schema: frontmatterSchema,
+        schema: pageSchema,
         postprocess: {
             includeProcessedMarkdown: true,
         },
@@ -78,7 +78,7 @@ export const faqDocs = defineDocs({
     // Specifies the directory where your docs are located
     dir: "content/faq",
     docs: {
-        schema: frontmatterSchema,
+        schema: pageSchema,
         postprocess: {
             includeProcessedMarkdown: true,
         },
@@ -92,7 +92,7 @@ export const renpyDocs = defineDocs({
     // Specifies the directory where your docs are located
     dir: "content/renpy",
     docs: {
-        schema: frontmatterSchema,
+        schema: pageSchema,
         postprocess: {
             includeProcessedMarkdown: true,
         },
@@ -106,7 +106,7 @@ export const nqtrDocs = defineDocs({
     // Specifies the directory where your docs are located
     dir: "content/nqtr",
     docs: {
-        schema: frontmatterSchema,
+        schema: pageSchema,
         postprocess: {
             includeProcessedMarkdown: true,
         },
@@ -120,7 +120,7 @@ export const jsonDocs = defineDocs({
     // Specifies the directory where your docs are located
     dir: "content/json",
     docs: {
-        schema: frontmatterSchema,
+        schema: pageSchema,
         postprocess: {
             includeProcessedMarkdown: true,
         },
