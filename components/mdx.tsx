@@ -13,7 +13,7 @@ export function getMDXComponents(components?: MDXComponents) {
         ...defaultMdxComponents,
         ...TabsComponents,
         ...AccordionsComponents,
-        img: Image,
+        img: Image as any,
         Sandbox: ({
             entry,
             template,
