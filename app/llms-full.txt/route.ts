@@ -1,7 +1,5 @@
-import { getLLMText } from "@/lib/get-llm-text";
-import { faqSource, inkSource, jsonSource, nqtrSource, renpySource, source } from "@/lib/source";
+import { faqSource, getLLMText, inkSource, jsonSource, nqtrSource, renpySource, source } from "@/lib/source";
 
-// cached forever
 export const revalidate = false;
 
 export async function GET() {
