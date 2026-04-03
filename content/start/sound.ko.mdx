@@ -1,0 +1,387 @@
+---
+title: Sounds and music
+---
+
+import { SoundExample } from "@/components/examples";
+
+<Callout type="warn">
+
+The entire audio system has been revised in version 1.6.0.
+
+</Callout>
+
+The sound module is a wrapper around the [PixiJS Sound](https://github.com/pixijs/sound) library. It provides a simple interface for playing sounds and saves the current state at each <DynamicLink href="/start/labels">`step`</DynamicLink>.
+
+<Callout title="ink" type="info">
+
+You can use this method with the _ink_ syntax. See more <DynamicLink href="/ink/sound">here</DynamicLink>.
+
+</Callout>
+
+It is composed of the following elements, which will be referenced later:
+
+- `sound` (manager) is the controller of the entire audio system. It is used to manage `channels`, start and control musical `media`, and retrieve information or modify sound `assets`. You can set values to adjust the overall audio level. These settings are not stored in save files and are mainly intended for game settings.
+- `channels` is a sub-level of the sound manager and can be seen as a container. It is used to contain, start, and manage musical `media`. You can set values to affect only the contained media. These settings are not stored in save files and are mainly intended for game settings.
+- `media` are instances of a sound that has been started. You can set values that apply only to themselves. All settings applied to them are saved in the game save. These settings are mainly intended to be modified during gameplay. They are contained within a `channel` in a one-to-many relationship. Each media has a unique `alias`.
+- `assets` (sound assets), as the name suggests, are the assets used during the game to play sounds. You can set values to influence all media that use this asset. These settings are not saved and are mainly intended to be configured during game initialization when loading assets.
+
+```ts tab="labels/startLabel.ts"
+import { narration, newLabel, sound } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await sound.play("sfx_whoosh", { delay: 0.1 });
+        await sound.play("bgm_cheerful", { loop: true, channel: "bgm" });
+        narration.dialogue = "Hello, I'm a cheerful background music that will loop forever until you stop me.";
+    },
+    () => {
+        sound.pause("bgm_cheerful");
+        narration.dialogue = "I'm paused, but I can be resumed.";
+    },
+    () => {
+        sound.resume("bgm_cheerful");
+        narration.dialogue = "I'm back!";
+    },
+]);
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "audio",
+            assets: [
+                {
+                    alias: "bgm_cheerful",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/audio/bgm_cheerful.wav",
+                },
+                {
+                    alias: "sfx_whoosh",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/audio/sfx_whoosh.wav",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<SoundExample />
+
+## Initialize
+
+First of all, you need to define the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink> exactly as with other components. After that, it is recommended to load sounds at the start of the game using the functions provided by `sound`.
+
+```ts tab="utils/assets-utility.ts"
+import { Assets, sound } from "@drincs/pixi-vn";
+import manifest from "../assets/manifest";
+
+/**
+ * Define all the assets that will be used in the game.
+ * This function will be called before the game starts.
+ * You can read more about assets management in the documentation: https://pixi-vn.web.app/start/assets-management.html
+ */
+export async function defineAssets() {
+    await Assets.init({ manifest });
+
+    // The audio bundle will be loaded in the background, so it will be available when needed, but it won't block the game start. // [!code focus]
+    sound.backgroundLoadBundle("audio"); // [!code focus]
+}
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "audio",
+            assets: [
+                {
+                    alias: "bgm_cheerful",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/audio/bgm_cheerful.wav",
+                },
+                {
+                    alias: "sfx_whoosh",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/audio/sfx_whoosh.wav",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+It is also recommended to define `channels` immediately after game initialization. During the definition of `channels`, you can configure their settings, which are all intuitive and based on PixiJS Sound, except for:
+
+- `background` (Optional): this is a boolean value that can be used to define `channels` intended for background sounds such as music or ambient audio. Unlike other sounds, they will not be stopped between narrative `step`s.
+
+```ts title="main.ts"
+import { Game, sound } from "@drincs/pixi-vn";
+
+Game.init(body, {
+    // ...
+}).then(() => {
+    sound.addChannel("bgm", { background: true });
+    sound.addChannel("sfx");
+    sound.defaultChannelAlias = "sfx";
+});
+```
+
+## Play
+
+<Callout type="info">
+
+If no `channel` is specified during the `play` function, the `media` will be assigned to `sound.defaultChannelAlias`.
+
+</Callout>
+
+The basic functionality is to start a sound (`asset`). This can be done using the `play` function. The `play` function generates a `media` instance that you can interact with to control the produced sound.
+
+This function has the following parameters:
+
+- `alias`: The alias to identify the `media`.
+- `soundUrl` (Optional): The URL or path. If you have initialized the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink>, you can use the alias of the sound. If you don't provide the URL, then the alias is used as the URL.
+- `options` (Optional): The options for the `media`.
+  - `delay`: The delay before the sound starts, in seconds.
+  - `loop`: Override default loop, default to the Sound's loop setting.
+  - `speed`: Override default speed, default to the Sound's speed setting.
+  - `volume`: Override default volume, default to the Sound's volume setting.
+  - `start`: Start time offset in seconds.
+  - `end`: End time in seconds.
+  - `muted`: If sound instance is muted by default.
+  - `filters`: Filters that apply to play. Only supported with WebAudio.
+  - `channel`: The alias of the `channel` to which the `media` will be assigned. If not specified, it will be assigned to `sound.defaultChannelAlias`.
+
+<Accordions>
+
+<Accordion title="sound_channel" id="channel-play">
+
+```ts
+import { sound } from "@drincs/pixi-vn";
+
+await sound.findChannel("sfx").play("sfx_whoosh", { delay: 0.1 });
+await sound.findChannel("bgm").play("bgm", "bgm_cheerful", { loop: true });
+```
+
+</Accordion>
+
+<Accordion title="sound_manager" id="sound-manager-play">
+
+```ts
+import { sound } from "@drincs/pixi-vn";
+
+await sound.play("sfx_whoosh", { delay: 0.1 });
+await sound.play("bgm", "bgm_cheerful", { loop: true, channel: "bgm" });
+```
+
+</Accordion>
+
+</Accordions>
+
+## Pause and resume
+
+There are various ways to pause individual or multiple `media`.
+
+<Accordions>
+
+<Accordion title="sound_media" id="media-pause">
+
+```ts
+import { sound } from "@drincs/pixi-vn";
+
+const bgmMedia = sound.find("bgm_cheerful");
+if (bgmMedia) bgmMedia.paused = true;
+// ...
+if (bgmMedia) bgmMedia.paused = false;
+```
+
+</Accordion>
+
+<Accordion title="sound_channel" id="channel-pause">
+
+```ts
+import { sound } from "@drincs/pixi-vn";
+
+sound.findChannel("sfx").pauseAll();
+sound.findChannel("sfx").resumeAll();
+```
+
+</Accordion>
+
+<Accordion title="sound_manager" id="sound-manager-pause">
+
+```ts
+import { sound } from "@drincs/pixi-vn";
+
+sound.pause("bgm_cheerful")
+sound.pauseAll()
+
+sound.resume("bgm_cheerful")
+sound.resumeAll()
+```
+
+</Accordion>
+
+</Accordions>
+
+## Edit
+
+<Callout type="info">
+
+Only `media` settings will be saved in game save files.
+
+</Callout>
+
+It is possible to edit almost all settings at any time for different purposes.
+
+<Accordions>
+
+<Accordion title="sound_media" id="media-edit">
+
+```ts
+import { sound } from "@drincs/pixi-vn";
+
+const bgmMedia = sound.find("bgm_cheerful");
+if (bgmMedia) bgmMedia.volume = 90
+```
+
+</Accordion>
+
+<Accordion title="sound_channel" id="channel-edit">
+
+```ts
+import { sound } from "@drincs/pixi-vn";
+
+sound.findChannel("sfx").volume = 90
+```
+
+</Accordion>
+
+<Accordion title="sound_manager" id="sound-manager-edit">
+
+```ts
+import { sound } from "@drincs/pixi-vn";
+
+sound.volumeAll = 90
+```
+
+</Accordion>
+
+<Accordion title="sound_asset" id="asset-edit">
+
+```ts title="utils/assets-utility.ts"
+import { Assets, sound } from "@drincs/pixi-vn";
+import manifest from "../assets/manifest";
+
+/**
+ * Define all the assets that will be used in the game.
+ * This function will be called before the game starts.
+ * You can read more about assets management in the documentation: https://pixi-vn.web.app/start/assets-management.html
+ */
+export async function defineAssets() {
+    await Assets.init({ manifest });
+
+    // The audio bundle will be loaded in the background, so it will be available when needed, but it won't block the game start. // [!code focus]
+    sound.backgroundLoadBundle(AUDIO_BUNDLE_NAME).then(() => { // [!code focus]
+        sound.edit("bgm_cheerful", { volume: 90 }); // [!code focus]
+    }); // [!code focus]
+}
+```
+
+</Accordion>
+
+</Accordions>
+
+## Stop
+
+To stop a sound, you can use the `stop` function.
+
+<Accordions>
+
+<Accordion title="sound_media" id="media-stop">
+
+```ts
+import { sound } from "@drincs/pixi-vn";
+
+sound.find("bgm_cheerful")?.stop();
+```
+
+</Accordion>
+
+<Accordion title="sound_channel" id="channel-stop">
+
+```ts
+import { sound } from "@drincs/pixi-vn";
+sound.findChannel("sfx").stopAll();
+```
+
+</Accordion>
+
+<Accordion title="sound_manager" id="sound-manager-stop">
+
+```ts
+import { sound } from "@drincs/pixi-vn";
+sound.stop("bgm_cheerful");
+sound.stopAll();
+```
+
+</Accordion>
+
+</Accordions>
+
+## Filters
+
+<Callout type="warn">
+
+Currently, they can only be modified when starting a media.
+
+</Callout>
+
+Filters are elements that allow advanced customization of sounds.
+
+<Accordions>
+
+<Accordion title="sound_media" id="media-edit">
+
+```ts
+import { sound, filters } from "@drincs/pixi-vn";
+
+await sound.play("sfx_whoosh", { filters: [new filters.ReverbFilter()] });
+```
+
+</Accordion>
+
+<Accordion title="sound_channel" id="channel-edit">
+
+```ts
+import { sound, filters } from "@drincs/pixi-vn";
+
+sound.addChannel("bgm", {
+    filters: [new filters.ReverbFilter()],
+});
+```
+
+</Accordion>
+
+<Accordion title="sound_manager" id="sound-manager-edit">
+
+```ts
+import { sound, filters } from "@drincs/pixi-vn";
+
+sound.filtersAll = [new filters.ReverbFilter()];
+```
+
+</Accordion>
+
+</Accordions>
