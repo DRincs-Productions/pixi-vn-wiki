@@ -25,10 +25,10 @@ export default defineConfig({
             lazy: true,
             inline: "tailing-curly-colon",
             themes: {
-                light: "github-light",
-                dark: "github-dark",
+                light: "github-dark-default",
+                dark: "github-dark-default",
             },
-            theme: "github-dark",
+            theme: "github-dark-default",
             langs: [
                 "ts",
                 "js",
