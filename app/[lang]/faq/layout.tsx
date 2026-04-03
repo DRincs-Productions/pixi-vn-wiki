@@ -1,5 +1,5 @@
-import { baseOptions } from "@/app/layout.config";
 import { faqTree, sidebar } from "@/components/docs-layout-props";
+import { baseOptions } from "@/lib/layout.shared";
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import { type ReactNode } from "react";
 
