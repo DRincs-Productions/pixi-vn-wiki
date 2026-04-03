@@ -1,11 +1,18 @@
-import { faqSource, inkSource, jsonSource, nqtrSource, renpySource, source } from "@/lib/source";
-import { getMDXComponents } from "@/mdx-components";
+import { getMDXComponents } from "@/components/mdx";
+import { faqSource, getPageMarkdownUrl, inkSource, jsonSource, nqtrSource, renpySource, source } from "@/lib/source";
+import {
+    DocsBody,
+    DocsDescription,
+    DocsPage,
+    DocsTitle,
+    EditOnGitHub,
+    ViewOptionsPopover,
+} from "fumadocs-ui/layouts/docs/page";
 import { createRelativeLink } from "fumadocs-ui/mdx";
-import { DocsBody, DocsDescription, DocsPage, DocsTitle, EditOnGitHub } from "fumadocs-ui/page";
 import { Edit } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { ChatGPTButton, PatreonButton, TranslateButton } from "./page-actions";
+import { PatreonButton, TranslateButton } from "./page-actions";
 
 export default async function MDXPage({
     lang,
@@ -49,28 +56,30 @@ export default async function MDXPage({
     if (!page || !pageBase) notFound();
     const t = await getTranslations("common");
 
-    const MDXContent = page.data.body;
+    const MDX = page.data.body;
+    const markdownUrl = getPageMarkdownUrl(page).url;
 
     return (
         <DocsPage toc={page.data.toc} full={page.data.full}>
             <DocsTitle>{page.data.title}</DocsTitle>
             <DocsDescription className='mb-0'>{page.data.description}</DocsDescription>
+            <div className='flex flex-row gap-2 items-center border-b pb-6'>
+                <EditOnGitHub
+                    href={`https://github.com/DRincs-Productions/pixi-vn-wiki/blob/main/content/${folther}/${pageBase.path}`}
+                >
+                    <Edit className='size-3.5' />
+                    {t("edit_github")}
+                </EditOnGitHub>
+                <TranslateButton lang={lang} folther={folther} />
+                <ViewOptionsPopover markdownUrl={markdownUrl} />
+                {/* <ChatGPTButton markdownUrl={pageBase.url} /> */}
+                <PatreonButton />
+            </div>
             <DocsBody>
-                <div className='flex flex-row gap-2 items-center mb-4'>
-                    <EditOnGitHub
-                        href={`https://github.com/DRincs-Productions/pixi-vn-wiki/blob/main/content/${folther}/${pageBase.path}`}
-                    >
-                        <Edit className='size-3.5' />
-                        {t("edit_github")}
-                    </EditOnGitHub>
-                    <TranslateButton lang={lang} folther={folther} />
-                    <ChatGPTButton markdownUrl={pageBase.url} />
-                    <PatreonButton />
-                </div>
-                <MDXContent
+                <MDX
                     components={getMDXComponents({
                         // this allows you to link to other pages with relative file paths
-                        a: createRelativeLink(inkSource, page),
+                        a: createRelativeLink(source, page),
                     })}
                 />
             </DocsBody>
