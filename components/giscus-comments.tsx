@@ -2,24 +2,23 @@
 import Giscus from "@giscus/react";
 import { useTheme } from "next-themes";
 
-export function GiscusComments() {
+export function GiscusComments({ lang }: { lang?: string }) {
     const { resolvedTheme } = useTheme();
 
     return (
         <div className='mt-8 border-t pt-8'>
-            {/* repoId and categoryId can be generated at https://giscus.app for DRincs-Productions/pixi-vn */}
             <Giscus
                 repo='DRincs-Productions/pixi-vn'
-                repoId='TODO_REPLACE_REPO_ID'
-                category='General'
-                categoryId='TODO_REPLACE_CATEGORY_ID'
+                repoId='R_kgDOLSXFcQ'
+                category='Wiki chat (giscus)'
+                categoryId='DIC_kwDOLSXFcc4CkZqY'
                 mapping='pathname'
                 strict='0'
                 reactionsEnabled='1'
                 emitMetadata='0'
-                inputPosition='top'
+                inputPosition='bottom'
                 theme={resolvedTheme === "dark" ? "dark" : "light"}
-                lang='en'
+                lang={lang ?? "en"}
                 loading='lazy'
             />
         </div>

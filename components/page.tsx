@@ -89,7 +89,7 @@ export default async function MDXPage({
                     })}
                 />
             </DocsBody>
-            <GiscusComments />
+            <GiscusComments lang={lang} />
         </DocsPage>
     );
 }
