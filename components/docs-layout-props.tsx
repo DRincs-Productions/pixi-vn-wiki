@@ -794,6 +794,7 @@ export async function sidebar(lang?: string): Promise<
             },
             {
                 title: "FAQ",
+                icon: <CircleQuestionMark size={16} />,
                 description: "Frequently Asked Questions",
                 url: `${preUrl}/faq`,
             },
