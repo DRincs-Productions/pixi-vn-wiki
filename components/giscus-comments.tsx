@@ -2,8 +2,9 @@
 import Giscus from "@giscus/react";
 import { useTheme } from "next-themes";
 
-export function GiscusComments({ lang }: { lang?: string }) {
+export function GiscusComments({ lang, folther, slug }: { lang?: string; folther: string; slug?: string[] }) {
     const { resolvedTheme } = useTheme();
+    const term = slug && slug.length > 0 ? `${folther}/${slug.join("/")}` : folther;
 
     return (
         <div className='mt-8 border-t pt-8'>
@@ -12,7 +13,8 @@ export function GiscusComments({ lang }: { lang?: string }) {
                 repoId='R_kgDOLSXFcQ'
                 category='Wiki chat (giscus)'
                 categoryId='DIC_kwDOLSXFcc4CkZqY'
-                mapping='pathname'
+                mapping='specific'
+                term={term}
                 strict='0'
                 reactionsEnabled='1'
                 emitMetadata='0'

@@ -89,7 +89,7 @@ export default async function MDXPage({
                     })}
                 />
             </DocsBody>
-            <GiscusComments lang={lang} />
+            <GiscusComments lang={lang} folther={folther} slug={slug} />
         </DocsPage>
     );
 }
