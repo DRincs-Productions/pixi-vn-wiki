@@ -15,6 +15,8 @@ export const gitConfig = {
     branch: "main",
 };
 
+export const discordUrl = "https://discord.gg/E95FZWakzp";
+
 // available languages that will be displayed on UI
 // make sure `locale` is consistent with your i18n config
 export const locales = [

@@ -1,7 +1,9 @@
 import { CodeBlockPre } from "@/components/code-block";
 import { buttonVariants } from "@/components/ui/button";
+import { ItchLogo } from "@/components/ui/icons";
 import { cn } from "@/lib/cn";
 import { createMetadata } from "@/lib/metadata";
+import { discordUrl } from "@/lib/shared";
 import { source } from "@/lib/source";
 import ArchImg from "@/public/arch.png";
 import LogoImg from "@/public/logo.webp";
@@ -14,7 +16,6 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { CreateAppAnimation, PreviewImages } from "./home.client";
-import { ItchLogo } from "./icons";
 
 const badgeVariants = cva(
     "inline-flex size-7 items-center justify-center rounded-full bg-fd-primary font-medium text-fd-primary-foreground",
@@ -173,7 +174,7 @@ async function Hero() {
                             {t("why_pixivn")}
                         </Link>
                         <a
-                            href='https://discord.gg/E95FZWakzp'
+                            href={discordUrl}
                             target='_blank'
                             rel='noreferrer noopener'
                             className={cn(

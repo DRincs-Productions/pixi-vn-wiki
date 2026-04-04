@@ -1,8 +1,9 @@
+import { DiscordIcon } from "@/components/ui/icons";
 import { i18n } from "@/lib/i18n";
 import LogoImg from "@/public/logo.webp";
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import Image from "next/image";
-import { appName, gitConfig } from "./shared";
+import { appName, discordUrl, gitConfig } from "./shared";
 
 export function baseOptions(): BaseLayoutProps {
     return {
@@ -17,5 +18,14 @@ export function baseOptions(): BaseLayoutProps {
         },
         githubUrl: `https://github.com/${gitConfig.user}/${gitConfig.repo}`,
         i18n,
+        links: [
+            {
+                type: "icon",
+                label: "Discord",
+                icon: <DiscordIcon className='size-5' />,
+                text: "Discord",
+                url: discordUrl,
+            },
+        ],
     };
 }
