@@ -481,6 +481,7 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
             { type: "separator", name: t("introduction") },
             { type: "page", name: t("start"), icon: <Album />, url: `${preUrl}/ink` },
             { type: "page", name: t("vscode-extension"), url: `${preUrl}/ink/vscode-extension` },
+            { type: "page", name: "llms.txt", url: `/llms.txt`, icon: <Brain /> },
             {
                 type: "folder",
                 name: t("make-your-first"),
@@ -631,6 +632,7 @@ export async function nqtrTree(lang?: string): Promise<DocsLayoutProps["tree"]> 
                 icon: <Album />,
                 url: `${preUrl}/nqtr`,
             },
+            { type: "page", name: "llms.txt", url: `/llms.txt`, icon: <Brain /> },
             {
                 type: "folder",
                 name: t("make-your-first"),
