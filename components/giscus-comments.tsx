@@ -1,4 +1,5 @@
 "use client";
+import { gitConfig } from "@/lib/shared";
 import Giscus from "@giscus/react";
 import { useTheme } from "next-themes";
 
@@ -9,7 +10,7 @@ export function GiscusComments({ lang, folther, slug }: { lang?: string; folther
     return (
         <div className='mt-8 border-t pt-8'>
             <Giscus
-                repo='DRincs-Productions/pixi-vn'
+                repo={`${gitConfig.user}/${gitConfig.repo}`}
                 repoId='R_kgDOLSXFcQ'
                 category='Wiki chat (giscus)'
                 categoryId='DIC_kwDOLSXFcc4CkZqY'
