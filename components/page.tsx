@@ -13,7 +13,7 @@ import { createRelativeLink } from "fumadocs-ui/mdx";
 import { Edit } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { PatreonButton, TranslateButton } from "./page-actions";
+import { ChatGPTButton, PatreonButton, TranslateButton } from "./page-actions";
 
 export default async function MDXPage({
     lang,
@@ -77,7 +77,7 @@ export default async function MDXPage({
                 </EditOnGitHub>
                 <TranslateButton lang={lang} folther={folther} />
                 <ViewOptionsPopover markdownUrl={markdownUrl} />
-                {/* <ChatGPTButton markdownUrl={pageBase.url} /> */}
+                <ChatGPTButton markdownUrl={pageBase.url} />
                 <PatreonButton />
             </div>
             <DocsBody>
