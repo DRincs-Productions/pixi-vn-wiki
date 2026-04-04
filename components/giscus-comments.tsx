@@ -7,11 +7,12 @@ export function GiscusComments() {
 
     return (
         <div className='mt-8 border-t pt-8'>
+            {/* repoId and categoryId can be generated at https://giscus.app for DRincs-Productions/pixi-vn */}
             <Giscus
-                repo='DRincs-Productions/pixi-vn-wiki'
-                repoId='R_kgDONapE6Q'
+                repo='DRincs-Productions/pixi-vn'
+                repoId='TODO_REPLACE_REPO_ID'
                 category='General'
-                categoryId='DIC_kwDONapE6c4CmOg5'
+                categoryId='TODO_REPLACE_CATEGORY_ID'
                 mapping='pathname'
                 strict='0'
                 reactionsEnabled='1'
