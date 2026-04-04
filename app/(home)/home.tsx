@@ -18,7 +18,7 @@ import type { ReactNode } from "react";
 import { CreateAppAnimation, PreviewImages } from "./home.client";
 
 const badgeVariants = cva(
-    "inline-flex size-7 items-center justify-center rounded-full bg-fd-primary font-medium text-fd-primary-foreground",
+    "inline-flex size-7 items-center justify-center rounded-full bg-fd-primary font-medium text-fd-primary-foreground ring-4 ring-fd-primary/20",
 );
 
 export async function generateStaticParams() {
@@ -63,7 +63,14 @@ async function Architecture() {
     return (
         <div className='flex flex-col gap-4 border-x border-t p-8 md:px-12 lg:flex-row'>
             <div className='text-start'>
-                <p className='px-2 py-1 text-sm font-mono bg-fd-primary text-fd-primary-foreground font-bold w-fit mb-4'>
+                <p
+                    className='px-2 py-1 text-sm font-mono text-fd-primary-foreground font-bold w-fit mb-4 animate-pixivn-shimmer'
+                    style={{
+                        background:
+                            "linear-gradient(90deg, var(--color-fd-primary), var(--color-brand-secondary), var(--color-fd-primary))",
+                        backgroundSize: "200% auto",
+                    }}
+                >
                     {t("info")}
                 </p>
                 <h2 className='text-2xl font-semibold mb-4'>{t("title")}</h2>
@@ -114,9 +121,9 @@ function Highlight({
     children: ReactNode;
 }): React.ReactElement {
     return (
-        <div className='border-l border-t px-6 py-12'>
+        <div className='border-l border-t px-6 py-12 group transition-all duration-300 hover:bg-fd-accent/30 hover:shadow-[inset_4px_0_0_0_var(--color-fd-primary)]'>
             <div className='mb-4 flex flex-row items-center gap-2 text-fd-muted-foreground'>
-                <Icon className='size-4' />
+                <Icon className='size-4 group-hover:text-fd-primary transition-colors duration-300' />
                 <h2 className='text-sm font-medium'>{heading}</h2>
             </div>
             <span className='font-medium'>{children}</span>
@@ -297,8 +304,15 @@ async function Contributing() {
     const t = await getTranslations("Contributing");
 
     return (
-        <div className='flex flex-col items-center border-x border-t px-4 py-16 text-center'>
-            <Heart fill='currentColor' className='text-pink-500 mb-4' />
+        <div className='flex flex-col items-center border-x border-t px-4 py-16 text-center relative overflow-hidden'>
+            <div
+                className='absolute inset-0 pointer-events-none opacity-[0.06] dark:opacity-[0.10]'
+                style={{
+                    background:
+                        "radial-gradient(ellipse at center, var(--color-brand-secondary) 0%, transparent 70%)",
+                }}
+            />
+            <Heart fill='currentColor' className='text-pink-500 mb-4 animate-pixivn-float' />
             <h2 className='mb-4 text-xl font-semibold sm:text-2xl'>{t("title")}</h2>
             <p className='mb-4 text-fd-muted-foreground'>{t("subtitle")}</p>
             <div className='mb-8 flex flex-row items-center gap-2'>
