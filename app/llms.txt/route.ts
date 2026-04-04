@@ -6,18 +6,18 @@ export const revalidate = false;
 export function GET() {
     return new Response(
         llms(source)
-            .index()
+            .index("en")
             .replaceAll("# Docs", "# Pixi'VN")
             .concat("\n\n")
-            .concat(llms(inkSource).index().replaceAll("# Docs", "# ink language integration"))
+            .concat(llms(inkSource).index("en").replaceAll("# Docs", "## ink language integration"))
             .concat("\n\n")
-            .concat(llms(renpySource).index().replaceAll("# Docs", "# Ren'py language integration"))
+            .concat(llms(renpySource).index("en").replaceAll("# Docs", "## Ren'py language integration"))
             .concat("\n\n")
-            .concat(llms(jsonSource).index().replaceAll("# Docs", "# Pixi'VN Json"))
+            .concat(llms(nqtrSource).index("en").replaceAll("# Docs", "## NQTR"))
             .concat("\n\n")
-            .concat(llms(nqtrSource).index().replaceAll("# Docs", "# NQTR"))
+            .concat(llms(jsonSource).index("en").replaceAll("# Docs", "## Pixi'VN Json"))
             .concat("\n\n")
-            .concat(llms(faqSource).index().replaceAll("# Docs", "# FAQ"))
+            .concat(llms(faqSource).index("en").replaceAll("# Docs", "## FAQ"))
             .replaceAll("/en/", "/"),
     );
 }
