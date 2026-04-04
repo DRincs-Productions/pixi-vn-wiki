@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { ReactNode } from "react";
+import { VSCodeIcon } from "./ui/icons";
 
 export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
     const preUrl = lang ? `/${lang}` : "";
@@ -480,7 +481,7 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
         children: [
             { type: "separator", name: t("introduction") },
             { type: "page", name: t("start"), icon: <Album />, url: `${preUrl}/ink` },
-            { type: "page", name: t("vscode-extension"), url: `${preUrl}/ink/vscode-extension` },
+            { type: "page", name: t("vscode-extension"), url: `${preUrl}/ink/vscode-extension`, icon: <VSCodeIcon /> },
             { type: "page", name: "llms.txt", url: `/llms.txt`, icon: <Brain /> },
             {
                 type: "folder",
