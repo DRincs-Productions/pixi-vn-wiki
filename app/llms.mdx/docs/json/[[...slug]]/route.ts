@@ -1,4 +1,4 @@
-import { getLLMText, getPageMarkdownUrl, source } from "@/lib/source";
+import { getLLMText, getPageMarkdownUrl, jsonSource } from "@/lib/source";
 import { notFound } from "next/navigation";
 
 export const revalidate = false;
@@ -6,7 +6,7 @@ export const revalidate = false;
 export async function GET(_req: Request, { params }: RouteContext<"/llms.mdx/docs/[[...slug]]">) {
     const { slug } = await params;
     // remove the appended "content.md"
-    const page = source.getPage(slug?.slice(0, -1));
+    const page = jsonSource.getPage(slug?.slice(0, -1));
     if (!page) notFound();
 
     return new Response((await getLLMText(page)).replaceAll("/en/", "/"), {
@@ -17,7 +17,7 @@ export async function GET(_req: Request, { params }: RouteContext<"/llms.mdx/doc
 }
 
 export function generateStaticParams() {
-    return source.getPages().map((page) => ({
-        slug: getPageMarkdownUrl(page, "start").segments,
+    return jsonSource.getPages().map((page) => ({
+        slug: getPageMarkdownUrl(page, "json").segments,
     }));
 }

@@ -62,7 +62,7 @@ export default async function MDXPage({
     const t = await getTranslations({ locale: lang ?? routing.defaultLocale, namespace: "common" });
 
     const MDX = page.data.body;
-    const markdownUrl = getPageMarkdownUrl(page).url;
+    const markdownUrl = getPageMarkdownUrl(page, folther).url;
 
     return (
         <DocsPage toc={page.data.toc} full={page.data.full}>

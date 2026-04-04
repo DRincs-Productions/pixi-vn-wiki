@@ -169,12 +169,19 @@ export function getPageImage(page: InferPageType<typeof source>) {
     };
 }
 
-export function getPageMarkdownUrl(page: InferPageType<typeof source>) {
+export function getPageMarkdownUrl(
+    page: InferPageType<typeof source>,
+    folther: "start" | "ink" | "faq" | "renpy" | "nqtr" | "json",
+) {
     const segments = [...page.slugs, "content.md"];
+    const url =
+        folther === "start"
+            ? `${docsContentRoute}/${segments.join("/")}`
+            : `${docsContentRoute}/${folther}/${segments.join("/")}`;
 
     return {
         segments,
-        url: `${docsContentRoute}/${segments.join("/")}`,
+        url: url,
     };
 }
 

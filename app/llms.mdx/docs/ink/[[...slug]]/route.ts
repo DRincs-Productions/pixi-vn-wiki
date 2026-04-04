@@ -1,12 +1,12 @@
-import { getLLMText, getPageMarkdownUrl, source } from "@/lib/source";
+import { getLLMText, getPageMarkdownUrl, inkSource } from "@/lib/source";
 import { notFound } from "next/navigation";
 
 export const revalidate = false;
 
-export async function GET(_req: Request, { params }: RouteContext<"/llms.mdx/docs/[[...slug]]">) {
+export async function GET(_req: Request, { params }: RouteContext<"/llms.mdx/docs/ink/[[...slug]]">) {
     const { slug } = await params;
     // remove the appended "content.md"
-    const page = source.getPage(slug?.slice(0, -1));
+    const page = inkSource.getPage(slug?.slice(0, -1));
     if (!page) notFound();
 
     return new Response((await getLLMText(page)).replaceAll("/en/", "/"), {
@@ -17,7 +17,7 @@ export async function GET(_req: Request, { params }: RouteContext<"/llms.mdx/doc
 }
 
 export function generateStaticParams() {
-    return source.getPages().map((page) => ({
-        slug: getPageMarkdownUrl(page, "start").segments,
+    return inkSource.getPages().map((page) => ({
+        slug: getPageMarkdownUrl(page, "ink").segments,
     }));
 }
