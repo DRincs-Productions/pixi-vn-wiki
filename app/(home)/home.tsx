@@ -35,7 +35,7 @@ export default function Home() {
                     background: `repeating-linear-gradient(to right, ${gridColor}, ${gridColor} 1px,transparent 1px,transparent 50px), repeating-linear-gradient(to bottom, ${gridColor}, ${gridColor} 1px,transparent 1px,transparent 50px)`,
                 }}
             />
-            <main className='container relative max-w-[1100px] px-2 py-4 z-[2] lg:py-8'>
+            <main className='container relative max-w-[1100px] mx-auto px-2 py-4 z-[2] lg:py-8'>
                 <div
                     style={{
                         background:
@@ -133,7 +133,7 @@ async function Hero() {
                 <div className='order-1 md:order-2 flex justify-center items-center mt-8 md:mt-0 md:w-[30%] h-full relative'>
                     <div
                         className='flex justify-center items-center w-full h-full
-                        md:absolute md:top-[-2.5rem] md:left-[-2.5rem] md:right-0'
+                        md:absolute md:top-[-2.5rem] md:left-0 md:right-0'
                     >
                         <div className='w-[300px] h-[300px] md:w-auto md:h-auto flex justify-center items-center'>
                             <Image src={LogoImg} alt='preview' priority className='w-full h-full object-contain' />
