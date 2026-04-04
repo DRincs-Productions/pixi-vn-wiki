@@ -4,11 +4,10 @@ import { cn } from "@/lib/cn";
 import PCImg from "@/public/pointclick.png";
 import VNImg from "@/public/visualnovel.png";
 import { cva } from "class-variance-authority";
-import { TerminalIcon } from "lucide-react";
 import Image from "next/image";
-import { Fragment, type HTMLAttributes, type ReactElement, useEffect, useState } from "react";
+import { type ComponentProps, Fragment, type HTMLAttributes, type ReactElement, useEffect, useState } from "react";
 
-export function CreateAppAnimation() {
+export function CreateAppAnimation(props: ComponentProps<'div'>) {
     const installCmd = "npm create pixi-vn@latest";
     const tickTime = 100;
     const timeCommandEnter = installCmd.length;
@@ -34,7 +33,7 @@ export function CreateAppAnimation() {
     lines.push(
         <span key='command_type'>
             {installCmd.substring(0, tick)}
-            {tick < timeCommandEnter && <div className='inline-block h-3 w-1 animate-pulse bg-white' />}
+            {tick < timeCommandEnter && <div className='inline-block h-3 w-1 animate-pulse bg-fd-foreground' />}
         </span>,
     );
 
@@ -47,14 +46,14 @@ export function CreateAppAnimation() {
             <Fragment key='command_response'>
                 {tick > timeCommandRun + 1 && (
                     <>
-                        <span className='font-bold'>◇ Project name</span>
+                        <span className='font-medium'>◇ Project name</span>
                         <span>│ My Game</span>
                     </>
                 )}
                 {tick > timeCommandRun + 2 && (
                     <>
                         <span>│</span>
-                        <span className='font-bold'>◆ Select the type of game you want to create:</span>
+                        <span className='font-medium'>◆ Select the type of game you want to create:</span>
                     </>
                 )}
                 {tick > timeCommandRun + 3 && (
@@ -68,7 +67,7 @@ export function CreateAppAnimation() {
 
     return (
         <div
-            className='relative'
+            {...props}
             onMouseEnter={() => {
                 if (tick >= timeEnd) {
                     setTick(0);
@@ -78,27 +77,18 @@ export function CreateAppAnimation() {
             {tick > timeWindowOpen && (
                 <LaunchAppWindow className='absolute bottom-5 right-4 z-10 animate-in fade-in slide-in-from-top-10' />
             )}
-            <pre className='overflow-hidden rounded-xl border text-[13px] shadow-lg'>
-                <div className='flex flex-row items-center gap-2 border-b px-4 py-2'>
-                    <TerminalIcon className='size-4' /> <span className='font-bold'>Terminal</span>
-                    <div className='grow' />
-                    <div className='size-2 rounded-full bg-red-400' />
-                </div>
-                <div className='min-h-[200px] bg-gradient-to-b from-fd-card'>
-                    <code className='grid p-4'>{lines}</code>
-                </div>
+            <pre className='font-mono text-sm min-h-[240px]'>
+                <code className='grid'>{lines}</code>
             </pre>
         </div>
     );
 }
 
-function LaunchAppWindow(props: HTMLAttributes<HTMLDivElement>): React.ReactElement {
+function LaunchAppWindow(props: HTMLAttributes<HTMLDivElement>) {
     return (
-        <div {...props} className={cn("overflow-hidden rounded-md border bg-fd-background shadow-xl", props.className)}>
-            <div className='relative flex h-6 flex-row items-center border-b bg-fd-muted px-4 text-xs text-fd-muted-foreground'>
-                <p className='absolute inset-x-0 text-center'>localhost:1420</p>
-            </div>
-            <div className='p-4 text-sm'>New App launched!</div>
+        <div {...props} className={cn("overflow-hidden rounded-md border bg-fd-popover shadow-lg", props.className)}>
+            <p className='text-xs text-fd-muted-foreground text-center px-4 py-2 border-b'>localhost:1420</p>
+            <p className='text-sm px-4 py-2'>New App launched!</p>
         </div>
     );
 }

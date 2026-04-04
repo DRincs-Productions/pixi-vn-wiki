@@ -218,7 +218,14 @@ async function Introduction() {
                 <div className={cn(badgeVariants())}>1</div>
                 <h3 className='text-xl font-semibold'>{t("create_it")}</h3>
                 <p className='mb-8 text-fd-muted-foreground'>{t("create_it_description")}</p>
-                <CreateAppAnimation />
+                <div className='relative overflow-hidden rounded-xl border shadow-lg'>
+                    <div className='flex flex-row items-center gap-2 border-b p-2 text-fd-muted-foreground'>
+                        <TerminalIcon className='size-4' />
+                        <span className='text-xs font-medium'>Terminal</span>
+                        <div className='ms-auto me-2 size-2 rounded-full bg-red-400' />
+                    </div>
+                    <CreateAppAnimation className='p-2' />
+                </div>
             </div>
             <div className='flex flex-col gap-2 border-l border-t px-6 py-12 md:py-16'>
                 <div className={cn(badgeVariants())}>2</div>
