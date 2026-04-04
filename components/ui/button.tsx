@@ -2,7 +2,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 const variants = {
     primary:
-        "bg-fd-primary text-fd-primary-foreground hover:bg-fd-primary/80 hover:shadow-[0_0_20px_-4px_var(--color-brand-primary)] disabled:bg-fd-secondary disabled:text-fd-secondary-foreground",
+        "bg-fd-primary text-fd-primary-foreground hover:bg-fd-primary/80 hover:shadow-[0_0_20px_-4px_var(--color-brand-secondary)] disabled:bg-fd-secondary disabled:text-fd-secondary-foreground",
     outline: "border hover:bg-fd-accent hover:text-fd-accent-foreground",
     ghost: "hover:bg-fd-accent hover:text-fd-accent-foreground",
     secondary: "border bg-fd-secondary text-fd-secondary-foreground hover:bg-fd-accent hover:text-fd-accent-foreground",

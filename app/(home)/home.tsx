@@ -121,9 +121,9 @@ function Highlight({
     children: ReactNode;
 }): React.ReactElement {
     return (
-        <div className='border-l border-t px-6 py-12 group transition-all duration-300 hover:bg-fd-accent/30 hover:shadow-[inset_4px_0_0_0_var(--color-fd-primary)]'>
+        <div className='border-l border-t px-6 py-12 group transition-all duration-300 hover:bg-fd-accent/30 hover:shadow-[inset_4px_0_0_0_var(--color-brand-secondary)]'>
             <div className='mb-4 flex flex-row items-center gap-2 text-fd-muted-foreground'>
-                <Icon className='size-4 group-hover:text-fd-primary transition-colors duration-300' />
+                <Icon className='size-4 group-hover:text-[var(--color-brand-secondary)] transition-colors duration-300' />
                 <h2 className='text-sm font-medium'>{heading}</h2>
             </div>
             <span className='font-medium'>{children}</span>
