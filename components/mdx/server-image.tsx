@@ -1,12 +1,22 @@
 "use client";
 
-import { ImageZoom } from "fumadocs-ui/components/image-zoom";
+import Image from "next/image";
+import type { ImgHTMLAttributes } from "react";
 
-export function Image(props: { alt: string; src: string; title?: string; style?: React.CSSProperties }) {
-    if (props.alt.endsWith("-h3")) {
+export default function ServerImage(
+    props: {
+        alt: string;
+        src: string;
+        title?: string;
+        style?: React.CSSProperties;
+    } & ImgHTMLAttributes<HTMLImageElement>,
+) {
+    const { alt, src, title, style, ...rest } = props;
+
+    if (alt?.endsWith("-h3")) {
         return (
-            <ImageZoom
-                {...props}
+            <Image
+                {...{ src, alt, title }}
                 style={{
                     width: "26px",
                     height: "26px",
@@ -15,15 +25,16 @@ export function Image(props: { alt: string; src: string; title?: string; style?:
                     borderRadius: "5px",
                     marginBottom: "0px",
                     marginTop: "15px",
-                    ...props.style,
+                    ...(style || {}),
                 }}
+                {...(rest as any)}
             />
         );
     }
-    if (props.alt.endsWith("-h3-bgwt")) {
+    if (alt?.endsWith("-h3-bgwt")) {
         return (
-            <ImageZoom
-                {...props}
+            <Image
+                {...{ src, alt, title }}
                 style={{
                     width: "26px",
                     height: "26px",
@@ -33,15 +44,16 @@ export function Image(props: { alt: string; src: string; title?: string; style?:
                     marginBottom: "0px",
                     marginTop: "15px",
                     backgroundColor: "white",
-                    ...props.style,
+                    ...(style || {}),
                 }}
+                {...(rest as any)}
             />
         );
     }
-    if (props.alt.endsWith("-h2")) {
+    if (alt?.endsWith("-h2")) {
         return (
-            <ImageZoom
-                {...props}
+            <Image
+                {...{ src, alt, title }}
                 style={{
                     width: "28px",
                     height: "28px",
@@ -50,15 +62,16 @@ export function Image(props: { alt: string; src: string; title?: string; style?:
                     borderRadius: "5px",
                     marginBottom: "0px",
                     marginTop: "29px",
-                    ...props.style,
+                    ...(style || {}),
                 }}
+                {...(rest as any)}
             />
         );
     }
-    if (props.alt.endsWith("-h2-bgwt")) {
+    if (alt?.endsWith("-h2-bgwt")) {
         return (
-            <ImageZoom
-                {...props}
+            <Image
+                {...{ src, alt, title }}
                 style={{
                     width: "28px",
                     height: "28px",
@@ -68,15 +81,16 @@ export function Image(props: { alt: string; src: string; title?: string; style?:
                     marginBottom: "0px",
                     marginTop: "29px",
                     backgroundColor: "white",
-                    ...props.style,
+                    ...(style || {}),
                 }}
+                {...(rest as any)}
             />
         );
     }
-    if (props.alt.endsWith("-text")) {
+    if (alt?.endsWith("-text")) {
         return (
-            <ImageZoom
-                {...props}
+            <Image
+                {...{ src, alt, title }}
                 style={{
                     width: "24px",
                     height: "24px",
@@ -85,24 +99,27 @@ export function Image(props: { alt: string; src: string; title?: string; style?:
                     borderRadius: "5px",
                     marginBottom: "0px",
                     marginTop: "0px",
-                    ...props.style,
+                    ...(style || {}),
                 }}
+                {...(rest as any)}
             />
         );
     }
-    if (props.alt === "Architecture") {
+    if (alt === "Architecture") {
         return (
-            <ImageZoom
-                {...props}
+            <Image
+                {...{ src, alt, title }}
                 className='mx-auto -my-16 w-full max-w-[400px] invert dark:invert-0 lg:mx-0'
                 style={{
                     maxHeight: "300px",
                     width: "auto",
                     height: "auto",
-                    ...props.style,
+                    ...(style || {}),
                 }}
+                {...(rest as any)}
             />
         );
     }
-    return <ImageZoom {...props} />;
+
+    return <Image {...{ src, alt, title }} style={style} {...(rest as any)} />;
 }

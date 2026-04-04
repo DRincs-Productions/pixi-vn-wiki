@@ -35,7 +35,7 @@ export function CreateAppAnimation() {
         <span key='command_type'>
             {installCmd.substring(0, tick)}
             {tick < timeCommandEnter && <div className='inline-block h-3 w-1 animate-pulse bg-white' />}
-        </span>
+        </span>,
     );
 
     if (tick >= timeCommandEnter) {
@@ -63,7 +63,7 @@ export function CreateAppAnimation() {
                         <span>│ ○ Game Engine</span>
                     </>
                 )}
-            </Fragment>
+            </Fragment>,
         );
 
     return (
@@ -137,7 +137,7 @@ export function PreviewImages() {
                 priority
                 className={cn(
                     "w-full select-none duration-1000 animate-in fade-in -mb-60 slide-in-from-bottom-12 lg:-mb-40",
-                    active !== 0 && "hidden"
+                    active !== 0 && "hidden",
                 )}
             />
             {active === 1 && (
@@ -147,7 +147,7 @@ export function PreviewImages() {
                     priority
                     className={cn(
                         "w-full select-none duration-1000 animate-in fade-in -mb-60 slide-in-from-bottom-12 lg:-mb-40",
-                        active !== 1 && "hidden"
+                        active !== 1 && "hidden",
                     )}
                 />
             )}

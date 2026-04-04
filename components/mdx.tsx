@@ -1,20 +1,19 @@
 import DynamicLink from "@/components/dynamiclink";
 import * as AccordionsComponents from "@/components/mdx/accordion";
-import { Image } from "@/components/mdx/img";
 import { Mermaid } from "@/components/mdx/mermaid";
+import ServerImage from "@/components/mdx/server-image";
 import * as TabsComponents from "fumadocs-ui/components/tabs";
 import defaultMdxComponents from "fumadocs-ui/mdx";
 import * as icons from "lucide-react";
 import type { MDXComponents } from "mdx/types";
 
-// use this function to get MDX components, you will need it for rendering MDX
-export function getMDXComponents(components?: MDXComponents): MDXComponents {
+export function getMDXComponents(components?: MDXComponents) {
     return {
         ...(icons as unknown as MDXComponents),
         ...defaultMdxComponents,
         ...TabsComponents,
         ...AccordionsComponents,
-        img: Image,
+        img: ServerImage as any,
         Sandbox: ({
             entry,
             template,
@@ -44,5 +43,11 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
         Comments: () => null,
         DynamicLink,
         ...components,
-    };
+    } satisfies MDXComponents;
+}
+
+export const useMDXComponents = getMDXComponents;
+
+declare global {
+    type MDXProvidedComponents = ReturnType<typeof getMDXComponents>;
 }

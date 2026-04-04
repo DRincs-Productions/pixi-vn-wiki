@@ -17,7 +17,11 @@ export function ReactTemplate({
             customSetup={{
                 dependencies: {
                     "@drincs/pixi-vn": "^1.6.3",
+                    "@pixi/devtools": "^2.0.1",
+                    "@pixi/sound": "^6.0.1",
                     "@tanstack/react-query": "^5.85.2",
+                    motion: "^12.38.0",
+                    "pixi.js": "^8.17.1",
                     "react-markdown": "^8.0.0",
                     "rehype-raw": "^7.0.0",
                     "remark-gfm": "^4.0.1",

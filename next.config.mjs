@@ -9,7 +9,12 @@ const config = {
     output: "export",
     reactStrictMode: true,
     images: {
-        domains: ["pixijs.io", "github.com", "pixijs.download", "firebasestorage.googleapis.com"],
+        remotePatterns: [
+            { protocol: "https", hostname: "pixijs.io" },
+            { protocol: "https", hostname: "github.com" },
+            { protocol: "https", hostname: "pixijs.download" },
+            { protocol: "https", hostname: "firebasestorage.googleapis.com" },
+        ],
         unoptimized: true,
     },
     eslint: {

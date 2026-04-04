@@ -1,5 +1,5 @@
-import { baseOptions } from "@/app/layout.config";
 import { jsonTree, sidebar } from "@/components/docs-layout-props";
+import { baseOptions } from "@/lib/layout.shared";
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import { setRequestLocale } from "next-intl/server";
 import { type ReactNode } from "react";

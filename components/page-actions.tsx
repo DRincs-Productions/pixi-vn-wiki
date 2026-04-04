@@ -288,7 +288,7 @@ export function ChatGPTButton({ markdownUrl }: { markdownUrl: string }) {
                 hints: "search",
                 q: t("query_chatgpt", {
                     fullMarkdownUrl: `${fullMarkdownUrl}`.replaceAll("/en", ""),
-                    llms: `https://pixi-vn.web.app/llms-full.txt`,
+                    llms: `https://pixi-vn.web.app/llms.txt`,
                 }),
             })}`}
         >
