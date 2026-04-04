@@ -13,6 +13,10 @@ export function GiscusComments({ lang, folther, slug }: { lang?: string; folther
         setMounted(true);
     }, []);
 
+    if (!mounted) {
+        return <div className='mt-8 border-t pt-8' />;
+    }
+
     return (
         <div className='mt-8 border-t pt-8'>
             <Giscus
@@ -26,7 +30,7 @@ export function GiscusComments({ lang, folther, slug }: { lang?: string; folther
                 reactionsEnabled='1'
                 emitMetadata='0'
                 inputPosition='bottom'
-                theme={mounted && resolvedTheme === "dark" ? "dark" : "light"}
+                theme={resolvedTheme === "dark" ? "dark" : "light"}
                 lang={lang ?? "en"}
                 loading='lazy'
             />
