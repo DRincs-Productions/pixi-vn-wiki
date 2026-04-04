@@ -4,6 +4,7 @@ import { cn } from "@/lib/cn";
 import PCImg from "@/public/pointclick.png";
 import VNImg from "@/public/visualnovel.png";
 import { cva } from "class-variance-authority";
+import { TerminalIcon } from "lucide-react";
 import Image from "next/image";
 import { type ComponentProps, Fragment, type HTMLAttributes, type ReactElement, useEffect, useState } from "react";
 

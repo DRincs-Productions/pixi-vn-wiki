@@ -10,7 +10,7 @@ import LogoImg from "@/public/logo.webp";
 import { cva } from "class-variance-authority";
 import { File, Files, Folder } from "fumadocs-ui/components/files";
 import { Tab, Tabs } from "fumadocs-ui/components/tabs";
-import { Heart, LayoutIcon, type LucideIcon, MousePointer, SearchIcon, TimerIcon } from "lucide-react";
+import { Heart, LayoutIcon, type LucideIcon, MousePointer, SearchIcon, TerminalIcon, TimerIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
@@ -315,8 +315,7 @@ async function Contributing() {
             <div
                 className='absolute inset-0 pointer-events-none opacity-[0.06] dark:opacity-[0.10]'
                 style={{
-                    background:
-                        "radial-gradient(ellipse at center, var(--color-brand-secondary) 0%, transparent 70%)",
+                    background: "radial-gradient(ellipse at center, var(--color-brand-secondary) 0%, transparent 70%)",
                 }}
             />
             <Heart fill='currentColor' className='text-pink-500 mb-4 animate-pixivn-float' />
