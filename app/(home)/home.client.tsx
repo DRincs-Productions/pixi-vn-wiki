@@ -78,7 +78,15 @@ export function CreateAppAnimation() {
             {tick > timeWindowOpen && (
                 <LaunchAppWindow className='absolute bottom-5 right-4 z-10 animate-in fade-in slide-in-from-top-10' />
             )}
-            <pre className='overflow-hidden rounded-xl border text-[13px] shadow-lg'>
+            <pre className='overflow-hidden rounded-xl border text-[13px] shadow-lg relative'>
+                {/* scanline overlay — gives a retro CRT feel */}
+                <div
+                    className='absolute inset-0 pointer-events-none z-10 rounded-xl'
+                    style={{
+                        backgroundImage:
+                            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,var(--pixivn-scanline-opacity,0.04)) 2px, rgba(0,0,0,var(--pixivn-scanline-opacity,0.04)) 4px)",
+                    }}
+                />
                 <div className='flex flex-row items-center gap-2 border-b px-4 py-2'>
                     <TerminalIcon className='size-4' /> <span className='font-bold'>Terminal</span>
                     <div className='grow' />
@@ -95,7 +103,14 @@ export function CreateAppAnimation() {
 function LaunchAppWindow(props: HTMLAttributes<HTMLDivElement>): React.ReactElement {
     return (
         <div {...props} className={cn("overflow-hidden rounded-md border bg-fd-background shadow-xl", props.className)}>
-            <div className='relative flex h-6 flex-row items-center border-b bg-fd-muted px-4 text-xs text-fd-muted-foreground'>
+            <div
+                className='relative flex h-6 flex-row items-center border-b px-4 text-xs text-white'
+                style={{
+                    /* darken brand colors ~25% so white text meets WCAG AA (≥4.5:1) */
+                    background:
+                        "linear-gradient(90deg, color-mix(in oklab, var(--color-brand-primary) 75%, black), color-mix(in oklab, var(--color-brand-secondary) 75%, black))",
+                }}
+            >
                 <p className='absolute inset-x-0 text-center'>localhost:1420</p>
             </div>
             <div className='p-4 text-sm'>New App launched!</div>
