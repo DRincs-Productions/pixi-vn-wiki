@@ -13,6 +13,7 @@ import { createRelativeLink } from "fumadocs-ui/mdx";
 import { Edit } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { GiscusComments } from "./giscus-comments";
 import { ChatGPTButton, PatreonButton, TranslateButton } from "./page-actions";
 
 export default async function MDXPage({
@@ -88,6 +89,7 @@ export default async function MDXPage({
                     })}
                 />
             </DocsBody>
+            <GiscusComments />
         </DocsPage>
     );
 }
