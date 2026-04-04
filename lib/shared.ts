@@ -16,6 +16,7 @@ export const gitConfig = {
 };
 
 export const discordUrl = "https://discord.gg/E95FZWakzp";
+export const patreonUrl = "https://www.patreon.com/pixi_vn";
 
 // available languages that will be displayed on UI
 // make sure `locale` is consistent with your i18n config

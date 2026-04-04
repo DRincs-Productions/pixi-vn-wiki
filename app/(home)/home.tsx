@@ -3,7 +3,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { ItchLogo } from "@/components/ui/icons";
 import { cn } from "@/lib/cn";
 import { createMetadata } from "@/lib/metadata";
-import { discordUrl } from "@/lib/shared";
+import { discordUrl, patreonUrl } from "@/lib/shared";
 import { source } from "@/lib/source";
 import ArchImg from "@/public/arch.png";
 import LogoImg from "@/public/logo.webp";
@@ -302,11 +302,7 @@ async function Contributing() {
             <h2 className='mb-4 text-xl font-semibold sm:text-2xl'>{t("title")}</h2>
             <p className='mb-4 text-fd-muted-foreground'>{t("subtitle")}</p>
             <div className='mb-8 flex flex-row items-center gap-2'>
-                <a
-                    href='https://www.patreon.com/pixi_vn'
-                    target='_blank'
-                    className={cn(buttonVariants({ variant: "outline" }))}
-                >
+                <a href={patreonUrl} target='_blank' className={cn(buttonVariants({ variant: "outline" }))}>
                     {t("patreon")}
                 </a>
                 <a

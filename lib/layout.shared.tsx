@@ -1,9 +1,9 @@
-import { DiscordIcon } from "@/components/ui/icons";
+import { DiscordIcon, PatreonIcon } from "@/components/ui/icons";
 import { i18n } from "@/lib/i18n";
 import LogoImg from "@/public/logo.webp";
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import Image from "next/image";
-import { appName, discordUrl, gitConfig } from "./shared";
+import { appName, discordUrl, gitConfig, patreonUrl } from "./shared";
 
 export function baseOptions(): BaseLayoutProps {
     return {
@@ -25,6 +25,13 @@ export function baseOptions(): BaseLayoutProps {
                 icon: <DiscordIcon className='size-5' />,
                 text: "Discord",
                 url: discordUrl,
+            },
+            {
+                type: "icon",
+                label: "Patreon",
+                icon: <PatreonIcon className='size-5' />,
+                text: "Patreon",
+                url: patreonUrl,
             },
         ],
     };
