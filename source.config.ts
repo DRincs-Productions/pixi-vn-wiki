@@ -1,3 +1,5 @@
+import dark from "@shikijs/themes/github-dark";
+import light from "@shikijs/themes/github-light";
 import { metaSchema, pageSchema } from "fumadocs-core/source/schema";
 import { defineConfig, defineDocs } from "fumadocs-mdx/config";
 import { inkLanguage } from "./lib/syntaxes";
@@ -25,10 +27,10 @@ export default defineConfig({
             lazy: true,
             inline: "tailing-curly-colon",
             themes: {
-                light: "github-dark",
-                dark: "github-dark",
+                light: light,
+                dark: dark,
             },
-            theme: "github-dark",
+            theme: dark,
             langs: [
                 "ts",
                 "js",
