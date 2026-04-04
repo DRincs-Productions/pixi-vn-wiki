@@ -1,20 +1,14 @@
 import { getMDXComponents } from "@/components/mdx";
 import { routing } from "@/i18n/routing";
 import { faqSource, getPageMarkdownUrl, inkSource, jsonSource, nqtrSource, renpySource, source } from "@/lib/source";
-import {
-    DocsBody,
-    DocsDescription,
-    DocsPage,
-    DocsTitle,
-    EditOnGitHub,
-    ViewOptionsPopover,
-} from "fumadocs-ui/layouts/docs/page";
+import { DocsBody, DocsDescription, DocsPage, DocsTitle, EditOnGitHub } from "fumadocs-ui/layouts/docs/page";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import { Edit } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { ViewOptionsPopover } from "./ai/page-actions";
 import { GiscusComments } from "./giscus-comments";
-import { ChatGPTButton, PatreonButton, TranslateButton } from "./page-actions";
+import { PatreonButton, TranslateButton } from "./page-actions";
 
 export default async function MDXPage({
     lang,
@@ -78,7 +72,6 @@ export default async function MDXPage({
                 </EditOnGitHub>
                 <TranslateButton lang={lang} folther={folther} />
                 <ViewOptionsPopover markdownUrl={markdownUrl} />
-                <ChatGPTButton markdownUrl={pageBase.url} />
                 <PatreonButton />
             </div>
             <DocsBody>
