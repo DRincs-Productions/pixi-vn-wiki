@@ -1,0 +1,159 @@
+---
+title: Sounds and music
+---
+
+import { SoundExample } from "@/components/ink-examples";
+
+The **_ink_ + Pixi’VN integration** introduces a "# script" that allows you to use the <DynamicLink href="/start/sound">sounds and music</DynamicLink>. Per fare ciò, è necessario utilizzare la seguente sintassi:
+
+```ink title="ink"
+# {operation} {component type} {alias} {parameters}
+```
+
+- `#`: è il simbolo hashtag per identificare uno comando hashtag.
+- `operation`: l'operazione da eseguire. Attualmente supportati:
+  - `play`: Play a sound. (Read more [here](#play))
+  - `pause`: Pause a sound. (Read more [here](#pause-and-resume))
+  - `resume`: Resume a sound. (Read more [here](#pause-and-resume))
+  - `stop`: Stop a sound. (Read more [here](#stop))
+  - `edit`: Edit a sound. (Per saperne di più [qui](#edit))
+- `component type`: il tipo di componente. Tipi disponibili:
+  - `sound`: to play, pause, resume, stop or edit a sound.
+  - `channel`: to run an operation on a channel.
+- `alias`: The alias to identify the sound. Utilizza le doppie virgolette se l'alias contiene spazi.
+- `parameters` (Opzionale): un elenco di coppie proprietà/valore separate da spazi. Se un valore contiene spazi, racchiuderlo tra virgolette doppie. Se un valore è un oggetto, passa un JSON valido ed esegui l'escape delle parentesi graffe per **_ink_** (ad esempio `\{ "placeholder": "Enter your name", "maxLength": 20 \}`).
+
+```ink tab="ink/start.ink"
+# play sound sfx_whoosh delay 0.1
+# play sound bgm_cheerful loop true channel bgm
+Hello, I'm a cheerful background music that will loop forever until you stop me.
+# pause sound bgm_cheerful
+I'm paused, but I can be resumed.
+# resume sound bgm_cheerful
+I'm back!
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "audio",
+            assets: [
+                {
+                    alias: "bgm_cheerful",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/audio/bgm_cheerful.wav",
+                },
+                {
+                    alias: "sfx_whoosh",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/audio/sfx_whoosh.wav",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<SoundExample />
+
+## Play
+
+You can use the `play` to <DynamicLink href="/start/sound#play">play</DynamicLink> a sound in **_ink_**. Per fare ciò, è necessario utilizzare la seguente sintassi:
+
+```ink title="ink"
+# play sound {alias} {source} {parameters}
+```
+
+- `[parameters] (Optional)`: In the `parameters` you must include the properties of `SoundPlayOptions` that you want to set. The `parameters` must be set as follows: `parameterName` + `SPACE` + `value`. If the `value` is a string and includes spaces, you must use double quotes.
+
+```ink tab="ink/start.ink"
+# play sound sfx_whoosh
+Now the sfx_whoosh is singing.
+# play sound sfx_whoosh volume 100
+Now the sfx_whoosh is singing louder.
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "audio",
+            assets: [
+                {
+                    alias: "bgm_cheerful",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/audio/bgm_cheerful.wav",
+                },
+                {
+                    alias: "sfx_whoosh",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/audio/sfx_whoosh.wav",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+## Pause and resume
+
+To <DynamicLink href="/start/sound#pause-and-resume">pause</DynamicLink> a sound or a channel in **_ink_**, you can use the `pause` operation. Per fare ciò, è necessario utilizzare la seguente sintassi:
+
+```ink title="ink"
+# pause {component type} {alias}
+```
+
+To <DynamicLink href="/start/sound#pause-and-resume">resume</DynamicLink> a sound or a channel in **_ink_**, you can use the `resume` operation. Per fare ciò, è necessario utilizzare la seguente sintassi:
+
+```ink title="ink"
+# resume {component type} {alias}
+```
+
+To pause or resume all sounds, you can use the following syntax:
+
+```ink title="ink"
+# pause all sounds
+# resume all sounds
+```
+
+## Modifica
+
+To <DynamicLink href="/start/sound#edit">edit</DynamicLink> a sound in **_ink_**, you can use the `edit` operation. Per fare ciò, è necessario utilizzare la seguente sintassi:
+
+```ink title="ink"
+# edit sound {alias} {parameters}
+```
+
+```ink title="ink"
+# edit sound bgm_cheerful volume 50
+# edit sound bgm_cheerful loop false
+```
+
+## Stop
+
+To <DynamicLink href="/start/sound#stop">stop</DynamicLink> a sound in **_ink_**, you can use the `stop` operation. Per fare ciò, è necessario utilizzare la seguente sintassi:
+
+```ink title="ink"
+# stop sound {alias}
+```
+
+```ink title="ink"
+# stop sound bgm_cheerful
+```
+
+To stop all sounds, you can use the following syntax:
+
+```ink title="ink"
+# stop all sounds
+```
