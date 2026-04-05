@@ -7,6 +7,10 @@ export function GiscusComments({ lang, folther, slug }: { lang?: string; folther
     const { resolvedTheme } = useTheme();
     const term = slug && slug.length > 0 ? `${folther}/${slug.join("/")}` : folther;
 
+    if (lang === "zh") {
+        lang = "zh-CN";
+    }
+
     return (
         <div className='mt-8 border-t pt-8'>
             <Giscus
