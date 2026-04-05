@@ -1,0 +1,93 @@
+---
+title: Text
+description: |
+  How to display and style text on the canvas using the `Text` component. Covers `showText`, `TextStyle`, removal, and positioning features.
+---
+
+import { TextCanvas, TextCanvasStyle } from "@/components/examples";
+
+The `Text` component extends the [`PixiJS.Text`](https://pixijs.com/8.x/guides/components/scene-objects/text) component, so you can use all the methods and properties of `PixiJS.Text`. It is used to display text on the canvas.
+
+To initialize this component, you must pass the following parameters:
+
+* `options`: The options for the component, the `text` property is required.
+
+```ts
+import { canvas, Text } from "@drincs/pixi-vn";
+
+const basicText = new Text({ text: "Basic text in pixi", align: 0.5 });
+
+canvas.add("text", basicText);
+```
+
+Compared to the `PixiJS.Text` component, `Text` adds the following features:
+
+* Additional positioning: <DynamicLink href="/start/canvas-position">align and position with percentage</DynamicLink>.
+
+## Show
+
+The simplest way to show text on the canvas is to use the `showText` function.
+
+This function returns a `Text` that you can use to manipulate the component. This function has the following parameters:
+
+* `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> to identify the component.
+* `text`: The text to display.
+* `options` (Optional): The options for the component.
+
+```ts tab="labels/startLabel.ts"
+import { newLabel, showText } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        let text = await showText("text", "Hello World!", { // [!code focus]
+            xAlign: 0.5, // [!code focus]
+            yAlign: 0.5, // [!code focus]
+        }); // [!code focus]
+        text.style.fontSize = 30; // [!code focus]
+    },
+]);
+```
+
+<TextCanvas />
+
+## Remove
+
+As with other canvas components, you can remove this component using the <DynamicLink href="/start/canvas-functions#remove-a-canvas-component">`canvas.remove`</DynamicLink> function.
+
+## Style
+
+To style the text, use `TextStyle`. This class allows you to customize font family, size, color, stroke, shadow, and more.
+
+```ts tab="labels/startLabel.ts"
+import { canvas, newLabel, Text, TextStyle } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    () => {
+        const skewStyle = new TextStyle({ // [!code focus]
+            fontFamily: "Arial", // [!code focus]
+            dropShadow: { // [!code focus]
+                alpha: 0.8, // [!code focus]
+                angle: 2.1, // [!code focus]
+                blur: 4, // [!code focus]
+                color: "0x111111", // [!code focus]
+                distance: 10, // [!code focus]
+            }, // [!code focus]
+            fill: "#ffffff", // [!code focus]
+            stroke: { color: "#004620", width: 12, join: "round" }, // [!code focus]
+            fontSize: 60, // [!code focus]
+            fontWeight: "lighter", // [!code focus]
+        }); // [!code focus]
+
+        const skewText = new Text({ // [!code focus]
+            text: "SKEW IS COOL", // [!code focus]
+            style: skewStyle, // [!code focus]
+            align: 0.5, // [!code focus]
+            skew: { x: 0.65, y: -0.3 }, // [!code focus]
+        }); // [!code focus]
+
+        canvas.add("text", skewText); // [!code focus]
+    },
+]);
+```
+
+<TextCanvasStyle />

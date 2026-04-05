@@ -1,0 +1,66 @@
+---
+title: 历史记录
+description: 介绍Pixi'VN如何跟踪和管理历史记录，涵盖对话、选项、步骤计数及保存限制等内容。
+---
+
+<Callout title="UI screen" type="info">
+
+你可以在<DynamicLink href="/start/interface-examples#history">界面示例</DynamicLink>章节中找到历史记录UI界面的示例代码。
+
+</Callout>
+
+Pixi'VN 会保存游戏过程中每个步骤（`step`）中执行的所有对话、选择、回应等信息。
+
+## Get
+
+叙事时间线（Narration Timeline）是一个包含了所有已展示给玩家的对话和选项的列表。\
+要获取历史记录，请使用`stepHistory.narrativeHistory`。 它会返回一个`NarrativeHistory<T>[]`类型的列表。
+
+```typescript
+const dialogues: NarrativeHistory[] = stepHistory.narrativeHistory;
+```
+
+## Remove
+
+如果要删除所有历史记录，请使用stepHistory.removeNarrativeHistory()。
+
+```typescript
+stepHistory.removeNarrativeHistory();
+```
+
+如果要删除部分历史记录，传入一个数字便可移除前N条记录：
+
+```typescript
+// Delete the first 2 elements
+stepHistory.removeNarrativeHistory(2);
+```
+
+## 其他叙事功能
+
+<Accordions>
+
+<Accordion title="limit_saved_steps" id="limit-saved-steps">
+
+每进行一个步骤（`step`），系统都会保存当前的完整状态信息。
+
+为了防止存档文件过大，系统对保存的步骤（`step`）数量设有限制。 默认情况下，只保存最近的20个步骤（`step`），但你可以增加这个限制（例如设为 100）。 达到限制后，只会保留较早步骤（`step`）中的必要信息。 这样你依然可以显示完整的<DynamicLink href="/start/history">历史记录</DynamicLink>，但无法<DynamicLink href="/start/labels-flow#go-back">返回</DynamicLink>到超出限制的特定步骤（`step`）。
+
+你可以通过设置`stepHistory`对象中的`stepLimitSaved`属性来更改步骤（`step`）保存限制。
+
+```typescript
+import { stepHistory } from '@drincs/pixi-vn'
+
+stepHistory.stepLimitSaved = 100
+```
+
+如果要禁用步骤（`step`）保存限制，可以将`stepLimitSaved`设置为`Infinity`。
+
+```typescript
+import { stepHistory } from '@drincs/pixi-vn'
+
+stepHistory.stepLimitSaved = Infinity
+```
+
+</Accordion>
+
+</Accordions>
