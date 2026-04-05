@@ -23,7 +23,7 @@ First, you need a React application and to <DynamicLink href="/start#installatio
 Now you can replace the content of the following files with the code below:
 
 ```tsx tab="src/main.tsx"
-import { Assets, canvas, Container, drawCanvasErrorHandler, Game, sound } from "@drincs/pixi-vn"; // [!code ++]
+import { Assets, canvas, Container, drawCanvasErrorHandler, Game, showImage, sound } from "@drincs/pixi-vn"; // [!code ++]
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
@@ -41,6 +41,14 @@ Game.init(body, { // [!code ++]
     backgroundColor: "#303030", // [!code ++]
     resizeMode: "contain", // [!code ++]
 }).then(() => { // [!code ++]
+    showImage( // [!code ++]
+        "juliette", // [!code ++]
+        "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/icon.webp", // [!code ++]
+        { xAlign: 0.9, yAlign: 0.1, anchor: 0.5 }, // [!code ++]
+    ).then(() => { // [!code ++]
+        canvas.animate("juliette", { angle: 360 }, { repeat: Infinity, duration: 5 }); // [!code ++]
+    }); // [!code ++]
+
     // Pixi.JS UI Layer // [!code ++]
     canvas.addLayer("ui", new Container()); // [!code ++]
 
@@ -60,7 +68,6 @@ Game.init(body, { // [!code ++]
         throw new Error("htmlLayout not found"); // [!code ++]
     } // [!code ++]
     const reactRoot = createRoot(htmlLayout); // [!code ++]
-    const queryClient = new QueryClient(); // [!code ++]
 
     reactRoot.render(
         <StrictMode>
@@ -75,7 +82,7 @@ Game.onEnd(async (props) => { // [!code ++]
 }); // [!code ++]
 
 Game.addOnError(drawCanvasErrorHandler()); // [!code ++]
-Game.addOnError((error, props) => {
+Game.addOnError((error, props) => { // [!code ++]
     console.error(`Error occurred`, error); // [!code ++]
 }); // [!code ++]
 
