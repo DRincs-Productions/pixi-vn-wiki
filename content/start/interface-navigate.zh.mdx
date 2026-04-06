@@ -113,45 +113,49 @@ Using the browser's back and forward buttons can cause the game to be in an inco
 
 It is recommended to prevent the path from changing when the browser's back button is pressed. There are many ways to do this, but the following approach is suggested:
 
-Intercept the `popstate` event, which is triggered after the back button is pressed, and immediately go forward one step. This means that when the back button is pressed, it returns to the previous path for a short time and then immediately returns to the current path. To ensure the path does not change, even briefly, you can add two nodes to the history every time you navigate to a new path, instead of one (the default).
+Intercept the `popstate` event, which is triggered after the browser's back button is pressed, and call `history.forward()` to cancel the navigation. To allow users to navigate back if they press the back button twice in succession, we can push a new state to the history stack on each route change.
 
 For example:
 
-```ts title="EventInterceptor.ts"
-import { useEffect } from 'react';
+```ts title="hooks/useConfirmBackNavigation.ts"
+import { useLocation } from "@tanstack/react-router";
+import { useEffect } from "react";
 
-export default function EventInterceptor() {
+/**
+ * useConfirmBackNavigation
+ *
+ * Prevent accidental browser "back" navigation.
+ * Behavior:
+ * - On each `href` change it pushes a history state (`pushState`).
+ * - Listens for `popstate` and calls `history.forward()` to cancel a single
+ *   press of the browser back button.
+ * - If the user presses back twice in succession (i.e. the second press occurs
+ *   before the first is handled), the browser will navigate back.
+ *
+ * Usage: call this hook at the app root to avoid unintended back navigations
+ * (e.g. accidental taps or gestures). Returns `null`.
+ */
+export default function useConfirmBackNavigation() {
+    const { href } = useLocation();
+
     useEffect(() => {
-        window.addEventListener("popstate", onpopstate);
+        const isInIframe = typeof window !== "undefined" && window.self !== window.top;
+        if (isInIframe) return;
+        const listener = () => {
+            window.history.forward();
+        };
+        window.addEventListener("popstate", listener);
+
         return () => {
-            window.removeEventListener("popstate", onpopstate);
+            window.removeEventListener("popstate", listener);
         };
     }, []);
 
-    function onpopstate() {
-        window.history.forward();
-    }
+    useEffect(() => {
+        window.history.pushState(null, href, href);
+    }, [href]);
 
-    return null
-}
-```
-
-```tsx title="React example"
-import { Assets } from "@drincs/pixi-vn";
-import { NavigateFunction, NavigateOptions, To, useNavigate } from "react-router-dom";
-
-export default function useMyNavigate(): NavigateFunction {
-    const navigate = useNavigate();
-
-    return async (to: To | number, options?: NavigateOptions) => {
-        if (typeof to === "number") {
-            await navigate(to);
-        } else {
-            Assets.backgroundLoadBundle(to as string);
-            await navigate(to, options);
-        }
-        window.history.pushState(null, window.location.href, window.location.href);
-    };
+    return null;
 }
 ```
 
