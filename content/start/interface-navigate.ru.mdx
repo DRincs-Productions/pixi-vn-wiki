@@ -1,99 +1,49 @@
 ---
 title: Navigate/switch between UI screens
-description: Learn how to navigate between different UI screens in Pixi’VN using routing systems.
 ---
 
-To switch between UI screens (without interrupting the canvas), you can use popups and modals, or navigate between different **URL paths/routes**.
+To navigate between different UI screens, it is necessary to use a routing system. A routing system allows you to define routes (or paths) for different screens and manage navigation between them. There are several routing systems available, including:
 
-**What is the URL paths/routes?** The **URL paths/routes** are the parts of the URL that come after the domain. For example, in the URL `https://example.com/path/to/page`, the route is `/path/to/page`. Typically, in all front-end (client) web projects, each route is linked to a web page (UI screen).
-
-A routing system can be used to manage navigation between **URL paths/routes**. For example, you can use:
-
+- [TanStack Router](https://tanstack.com/router/latest)
 - [React Router](https://reactrouter.com/)
 - [Vue Router](https://router.vuejs.org/)
 - [Angular Router](https://angular.io/guide/router)
-- [TanStack Router](https://tanstack.com/router/latest)
 
-```tsx tab="React Router"
-import { Route, Routes } from "react-router-dom";
-import LoadingScreen from "./screens/LoadingScreen";
-import MainMenu from "./screens/MainMenu";
-import NarrationElement from "./screens/NarrationElement";
+## TanStack Router
 
-export default function AppRoutes() {
+<Callout title="Templates" type="info">
+
+All templates generated with version 2.0.0 of `create-pixi-vn` use TanStack Router as the routing system.
+
+</Callout>
+
+TanStack Router is a routing system for web applications that allows you to manage navigation between different pages or components in a simple and efficient way. It is designed to be flexible and easy to use, offering advanced features such as support for dynamic parameters, router state management, and integration with rendering libraries like React, Vue, and Angular.
+
+The main advantage of TanStack Router is its ability to automatically generate route handling using `createFileRoute`. With `createFileRoute`, you can define your routes simply by creating files in a specific folder structure. For example, if you create a file `about.tsx` in the `src/routes` folder, TanStack Router will automatically generate a route for `/about` that renders the component defined in `about.tsx`.
+
+```ts title="src/routes/about.tsx"
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/about")({ // [!code focus]
+    component: About, // [!code focus]
+}); // [!code focus]
+
+function About() {
     return (
-        <Routes>
-            <Route key={"main_menu"} path={"/"} element={<MainMenu />} />
-            <Route key={"loading"} path={"/loading"} element={<LoadingScreen />} />
-            <Route key={"narration"} path={"/narration"} element={<NarrationElement />} />
-            <Route path='*' element={<MainMenu />} />
-        </Routes>
+        <main className="page-wrap px-4 py-12">
+            <section className="island-shell rounded-2xl p-6 sm:p-8">
+                <p className="island-kicker mb-2">About</p>
+                <h1 className="display-title mb-3 text-4xl font-bold text-[var(--sea-ink)] sm:text-5xl">
+                    A small starter with room to grow.
+                </h1>
+                <p className="m-0 max-w-3xl text-base leading-8 text-[var(--sea-ink-soft)]">
+                    TanStack Start gives you type-safe routing, server functions, and modern SSR defaults. Use this as a
+                    clean foundation, then layer in your own routes, styling, and add-ons.
+                </p>
+            </section>
+        </main>
     );
 }
-```
-
-```vue tab="Vue Router"
-<script setup>
-import { createRouter, createWebHistory } from 'vue-router'
-import MainMenu from './screens/MainMenu.vue'
-import LoadingScreen from './screens/LoadingScreen.vue'
-import NarrationElement from './screens/NarrationElement.vue'
-
-const routes = [
-  { path: '/', component: MainMenu },
-  { path: '/loading', component: LoadingScreen },
-  { path: '/narration', component: NarrationElement },
-  { path: '/:pathMatch(.*)*', component: MainMenu }
-]
-
-const router = createRouter({
-  history: createWebHistory(),
-  routes
-})
-
-export default router
-</script>
-```
-
-```typescript tab="Angular Router"
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { MainMenuComponent } from './screens/main-menu.component';
-import { LoadingScreenComponent } from './screens/loading-screen.component';
-import { NarrationElementComponent } from './screens/narration-element.component';
-
-const routes: Routes = [
-  { path: '', component: MainMenuComponent },
-  { path: 'loading', component: LoadingScreenComponent },
-  { path: 'narration', component: NarrationElementComponent },
-  { path: '**', component: MainMenuComponent }
-];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
-})
-export class AppRoutingModule { }
-```
-
-```tsx tab="TanStack Router"
-import { Router, Route } from '@tanstack/router'
-import MainMenu from './screens/MainMenu'
-import LoadingScreen from './screens/LoadingScreen'
-import NarrationElement from './screens/NarrationElement'
-
-const router = new Router({
-  routeTree: (
-    <>
-      <Route path="/" element={<MainMenu />} />
-      <Route path="/loading" element={<LoadingScreen />} />
-      <Route path="/narration" element={<NarrationElement />} />
-      <Route path="*" element={<MainMenu />} />
-    </>
-  )
-})
-
-export default router
 ```
 
 ## How to navigate between routes?
