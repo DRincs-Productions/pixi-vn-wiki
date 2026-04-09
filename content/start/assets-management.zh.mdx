@@ -1,30 +1,30 @@
 ---
-title: Assets management
-description: Organization, referencing, and loading of assets (images, sounds, videos) in Pixi’VN using aliases and manifests.
+title: 资源管理
+description: 在 Pixi’VN 中使用别名和清单对资源（图片、声音、视频）进行管理、引用和加载。
 ---
 
 要加载和操作资源（如图片、动图、视频等）， 需要使用 `Assets`。 `Assets`来自PixiJS库，是一个具有丰富功能的类。 如要了解更多信息，请参阅[此处](https://pixijs.com/8.x/guides/components/assets)。
 
-In all Pixi’VN functions, you can directly use the image URL, even if it is not defined in `Assets`.
+在所有 Pixi’VN 函数中，你都可以直接使用图片URL，即使该URL并没有在`Assets`中定义。
 
 ```ts
 let alien1 = await showImage("alien", "https://pixijs.com/assets/eggHead.png");
 ```
 
-This method has some drawbacks:
+这种方法有一些缺点：
 
-- Changing the URL of an asset from one version to another may cause incompatibilities.
-- The player will have to wait for a short loading time every time they press "continue" and a <DynamicLink href="/start/labels">`step`</DynamicLink> is started that uses assets.
-- Writing the entire URL in code will increase its length and make it less readable.
+- 从一个版本到另一个版本更改资源的URL可能会导致不兼容。
+- 每次玩家按下“继续”并开始一个使用资源<DynamicLink href="/start/labels">的步骤</DynamicLink>时，都必须等待短暂的加载时间。
+- 在代码中直接写完整的URL会增加代码长度，并降低其可读性。
 
-For these reasons, it is recommended to handle assets in the following ways.
+出于这些原因，建议通过以下方式处理资源。
 
-## Initialize the asset matrix at project start
+## 在项目启动时初始化资源矩阵
 
-Initializing the asset matrix at the beginning of the project allows you to reference assets by a unique alias without having to use the URL/path. Using the alias you can change the URL of an asset without having to worry about version compatibility.
+在项目开始时初始化资源矩阵，就可以通过唯一的别名引用资源，而无需使用 URL/路径。 使用别名，可以放心更改资源的URL，而无需担心版本兼容性问题。
 
-To do this, it is recommended to create an asynchronous function `defineAssets` that will be called at the start of the project.
-In the `defineAssets` function, use `Assets` (e.g. `Assets.add`, `Assets.addBundle`, and `Assets.init`) to assign aliases to URLs. You can find more information about them [here](https://pixijs.com/8.x/guides/components/assets) to assign an alias to each asset.
+为此，建议创建一个异步函数`defineAssets`，在项目启动时调用它。
+在 `defineAssets`函数中，用`Assets` 的各种方法（比如`Assets.add`、`Assets.addBundle`和`Assets.init`）给URL绑定别名。 更多细节可以参考[这里](https://pixijs.com/8.x/guides/components/assets)。
 
 ```ts tab="utils/defineAssets.ts"
 import { Assets, sound } from "@drincs/pixi-vn";
@@ -82,17 +82,17 @@ const manifest: AssetsManifest = {
 export default manifest;
 ```
 
-## Load assets
+## 加载资源
 
-By default, assets are loaded only when needed.
+默认情况下，资源是“随用随加载”的。
 
-But **if the assets are not saved locally**, but in an <DynamicLink href="/start/assets#assets-hosting">"assets hosting"</DynamicLink>, their loading may take some time. This means that starting a `step` may not be immediate. So, after starting the execution of the <DynamicLink href="/start/labels-flow#continue">next `step`</DynamicLink> (for example with the "next" button), the player may have to wait some time to "view" the changes and be able to run another `step`.
+但**如果资产不是保存在本地**，而是保存在<DynamicLink href="/start/assets#assets-hosting">“资源托管服务”</DynamicLink>中，加载就要花些时间了。 这意味着启动一个`step`可能不会立即开始。 因此，在开始执行<DynamicLink href="/start/labels-flow#continue">下一个 `step`</DynamicLink>（例如使用“下一步”按钮）后，玩家可能需要等待一段时间，才能“查看”到更改并运行另一个`step`。
 
-Performing these loadings at each `step` may be annoying to the player, even if they are very short.
+就算加载时间再短，每个`step`都要加载一下也很烦人。
 
-To solve this problem, the developer can group multiple loadings at a certain stage of the game. In this way, the player will not have continuous loadings, but fewer, even if longer.
+为了解决这个问题，开发人员可以在游戏的某个阶段将多个加载分组。 In this way, the player will not have continuous loadings, but fewer, even if longer.
 
-Here are various ways to load the assets:
+下面是几种加载资源的方式：
 
 <Accordions>
 
