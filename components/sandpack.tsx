@@ -105,8 +105,10 @@ export default function App() {
   );
 }`;
 
-const styles = `:root {
+const styles = `html,
+body {
   background-color: #242424;
+  height: 100%;
 }
 
 body {
