@@ -29,6 +29,18 @@ export default function DefaultSearchDialog(props: SharedProps) {
         initOrama,
         locale,
     });
+    let items = query.data;
+    switch (locale) {
+        case "en":
+            if (Array.isArray(items)) {
+                items = items.map((item) => ({
+                    ...item,
+                    id: item.id.replaceAll("/en/", "/"),
+                    url: item.url.replaceAll("/en/", "/"),
+                }));
+            }
+            break;
+    }
 
     return (
         <SearchDialog search={search} onSearchChange={setSearch} isLoading={query.isLoading} {...props}>
@@ -39,7 +51,7 @@ export default function DefaultSearchDialog(props: SharedProps) {
                     <SearchDialogInput />
                     <SearchDialogClose />
                 </SearchDialogHeader>
-                <SearchDialogList items={query.data !== "empty" ? query.data : null} />
+                <SearchDialogList items={items !== "empty" ? items : null} />
             </SearchDialogContent>
         </SearchDialog>
     );
