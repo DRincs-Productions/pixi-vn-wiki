@@ -1,0 +1,146 @@
+---
+title: 标签（labels）和步骤（steps）
+description: 解释Pixi’VN中标签（labels）和步骤（steps）的核心概念，详细说明引擎内的叙事流程是如何构建和管理的。
+---
+
+视觉小说，通常来说，是一系列带有图像和文本的场景序列。
+
+<Callout title="Nomenclature" type="info">
+
+“标签”（`label`）一词借鉴自Ren'Py，在Ren'Py中它充当故事中的"书签"或"地标"。 在 ink 语言中，其对应的术语是“节点”（`knot`）。
+
+“步骤”（`step`）一词由Pixi’VN引入，用于表示在一个标签内发生的单个动作或事件。
+
+</Callout>
+
+在Pixi'VN中，整个叙事流程都基于“标签”（`labels`）与“步骤”（`steps`）这两个概念。
+
+`label`用于组织叙事；它可以作为故事的“书签”或章节。 从技术上来讲，`label`是一个充当`steps`容器的类。
+
+“步骤”（`steps`）是在“标签”（`labels`）内发生的单个动作或事件。 “步骤”（step）被用于显示图像、文本和其他叙事元素。
+
+游戏的基本生命周期如下：
+
+- 游戏通过<DynamicLink href="/start/labels-flow#run-a-label">调用一个标签（`label`）</DynamicLink>开始。 该`label`的第一个`step`会自动执行。
+- 之后，通过将<DynamicLink href="/start/labels-flow#continue">“下一步”</DynamicLink>功能连接到某个事件（如按钮点击），每次调用该功能时，就会执行该`label`的下一个`step`。 某些`step`也可以启动其他`label`。
+- 只有在所有步骤（ `steps`）都完成之后，游戏才会结束。 此时，<DynamicLink href="/start/other-narrative-features#how-manage-the-end-of-the-game">Game.onEnd</DynamicLink>函数将会被触发。
+
+## Add
+
+要创建一个`label`，请使用 `newLabel() `函数。
+该函数具有以下参数：
+
+- `id`: A unique identifier (string). 用于在游戏中引用该`label`（必须是唯一的）。
+- `steps`：一个按顺序执行的函数数组。 要创建动态数组，可以点击<DynamicLink href="/start/labels-advanced#dynamic-step-list">此处</DynamicLink>了解更多信息。
+- `options`（可选）：包含`label`选项的对象：
+  - `onStepStart`（可选）：在每个`step`之前执行的函数。 点击<DynamicLink href="/start/labels-advanced#onstepstart">此处</DynamicLink>查看更多信息。
+  - `onStepEnd`（可选）：在每个`step`之后执行的函数。 点击<DynamicLink href="/start/labels-advanced#onstepend">此处</DynamicLink>查看更多信息。
+  - `onLoadingLabel` （可选）: 如果步骤（ `step` ）索引为 0，或在加载存档文件时，在onStepStart中执行的函数。 点击<DynamicLink href="/start/labels-advanced#onloadinglabel">此处</DynamicLink>查看更多信息。
+
+```ts title="labels/startLabel.ts"
+import { narration, StepLabelProps } from '@drincs/pixi-vn'
+
+export const startLabel = newLabel("start_label",
+    [
+        () => {
+            narration.dialogue = { character: liam, text: "Example of dialogue" }
+        },
+        (props: StepLabelProps, { labelId }) => narration.jump(labelId, props),
+    ]
+)
+```
+
+<Accordions>
+
+<Accordion title="overriding_stepLabelprops" id="steplabelprops">
+
+<Callout title="Templates" type="info">
+
+在所有模板中，`StepLabelProps`接口都已经被重写了。 你可以在`pixi-vn.d.ts`文件中找到它。
+
+</Callout>
+
+所有<DynamicLink href="/start/labels-flow">叙事流程控制函数</DynamicLink>都需要一个与`StepLabelProps`接口匹配的对象。
+
+在默认情况下，`StepLabelProps`是`{ [key: string]: any }`。 你可以在`.d.ts`文件中“重写”`StepLabelProps`接口，以指定所需的参数。
+
+```ts tab="pixi-vn.d.ts"
+import { narration } from '@drincs/pixi-vn'
+
+declare module '@drincs/pixi-vn' {
+    interface StepLabelProps {
+        navigate: (route: string) => void,
+    }
+}
+```
+
+```ts tab="labels/startLabel.ts"
+export const startLabel = newLabel("start_label",
+    [
+        ({ navigate }) => { // [!code focus]
+            navigate("/new-route") // [!code focus]
+        }, // [!code focus]
+    ]
+)
+```
+
+## 其他叙事功能
+
+</Accordion>
+
+<Accordion title="step_pros" id="step-pros">
+
+除了[` StepLabelProps`](#steplabelprops)之外，你还可以向` newLabel` 函数传递一个类型，以便为该`label`添加自定义参数。
+
+```ts title="labels/startLabel.ts"
+import { narration } from '@drincs/pixi-vn'
+
+export const startLabel = newLabel<{name: string}>("start_label",
+    [
+        (props) => {
+            console.log(props.name)
+        },
+    ]
+)
+
+narration.call(startLabel, {
+    // Add StepLabelProps here
+    navigate: navigate, // example
+    // And the custom props for the label
+    name: "John"
+})
+```
+
+</Accordion>
+
+<Accordion title="step_results" id="step-results">
+
+步骤（`step`）可以返回一个`StepLabelResult`对象。 在默认情况下，`StepLabelResult`是`{ [key: string]: any }`。
+
+你可以在`.d.ts`文件中“重写”`StepLabelResult`接口，为步骤（`step`）的结果定义自定义属性。
+
+```ts tab="pixi-vn.d.ts"
+declare module '@drincs/pixi-vn' {
+    interface StepLabelResult {
+        newRoute?: string,
+        [key: string]: any
+    }
+}
+```
+
+```ts tab="labels/startLabel.ts"
+export const startLabel = newLabel("start_label",
+    [
+        () => {
+            return { // [!code focus]
+                newRoute: '/new-route', // [!code focus]
+                customProperty: 12 // [!code focus]
+            } // [!code focus]
+        },
+    ]
+)
+```
+
+</Accordion>
+
+</Accordions>

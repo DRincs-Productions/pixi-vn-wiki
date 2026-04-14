@@ -1,0 +1,79 @@
+---
+title: 资源
+description: 本文介绍如何在Pixi'VN（Ink）中定义、初始化和加载资源，涵盖资源矩阵设置、Ink加载/懒加载命令、清单示例及资源别名等内容。
+---
+
+正如在<DynamicLink href="/start/assets-management">这里</DynamicLink>所更详细解释的那样，建议在项目开始时初始化资源矩阵，预先加载资源，并规划好资源的加载时机。
+
+在**_Ink_**中，你对于资源加载方式和时机的控制力显然不如使用JavaScript/TypeScript的时候灵活。 为此，Pixi'VN在**_Ink_**中提供了一个单一函数，用于在标签（ `label` ）开始前加载资源。 你需要使用以下语法：
+
+```ink title="ink"
+# {operation} {assets or bundle} {list of URL/path of the image}
+```
+
+- `#`: is the hashtag symbol to identify a hashtag command.
+- `operation`: the operation to perform. Currently supported:
+  - `load`：使用await方式加载资源或资源包（对应`Assets.load`或`Assets.loadBundle`）。
+  - `lazyload`：在后台静默加载资源或资源包（对应`Assets.backgroundLoad`或 `Assets.backgroundLoadBundle`）。
+- `assets or bundle`：要加载的资源类型。 可用类型包括：
+  - `assets`：加载assets。
+  - `bundle`：加载bundle。
+- `list of URL/path of the image`：要显示的图片（或者其他资源）的URL/路径列表。 如果你已经初始化了<DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">资源清单</DynamicLink>，你可以直接使用纹理别名代替URL。 注意：在**_ink_**中写`https://`时必须写成` https:\/\/`，因为`//`在**_Ink_**中会被视为注释。
+
+```ink tab="ink/start.ink"
+=== start ===
+# lazyload bundle main_menu start
+# load assets eggHead flowerTop my_video
+# show image eggHead
+# show image flowerTop
+# show video my_video
+# pause
+-> start
+```
+
+```ts tab="utils/defineAssets.ts"
+import { Assets } from "@drincs/pixi-vn"
+
+export async function defineAssets() {
+    // manifest
+    await Assets.init({ manifest });
+    // single asset
+    Assets.add({ alias: 'eggHead', src: "https://pixijs.com/assets/eggHead.png" })
+    Assets.add({ alias: 'flowerTop', src: "https://pixijs.com/assets/flowerTop.png" })
+    Assets.add({ alias: "my_video", src: "https://pixijs.com/assets/video.mp4" });
+}
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        // screens
+        {
+            name: "main_menu",
+            assets: [
+                {
+                    alias: "background_main_menu",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/main-menu.png",
+                },
+            ],
+        },
+        // labels
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "bg01-hallway",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/bg01-hallway.webp",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```

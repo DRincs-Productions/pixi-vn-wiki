@@ -1,0 +1,187 @@
+---
+title: 国际化
+description: 本文介绍如何借助i18next为你的Pixi'VN游戏添加多语言支持，涵盖界面与剧情文本的翻译策略。 视觉小说该如何做多语言适配？
+---
+
+在视觉小说及同类游戏中，让玩家自由选择母语是非常常见的需求。
+
+对于Pixi'VN项目，我们建议使用外部库来管理翻译内容。 这样你就可以灵活选用最契合项目需求的实现方案。
+
+<Callout title="Templates" type="info">
+
+所有模板均已预装并配置好i18next。 你可以直接开始翻译游戏内容。
+
+</Callout>
+
+目前生态中最流行、兼容性最好的方案就是**i18next**。
+
+![i18next-h2](/i18next.svg)
+
+## i18next
+
+**什么是 i18next**？i18next是一个面向JavaScript的国际化框架。 使用前，需要先安装并初始化它。 具体可查阅[i18next官网](https://www.i18next.com/)。
+
+翻译内容以多个JSON文件存储（每种语言一个），采用键 - 值对形式。 键是文本的唯一标识符，值是对应语言的翻译结果。
+
+```ts tab="i18n.ts"
+import i18n from 'i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
+import { initReactI18next } from 'react-i18next';
+import strings_en from '../src/values/translations/strings_en.json';
+import strings_es from '../src/values/translations/strings_es.json';
+
+const getUserLang = (): string => {
+    let userLang: string = navigator.language || "en";
+    return userLang?.toLocaleLowerCase()?.split("-")[0];
+}
+
+export const useI18n = () => {
+    if (!i18n.isInitialized) {
+        i18n
+            .use(LanguageDetector)
+            .use(initReactI18next)
+            .init({
+                debug: false,
+                fallbackLng: 'en',
+                lng: getUserLang(),
+                interpolation: {
+                    escapeValue: false,
+                },
+                resources: {
+                    en: strings_en,
+                    es: strings_es,
+                    // Add more languages here
+                }
+            });
+    }
+}
+```
+
+```ts tab="main.ts"
+import { useI18n } from './i18n';
+
+useI18n()
+```
+
+<Accordions>
+
+<Accordion title="translate_ui" id="translate-ui">
+
+界面文本翻译只需调用 i18next 提供的`t`函数， 传入对应的翻译键，即可获取当前语言下的文本。
+
+For example:
+
+```tsx tab="React"
+import { useTranslation } from 'react-i18next';
+
+export default function MyComponent() {
+    const { t } = useTranslation("ui");
+
+    return (
+        <div>
+            <Button>{t("text_speed")}</Button>
+        </div>
+    );
+}
+```
+
+```vue tab="Vue"
+<script setup>
+    import { useTranslation } from "i18next-vue";
+    const { t } = useTranslation("ui");
+</script>
+
+<template>
+    <div>
+        <button>{{ t('text_speed') }}</button>
+    </div>
+</template>
+```
+
+```svelte tab="Svelte"
+<script>
+    import { useTranslation } from 'svelte-i18n';
+    const { t } = useTranslation("ui");
+</script>
+
+<div>
+    <button>{t('text_speed')}</button>
+</div>
+```
+
+</Accordion>
+
+<Accordion title="translate_narration" id="translate-narration">
+
+<Callout title="Templates" type="info">
+
+在所有模板中，`StepLabelProps`接口都已内置 t 函数。 详见`pixi-vn.d.ts`。
+
+</Callout>
+
+<Callout type="info">
+
+建议在<DynamicLink href="/start/labels">标签</DynamicLink>内部使用`t`函数，而不是直接在UI组件中调用。这样可以充分利用[i18n的插值功能](https://i18next.com/translation-function/interpolation)。
+
+</Callout>
+
+在Pixi'VN项目中，你经常需要在TypeScript/JavaScript<DynamicLink href="/start/labels">标签</DynamicLink>中翻译剧情文本。 为此，翻译函数必须包含在<DynamicLink href="/start/labels#steplabelprops">`StepLabelProps`接口</DynamicLink>.中。
+
+建议直接使用原始字符串作为翻译键，便于管理与识别。
+
+```ts tab="labels/startLabel.ts"
+export const startLabel = newLabel("start_label",
+    [
+        ({ t }) => { // [!code focus]
+            narration.dialogue = {
+                character: liam,
+                text: t("Hello, my name is {{name}}", { name: "Liam" }) // [!code focus]
+            }
+        },
+    ]
+)
+```
+
+```ts tab="pixi-vn.d.ts"
+declare module '@drincs/pixi-vn' {
+    interface StepLabelProps {
+        /**
+         * Translate a key to a string.
+         * @param key The key to translate.
+         * @returns The translated string.
+         */
+        t: TFunction<[string], undefined>
+        // ...
+    }
+}
+```
+
+</Accordion>
+
+</Accordions>
+
+## 创建存档
+
+<Callout title="ink" type="info">
+
+如果你采用 Ink 编写剧情，可以自动提取文本用于翻译。 具体方法见<DynamicLink href="/ink/translate">此</DynamicLink>。
+
+</Callout>
+
+翻译用的JSON文件需手动创建。 推荐将内容分为两大区块（参考`strings_es.json`）：
+
+- <DynamicLink href="/start/interface">UI</DynamicLink>文本 ：界面相关文本，如菜单、设置项、快捷按钮等非剧情内容。
+- <DynamicLink href="/start/narration">叙事</DynamicLink>文本：剧情相关文本，如角色对话、选项分支等。
+
+```json tab="locales/strings_es.json"
+{
+    "ui": {
+        "text_speed": "Velocidad del texto",
+        // ...
+    },
+    "narration": {
+        "Hello, my name is {{name}}": "Hola, mi nombre es {{name}}"
+        // ...
+    }
+}
+```

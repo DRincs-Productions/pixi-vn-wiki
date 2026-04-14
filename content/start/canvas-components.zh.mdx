@@ -1,0 +1,68 @@
+---
+title: 画布组件
+description: 介绍 Pixi'VN 内置及自定义的画布组件，涵盖扩展方法与状态记忆功能。
+---
+
+Pixi'VN 提供了一套画布组件。 它们在 [Pixi.js](https://pixijs.com/) 原生组件的基础上进行了扩展，增加了诸如保存当前状态等多种功能。
+
+**什么是画布组件？** 组件是构建画布应用的可复用模块。开发者可以利用它们创建自定义控件，既可以在单个应用内使用，也可以通过组件库在不同应用间复用。 组件支持自定义属性等高级功能，能够实现复杂的交互能力。
+
+## 基础组件
+
+目前可用的组件包括：
+
+- `Sprite`对应[`PixiJS.Sprite`](https://pixijs.com/8.x/guides/components/sprites)组件。
+- `Container`对应[`PixiJS.Container`](https://pixijs.com/8.x/guides/components/containers)组件。
+- <DynamicLink href="/start/canvas-image">ImageSprite</DynamicLink>是Pixi'VN的新增组件。
+- <DynamicLink href="/start/canvas-image-container">ImageContainer</DynamicLink>是Pixi'VN的新增组件。
+- <DynamicLink href="/start/canvas-video">VideoSprite</DynamicLink>是Pixi'VN的新增组件。
+- <DynamicLink href="/start/canvas-text">Text</DynamicLink>是Pixi'VN的新增组件。
+
+## 自定义组件
+
+可以通过继承基础组件来创建自定义组件。 为此，需要使用`@canvasComponentDecorator`装饰器。
+
+`@canvasComponentDecorator`是一个用于将画布组件状态保存至内存的装饰器（<DynamicLink href="/faq#enable-typescript-decorators">如何在 TypeScript 中启用装饰器？</DynamicLink>）。   该函数具有以下参数：
+
+- `name`：Pixi'VN 引用该类时使用的 ID（必须唯一）。 如果不传递该参数，将默认使用类名作为 ID。
+- `getInstance`：返回画布组件实例的函数。 当画布状态重置时，会调用此函数。
+- `copyProperty`：复制属性复制画布组件属性的函数。 当需要将属性从一个实例复制到同类型的另一个实例时，会调用此函数。
+
+若要存储自定义组件的属性，必须重写`memory`属性。
+在`get memory()`中，务必返回`className` 属性，且该属性的值必须与装饰器中使用的 ID 一致。
+
+例如，你可以创建一个继承自 `Sprite` 类的 `AlienTinting` 类，用于管理动画中每个外星人的方向和速度。
+
+```ts title="canvas/components/AlienTinting.ts"
+const ALIEN_TINTING_TEST_ID = "AlienTintingTest"
+@canvasComponentDecorator({
+    name: ALIEN_TINTING_TEST_ID,
+})
+class AlienTintingTest extends Sprite<IAlienTintingMemory> {
+    readonly pixivnId: string = CANVAS_SPINE_ID;
+    override get memory() {
+        return {
+            ...super.memory,
+            pixivnId: CANVAS_SPINE_ID,
+            direction: this.direction,
+            turningSpeed: this.turningSpeed,
+            speed: this.speed,
+        }
+    }
+    override async setMemory(memory: IAlienTintingMemory) {
+        await super.setMemory(memory)
+        this.direction = memory.direction
+        this.turningSpeed = memory.turningSpeed
+        this.speed = memory.speed
+    }
+    direction: number = 0
+    turningSpeed: number = 0
+    speed: number = 0
+    static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
+        let sprite = Sprite.from(source, skipCache)
+        let mySprite = new AlienTintingTest()
+        mySprite.texture = sprite.texture
+        return mySprite
+    }
+}
+```

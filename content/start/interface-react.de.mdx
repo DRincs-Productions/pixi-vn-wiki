@@ -1,0 +1,357 @@
+---
+icon: /react.svg
+title: React UI
+description: How to integrate Pixi’VN with React, including setup, templates, and best UI libraries. Create a React visual novel or 2D game.
+---
+
+**What is React?** React is a JavaScript library for building user interfaces (UIs) for websites, apps, and more. It's free, open-source, and maintained by Meta (formerly Facebook) and a large community.
+
+You can learn more about React on the [React website](https://react.dev/).
+
+## How to add Pixi’VN to a React application
+
+<Callout title="React template" type="info">
+
+There are Pixi’VN templates available that use React. You can read more about them in the <DynamicLink href="/start#project-initialization">templates</DynamicLink> section.
+
+If you want to add Pixi’VN to an existing React application, follow the steps below.
+
+</Callout>
+
+First, you need a React application and to <DynamicLink href="/start#installation">install pixi-vn</DynamicLink>. It is recommended to use [Vite](https://vite.dev/guide/#scaffolding-your-first-vite-project) to create a new React application.
+
+Now you can replace the content of the following files with the code below:
+
+```tsx tab="src/main.tsx"
+import { Assets, canvas, Container, drawCanvasErrorHandler, Game, showImage, sound } from "@drincs/pixi-vn"; // [!code ++]
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import App from "./App.tsx";
+import "./index.css";
+
+createRoot(document.getElementById("root")!).render( // [!code --]
+const body = document.body; // [!code ++]
+if (!body) { // [!code ++]
+    throw new Error("body element not found"); // [!code ++]
+} // [!code ++]
+
+Game.init(body, { // [!code ++]
+    height: 1080, // [!code ++]
+    width: 1920, // [!code ++]
+    backgroundColor: "#303030", // [!code ++]
+    resizeMode: "contain", // [!code ++]
+}).then(() => { // [!code ++]
+    showImage( // [!code ++]
+        "juliette", // [!code ++]
+        "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/icon.webp", // [!code ++]
+        { xAlign: 0.9, yAlign: 0.1, anchor: 0.5 }, // [!code ++]
+    ).then(() => { // [!code ++]
+        canvas.animate("juliette", { angle: 360 }, { repeat: Infinity, duration: 5 }); // [!code ++]
+    }); // [!code ++]
+
+    // Pixi.JS UI Layer // [!code ++]
+    canvas.addLayer("ui", new Container()); // [!code ++]
+
+    // Sound setup // [!code ++]
+    sound.addChannel("bgm", { background: true }); // [!code ++]
+    sound.addChannel("sfx"); // [!code ++]
+    sound.defaultChannelAlias = "sfx"; // [!code ++]
+
+    // React setup with ReactDOM // [!code ++]
+    const root = document.getElementById("root"); // [!code ++]
+    if (!root) { // [!code ++]
+        throw new Error("root element not found"); // [!code ++]
+    } // [!code ++]
+
+    const htmlLayout = canvas.addHtmlLayer("ui", root); // [!code ++]
+    if (!htmlLayout) { // [!code ++]
+        throw new Error("htmlLayout not found"); // [!code ++]
+    } // [!code ++]
+    const reactRoot = createRoot(htmlLayout); // [!code ++]
+
+    reactRoot.render(
+        <StrictMode>
+            <App />
+        </StrictMode>,
+    )
+}); // [!code ++]
+
+Game.onEnd(async (props) => { // [!code ++]
+    Game.clear(); // [!code ++]
+    // Navigate to the main menu after the game ends // [!code ++]
+}); // [!code ++]
+
+Game.addOnError(drawCanvasErrorHandler()); // [!code ++]
+Game.addOnError((error, props) => { // [!code ++]
+    console.error(`Error occurred`, error); // [!code ++]
+}); // [!code ++]
+
+Game.onLoadingLabel((_stepId, { id }) => Assets.backgroundLoadBundle(id)); // [!code ++]
+```
+
+```css tab="src/index.css"
+:root {
+  --text: #6b6375;
+  --text-h: #08060d;
+  --bg: #fff;
+  --border: #e5e4e7;
+  --code-bg: #f4f3ec;
+  --accent: #aa3bff;
+  --accent-bg: rgba(170, 59, 255, 0.1);
+  --accent-border: rgba(170, 59, 255, 0.5);
+  --social-bg: rgba(244, 243, 236, 0.5);
+  --shadow:
+    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+
+  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+
+  font: 18px/145% var(--sans);
+  letter-spacing: 0.18px;
+  color-scheme: light dark;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  @media (max-width: 1024px) {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #9ca3af;
+    --text-h: #f3f4f6;
+    --bg: #16171d;
+    --border: #2e303a;
+    --code-bg: #1f2028;
+    --accent: #c084fc;
+    --accent-bg: rgba(192, 132, 252, 0.15);
+    --accent-border: rgba(192, 132, 252, 0.5);
+    --social-bg: rgba(47, 48, 58, 0.5);
+    --shadow:
+      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+  }
+
+  #social .button-icon {
+    filter: invert(1) brightness(2);
+  }
+}
+
+#root {
+  width: 1126px;
+  max-width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  border-inline: 1px solid var(--border);
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+html, /* [!code ++] */
+body { /* [!code ++] */
+  background-color: #242424; /* [!code ++] */
+  height: 100%; /* [!code ++] */
+} /* [!code ++] */
+
+body {
+  margin: 0;
+  min-height: 100vh; /* [!code ++] */
+  display: flex; /* [!code ++] */
+  overflow: hidden; /* [!code ++] */
+}
+
+h1,
+h2 {
+  font-family: var(--heading);
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+h1 {
+  font-size: 56px;
+  letter-spacing: -1.68px;
+  margin: 32px 0;
+  @media (max-width: 1024px) {
+    font-size: 36px;
+    margin: 20px 0;
+  }
+}
+h2 {
+  font-size: 24px;
+  line-height: 118%;
+  letter-spacing: -0.24px;
+  margin: 0 0 8px;
+  @media (max-width: 1024px) {
+    font-size: 20px;
+  }
+}
+p {
+  margin: 0;
+}
+
+code,
+.counter {
+  font-family: var(--mono);
+  display: inline-flex;
+  border-radius: 4px;
+  color: var(--text-h);
+}
+
+code {
+  font-size: 15px;
+  line-height: 135%;
+  padding: 4px 8px;
+  background: var(--code-bg);
+}
+```
+
+```tsx tab="src/App.tsx"
+import { useState } from 'react'
+import './App.css'
+import heroImg from './assets/hero.png'
+import reactLogo from './assets/react.svg'
+import viteLogo from './assets/vite.svg'
+
+function App() {
+  const [count, setCount] = useState(0)
+
+  return (
+    <>
+      <section id="center">
+        <div className="hero">
+          <img src={heroImg} className="base" width="170" height="179" alt="" />
+          <img src={reactLogo} className="framework" alt="React logo" />
+          <img src={viteLogo} className="vite" alt="Vite logo" />
+        </div>
+        <div>
+          <h1>Get started</h1>
+          <p>
+            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
+          </p>
+        </div>
+        <button
+          className="counter"
+          onClick={() => setCount((count) => count + 1)}
+          // Read here: https://pixi-vn.web.app/start/interface#how-to-enable-ui-interaction // [!code ++]
+          style={{ pointerEvents: "auto" }} // [!code ++]
+        >
+          Count is {count}
+        </button>
+      </section>
+
+      <div className="ticks"></div>
+
+      <section id="next-steps">
+        <div id="docs">
+          <svg className="icon" role="presentation" aria-hidden="true">
+            <use href="/icons.svg#documentation-icon"></use>
+          </svg>
+          <h2>Documentation</h2>
+          <p>Your questions, answered</p>
+          <ul>
+            <li>
+              <a href="https://vite.dev/" target="_blank"
+                // Read here: https://pixi-vn.web.app/start/interface#how-to-enable-ui-interaction // [!code ++]
+                style={{ pointerEvents: "auto" }} // [!code ++]
+              >
+                <img className="logo" src={viteLogo} alt="" />
+                Explore Vite
+              </a>
+            </li>
+            <li>
+              <a href="https://react.dev/" target="_blank"
+                // Read here: https://pixi-vn.web.app/start/interface#how-to-enable-ui-interaction // [!code ++]
+                style={{ pointerEvents: "auto" }} // [!code ++]
+              >
+                <img className="button-icon" src={reactLogo} alt="" />
+                Learn more
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div id="social">
+          <svg className="icon" role="presentation" aria-hidden="true">
+            <use href="/icons.svg#social-icon"></use>
+          </svg>
+          <h2>Connect with us</h2>
+          <p>Join the Vite community</p>
+          <ul>
+            <li>
+              <a href="https://github.com/vitejs/vite" target="_blank"
+                // Read here: https://pixi-vn.web.app/start/interface#how-to-enable-ui-interaction // [!code ++]
+                style={{ pointerEvents: "auto" }} // [!code ++]
+              >
+                <svg
+                  className="button-icon"
+                  role="presentation"
+                  aria-hidden="true"
+                >
+                  <use href="/icons.svg#github-icon"></use>
+                </svg>
+                GitHub
+              </a>
+            </li>
+            <li>
+              <a href="https://chat.vite.dev/" target="_blank"
+                // Read here: https://pixi-vn.web.app/start/interface#how-to-enable-ui-interaction // [!code ++]
+                style={{ pointerEvents: "auto" }} // [!code ++]
+              >
+                <svg
+                  className="button-icon"
+                  role="presentation"
+                  aria-hidden="true"
+                >
+                  <use href="/icons.svg#discord-icon"></use>
+                </svg>
+                Discord
+              </a>
+            </li>
+            <li>
+              <a href="https://x.com/vite_js" target="_blank"
+                // Read here: https://pixi-vn.web.app/start/interface#how-to-enable-ui-interaction // [!code ++]
+                style={{ pointerEvents: "auto" }} // [!code ++]
+              >
+                <svg
+                  className="button-icon"
+                  role="presentation"
+                  aria-hidden="true"
+                >
+                  <use href="/icons.svg#x-icon"></use>
+                </svg>
+                X.com
+              </a>
+            </li>
+            <li>
+              <a href="https://bsky.app/profile/vite.dev" target="_blank"
+                // Read here: https://pixi-vn.web.app/start/interface#how-to-enable-ui-interaction // [!code ++]
+                style={{ pointerEvents: "auto" }} // [!code ++]
+              >
+                <svg
+                  className="button-icon"
+                  role="presentation"
+                  aria-hidden="true"
+                >
+                  <use href="/icons.svg#bluesky-icon"></use>
+                </svg>
+                Bluesky
+              </a>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <div className="ticks"></div>
+      <section id="spacer"></section>
+    </>
+  )
+}
+
+export default App
+```

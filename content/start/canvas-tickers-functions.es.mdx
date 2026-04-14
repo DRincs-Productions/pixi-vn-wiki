@@ -1,0 +1,165 @@
+---
+title: Tickers functions
+---
+
+To play, pause, or stop a ticker, you must use the functions of the `canvas`.
+
+It is important to keep the following behaviors in mind:
+
+- If a ticker does not have any canvas components associated with it, it will be deleted.
+- If you <DynamicLink href="/start/canvas-functions#remove-a-canvas-component">remove a canvas component</DynamicLink>, your alias will be unlinked from the ticker.
+- If you add a canvas component with an alias that already exists, the new component will replace the old one. The new component will inherit the tickers of the old component.
+
+## Find a ticker
+
+To find a ticker, you must use the `canvas.findTicker` function. This function receives the following parameters:
+
+- `tickerId`: The id of the ticker to be found.
+
+```ts tab="labels/startLabel.ts"
+import { canvas, newLabel, RotateTicker, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await showImage("egg_head", "egg_head", { yAlign: 0.5, xAlign: 0.25, anchor: 0.5 });
+        await showImage("flower_top", "flower_top", { yAlign: 0.5, xAlign: 0.75, anchor: 0.5 });
+        let tikerId = canvas.addTicker(["egg_head", "flower_top"], new RotateTicker({}));
+        let ticker = canvas.findTicker(tikerId); // [!code focus]
+        console.log(ticker);
+    },
+]);
+```
+
+```ts tab="utils/defineAssets.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+export async function defineAssets() {
+    Assets.add({ alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" });
+    Assets.add({ alias: "flower_top", src: "https://pixijs.com/assets/flowerTop.png" });
+}
+```
+
+## Remove a ticker
+
+To remove a ticker, you must use the `canvas.removeTicker` function. This function receives the following parameters:
+
+- `tikerId`: The id or an array of ids of the ticker to be removed.
+
+```ts tab="labels/startLabel.ts"
+import { canvas, newLabel, RotateTicker, showImage, storage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await showImage("egg_head", "egg_head", { yAlign: 0.5, xAlign: 0.25, anchor: 0.5 });
+        await showImage("flower_top", "flower_top", { yAlign: 0.5, xAlign: 0.75, anchor: 0.5 });
+        let tikerId = canvas.addTicker(["egg_head", "flower_top"], new RotateTicker({}));
+        storage.set("tiker_id", tikerId);
+    },
+    () => {
+        let tikerId = storage.get<string>("tiker_id");
+        tikerId && canvas.removeTicker(tikerId); // [!code focus]
+    },
+]);
+
+```
+
+```ts tab="utils/defineAssets.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+export async function defineAssets() {
+    Assets.add({ alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" });
+    Assets.add({ alias: "flower_top", src: "https://pixijs.com/assets/flowerTop.png" });
+}
+```
+
+<Sandbox
+  template="zglj8q"
+  entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
+/>
+
+## Pause and resume a ticker
+
+To pause a ticker, you must use the `canvas.pauseTicker` function. This function receives the following parameters:
+
+- `alias`: The alias of the canvas element that will use the ticker.
+- `tickerIdsExcluded`: The tickers that will not be paused.
+
+To resume a paused ticker, you must use the `canvas.resumeTicker` function. This function receives the following parameters:
+
+- `alias`: The alias of the canvas element that will use the ticker.
+
+```ts tab="labels/startLabel.ts"
+import { canvas, narration, newLabel, RotateTicker, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await showImage("egg_head", "egg_head", { align: 0.5, anchor: 0.5 });
+        let tikerId = canvas.addTicker(["egg_head"], new RotateTicker({}));
+        narration.dialogue = "start";
+    },
+    () => {
+        canvas.pauseTicker("egg_head"); // [!code focus]
+        narration.dialogue = "pause";
+    },
+    () => {
+        canvas.resumeTicker("egg_head"); // [!code focus]
+        narration.dialogue = "resume";
+    },
+]);
+```
+
+```ts tab="utils/defineAssets.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+export async function defineAssets() {
+    Assets.add({ alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" });
+}
+```
+
+<Sandbox
+  template="ns726n"
+  entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
+/>
+
+## Force completion of the transition at the end of the step
+
+When the animation has a goal to reach, such as a destination, we sometimes need the animation to reach the goal before the current `step` ends.
+
+To do this, you can use the `canvas.completeTickerOnStepEnd` function. This function receives the following parameters:
+
+- `step`: The `step` that the ticker must be completed before the next `step`. It receives an object with the following properties:
+  - `id`: The id of the `step`.
+  - `alias`: If it is a sequence of tickers, the alias of the [sequence of tickers](#sequence-of-tickers).
+
+```ts tab="labels/startLabel.ts"
+import { canvas, narration, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start_label", [
+    async () => {
+        await showImage("egg_head", "egg_head", { yAlign: 0, xAlign: 0, anchor: 0 });
+        let tikerId = canvas.addTicker(["egg_head"],
+            new MoveTicker({
+                destination: { x: 1, y: 0, type: "align" },
+                speed: 1,
+            })
+        );
+        tikerId && canvas.completeTickerOnStepEnd({ id: tikerId }); // [!code focus]
+    },
+    () => {
+        narration.dialogue = "complete";
+    },
+]);
+```
+
+```ts tab="utils/defineAssets.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+export async function defineAssets() {
+    Assets.add({ alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" });
+}
+```
+
+<Sandbox
+  template="7zgqr6"
+  entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts"
+/>

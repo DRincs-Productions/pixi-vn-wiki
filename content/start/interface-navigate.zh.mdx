@@ -1,0 +1,162 @@
+---
+title: Navigate/switch between UI screens
+---
+
+To navigate between different UI screens, it is necessary to use a routing system. A routing system allows you to define routes (or paths) for different screens and manage navigation between them. There are several routing systems available, including:
+
+- [TanStack Router](https://tanstack.com/router/latest)
+- [React Router](https://reactrouter.com/)
+- [Vue Router](https://router.vuejs.org/)
+- [Angular Router](https://angular.io/guide/router)
+
+## TanStack Router
+
+<Callout title="Templates" type="info">
+
+All templates generated with version 2.0.0 of `create-pixi-vn` use TanStack Router as the routing system.
+
+</Callout>
+
+TanStack Router is a routing system for web applications that allows you to manage navigation between different pages or components in a simple and efficient way. It is designed to be flexible and easy to use, offering advanced features such as support for dynamic parameters, router state management, and integration with rendering libraries like React, Vue, and Angular.
+
+The main advantage of TanStack Router is its ability to automatically generate route handling using `createFileRoute`. With `createFileRoute`, you can define your routes simply by creating files in a specific folder structure. For example, if you create a file `about.tsx` in the `src/routes` folder, TanStack Router will automatically generate a route for `/about` that renders the component defined in `about.tsx`.
+
+```ts title="src/routes/about.tsx"
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/about")({ // [!code focus]
+    component: About, // [!code focus]
+}); // [!code focus]
+
+function About() {
+    return (
+        <main className="page-wrap px-4 py-12">
+            <section className="island-shell rounded-2xl p-6 sm:p-8">
+                <p className="island-kicker mb-2">About</p>
+                <h1 className="display-title mb-3 text-4xl font-bold text-[var(--sea-ink)] sm:text-5xl">
+                    A small starter with room to grow.
+                </h1>
+                <p className="m-0 max-w-3xl text-base leading-8 text-[var(--sea-ink-soft)]">
+                    TanStack Start gives you type-safe routing, server functions, and modern SSR defaults. Use this as a
+                    clean foundation, then layer in your own routes, styling, and add-ons.
+                </p>
+            </section>
+        </main>
+    );
+}
+```
+
+## How to navigate between routes?
+
+To navigate between routes, use the navigation function provided by your routing system.
+
+<Callout title="Templates" type="info">
+
+In all templates, the `StepLabelProps` interface is already extended to include a `navigate` function. 你可以在`pixi-vn.d.ts`文件中找到它。
+
+</Callout>
+
+In pixi-vn projects, it's very common to need to navigate between routes while narrating. To enable this, the navigation function must be included in the <DynamicLink href="/start/labels#steplabelprops">`StepLabelProps` interface</DynamicLink>.
+
+```ts tab="pixi-vn.d.ts"
+import { narration } from '@drincs/pixi-vn'
+
+declare module '@drincs/pixi-vn' {
+    interface StepLabelProps {
+        navigate: (route: string) => void,
+    }
+}
+```
+
+```ts tab="hooks/useGameProps.ts"
+import { StepLabelProps } from "@drincs/pixi-vn";
+import useMyNavigate from "./useMyNavigate";
+
+export default function useGameProps(): StepLabelProps {
+    const navigate = useMyNavigate();
+
+    return {
+        navigate,
+    };
+}
+```
+
+<Callout title="ink" type="info">
+
+In all _ink_ templates, a <DynamicLink href="/ink/hashtag">custom hashtag command</DynamicLink> has been introduced to navigate between routes. To do this, you need to use the following syntax:
+
+```ink title="ink"
+# navigate [route]
+```
+
+- `route`: The destination route/path. For example, `# navigate /new-route`.
+
+</Callout>
+
+So, when you create a new label, you can use the `navigate` function to switch between routes:
+
+```ts tab="labels/startLabel.ts"
+export const startLabel = newLabel("start_label",
+    [
+        ({ navigate }) => { // [!code focus]
+            navigate("/new-route") // [!code focus]
+        }, // [!code focus]
+    ]
+)
+```
+
+<Accordions>
+
+<Accordion title="block_back_forward" id="block-back-forward">
+
+Using the browser's back and forward buttons can cause the game to be in an inconsistent state. This is because those keys allow the player to navigate between routes, not between narrative `steps`.
+
+It is recommended to prevent the path from changing when the browser's back button is pressed. There are many ways to do this, but the following approach is suggested:
+
+Intercept the `popstate` event, which is triggered after the browser's back button is pressed, and call `history.forward()` to cancel the navigation. To allow users to navigate back if they press the back button twice in succession, we can push a new state to the history stack on each route change.
+
+For example:
+
+```ts title="hooks/useConfirmBackNavigation.ts"
+import { useLocation } from "@tanstack/react-router";
+import { useEffect } from "react";
+
+/**
+ * useConfirmBackNavigation
+ *
+ * Prevent accidental browser "back" navigation.
+ * Behavior:
+ * - On each `href` change it pushes a history state (`pushState`).
+ * - Listens for `popstate` and calls `history.forward()` to cancel a single
+ *   press of the browser back button.
+ * - If the user presses back twice in succession (i.e. the second press occurs
+ *   before the first is handled), the browser will navigate back.
+ *
+ * Usage: call this hook at the app root to avoid unintended back navigations
+ * (e.g. accidental taps or gestures). Returns `null`.
+ */
+export default function useConfirmBackNavigation() {
+    const { href } = useLocation();
+
+    useEffect(() => {
+        const isInIframe = typeof window !== "undefined" && window.self !== window.top;
+        if (isInIframe) return;
+        const listener = () => {
+            window.history.forward();
+        };
+        window.addEventListener("popstate", listener);
+
+        return () => {
+            window.removeEventListener("popstate", listener);
+        };
+    }, []);
+
+    useEffect(() => {
+        window.history.pushState(null, href, href);
+    }, [href]);
+}
+```
+
+</Accordion>
+
+</Accordions>

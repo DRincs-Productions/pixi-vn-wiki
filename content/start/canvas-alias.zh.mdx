@@ -1,0 +1,47 @@
+---
+title: 画布组件别名
+description: 介绍 Pixi'VN 中画布组件的别名机制，涵盖继承特性、别名编辑及特殊游戏图层的使用。
+---
+
+import { HeredityFactorExample } from "@/components/examples";
+
+凡是添加到画布的组件，都必须分配一个别名（alias）。 别名是通过唯一字符串引用组件的方式。
+
+如果使用已有别名添加组件，新组件将自动替换旧组件。
+
+别名底层对应`PixiJSComponent.label`，因此请勿直接修改 label，应使用<DynamicLink href="/start/canvas-functions">Pixi'VN提供的方法</DynamicLink>来更改别名。
+
+## 继承特性
+
+当使用现有别名添加组件时，新组件在替换旧组件的同时，还会继承旧组件的组件属性、`zIndex`与<DynamicLink href="/start/canvas-tickers">ticker</DynamicLink>。
+
+<HeredityFactorExample />
+
+## 编辑组件别名
+
+要编辑画布组件的别名，可使用canvas.editAlias方法。 如果该别名关联了一个或多个<DynamicLink href="/start/canvas-tickers">ticker</DynamicLink>，它们会自动同步更新。
+
+`editAlias`方法有以下参数：
+
+- `oldAlias`：要编辑的组件旧别名。
+- `newAlias`：组件的新别名。
+
+```typescript
+import { canvas } from '@drincs/pixi-vn'
+
+canvas.editAlias('sprite1', 'sprite2')
+```
+
+## 游戏图层别名
+
+在Pixi'VN中，游戏图层（game layer）是一个特殊组件，代表了渲染所有游戏元素的主游戏区域。
+
+该组件被分配了一个特殊别名 ，`const CANVAS_APP_GAME_LAYER_ALIAS = "__game_layer__"`，用于在脚本中直接引用游戏图层。
+
+如果需要对整个图层运行<DynamicLink href="/start/canvas-animations-effects">动画或特效</DynamicLink>，这一机制会非常实用。 某些操作对此组件不可用，例如删除。
+
+```typescript
+import { CANVAS_APP_GAME_LAYER_ALIAS, shakeEffect } from '@drincs/pixi-vn'
+
+shakeEffect(CANVAS_APP_GAME_LAYER_ALIAS)
+```
