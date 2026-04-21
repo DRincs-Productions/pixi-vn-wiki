@@ -4,6 +4,57 @@ title: Migration guide
 
 ## pixi-vn
 
+### Migration from v1.6.x to v1.7.0
+
+This version has been designed to improve integration with the template.
+
+The first change introduced is that HTML layouts now use `userSelect: "none"` by default (so text is not selectable). This was done to prevent issues with text selection during UI interactions. If you want to make text selectable, you can simply override this property with `userSelect: "auto"`.
+
+```ts
+const htmlLayer = canvas.addHtmlLayer("ui", root, {
+    userSelect: "auto", // [!code ++]
+});
+```
+
+Additionally, some features have been deprecated to centralize navigation management into a single function. You should now use `Game.onNavigate` to handle navigation between UI screens, instead of passing a navigation function to every function that requires one (for example `Game.restoreGameState`).
+
+```ts
+Game.onNavigate((path) => { // [!code ++]
+    navigateTo(path); // [!code ++]
+}); // [!code ++]
+
+Game.restoreGameState(data, navigateTo); // [!code --]
+Game.restoreGameState(data); // [!code ++]
+```
+
+Finally, the ability to implement a custom UI storage has been added, allowing automatic rerendering when game variables change. To do this, you need to use the `storage.setStorageHandler` function to set a handler that updates the state of your custom UI storage whenever a game variable is modified.
+
+```ts
+import { Store } from '@tanstack/store'
+// Create a TanStack store that mirrors the game storage variables
+const gameStore = new Store<Record<string, unknown>>({})
+
+storage.setStorageHandler({
+    onSetVariable: (key, value) => {
+        gameStore.setState((state) => ({ ...state, [key]: value }))
+    },
+    onRemoveVariable: (key) => {
+        gameStore.setState((state) => {
+            const next = { ...state }
+            delete next[key]
+            return next
+        })
+    },
+    onClearOldTempVariable: (key) => {
+        gameStore.setState((state) => {
+            const next = { ...state }
+            delete next[key]
+            return next
+        })
+    },
+})
+```
+
 ### Migration from v1.5.x to v1.6.0
 
 In this version, the audio system has been completely redesigned, as the previous implementation was very limiting. In this new version, the `channel` component has been introduced, and the system has been divided into four elements, each responsible for a specific role, unlike before where they could be used in multiple ways, leading to instability (`sound` (manager), `channels`, `media`, sound `assets`).
