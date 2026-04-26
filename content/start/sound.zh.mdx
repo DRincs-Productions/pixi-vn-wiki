@@ -6,24 +6,24 @@ import { SoundExample } from "@/components/examples";
 
 <Callout type="warn">
 
-The entire audio system has been revised in version 1.6.0.
+自1.6.0版本起，整个音频系统已完成重构。
 
 </Callout>
 
-声音模块是对[PixiJS Sound](https://github.com/pixijs/sound)库的封装。 It provides a simple interface for playing sounds and saves the current state at each <DynamicLink href="/start/labels">`step`</DynamicLink>.
+声音模块是对[PixiJS Sound](https://github.com/pixijs/sound)库的封装。 它提供了简洁的调用接口，并自动记录每一<DynamicLink href="/start/labels">步骤（`step`）</DynamicLink>的播放状态，方便存档回溯。
 
 <Callout title="ink" type="info">
 
-此方法可以与_ink_语法一起使用。 See more <DynamicLink href="/ink/sound">here</DynamicLink>.
+此方法可以与_ink_语法一起使用。 在<DynamicLink href="/ink/sound">这里</DynamicLink>查看更多。
 
 </Callout>
 
-It is composed of the following elements, which will be referenced later:
+它由以下元素构成（后文将频繁引用）：
 
-- `sound` (manager) is the controller of the entire audio system. It is used to manage `channels`, start and control musical `media`, and retrieve information or modify sound `assets`. You can set values to adjust the overall audio level. These settings are not stored in save files and are mainly intended for game settings.
-- `channels` is a sub-level of the sound manager and can be seen as a container. It is used to contain, start, and manage musical `media`. You can set values to affect only the contained media. These settings are not stored in save files and are mainly intended for game settings.
-- `media` are instances of a sound that has been started. You can set values that apply only to themselves. All settings applied to them are saved in the game save. These settings are mainly intended to be modified during gameplay. They are contained within a `channel` in a one-to-many relationship. Each media has a unique `alias`.
-- `assets` (sound assets), as the name suggests, are the assets used during the game to play sounds. You can set values to influence all media that use this asset. These settings are not saved and are mainly intended to be configured during game initialization when loading assets.
+- `sound`（管理器）是整个音频系统的控制器。 负责通道（`channels`）管理、媒体（`media`）启停、资源（`assets`）查询与参数调整。 可以设置值来调整整体的音频电平。 这些设置不会存入存档，适合用于游戏运行时的统一调控。
+- `channels`是隶属于 sound 管理器的子级容器，可理解为音频的"分组"。 用于容纳、启动和管理具体的音频媒体。 你对频道做的设置只会影响其内部的媒体。 这些设置不会存入存档，适合用于游戏运行时的统一调控。
+- `media`是每次播放声音时生成的独立实例。 你可以为每个实例单独设置参数。 此处所有的设置都会随游戏存档保存。 这些设置主要用于剧情推进过程中的动态调整。 一个频道可以包含多个 media，二者是一对多的关系。 每个 media 都有唯一的别名（`alias`）用于识别。
+- `assets`（声音资源），顾名思义，就是游戏中实际用到的音频文件。 对资源做的设置会作用于所有使用该资源的 media 实例。 这些配置不会被保存，通常在游戏初始化加载资源时一次性设定好。
 
 ```ts tab="labels/startLabel.ts"
 import { narration, newLabel, sound } from "@drincs/pixi-vn";
