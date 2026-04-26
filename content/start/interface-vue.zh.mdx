@@ -1,0 +1,220 @@
+---
+icon: /vue.svg
+title: Vue UI
+description: 介绍如何将 Pixi’VN 与 Vue 集成，包括配置、模板和 UI 示例。 使用 Vue 创建视觉小说或 2D 游戏。
+---
+
+什么是 Vue？Vue 是一款用于构建用户界面的渐进式框架。 它的设计便于渐进式采用，既可直接作为轻量级库使用，也能轻松扩展为功能完备的框架。
+
+你可以访问 [Vue官网](https://vuejs.org/)，以了解更多信息。
+
+## 如何将 Pixi’VN 添加到 Vue 应用程序中
+
+<Callout title="Vue template" type="info">
+
+我们正在寻找协助开发 Vue 模板的伙伴。 愿意来帮忙吗？
+
+如果你感兴趣，或是有时间协助，欢迎在下方评论区留言！
+
+</Callout>
+
+首先，你需要准备一个Vue应用，并且要<DynamicLink href="/start#installation">安装pixi-vn</DynamicLink>。 推荐使用[Vite](https://vite.dev/guide/#scaffolding-your-first-vite-project)来创建新的 Vue 应用。
+
+然后，你可以将以下文件的内容替换为示例代码：
+
+```tsx tab="src/main.ts"
+import { canvas, Container, Game, RotateTicker, showImage } from '@drincs/pixi-vn'
+import { createApp } from 'vue'
+import './style.css'
+import App from './App.vue'
+
+createApp(App).mount('#app') // [!code --]
+const body = document.body; // [!code ++]
+if (!body) { // [!code ++]
+  throw new Error("body element not found"); // [!code ++]
+} // [!code ++]
+ // [!code ++]
+Game.init(body, { // [!code ++]
+    height: 1080, // [!code ++]
+    width: 1920, // [!code ++]
+    backgroundColor: "#303030", // [!code ++]
+  }) // [!code ++]
+  .then(() => { // [!code ++]
+ // [!code ++]
+    // Pixi.JS UI Layer [!code ++]
+    canvas.addLayer("ui", new Container()); // [!code ++]
+    showImage( // [!code ++]
+      "juliette", // [!code ++]
+      "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fcharacters%2Fjuliette-icon.webp?alt=media&token=cbcdd613-12e4-48b5-b7b3-16443b4e125e", // [!code ++]
+      { xAlign: 0.9, yAlign: 0.1, anchor: 0.5 } // [!code ++]
+    ); // [!code ++]
+    canvas.addTicker("juliette", new RotateTicker({ speed: 1 })); // [!code ++]
+ // [!code ++]
+    // Vue setup [!code ++]
+    const app = document.getElementById("app"); // [!code ++]
+    if (!app) { // [!code ++]
+      throw new Error("app element not found"); // [!code ++]
+    } // [!code ++]
+ // [!code ++]
+    const htmlLayer = canvas.addHtmlLayer("ui", app, { // [!code ++]
+      position: "absolute", // [!code ++]
+      pointerEvents: "none" // [!code ++]
+    }); // [!code ++]
+    if (!htmlLayer) { // [!code ++]
+      throw new Error("htmlLayer not found"); // [!code ++]
+    } // [!code ++]
+    createApp(App).mount(htmlLayer) // [!code ++]
+  } // [!code ++]
+) // [!code ++]
+```
+
+```css tab="src/style.css"
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+html, /* [!code ++] */
+body { /* [!code ++] */
+  background-color: #242424; /* [!code ++] */
+  height: 100%; /* [!code ++] */
+} /* [!code ++] */
+
+body {
+  margin: 0;
+  display: flex;
+  min-height: 100vh;
+  place-items: center; /* [!code --] */
+  min-width: 320px; /* [!code --] */
+  overflow: hidden; /* [!code ++] */
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+.card {
+  padding: 2em;
+}
+
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem; /* [!code --] */
+  text-align: center;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+```
+
+```vue tab="src/components/HelloWorld.vue"
+<script setup lang="ts">
+import { ref } from 'vue'
+
+defineProps<{ msg: string }>()
+
+const count = ref(0)
+</script>
+
+<template>
+  <h1>{{ msg }}</h1>
+
+  <div class="card">
+    <!-- Read here: https://pixi-vn.web.app/start/interface#how-to-enable-ui-interaction -->
+    <button type="button" @click="count++">count is {{ count }}</button> <!-- [!code --] -->
+    <button type="button" @click="count++" :style="{ pointerEvents: 'auto' }">count is {{ count }}</button> <!-- [!code ++] -->
+    <p>
+      Edit
+      <code>components/HelloWorld.vue</code> to test HMR
+    </p>
+  </div>
+
+  <p>
+    Check out
+    <a href="https://vuejs.org/guide/quick-start.html#local" target="_blank"
+      >create-vue</a
+    >, the official Vue + Vite starter
+  </p>
+  <p>
+    Learn more about IDE Support for Vue in the
+    <a
+      href="https://vuejs.org/guide/scaling-up/tooling.html#ide-support"
+      target="_blank"
+      >Vue Docs Scaling up Guide</a
+    >.
+  </p>
+  <p class="read-the-docs">Click on the Vite and Vue logos to learn more</p>
+</template>
+
+<style scoped>
+.read-the-docs {
+  color: #888;
+}
+</style>
+```
+
+```html tab="index.html"
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + Vue</title> <!-- [!code --] -->
+    <title>Vite + Vue + Pixi’VN</title> <!-- [!code ++] -->
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
+```
