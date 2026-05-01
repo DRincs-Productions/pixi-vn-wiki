@@ -1,4 +1,15 @@
-import { faqSource, getLLMText, inkSource, jsonSource, nqtrSource, renpySource, source } from "@/lib/source";
+import {
+    faqSource,
+    getLLMText,
+    inkSource,
+    jsdocPixiVnInkSource,
+    jsdocPixiVnJsonSource,
+    jsdocPixiVnSource,
+    jsonSource,
+    nqtrSource,
+    renpySource,
+    source,
+} from "@/lib/source";
 
 export const revalidate = false;
 
@@ -12,7 +23,14 @@ export async function GET() {
         .concat(faqSource.getPages())
         .filter((v) => v.locale === "en")
         .map(getLLMText);
-    const scanned = await Promise.all(scan);
 
-    return new Response(scanned.join("\n\n").replaceAll("/en/", "/"));
+    const jsdocScan = [
+        ...jsdocPixiVnSource.getPages(),
+        ...jsdocPixiVnJsonSource.getPages(),
+        ...jsdocPixiVnInkSource.getPages(),
+    ].map(getLLMText);
+
+    const [scanned, scannedJsdoc] = await Promise.all([Promise.all(scan), Promise.all(jsdocScan)]);
+
+    return new Response([...scanned, ...scannedJsdoc].join("\n\n").replaceAll("/en/", "/"));
 }

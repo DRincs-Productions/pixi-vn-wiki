@@ -1,4 +1,14 @@
-import { docs, faqDocs, inkDocs, jsonDocs, nqtrDocs, renpyDocs } from "collections/server";
+import {
+    docs,
+    faqDocs,
+    inkDocs,
+    jsdocPixiVnDocs,
+    jsdocPixiVnInkDocs,
+    jsdocPixiVnJsonDocs,
+    jsonDocs,
+    nqtrDocs,
+    renpyDocs,
+} from "collections/server";
 import { type InferPageType, loader } from "fumadocs-core/source";
 import { icons } from "lucide-react";
 import { createElement } from "react";
@@ -8,6 +18,9 @@ import {
     docsImageRoute,
     faqRoute,
     inkRoute,
+    jsdocPixiVnInkRoute,
+    jsdocPixiVnJsonRoute,
+    jsdocPixiVnRoute,
     jsonRoute,
     nqtrRoute,
     renpyRoute,
@@ -160,6 +173,21 @@ export const jsonSource = loader({
     i18n,
 });
 
+function createJsdocLoader(baseUrl: string, docsSource: ReturnType<typeof jsdocPixiVnDocs.toFumadocsSource>) {
+    return loader({
+        baseUrl,
+        source: docsSource,
+        plugins: [],
+        icon(icon) {
+            if (icon && icon in icons) return createElement(icons[icon as keyof typeof icons]);
+        },
+    });
+}
+
+export const jsdocPixiVnSource = createJsdocLoader(jsdocPixiVnRoute, jsdocPixiVnDocs.toFumadocsSource());
+export const jsdocPixiVnJsonSource = createJsdocLoader(jsdocPixiVnJsonRoute, jsdocPixiVnJsonDocs.toFumadocsSource());
+export const jsdocPixiVnInkSource = createJsdocLoader(jsdocPixiVnInkRoute, jsdocPixiVnInkDocs.toFumadocsSource());
+
 export function getPageImage(page: InferPageType<typeof source>) {
     const segments = [...page.slugs, "image.png"];
 
@@ -185,7 +213,23 @@ export function getPageMarkdownUrl(
     };
 }
 
-export async function getLLMText(page: InferPageType<typeof source>) {
+export function getJsdocPageMarkdownUrl(
+    page: { slugs: string[] },
+    lib: "pixi-vn" | "pixi-vn-json" | "pixi-vn-ink",
+) {
+    const segments = [...page.slugs, "content.md"];
+    const url = `${docsContentRoute}/jsdoc/${lib}/${segments.join("/")}`;
+
+    return {
+        segments,
+        url,
+    };
+}
+
+export async function getLLMText(page: {
+    data: { title: string; getText: (key: string) => Promise<string> };
+    url: string;
+}) {
     const processed = await page.data.getText("processed");
 
     return `# ${page.data.title} (${page.url})

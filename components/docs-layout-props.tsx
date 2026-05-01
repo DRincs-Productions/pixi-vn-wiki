@@ -799,6 +799,11 @@ export async function sidebar(lang?: string): Promise<
                 description: "Frequently Asked Questions",
                 url: `${preUrl}/faq`,
             },
+            {
+                title: "JSDoc",
+                description: "Auto-generated API reference",
+                url: `/jsdoc/pixi-vn`,
+            },
         ],
     };
 }
