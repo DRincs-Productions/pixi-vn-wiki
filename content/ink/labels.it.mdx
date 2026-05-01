@@ -18,7 +18,7 @@ Per eseguire un `knot` puoi usare i seguenti metodi:
 
 <Accordion title="ink_jump" id="jump">
 
-È possibile eseguire un `knot` utilizzando il simbolo `->`. Corrisponde alla funzionalità <DynamicLink href="/start/labels#jump-to-a-label">`jump`</DynamicLink> nella libreria Pixi'VN.
+You can execute a `knot` using the Divert operator, which is represented by the `-> start` syntax. Corrisponde alla funzionalità <DynamicLink href="/start/labels#jump-to-a-label">`jump`</DynamicLink> nella libreria Pixi'VN.
 
 Scrivi il simbolo `->` seguito dal nome del `knot`, ad esempio:
 
@@ -39,33 +39,52 @@ End
 
 <Accordion title="ink_call" id="call">
 
-È possibile eseguire un `knot` utilizzando il simbolo `->`. Corrisponde alla funzionalità <DynamicLink href="/start/labels#call-to-a-label">`call`</DynamicLink> nella libreria Pixi'VN.
+<Callout type="info" title="Threads">
 
-Scrivi il simbolo `<-` seguito dal nome del `knot`, ad esempio:
+Unlike **native ink**, in **ink + Pixi’VN integration** "Threads" are not supported, so the `<-` symbol corresponds to calling a `knot` instead of being a "Thread" operator.
+
+</Callout>
+
+<Callout type="info">
+
+For simplicity, in **ink + Pixi’VN integration**, `->->` and `-> DONE` will correctly close the `label`, so they are equivalent.
+
+</Callout>
+
+You can execute a `knot` using the Tunnels operator, which is represented by the `-> start ->` syntax. Corrisponde alla funzionalità <DynamicLink href="/start/labels#call-to-a-label">`call`</DynamicLink> nella libreria Pixi'VN.
+
+Write the `->` symbol followed by the name of the `knot` and then the `->` symbol again, for example:
 
 ```ink title="ink"
-== start ==
-I had a headache; threading is hard to get your head around.
-<- conversation // [!code focus]
-<- walking // [!code focus]
+VAR reputation = 0
 
+-> city
+=== city ===
+You are in the square.
 
-== conversation ==
-It was a tense moment for Monty and me.
- * "What did you have for lunch today?"[] I asked.
-    "Spam and eggs," he replied.
- * "Nice weather, we're having,"[] I said.
-    "I've seen better," he replied.
- - -> house
+* [Talk to the guard]
+    -> guard_dialogue ->
+    You return to the square.
+    -> city
+    You don't see this line because you are sent back to the city before.
 
-== walking ==
-We continued to walk down the dusty road.
- * [Continue walking]
-    -> house
+* {reputation >= 1} [Ask for a favor]
+    The guard helps you.
+    -> END
 
-== house ==
-Before long, we arrived at his house.
--> DONE
+=== guard_dialogue ===
+The guard looks at you.
+
+* [Greet]
+    "Hello citizen."
+    ~ reputation += 1
+->->
+
+* [Insult]
+    "Hey you!"
+    ~ reputation -= 1
+
+->->
 ```
 
 <NativeCallExample />
