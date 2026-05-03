@@ -13,6 +13,7 @@ import {
     Crop,
     Database,
     File,
+    FunctionSquare,
     Gamepad2,
     Globe,
     Hammer,
@@ -563,8 +564,9 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
             { type: "page", name: t("canvas"), icon: <ImageIcon />, url: `${preUrl}/ink/canvas` },
             { type: "page", name: t("sound"), url: `${preUrl}/ink/sound`, icon: <Music /> },
             { type: "page", icon: <Boxes />, name: t("assets"), url: `${preUrl}/ink/assets` },
+            { type: "page", icon: <FunctionSquare />, name: t("functions"), url: `${preUrl}/ink/functions` },
             { type: "page", name: "Text replacement", url: `${preUrl}/ink/replacement` },
-            { type: "page", name: "Custom Hashtag Command", url: `${preUrl}/ink/hashtag` },
+            { type: "page", name: "Custom hashtag command", url: `${preUrl}/ink/hashtag` },
         ],
     };
 }
