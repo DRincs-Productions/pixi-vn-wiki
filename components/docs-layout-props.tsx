@@ -553,6 +553,11 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
                         name: t("temp-storage"),
                         url: `${preUrl}/ink/temp-storage`,
                     },
+                    {
+                        type: "page",
+                        name: t("arithmetic-logic"),
+                        url: `${preUrl}/ink/arithmetic-logic`,
+                    },
                 ],
             },
             { type: "page", name: t("canvas"), icon: <ImageIcon />, url: `${preUrl}/ink/canvas` },
