@@ -14,6 +14,7 @@ export function createMetadata(props: Metadata, params: { lang?: string; slug?: 
     return {
         title: title,
         description: description,
+        keywords: ["pixi-vn", "pixivn", "Pixi'VN", "PixiVN", "pixi vn", "visual novel engine", "2D game engine", "PixiJS", "Point & Click Adventure", "React", "JavaScript", "Node.js", "ink", "inkle", "renpy alternatives", "ren'py alternatives"],
         openGraph: {
             title: title,
             description: description ?? undefined,
