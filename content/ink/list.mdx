@@ -76,23 +76,29 @@ You can use the same set of states in multiple variables:
 
 ```ink title="ink"
 LIST daysOfTheWeek = Monday, Tuesday, Wednesday, Thursday, Friday
-VAR today = Monday
-VAR tomorrow = Tuesday
+VAR today = daysOfTheWeek.Monday
+VAR tomorrow = daysOfTheWeek.Tuesday
 ```
+
+<Callout type="info">
+
+In **Pixi'VN storage**, the declaration above creates entries such as `daysOfTheWeek.Monday = 1`, `daysOfTheWeek.Tuesday = 2`, … Always use the qualified form `daysOfTheWeek.Monday` — not the bare `Monday` — when referencing an entry in **Pixi'VN *ink***.
+
+</Callout>
 
 ## Set
 
 Change the current value of a list variable using the `~` logic syntax:
 
 ```ink title="ink"
-~ kettleState = cold
-~ kettleState = boiling
+~ kettleState = kettleState.cold
+~ kettleState = kettleState.boiling
 ```
 
 For multi-valued lists, you can assign several values at once:
 
 ```ink title="ink"
-~ DoctorsInSurgery = (Adams, Bernard)
+~ DoctorsInSurgery = (DoctorsInSurgery.Adams, DoctorsInSurgery.Bernard)
 ```
 
 Or clear the list entirely:
@@ -106,10 +112,10 @@ Or clear the list entirely:
 Use `+=` and `-=` to add or remove individual entries without touching the rest of the list:
 
 ```ink title="ink"
-~ DoctorsInSurgery += Adams
-~ DoctorsInSurgery -= Eamonn
-~ DoctorsInSurgery += (Eamonn, Denver)
-~ DoctorsInSurgery -= (Adams, Eamonn, Denver)
+~ DoctorsInSurgery += DoctorsInSurgery.Adams
+~ DoctorsInSurgery -= DoctorsInSurgery.Eamonn
+~ DoctorsInSurgery += (DoctorsInSurgery.Eamonn, DoctorsInSurgery.Denver)
+~ DoctorsInSurgery -= (DoctorsInSurgery.Adams, DoctorsInSurgery.Eamonn, DoctorsInSurgery.Denver)
 ```
 
 Adding an entry that is already present, or removing one that isn't, does nothing — no error is produced.
@@ -131,7 +137,7 @@ Print the current value of a list variable using the standard `{...}` syntax —
 
 ```ink title="ink"
 LIST volumeLevel = off, quiet, medium, loud, deafening
-VAR lecturersVolume = quiet
+VAR lecturersVolume = volumeLevel.quiet
 
 The lecturer's voice becomes {lecturersVolume}.
 ```
@@ -139,7 +145,7 @@ The lecturer's voice becomes {lecturersVolume}.
 ### Testing a single value
 
 ```ink title="ink"
-{ kettleState == cold:
+{ kettleState == kettleState.cold:
     The kettle is cool to the touch.
 - else:
     The outside of the kettle is very warm!
@@ -151,11 +157,11 @@ The lecturer's voice becomes {lecturersVolume}.
 Use `has` (or `?`) to check whether a value is present in a multi-valued list:
 
 ```ink title="ink"
-{ DoctorsInSurgery has Eamonn:
+{ DoctorsInSurgery has DoctorsInSurgery.Eamonn:
     Dr Eamonn is polishing his glasses.
 }
 
-{ DoctorsInSurgery ? (Adams, Bernard):
+{ DoctorsInSurgery ? (DoctorsInSurgery.Adams, DoctorsInSurgery.Bernard):
     Dr Adams and Dr Bernard are having a hushed argument in one corner.
 }
 ```
@@ -163,7 +169,7 @@ Use `has` (or `?`) to check whether a value is present in a multi-valued list:
 Use `hasnt` (or `!?`) to negate:
 
 ```ink title="ink"
-{ DoctorsInSurgery !? Eamonn:
+{ DoctorsInSurgery !? DoctorsInSurgery.Eamonn:
     Dr Eamonn has left.
 }
 ```
@@ -181,7 +187,7 @@ A list evaluates to `true` unless it is empty:
 List values carry numeric weights (first value = 1, second = 2, …), so you can compare them:
 
 ```ink title="ink"
-{ lecturersVolume < deafening:
+{ lecturersVolume < volumeLevel.deafening:
     ~ lecturersVolume++
 }
 ```
@@ -189,7 +195,7 @@ List values carry numeric weights (first value = 1, second = 2, …), so you can
 Exact equality (`==`) on a multi-valued list means **set equality** — both lists must contain exactly the same entries:
 
 ```ink title="ink"
-{ DoctorsInSurgery == (Adams, Bernard):
+{ DoctorsInSurgery == (DoctorsInSurgery.Adams, DoctorsInSurgery.Bernard):
     Dr Adams and Dr Bernard are having a loud argument.
 }
 ```
@@ -225,11 +231,11 @@ LIST DoctorsInSurgery = (Adams), Bernard, (Cartwright), Denver, Eamonn
 LIST volumeLevel = off, quiet, medium, loud, deafening
 
 // number → name: LIST_VALUE returns the integer (first entry = 1)
-The lecturer has {LIST_VALUE(deafening) - LIST_VALUE(lecturersVolume)} notches left.
+The lecturer has {LIST_VALUE(volumeLevel.deafening) - LIST_VALUE(lecturersVolume)} notches left.
 
 // number → value: use the list name as a function
 LIST Numbers = one, two, three
-VAR score = one
+VAR score = Numbers.one
 ~ score = Numbers(2)  // score is now "two"
 ```
 
@@ -252,10 +258,10 @@ Track game events as flags — add an entry when it happens, test it later:
 ```ink title="ink"
 LIST GameEvents = foundSword, openedCasket, metGorgon
 
-~ GameEvents += metGorgon
+~ GameEvents += GameEvents.metGorgon
 
-{ GameEvents ? openedCasket: You remember opening the casket. }
-{ GameEvents ? (foundSword, metGorgon): You are well prepared. }
+{ GameEvents ? GameEvents.openedCasket: You remember opening the casket. }
+{ GameEvents ? (GameEvents.foundSword, GameEvents.metGorgon): You are well prepared. }
 ```
 
 </Accordion>
@@ -267,8 +273,8 @@ Use a list as a state machine — each entry is a state, advance with `++`:
 ```ink title="ink"
 LIST PancakeState = ingredients_gathered, batter_mix, pan_hot, pancakes_tossed, ready_to_eat
 
-{ PancakeState == batter_mix: The batter is ready. }
-{ PancakeState < ready_to_eat: Keep cooking! }
+{ PancakeState == PancakeState.batter_mix: The batter is ready. }
+{ PancakeState < PancakeState.ready_to_eat: Keep cooking! }
 ~ PancakeState++
 ```
 
@@ -282,13 +288,13 @@ Model objects with multiple independent properties using a multi-list variable:
 LIST OnOffState = on, off
 LIST ChargeState = uncharged, charging, charged
 
-VAR PhoneState = (off, uncharged)
+VAR PhoneState = (OnOffState.off, ChargeState.uncharged)
 
-* { PhoneState !? uncharged } [Plug in phone]
+* { PhoneState !? ChargeState.uncharged } [Plug in phone]
     ~ PhoneState -= LIST_ALL(ChargeState)
-    ~ PhoneState += charging
+    ~ PhoneState += ChargeState.charging
     You plug the phone into charge.
-* { PhoneState ? (on, charged) } [Call my mother]
+* { PhoneState ? (OnOffState.on, ChargeState.charged) } [Call my mother]
 ```
 
 </Accordion>
@@ -301,8 +307,8 @@ Variables can hold entries from multiple different lists, allowing you to model 
 LIST Characters = Alfred, Batman, Robin
 LIST Props = champagne_glass, newspaper
 
-VAR BallroomContents = (Alfred, Batman, newspaper)
-VAR HallwayContents = (Robin, champagne_glass)
+VAR BallroomContents = (Characters.Alfred, Characters.Batman, Props.newspaper)
+VAR HallwayContents = (Characters.Robin, Props.champagne_glass)
 ```
 
 </Accordion>
@@ -314,8 +320,8 @@ Track accumulated knowledge as a chain of facts:
 ```ink title="ink"
 LIST Facts = (Fogg_is_fairly_odd), first_name_phileas, (Fogg_is_English)
 
-{ Facts ? Fogg_is_fairly_odd: I smiled politely. | I frowned. }
-{ Facts ? (Fogg_is_English, Fogg_is_fairly_odd):
+{ Facts ? Facts.Fogg_is_fairly_odd: I smiled politely. | I frowned. }
+{ Facts ? (Facts.Fogg_is_English, Facts.Fogg_is_fairly_odd):
     'I know Englishmen are strange, but this is *incredible*!'
 }
 ```
@@ -341,8 +347,8 @@ A `LIST` declaration defines both the set of possible values *and* a variable. Y
 
 ```ink title="ink"
 LIST heatedWaterStates = cold, boiling, recently_boiled
-VAR kettleState = cold
-VAR potState = cold
+VAR kettleState = heatedWaterStates.cold
+VAR potState = heatedWaterStates.cold
 ```
 
 Both `kettleState` and `potState` hold values drawn from `heatedWaterStates`.
@@ -353,8 +359,8 @@ Use `^` to find the overlap between two lists:
 
 ```ink title="ink"
 LIST CoreValues = strength, courage, compassion, greed, nepotism, self_belief
-VAR desiredValues = (strength, courage, compassion, self_belief)
-VAR actualValues  = (greed, nepotism, self_belief)
+VAR desiredValues = (CoreValues.strength, CoreValues.courage, CoreValues.compassion, CoreValues.self_belief)
+VAR actualValues  = (CoreValues.greed, CoreValues.nepotism, CoreValues.self_belief)
 
 {desiredValues ^ actualValues}  // prints "self_belief"
 { desiredValues ^ actualValues: The new president has at least one desirable quality. }
