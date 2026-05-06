@@ -121,5 +121,13 @@ export default function ServerImage(
         );
     }
 
+    // Fall back to a native <img> when no explicit dimensions are provided
+    // (e.g. markdown images from auto-generated jsdoc content).
+    // Next.js <Image> requires width/height and would crash without them.
+    if (!rest.width && !rest.height) {
+        // eslint-disable-next-line @next/next/no-img-element
+        return <img {...{ src, alt, title }} style={{ maxWidth: "100%", height: "auto", ...(style || {}) }} {...(rest as any)} />;
+    }
+
     return <Image {...{ src, alt, title }} style={style} {...(rest as any)} />;
 }
