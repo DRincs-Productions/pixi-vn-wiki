@@ -68,6 +68,12 @@ jobs:
           } > "$file.tmp"
           mv "$file.tmp" "$file"
         done
+    - name: Fix jsdoc internal links for fumadocs
+      # Converts relative .md links to absolute fumadocs paths.
+      # TypeDoc generates relative links that resolve incorrectly in fumadocs
+      # because index.md pages are served without a trailing slash.
+      # These changes are intentionally NOT committed — they are only needed for the build.
+      run: python3 scripts/fix-jsdoc-links.py
     - name: npm install and build
       run: |
         npm install
