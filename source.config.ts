@@ -139,6 +139,9 @@ export const jsdocPixiVnDocs = defineDocs({
         postprocess: {
             includeProcessedMarkdown: true,
         },
+        mdxOptions: {
+            format: "md",
+        },
     },
     meta: {
         schema: metaSchema,
@@ -152,6 +155,9 @@ export const jsdocPixiVnJsonDocs = defineDocs({
         postprocess: {
             includeProcessedMarkdown: true,
         },
+        mdxOptions: {
+            format: "md",
+        },
     },
     meta: {
         schema: metaSchema,
@@ -164,6 +170,9 @@ export const jsdocPixiVnInkDocs = defineDocs({
         schema: pageSchema,
         postprocess: {
             includeProcessedMarkdown: true,
+        },
+        mdxOptions: {
+            format: "md",
         },
     },
     meta: {
