@@ -812,16 +812,26 @@ export async function sidebar(lang?: string): Promise<
                 url: `${preUrl}/renpy`,
             },
             {
-                title: "Pixi’VN Json",
-                icon: <Image width={16} height={16} src='/pixivn-json.svg' alt='Pixi’VN Json' />,
-                description: "Json Integration",
-                url: `${preUrl}/json`,
-            },
-            {
                 title: "FAQ",
                 icon: <CircleQuestionMark size={16} />,
                 description: "Frequently Asked Questions",
                 url: `${preUrl}/faq`,
+            },
+            {
+                title: "`@drinc/pixi-vn` JSDoc",
+                description: "Auto-generated API reference",
+                url: `/jsdoc/pixi-vn`,
+            },
+            {
+                title: "`@drinc/pixi-vn-ink` JSDoc",
+                description: "Auto-generated API reference",
+                url: `/jsdoc/pixi-vn-ink`,
+            },
+            {
+                title: "`@drinc/pixi-vn-json` JSDoc",
+                icon: <Image width={16} height={16} src='/pixivn-json.svg' alt='Pixi’VN Json' />,
+                description: "Auto-generated API reference",
+                url: `/jsdoc/pixi-vn-json`,
             },
         ],
     };

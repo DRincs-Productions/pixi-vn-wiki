@@ -131,3 +131,51 @@ export const jsonDocs = defineDocs({
         schema: metaSchema,
     },
 });
+
+export const jsdocPixiVnDocs = defineDocs({
+    dir: "content/jsdoc/pixi-vn",
+    docs: {
+        schema: pageSchema,
+        postprocess: {
+            includeProcessedMarkdown: true,
+        },
+        mdxOptions: {
+            format: "md",
+        },
+    },
+    meta: {
+        schema: metaSchema,
+    },
+});
+
+export const jsdocPixiVnJsonDocs = defineDocs({
+    dir: "content/jsdoc/pixi-vn-json",
+    docs: {
+        schema: pageSchema,
+        postprocess: {
+            includeProcessedMarkdown: true,
+        },
+        mdxOptions: {
+            format: "md",
+        },
+    },
+    meta: {
+        schema: metaSchema,
+    },
+});
+
+export const jsdocPixiVnInkDocs = defineDocs({
+    dir: "content/jsdoc/pixi-vn-ink",
+    docs: {
+        schema: pageSchema,
+        postprocess: {
+            includeProcessedMarkdown: true,
+        },
+        mdxOptions: {
+            format: "md",
+        },
+    },
+    meta: {
+        schema: metaSchema,
+    },
+});
