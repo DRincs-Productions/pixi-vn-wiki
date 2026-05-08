@@ -11,6 +11,8 @@ export function useBrowserLanguage() {
     const router = useRouter();
 
     useEffect(() => {
+        if (pathname.startsWith("/jsdoc")) return;
+
         const stored = localStorage.getItem("lang");
         if (stored && SUPPORTED_LANGS.includes(stored)) {
             if (stored !== locale) {
