@@ -818,17 +818,19 @@ export async function sidebar(lang?: string): Promise<
                 url: `${preUrl}/faq`,
             },
             {
-                title: "`@drinc/pixi-vn` JSDoc",
+                title: "@drinc/pixi-vn",
+                icon: <Image width={16} height={16} src='/icon.png' alt='Pixi’VN' />,
                 description: "Auto-generated API reference",
                 url: `/jsdoc/pixi-vn`,
             },
             {
-                title: "`@drinc/pixi-vn-ink` JSDoc",
+                title: "@drinc/pixi-vn-ink",
+                icon: <Image width={16} height={16} src='/ink.svg' alt='ink' />,
                 description: "Auto-generated API reference",
                 url: `/jsdoc/pixi-vn-ink`,
             },
             {
-                title: "`@drinc/pixi-vn-json` JSDoc",
+                title: "@drinc/pixi-vn-json",
                 icon: <Image width={16} height={16} src='/pixivn-json.svg' alt='Pixi’VN Json' />,
                 description: "Auto-generated API reference",
                 url: `/jsdoc/pixi-vn-json`,
