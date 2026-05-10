@@ -64,7 +64,7 @@ def fix_file(file_path: str, module_dir: str, base_url: str) -> None:
         # Only handle relative links that point to a markdown file.
         if raw_link.startswith(("http", "/", "#")):
             return m.group(0)
-        if ".md" not in raw_link:
+        if not any(ext in raw_link for ext in (".md", ".mdx")):
             return m.group(0)
 
         # Separate the optional anchor fragment from the file path.
