@@ -27,7 +27,7 @@ WIKI_LINK_RE = re.compile(r"\{\{([^{}\n|]+)\|([^{}\n]+)\}\}")
 RAW_ANGLE_TOKEN_RE = re.compile(r"</?[A-Za-z][^>\s]*>")
 RAW_LT_RE = re.compile(r"<(?![A-Za-z!/])")
 HTML_IMG_RE = re.compile(r"<img\b([^<>]*?)(?<!/)>")
-PASCAL_TAG_RE = re.compile(r"[A-Z][A-Za-z0-9]+")
+PASCAL_TAG_RE = re.compile(r"[A-Z][A-Za-z0-9]*[a-z][A-Za-z0-9]*")
 
 
 def sanitize_text_line(line: str) -> str:
@@ -81,7 +81,7 @@ def build_content(original: str, file_path: Path) -> str:
     title = title.replace("\\", "\\\\").replace('"', '\\"')
 
     if title_match:
-        body = original[title_match.end() :].lstrip("\r\n")
+        body = original[title_match.end():].lstrip("\r\n")
     else:
         body = original
 

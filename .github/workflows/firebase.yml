@@ -45,19 +45,19 @@ jobs:
         '
     - name: Commit submodule updates if changed
       run: |
-        git add content/jsdoc/pixi-vn content/jsdoc/pixi-vn-json content/jsdoc/pixi-vn-ink
-        if ! git diff --staged --quiet; then
-          git commit -m "chore: update jsdoc submodules to latest"
-          git pull --rebase origin main
-          attempt=1
-          while ! git push origin HEAD:main; do
-            if [ "$attempt" -ge 3 ]; then
-              exit 1
-            fi
+          git add content/jsdoc/pixi-vn content/jsdoc/pixi-vn-json content/jsdoc/pixi-vn-ink
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: update jsdoc submodules to latest"
             git pull --rebase origin main
-            attempt=$((attempt + 1))
-          done
-        fi
+            attempt=0
+            while ! git push origin HEAD:main; do
+              attempt=$((attempt + 1))
+              if [ "$attempt" -ge 3 ]; then
+                exit 1
+              fi
+              git pull --rebase origin main
+            done
+          fi
     - name: Add crowdin files
       # Merge l10n_main branch into main branch
       run: |
