@@ -79,10 +79,11 @@ def fix_file(file_path: str, module_dir: str, base_url: str) -> None:
 
         # Resolve the relative path to an absolute file path.
         abs_target = os.path.normpath(os.path.join(source_dir, link))
-        if not os.path.exists(abs_target):
-            mdx_target = strip_markdown_extension(abs_target) + ".mdx"
-            if os.path.exists(mdx_target):
-                abs_target = mdx_target
+        mdx_target = strip_markdown_extension(abs_target) + ".mdx"
+        if os.path.exists(mdx_target):
+            abs_target = mdx_target
+        elif not os.path.exists(abs_target):
+            return m.group(0)
 
         # Safety: reject links that escape the module directory.
         if os.path.relpath(abs_target, module_dir).startswith(".."):

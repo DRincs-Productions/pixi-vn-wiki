@@ -49,7 +49,14 @@ jobs:
         if ! git diff --staged --quiet; then
           git commit -m "chore: update jsdoc submodules to latest"
           git pull --rebase origin main
-          git push origin HEAD:main
+          attempt=1
+          until git push origin HEAD:main; do
+            if [ "$attempt" -ge 3 ]; then
+              exit 1
+            fi
+            attempt=$((attempt + 1))
+            git pull --rebase origin main
+          done
         fi
     - name: Add crowdin files
       # Merge l10n_main branch into main branch

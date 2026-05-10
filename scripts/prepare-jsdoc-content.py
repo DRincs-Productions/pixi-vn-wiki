@@ -18,6 +18,8 @@ MODULES = (
     "content/jsdoc/pixi-vn-ink",
 )
 
+# TypeDoc emits standard triple-backtick fences, so splitting on them keeps
+# prose sanitization away from code examples.
 FENCE_RE = re.compile(r"(```[\s\S]*?```)")
 INLINE_CODE_RE = re.compile(r"(`[^`\n]+`)")
 TITLE_RE = re.compile(r"^# (.+)$", re.MULTILINE)
@@ -40,11 +42,17 @@ def sanitize_text_line(line: str) -> str:
         if index % 2 == 1:
             continue
 
+        # Convert wiki-style aliases like {{PageName|DisplayText}} to the text
+        # that should remain visible once the source file has been renamed to
+        # MDX and the old wiki syntax is no longer meaningful in fumadocs.
         chunk = WIKI_LINK_RE.sub(lambda match: match.group(2), chunk)
         chunk = chunk.replace("{", "&#123;").replace("}", "&#125;")
+
         def replace_angle_token(match: re.Match[str]) -> str:
             token = match.group(0)
             inner = token[2:-1] if token.startswith("</") else token[1:-1]
+            # Preserve PascalCase tags because they are usually real MDX/JSX
+            # components from hand-authored jsdoc landing pages.
             if PASCAL_TAG_RE.fullmatch(inner):
                 return token
             return token.replace("<", "&lt;").replace(">", "&gt;")
