@@ -4,12 +4,12 @@
 TypeDoc generates relative .md links that work in GitHub wikis but break in
 fumadocs because:
 
-1. Links include the .md extension, but fumadocs strips .md from page URLs.
-2. For index.md pages, the fumadocs URL has no trailing slash (e.g.
+1. Links include the .md/.mdx extension, but fumadocs strips it from page URLs.
+2. For index.mdx pages, the fumadocs URL has no trailing slash (e.g.
    /jsdoc/pixi-vn/vite-listener), so the browser resolves relative links one
    level too high — missing the current-directory segment in the path.
 
-This script converts every relative .md link to an absolute fumadocs path,
+This script converts every relative .md/.mdx link to an absolute fumadocs path,
 using the source file's real directory for correct resolution.
 """
 
@@ -27,17 +27,23 @@ MODULES = {
 LINK_RE = re.compile(r"\[([^\]]*)\]\(([^)]+)\)")
 
 
+def strip_markdown_extension(path: str) -> str:
+    for suffix in (".mdx", ".md"):
+        if path.endswith(suffix):
+            return path[: -len(suffix)]
+    return path
+
+
 def file_path_to_url(abs_target: str, module_dir: str, base_url: str) -> str:
-    """Map an absolute .md file path to its fumadocs page URL.
+    """Map an absolute markdown file path to its fumadocs page URL.
 
     fumadocs rules:
-    - Strip the .md extension.
-    - foo/index.md  →  base_url/foo
-    - index.md      →  base_url          (root page)
+    - Strip the .md/.mdx extension.
+    - foo/index.mdx  →  base_url/foo
+    - index.mdx      →  base_url          (root page)
     """
     rel = os.path.relpath(abs_target, module_dir).replace("\\", "/")
-    if rel.endswith(".md"):
-        rel = rel[:-3]
+    rel = strip_markdown_extension(rel)
     if rel == "index":
         return base_url
     if rel.endswith("/index"):
@@ -55,10 +61,10 @@ def fix_file(file_path: str, module_dir: str, base_url: str) -> None:
         text = m.group(1)
         raw_link = m.group(2)
 
-        # Only handle relative links that point to a .md file.
+        # Only handle relative links that point to a markdown file.
         if raw_link.startswith(("http", "/", "#")):
             return m.group(0)
-        if ".md" not in raw_link:
+        if not any(ext in raw_link for ext in (".md", ".mdx")):
             return m.group(0)
 
         # Separate the optional anchor fragment from the file path.
@@ -68,11 +74,16 @@ def fix_file(file_path: str, module_dir: str, base_url: str) -> None:
             idx = raw_link.index("#")
             link, anchor = raw_link[:idx], raw_link[idx:]
 
-        if not link.endswith(".md"):
-            return m.group(0)  # .md is only in the anchor — leave as-is
+        if not link.endswith((".md", ".mdx")):
+            return m.group(0)  # .md/.mdx is only in the anchor — leave as-is
 
         # Resolve the relative path to an absolute file path.
         abs_target = os.path.normpath(os.path.join(source_dir, link))
+        mdx_target = strip_markdown_extension(abs_target) + ".mdx"
+        if os.path.exists(mdx_target):
+            abs_target = mdx_target
+        elif not os.path.exists(abs_target):
+            return m.group(0)
 
         # Safety: reject links that escape the module directory.
         if os.path.relpath(abs_target, module_dir).startswith(".."):
@@ -99,7 +110,7 @@ def main() -> None:
         count = 0
         for root, _dirs, files in os.walk(module_dir):
             for fname in files:
-                if fname.endswith(".md"):
+                if fname.endswith((".md", ".mdx")):
                     fix_file(os.path.join(root, fname), module_dir, base_url)
                     count += 1
         print(f"Processed {count} files in {rel_module_dir}")
