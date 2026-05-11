@@ -21,7 +21,11 @@ export function GET() {
             .concat("\n\n")
             .concat(llms(inkSource).index("en").replaceAll("# Docs", "## ink language integration"))
             .concat("\n\n")
-            .concat(llms(renpySource).index("en").replaceAll("# Docs", "## Ren'py language integration"))
+            .concat(
+                llms(renpySource)
+                    .index("en")
+                    .replaceAll("# Docs", "## Ren'py language integration"),
+            )
             .concat("\n\n")
             .concat(llms(nqtrSource).index("en").replaceAll("# Docs", "## NQTR"))
             .concat("\n\n")

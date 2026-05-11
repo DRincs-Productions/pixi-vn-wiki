@@ -1,7 +1,21 @@
 import { getMDXComponents } from "@/components/mdx";
 import { routing } from "@/i18n/routing";
-import { faqSource, getPageMarkdownUrl, inkSource, jsonSource, nqtrSource, renpySource, source } from "@/lib/source";
-import { DocsBody, DocsDescription, DocsPage, DocsTitle, EditOnGitHub } from "fumadocs-ui/layouts/docs/page";
+import {
+    faqSource,
+    getPageMarkdownUrl,
+    inkSource,
+    jsonSource,
+    nqtrSource,
+    renpySource,
+    source,
+} from "@/lib/source";
+import {
+    DocsBody,
+    DocsDescription,
+    DocsPage,
+    DocsTitle,
+    EditOnGitHub,
+} from "fumadocs-ui/layouts/docs/page";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import { Edit } from "lucide-react";
 import { getTranslations } from "next-intl/server";
@@ -62,12 +76,12 @@ export default async function MDXPage({
     return (
         <DocsPage toc={page.data.toc} full={page.data.full}>
             <DocsTitle>{page.data.title}</DocsTitle>
-            <DocsDescription className='mb-0'>{page.data.description}</DocsDescription>
-            <div className='flex flex-row gap-2 items-center border-b pb-6'>
+            <DocsDescription className="mb-0">{page.data.description}</DocsDescription>
+            <div className="flex flex-row gap-2 items-center border-b pb-6">
                 <EditOnGitHub
                     href={`https://github.com/DRincs-Productions/pixi-vn-wiki/blob/main/content/${folther}/${pageBase.path}`}
                 >
-                    <Edit className='size-3.5' />
+                    <Edit className="size-3.5" />
                     {t("edit_github")}
                 </EditOnGitHub>
                 <TranslateButton lang={lang} folther={folther} />

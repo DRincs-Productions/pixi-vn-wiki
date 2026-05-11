@@ -173,7 +173,10 @@ export const jsonSource = loader({
     i18n,
 });
 
-function createJsdocLoader(baseUrl: string, docsSource: ReturnType<typeof jsdocPixiVnDocs.toFumadocsSource>) {
+function createJsdocLoader(
+    baseUrl: string,
+    docsSource: ReturnType<typeof jsdocPixiVnDocs.toFumadocsSource>,
+) {
     return loader({
         baseUrl,
         source: docsSource,
@@ -184,9 +187,18 @@ function createJsdocLoader(baseUrl: string, docsSource: ReturnType<typeof jsdocP
     });
 }
 
-export const jsdocPixiVnSource = createJsdocLoader(jsdocPixiVnRoute, jsdocPixiVnDocs.toFumadocsSource());
-export const jsdocPixiVnJsonSource = createJsdocLoader(jsdocPixiVnJsonRoute, jsdocPixiVnJsonDocs.toFumadocsSource());
-export const jsdocPixiVnInkSource = createJsdocLoader(jsdocPixiVnInkRoute, jsdocPixiVnInkDocs.toFumadocsSource());
+export const jsdocPixiVnSource = createJsdocLoader(
+    jsdocPixiVnRoute,
+    jsdocPixiVnDocs.toFumadocsSource(),
+);
+export const jsdocPixiVnJsonSource = createJsdocLoader(
+    jsdocPixiVnJsonRoute,
+    jsdocPixiVnJsonDocs.toFumadocsSource(),
+);
+export const jsdocPixiVnInkSource = createJsdocLoader(
+    jsdocPixiVnInkRoute,
+    jsdocPixiVnInkDocs.toFumadocsSource(),
+);
 
 export function getPageImage(page: InferPageType<typeof source>) {
     const segments = [...page.slugs, "image.png"];

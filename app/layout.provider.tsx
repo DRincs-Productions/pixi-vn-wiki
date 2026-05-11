@@ -9,16 +9,22 @@ const inter = Inter({
     subsets: ["latin"],
 });
 
-export default function LayoutProvider({ children, lang = "en" }: { children: ReactNode; lang?: string }) {
+export default function LayoutProvider({
+    children,
+    lang = "en",
+}: {
+    children: ReactNode;
+    lang?: string;
+}) {
     setRequestLocale(lang);
     return (
         <html lang={lang} className={inter.className} suppressHydrationWarning>
-            <body className='flex flex-col min-h-screen'>
+            <body className="flex flex-col min-h-screen">
                 <NextIntlClientProvider locale={lang}>
                     <Provider locale={lang}>{children}</Provider>
                 </NextIntlClientProvider>
             </body>
-            <GoogleAnalytics gaId='G-KGCCEKXRVG' />
+            <GoogleAnalytics gaId="G-KGCCEKXRVG" />
         </html>
     );
 }

@@ -1,6 +1,11 @@
 "use client";
 
-import { SandpackFiles, SandpackLayout, SandpackPreview, SandpackProvider } from "@codesandbox/sandpack-react";
+import {
+    SandpackFiles,
+    SandpackLayout,
+    SandpackPreview,
+    SandpackProvider,
+} from "@codesandbox/sandpack-react";
 
 export function ReactTemplate({
     files,
@@ -13,7 +18,7 @@ export function ReactTemplate({
 }) {
     return (
         <SandpackProvider
-            template='react-ts'
+            template="react-ts"
             customSetup={{
                 dependencies: {
                     "@drincs/pixi-vn": "^1.6.3",

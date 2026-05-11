@@ -3,7 +3,13 @@
 import { SandpackFiles } from "@codesandbox/sandpack-react";
 import { ReactTemplate } from "./sandpack";
 
-export function InkExample({ files, previewHeight = 400 }: { files?: SandpackFiles; previewHeight?: number }) {
+export function InkExample({
+    files,
+    previewHeight = 400,
+}: {
+    files?: SandpackFiles;
+    previewHeight?: number;
+}) {
     return (
         <ReactTemplate
             files={{

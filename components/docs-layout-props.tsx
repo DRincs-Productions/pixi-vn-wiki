@@ -74,7 +74,7 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                         type: "page",
                         name: t("versus-renpy"),
                         url: `${preUrl}/start/versus-renpy`,
-                        icon: <Image width={16} height={16} src='/renpy.svg' alt="Ren'Py" />,
+                        icon: <Image width={16} height={16} src="/renpy.svg" alt="Ren'Py" />,
                     },
                 ],
             },
@@ -116,7 +116,12 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                 type: "separator",
                 name: t("first-steps"),
             },
-            { type: "page", name: t("character"), url: `${preUrl}/start/character`, icon: <User /> },
+            {
+                type: "page",
+                name: t("character"),
+                url: `${preUrl}/start/character`,
+                icon: <User />,
+            },
             {
                 type: "folder",
                 name: t("narration"),
@@ -131,18 +136,20 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                         type: "page",
                         name: t("ink"),
                         url: `${preUrl}/ink`,
-                        icon: <Image width={16} height={16} src='/ink.svg' alt='ink' />,
+                        icon: <Image width={16} height={16} src="/ink.svg" alt="ink" />,
                     },
                     {
                         type: "page",
                         name: t("renpy"),
                         url: `${preUrl}/renpy`,
-                        icon: <Image width={16} height={16} src='/renpy.svg' alt="Ren'Py" />,
+                        icon: <Image width={16} height={16} src="/renpy.svg" alt="Ren'Py" />,
                     },
                     {
                         type: "folder",
                         name: t("js-ts"),
-                        icon: <Image width={16} height={16} src='/typescript.svg' alt='TypeScript' />,
+                        icon: (
+                            <Image width={16} height={16} src="/typescript.svg" alt="TypeScript" />
+                        ),
                         children: [
                             { type: "page", name: t("dialogue"), url: `${preUrl}/start/dialogue` },
                             {
@@ -154,7 +161,11 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                                     url: `${preUrl}/start/labels`,
                                 },
                                 children: [
-                                    { type: "page", name: t("labels-flow"), url: `${preUrl}/start/labels-flow` },
+                                    {
+                                        type: "page",
+                                        name: t("labels-flow"),
+                                        url: `${preUrl}/start/labels-flow`,
+                                    },
                                     {
                                         type: "page",
                                         name: t("labels-advanced"),
@@ -189,8 +200,8 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                                     <Image
                                         width={16}
                                         height={16}
-                                        src='/markdown.svg'
-                                        alt='Markdown'
+                                        src="/markdown.svg"
+                                        alt="Markdown"
                                         style={{
                                             backgroundColor: "white",
                                             borderRadius: "50%",
@@ -202,12 +213,29 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                                 type: "page",
                                 name: t("markup-tailwindcss"),
                                 url: `${preUrl}/start/markup-tailwindcss`,
-                                icon: <Image width={16} height={16} src='/tailwindcss.svg' alt='Tailwind CSS' />,
+                                icon: (
+                                    <Image
+                                        width={16}
+                                        height={16}
+                                        src="/tailwindcss.svg"
+                                        alt="Tailwind CSS"
+                                    />
+                                ),
                             },
                         ],
                     },
-                    { type: "page", name: t("history"), icon: <History />, url: `${preUrl}/start/history` },
-                    { type: "page", name: t("translate"), icon: <Globe />, url: `${preUrl}/start/translate` },
+                    {
+                        type: "page",
+                        name: t("history"),
+                        icon: <History />,
+                        url: `${preUrl}/start/history`,
+                    },
+                    {
+                        type: "page",
+                        name: t("translate"),
+                        icon: <Globe />,
+                        url: `${preUrl}/start/translate`,
+                    },
                 ],
             },
             {
@@ -247,27 +275,66 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                             url: `${preUrl}/start/canvas-components`,
                         },
                         children: [
-                            { type: "page", name: t("canvas-image"), url: `${preUrl}/start/canvas-image` },
+                            {
+                                type: "page",
+                                name: t("canvas-image"),
+                                url: `${preUrl}/start/canvas-image`,
+                            },
                             {
                                 type: "page",
                                 name: t("canvas-image-container"),
                                 url: `${preUrl}/start/canvas-image-container`,
                             },
-                            { type: "page", name: t("canvas-video"), url: `${preUrl}/start/canvas-video` },
-                            { type: "page", name: t("canvas-text"), url: `${preUrl}/start/canvas-text` },
-                            { type: "page", name: t("canvas-filters"), url: `${preUrl}/start/canvas-filters` },
-                            { type: "page", name: t("canvas-lights"), url: `${preUrl}/start/canvas-lights` },
-                            { type: "page", name: t("canvas-spine2d"), url: `${preUrl}/start/canvas-spine2d` },
+                            {
+                                type: "page",
+                                name: t("canvas-video"),
+                                url: `${preUrl}/start/canvas-video`,
+                            },
+                            {
+                                type: "page",
+                                name: t("canvas-text"),
+                                url: `${preUrl}/start/canvas-text`,
+                            },
+                            {
+                                type: "page",
+                                name: t("canvas-filters"),
+                                url: `${preUrl}/start/canvas-filters`,
+                            },
+                            {
+                                type: "page",
+                                name: t("canvas-lights"),
+                                url: `${preUrl}/start/canvas-lights`,
+                            },
+                            {
+                                type: "page",
+                                name: t("canvas-spine2d"),
+                                url: `${preUrl}/start/canvas-spine2d`,
+                            },
                             {
                                 type: "page",
                                 name: t("canvas-threejs"),
                                 url: `${preUrl}/start/canvas-threejs`,
-                                icon: <Image width={16} height={16} src='/threejs.svg' alt='Three.js' />,
+                                icon: (
+                                    <Image
+                                        width={16}
+                                        height={16}
+                                        src="/threejs.svg"
+                                        alt="Three.js"
+                                    />
+                                ),
                             },
                         ],
                     },
-                    { type: "page", name: t("canvas-functions"), url: `${preUrl}/start/canvas-functions` },
-                    { type: "page", name: t("canvas-position"), url: `${preUrl}/start/canvas-position` },
+                    {
+                        type: "page",
+                        name: t("canvas-functions"),
+                        url: `${preUrl}/start/canvas-functions`,
+                    },
+                    {
+                        type: "page",
+                        name: t("canvas-position"),
+                        url: `${preUrl}/start/canvas-position`,
+                    },
                     {
                         type: "folder",
                         name: t("canvas-animations-effects"),
@@ -293,7 +360,11 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                                     },
                                 ],
                             },
-                            { type: "page", name: t("canvas-transition"), url: `${preUrl}/start/canvas-transition` },
+                            {
+                                type: "page",
+                                name: t("canvas-transition"),
+                                url: `${preUrl}/start/canvas-transition`,
+                            },
                             {
                                 type: "folder",
                                 name: t("canvas-tickers"),
@@ -366,19 +437,21 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                                 type: "page",
                                 name: t("interface-react"),
                                 url: `${preUrl}/start/interface-react`,
-                                icon: <Image width={16} height={16} src='/react.svg' alt='React' />,
+                                icon: <Image width={16} height={16} src="/react.svg" alt="React" />,
                             },
                             {
                                 type: "page",
                                 name: t("interface-vue"),
                                 url: `${preUrl}/start/interface-vue`,
-                                icon: <Image width={16} height={16} src='/vue.svg' alt='Vue' />,
+                                icon: <Image width={16} height={16} src="/vue.svg" alt="Vue" />,
                             },
                             {
                                 type: "page",
                                 name: t("interface-pixijs"),
                                 url: `${preUrl}/start/interface-pixijs`,
-                                icon: <Image width={16} height={16} src='/pixijs.svg' alt='PixiJS' />,
+                                icon: (
+                                    <Image width={16} height={16} src="/pixijs.svg" alt="PixiJS" />
+                                ),
                             },
                         ],
                     },
@@ -484,7 +557,12 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
         children: [
             { type: "separator", name: t("introduction") },
             { type: "page", name: t("start"), icon: <Album />, url: `${preUrl}/ink` },
-            { type: "page", name: t("vscode-extension"), url: `${preUrl}/ink/vscode-extension`, icon: <VSCodeIcon /> },
+            {
+                type: "page",
+                name: t("vscode-extension"),
+                url: `${preUrl}/ink/vscode-extension`,
+                icon: <VSCodeIcon />,
+            },
             { type: "page", name: "llms.txt", url: `/llms.txt`, icon: <Brain /> },
             {
                 type: "folder",
@@ -537,8 +615,18 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
                         name: t("other-features"),
                         url: `${preUrl}/ink/other-narrative-features`,
                     },
-                    { type: "page", name: t("markup"), icon: <Sparkles />, url: `${preUrl}/ink/markup` },
-                    { type: "page", name: t("translate"), icon: <Globe />, url: `${preUrl}/ink/translate` },
+                    {
+                        type: "page",
+                        name: t("markup"),
+                        icon: <Sparkles />,
+                        url: `${preUrl}/ink/markup`,
+                    },
+                    {
+                        type: "page",
+                        name: t("translate"),
+                        icon: <Globe />,
+                        url: `${preUrl}/ink/translate`,
+                    },
                 ],
             },
             {
@@ -552,7 +640,11 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
                 },
                 children: [
                     { type: "page", name: t("temp-storage"), url: `${preUrl}/ink/temp-storage` },
-                    { type: "page", name: t("arithmetic-logic"), url: `${preUrl}/ink/arithmetic-logic` },
+                    {
+                        type: "page",
+                        name: t("arithmetic-logic"),
+                        url: `${preUrl}/ink/arithmetic-logic`,
+                    },
                 ],
             },
             { type: "page", name: t("canvas"), url: `${preUrl}/ink/canvas`, icon: <ImageIcon /> },
@@ -563,9 +655,24 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
                 name: t("other-features"),
                 defaultOpen: true,
                 children: [
-                    { type: "page", name: t("functions"), url: `${preUrl}/ink/functions`, icon: <FunctionSquare /> },
-                    { type: "page", name: "Text replacement", url: `${preUrl}/ink/replacement`, icon: <Replace /> },
-                    { type: "page", name: "Custom hashtag command", url: `${preUrl}/ink/hashtag`, icon: <Hash /> },
+                    {
+                        type: "page",
+                        name: t("functions"),
+                        url: `${preUrl}/ink/functions`,
+                        icon: <FunctionSquare />,
+                    },
+                    {
+                        type: "page",
+                        name: "Text replacement",
+                        url: `${preUrl}/ink/replacement`,
+                        icon: <Replace />,
+                    },
+                    {
+                        type: "page",
+                        name: "Custom hashtag command",
+                        url: `${preUrl}/ink/hashtag`,
+                        icon: <Hash />,
+                    },
                 ],
             },
         ],
@@ -789,25 +896,25 @@ export async function sidebar(lang?: string): Promise<
         tabs: [
             {
                 title: "Pixi’VN",
-                icon: <Image width={16} height={16} src='/icon.png' alt='Pixi’VN' />,
+                icon: <Image width={16} height={16} src="/icon.png" alt="Pixi’VN" />,
                 description: "Getting started with Pixi’VN",
                 url: `${preUrl}/start`,
             },
             {
                 title: "NQTR",
-                icon: <Image width={16} height={16} src='/nqtr.png' alt='NQTR' />,
+                icon: <Image width={16} height={16} src="/nqtr.png" alt="NQTR" />,
                 description: "Navigation Quest Time Routine",
                 url: `${preUrl}/nqtr`,
             },
             {
                 title: "ink",
-                icon: <Image width={16} height={16} src='/ink.svg' alt='ink' />,
+                icon: <Image width={16} height={16} src="/ink.svg" alt="ink" />,
                 description: "ink narration",
                 url: `${preUrl}/ink`,
             },
             {
                 title: "Ren’Py (Cooming soon)",
-                icon: <Image width={16} height={16} src='/renpy.svg' alt="Ren'Py" />,
+                icon: <Image width={16} height={16} src="/renpy.svg" alt="Ren'Py" />,
                 description: "Ren’Py narration",
                 url: `${preUrl}/renpy`,
             },
@@ -819,19 +926,19 @@ export async function sidebar(lang?: string): Promise<
             },
             {
                 title: "@drinc/pixi-vn",
-                icon: <Image width={16} height={16} src='/icon.png' alt='Pixi’VN' />,
+                icon: <Image width={16} height={16} src="/icon.png" alt="Pixi’VN" />,
                 description: "Auto-generated API reference",
                 url: `/jsdoc/pixi-vn`,
             },
             {
                 title: "@drinc/pixi-vn-ink",
-                icon: <Image width={16} height={16} src='/ink.svg' alt='ink' />,
+                icon: <Image width={16} height={16} src="/ink.svg" alt="ink" />,
                 description: "Auto-generated API reference",
                 url: `/jsdoc/pixi-vn-ink`,
             },
             {
                 title: "@drinc/pixi-vn-json",
-                icon: <Image width={16} height={16} src='/pixivn-json.svg' alt='Pixi’VN Json' />,
+                icon: <Image width={16} height={16} src="/pixivn-json.svg" alt="Pixi’VN Json" />,
                 description: "Auto-generated API reference",
                 url: `/jsdoc/pixi-vn-json`,
             },

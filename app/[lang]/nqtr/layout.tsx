@@ -3,7 +3,13 @@ import { baseOptions } from "@/lib/layout.shared";
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import { type ReactNode } from "react";
 
-export default async function Layout({ children, params }: { children: ReactNode; params: Promise<{ lang: string }> }) {
+export default async function Layout({
+    children,
+    params,
+}: {
+    children: ReactNode;
+    params: Promise<{ lang: string }>;
+}) {
     const { lang } = await params;
     const sidebarVar = await sidebar(lang);
     const treeVar = await nqtrTree(lang);

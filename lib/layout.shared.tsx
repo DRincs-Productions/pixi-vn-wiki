@@ -11,7 +11,7 @@ export function baseOptions(): BaseLayoutProps {
             // JSX supported
             title: (
                 <>
-                    <Image src={LogoImg} alt='Logo' width={24} height={24} className='mr-2' />
+                    <Image src={LogoImg} alt="Logo" width={24} height={24} className="mr-2" />
                     {appName}
                 </>
             ),
@@ -22,14 +22,14 @@ export function baseOptions(): BaseLayoutProps {
             {
                 type: "icon",
                 label: "Discord",
-                icon: <DiscordIcon className='size-5' />,
+                icon: <DiscordIcon className="size-5" />,
                 text: "Discord",
                 url: discordUrl,
             },
             {
                 type: "icon",
                 label: "Patreon",
-                icon: <PatreonIcon className='size-5' />,
+                icon: <PatreonIcon className="size-5" />,
                 text: "Patreon",
                 url: patreonUrl,
             },

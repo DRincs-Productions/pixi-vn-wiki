@@ -13,7 +13,11 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
     return <Home />;
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ lang: string; slug?: string[] }> }) {
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ lang: string; slug?: string[] }>;
+}) {
     const { slug, lang } = await params;
 
     return createMetadata({}, { slug, lang });

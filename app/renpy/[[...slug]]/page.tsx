@@ -7,7 +7,7 @@ export default async function Page({ params }: { params: Promise<{ slug?: string
     const { slug } = await params;
     setRequestLocale("en");
 
-    return <MDXPage slug={slug} folther='renpy' />;
+    return <MDXPage slug={slug} folther="renpy" />;
 }
 
 export async function generateStaticParams() {

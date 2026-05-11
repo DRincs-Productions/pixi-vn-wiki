@@ -1,6 +1,17 @@
 import { getMDXComponents } from "@/components/mdx";
-import { getJsdocPageMarkdownUrl, jsdocPixiVnInkSource, jsdocPixiVnJsonSource, jsdocPixiVnSource } from "@/lib/source";
-import { DocsBody, DocsDescription, DocsPage, DocsTitle, EditOnGitHub } from "fumadocs-ui/layouts/docs/page";
+import {
+    getJsdocPageMarkdownUrl,
+    jsdocPixiVnInkSource,
+    jsdocPixiVnJsonSource,
+    jsdocPixiVnSource,
+} from "@/lib/source";
+import {
+    DocsBody,
+    DocsDescription,
+    DocsPage,
+    DocsTitle,
+    EditOnGitHub,
+} from "fumadocs-ui/layouts/docs/page";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import { ExternalLink } from "lucide-react";
 import { notFound } from "next/navigation";
@@ -27,13 +38,7 @@ const libConfig = {
 
 export type JsdocLib = keyof typeof libConfig;
 
-export default async function JsdocPage({
-    slug,
-    lib,
-}: {
-    slug?: string[];
-    lib: JsdocLib;
-}) {
+export default async function JsdocPage({ slug, lib }: { slug?: string[]; lib: JsdocLib }) {
     const config = libConfig[lib];
     const jsdocSource = config.source;
 
@@ -46,10 +51,10 @@ export default async function JsdocPage({
     return (
         <DocsPage toc={page.data.toc} full={page.data.full}>
             <DocsTitle>{page.data.title}</DocsTitle>
-            <DocsDescription className='mb-0'>{page.data.description}</DocsDescription>
-            <div className='flex flex-row gap-2 items-center border-b pb-6'>
+            <DocsDescription className="mb-0">{page.data.description}</DocsDescription>
+            <div className="flex flex-row gap-2 items-center border-b pb-6">
                 <EditOnGitHub href={config.githubUrl}>
-                    <ExternalLink className='size-3.5' />
+                    <ExternalLink className="size-3.5" />
                     {config.title} on GitHub
                 </EditOnGitHub>
                 <ViewOptionsPopover markdownUrl={markdownUrl} />

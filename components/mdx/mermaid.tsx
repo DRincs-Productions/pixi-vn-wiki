@@ -30,7 +30,7 @@ export function Mermaid({ chart }: { chart: string }) {
                     // strip invalid characters for `id` attribute
                     id.replaceAll(":", ""),
                     chart.replaceAll("\\n", "\n"),
-                    containerRef.current
+                    containerRef.current,
                 );
                 setSvg(svg);
             } catch (error) {

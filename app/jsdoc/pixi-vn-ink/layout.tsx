@@ -11,7 +11,11 @@ export default async function Layout({ children }: { children: ReactNode }) {
     const sidebarVar = await sidebar();
     return (
         <LayoutProvider>
-            <DocsLayout sidebar={sidebarVar} tree={jsdocPixiVnInkSource.pageTree} {...baseOptions()}>
+            <DocsLayout
+                sidebar={sidebarVar}
+                tree={jsdocPixiVnInkSource.pageTree}
+                {...baseOptions()}
+            >
                 {children}
             </DocsLayout>
         </LayoutProvider>

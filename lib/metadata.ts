@@ -1,7 +1,10 @@
 import { getPageImage, source } from "@/lib/source";
 import type { Metadata } from "next/types";
 
-export function createMetadata(props: Metadata, params: { lang?: string; slug?: string[] }): Metadata {
+export function createMetadata(
+    props: Metadata,
+    params: { lang?: string; slug?: string[] },
+): Metadata {
     const slug = params.slug;
     const slugString = slug ? "/" + slug.join("/") : "";
     const lang = params.lang ? "/" + params.lang : "";
@@ -14,7 +17,24 @@ export function createMetadata(props: Metadata, params: { lang?: string; slug?: 
     return {
         title: title,
         description: description,
-        keywords: ["pixi-vn", "pixivn", "Pixi'VN", "PixiVN", "pixi vn", "visual novel engine", "2D game engine", "PixiJS", "Point & Click Adventure", "React", "JavaScript", "Node.js", "ink", "inkle", "renpy alternatives", "ren'py alternatives"],
+        keywords: [
+            "pixi-vn",
+            "pixivn",
+            "Pixi'VN",
+            "PixiVN",
+            "pixi vn",
+            "visual novel engine",
+            "2D game engine",
+            "PixiJS",
+            "Point & Click Adventure",
+            "React",
+            "JavaScript",
+            "Node.js",
+            "ink",
+            "inkle",
+            "renpy alternatives",
+            "ren'py alternatives",
+        ],
         openGraph: {
             title: title,
             description: description ?? undefined,

@@ -29,7 +29,6 @@ export function useBrowserLanguage() {
                 navigateToLocale(lang);
             }
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [locale]);
 
     function navigateToLocale(newLang: string) {

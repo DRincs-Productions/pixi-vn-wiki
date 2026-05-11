@@ -6,7 +6,7 @@ export default async function Page({ params }: { params: Promise<{ slug?: string
     const { slug } = await params;
     setRequestLocale("en");
 
-    return <JsdocPage slug={slug} lib='pixi-vn' />;
+    return <JsdocPage slug={slug} lib="pixi-vn" />;
 }
 
 export async function generateStaticParams() {

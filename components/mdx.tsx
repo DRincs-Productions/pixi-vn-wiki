@@ -33,9 +33,9 @@ export function getMDXComponents(components?: MDXComponents) {
                         borderRadius: "4px",
                         overflow: "hidden",
                     }}
-                    title='drincs/pixi-vn'
-                    allow='geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media; usb'
-                    sandbox='allow-modals allow-forms allow-popups allow-scripts allow-same-origin'
+                    title="drincs/pixi-vn"
+                    allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media; usb"
+                    sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"
                 />
             );
         },

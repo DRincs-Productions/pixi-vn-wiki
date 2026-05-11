@@ -30,11 +30,19 @@ function getJSON(hostname, urlPath, headers = {}) {
                 if (res.statusCode === 301 || res.statusCode === 302) {
                     // follow redirect
                     if (!res.headers.location) {
-                        return reject(new Error(`Redirect with no Location header from ${hostname}${urlPath}`));
+                        return reject(
+                            new Error(
+                                `Redirect with no Location header from ${hostname}${urlPath}`,
+                            ),
+                        );
                     }
                     const redirectUrl = new URL(res.headers.location);
                     return resolve(
-                        getJSON(redirectUrl.hostname, redirectUrl.pathname + redirectUrl.search, headers)
+                        getJSON(
+                            redirectUrl.hostname,
+                            redirectUrl.pathname + redirectUrl.search,
+                            headers,
+                        ),
                     );
                 }
                 let data = "";
@@ -43,7 +51,11 @@ function getJSON(hostname, urlPath, headers = {}) {
                     try {
                         resolve(JSON.parse(data));
                     } catch (err) {
-                        reject(new Error(`Failed to parse JSON from ${hostname}${urlPath}: ${err.message}`));
+                        reject(
+                            new Error(
+                                `Failed to parse JSON from ${hostname}${urlPath}: ${err.message}`,
+                            ),
+                        );
                     }
                 });
             })
@@ -68,7 +80,9 @@ function downloadBuffer(url) {
             .get(options, (res) => {
                 if (res.statusCode === 301 || res.statusCode === 302) {
                     if (!res.headers.location) {
-                        return reject(new Error(`Redirect with no Location header fetching ${url}`));
+                        return reject(
+                            new Error(`Redirect with no Location header fetching ${url}`),
+                        );
                     }
                     return resolve(downloadBuffer(res.headers.location));
                 }
@@ -90,9 +104,7 @@ function downloadBuffer(url) {
 async function listVersions() {
     const entries = await getJSON(GITHUB_API_BASE, SCHEMAS_REPO_PATH);
     if (!Array.isArray(entries)) throw new Error("Unexpected response from GitHub Contents API");
-    return entries
-        .filter((e) => e.type === "dir")
-        .map((e) => e.name);
+    return entries.filter((e) => e.type === "dir").map((e) => e.name);
 }
 
 /**
@@ -101,7 +113,8 @@ async function listVersions() {
  */
 async function getLatestNpmVersion() {
     const pkg = await getJSON("registry.npmjs.org", NPM_LATEST_URL);
-    if (!pkg.version) throw new Error("version field missing in npm response for @drincs/pixi-vn-json");
+    if (!pkg.version)
+        throw new Error("version field missing in npm response for @drincs/pixi-vn-json");
     return pkg.version;
 }
 
@@ -125,13 +138,13 @@ async function main() {
             fs.mkdirSync(destDir, { recursive: true });
             fs.writeFileSync(destFile, buffer);
             console.log(`Saved schemas/${version}/schema.json`);
-        })
+        }),
     );
 
     // Write latest/ as a copy of the resolved npm version's schema.
     if (!versions.includes(latestVersion)) {
         throw new Error(
-            `Latest npm version ${latestVersion} not found in GitHub schemas (${versions.join(", ")})`
+            `Latest npm version ${latestVersion} not found in GitHub schemas (${versions.join(", ")})`,
         );
     }
     const latestSrc = path.join(schemasDir, latestVersion, "schema.json");

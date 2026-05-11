@@ -17,9 +17,6 @@ const config = {
         ],
         unoptimized: true,
     },
-    eslint: {
-        ignoreDuringBuilds: true,
-    },
 };
 
 export default withMDX(withNextIntl(config));

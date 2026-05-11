@@ -109,7 +109,7 @@ export default function ServerImage(
         return (
             <Image
                 {...{ src, alt, title }}
-                className='mx-auto -my-16 w-full max-w-[400px] invert dark:invert-0 lg:mx-0'
+                className="mx-auto -my-16 w-full max-w-[400px] invert dark:invert-0 lg:mx-0"
                 style={{
                     maxHeight: "300px",
                     width: "auto",
@@ -125,8 +125,13 @@ export default function ServerImage(
     // (e.g. markdown images from auto-generated jsdoc content).
     // Next.js <Image> requires width/height and would crash without them.
     if (!rest.width && !rest.height) {
-        // eslint-disable-next-line @next/next/no-img-element
-        return <img {...{ src, alt, title }} style={{ maxWidth: "100%", height: "auto", ...(style || {}) }} {...(rest as any)} />;
+        return (
+            <img
+                {...{ src, alt, title }}
+                style={{ maxWidth: "100%", height: "auto", ...(style || {}) }}
+                {...(rest as any)}
+            />
+        );
     }
 
     return <Image {...{ src, alt, title }} style={style} {...(rest as any)} />;
