@@ -28,7 +28,7 @@ export async function GET() {
         ...jsdocPixiVnSource.getPages(),
         ...jsdocPixiVnJsonSource.getPages(),
         ...jsdocPixiVnInkSource.getPages(),
-    ].map(getLLMText);
+    ].map((page) => getLLMText(page, "raw"));
 
     const [scanned, scannedJsdoc] = await Promise.all([Promise.all(scan), Promise.all(jsdocScan)]);
 
