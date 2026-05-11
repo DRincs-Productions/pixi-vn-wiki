@@ -4,20 +4,27 @@ import { metaSchema, pageSchema } from "fumadocs-core/source/schema";
 import { defineConfig, defineDocs } from "fumadocs-mdx/config";
 import { inkLanguage } from "./lib/syntaxes";
 
+function createDocsCollection(dir: string, jsdoc = true) {
+    return defineDocs({
+        dir,
+        docs: {
+            schema: pageSchema,
+            postprocess: {
+                includeProcessedMarkdown: jsdoc,
+            },
+            mdxOptions: {
+                format: jsdoc ? undefined : "mdx",
+            },
+        },
+        meta: {
+            schema: metaSchema,
+        },
+    });
+}
+
 // You can customise Zod schemas for frontmatter and `meta.json` here
 // see https://fumadocs.dev/docs/mdx/collections
-export const docs = defineDocs({
-    dir: "content/start",
-    docs: {
-        schema: pageSchema,
-        postprocess: {
-            includeProcessedMarkdown: true,
-        },
-    },
-    meta: {
-        schema: metaSchema,
-    },
-});
+export const docs = createDocsCollection("content/start");
 
 export default defineConfig({
     mdxOptions: {
@@ -62,111 +69,18 @@ export default defineConfig({
     },
 });
 
-export const inkDocs = defineDocs({
-    // Specifies the directory where your docs are located
-    dir: "content/ink",
-    docs: {
-        schema: pageSchema,
-        postprocess: {
-            includeProcessedMarkdown: true,
-        },
-    },
-    meta: {
-        schema: metaSchema,
-    },
-});
+export const inkDocs = createDocsCollection("content/ink");
 
-export const faqDocs = defineDocs({
-    // Specifies the directory where your docs are located
-    dir: "content/faq",
-    docs: {
-        schema: pageSchema,
-        postprocess: {
-            includeProcessedMarkdown: true,
-        },
-    },
-    meta: {
-        schema: metaSchema,
-    },
-});
+export const faqDocs = createDocsCollection("content/faq");
 
-export const renpyDocs = defineDocs({
-    // Specifies the directory where your docs are located
-    dir: "content/renpy",
-    docs: {
-        schema: pageSchema,
-        postprocess: {
-            includeProcessedMarkdown: true,
-        },
-    },
-    meta: {
-        schema: metaSchema,
-    },
-});
+export const renpyDocs = createDocsCollection("content/renpy");
 
-export const nqtrDocs = defineDocs({
-    // Specifies the directory where your docs are located
-    dir: "content/nqtr",
-    docs: {
-        schema: pageSchema,
-        postprocess: {
-            includeProcessedMarkdown: true,
-        },
-    },
-    meta: {
-        schema: metaSchema,
-    },
-});
+export const nqtrDocs = createDocsCollection("content/nqtr");
 
-export const jsonDocs = defineDocs({
-    // Specifies the directory where your docs are located
-    dir: "content/json",
-    docs: {
-        schema: pageSchema,
-        postprocess: {
-            includeProcessedMarkdown: true,
-        },
-    },
-    meta: {
-        schema: metaSchema,
-    },
-});
+export const jsonDocs = createDocsCollection("content/json");
 
-export const jsdocPixiVnDocs = defineDocs({
-    dir: "content/jsdoc/pixi-vn",
-    docs: {
-        schema: pageSchema,
-        postprocess: {
-            includeProcessedMarkdown: true,
-        },
-    },
-    meta: {
-        schema: metaSchema,
-    },
-});
+export const jsdocPixiVnDocs = createDocsCollection("content/jsdoc/pixi-vn", false);
 
-export const jsdocPixiVnJsonDocs = defineDocs({
-    dir: "content/jsdoc/pixi-vn-json",
-    docs: {
-        schema: pageSchema,
-        postprocess: {
-            includeProcessedMarkdown: true,
-        },
-    },
-    meta: {
-        schema: metaSchema,
-    },
-});
+export const jsdocPixiVnJsonDocs = createDocsCollection("content/jsdoc/pixi-vn-json", false);
 
-export const jsdocPixiVnInkDocs = defineDocs({
-    dir: "content/jsdoc/pixi-vn-ink",
-    docs: {
-        schema: pageSchema,
-        postprocess: {
-            includeProcessedMarkdown: true,
-        },
-    },
-    meta: {
-        schema: metaSchema,
-    },
-});
+export const jsdocPixiVnInkDocs = createDocsCollection("content/jsdoc/pixi-vn-ink", false);
