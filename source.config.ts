@@ -1,7 +1,7 @@
 import dark from "@shikijs/themes/github-dark";
 import light from "@shikijs/themes/github-light";
 import { metaSchema, pageSchema } from "fumadocs-core/source/schema";
-import { defineConfig, defineDocs } from "fumadocs-mdx/config";
+import { applyMdxPreset, defineConfig, defineDocs } from "fumadocs-mdx/config";
 import { inkLanguage } from "./lib/syntaxes";
 
 function createDocsCollection(dir: string, jsdoc = true) {
@@ -12,9 +12,7 @@ function createDocsCollection(dir: string, jsdoc = true) {
             postprocess: {
                 includeProcessedMarkdown: true,
             },
-            mdxOptions: {
-                format: jsdoc ? undefined : "mdx",
-            },
+            ...(jsdoc ? {} : { mdxOptions: applyMdxPreset({ format: "mdx" }) }),
         },
         meta: {
             schema: metaSchema,
