@@ -10,7 +10,7 @@ function createDocsCollection(dir: string, jsdoc = true) {
         docs: {
             schema: pageSchema,
             postprocess: {
-                includeProcessedMarkdown: jsdoc,
+                includeProcessedMarkdown: true,
             },
             mdxOptions: {
                 format: jsdoc ? undefined : "mdx",
