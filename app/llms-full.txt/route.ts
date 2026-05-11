@@ -22,7 +22,7 @@ export async function GET() {
         .concat(nqtrSource.getPages())
         .concat(faqSource.getPages())
         .filter((v) => v.locale === "en")
-        .map(getLLMText);
+        .map((page) => getLLMText(page));
 
     const jsdocScan = [
         ...jsdocPixiVnSource.getPages(),
