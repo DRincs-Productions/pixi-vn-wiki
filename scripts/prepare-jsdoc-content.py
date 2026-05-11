@@ -28,6 +28,7 @@ RAW_ANGLE_TOKEN_RE = re.compile(r"</?[A-Za-z][^>\s]*>")
 RAW_LT_RE = re.compile(r"<(?![A-Za-z!/])")
 HTML_IMG_RE = re.compile(r"<img\b([^<>]*?)(?<!/)>")
 PASCAL_TAG_RE = re.compile(r"[A-Z][A-Za-z0-9]*[a-z][A-Za-z0-9]*")
+SUFFIX = ".md"
 
 
 def sanitize_text_line(line: str) -> str:
@@ -92,7 +93,7 @@ def build_content(original: str, file_path: Path) -> str:
 
 def convert_file(file_path: Path) -> None:
     original = file_path.read_text(encoding="utf-8")
-    target_path = file_path.with_suffix(".mdx")
+    target_path = file_path.with_suffix(SUFFIX)
     target_path.write_text(build_content(original, file_path), encoding="utf-8")
 
     if target_path != file_path:

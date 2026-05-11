@@ -22,13 +22,13 @@ export async function GET() {
         .concat(nqtrSource.getPages())
         .concat(faqSource.getPages())
         .filter((v) => v.locale === "en")
-        .map((page) => getLLMText(page));
+        .map(getLLMText);
 
     const jsdocScan = [
         ...jsdocPixiVnSource.getPages(),
         ...jsdocPixiVnJsonSource.getPages(),
         ...jsdocPixiVnInkSource.getPages(),
-    ].map((page) => getLLMText(page, "raw"));
+    ].map(getLLMText);
 
     const [scanned, scannedJsdoc] = await Promise.all([Promise.all(scan), Promise.all(jsdocScan)]);
 

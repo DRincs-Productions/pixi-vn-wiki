@@ -4,13 +4,16 @@ import { metaSchema, pageSchema } from "fumadocs-core/source/schema";
 import { defineConfig, defineDocs } from "fumadocs-mdx/config";
 import { inkLanguage } from "./lib/syntaxes";
 
-function createDocsCollection(dir: string, includeProcessedMarkdown = true) {
+function createDocsCollection(dir: string, jsdoc = true) {
     return defineDocs({
         dir,
         docs: {
             schema: pageSchema,
             postprocess: {
-                includeProcessedMarkdown,
+                includeProcessedMarkdown: jsdoc,
+            },
+            mdxOptions: {
+                format: jsdoc ? undefined : "mdx",
             },
         },
         meta: {

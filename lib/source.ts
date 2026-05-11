@@ -241,10 +241,10 @@ export function getJsdocPageMarkdownUrl(
 export async function getLLMText(page: {
     data: { title: string; getText: (type: "processed" | "raw") => Promise<string> };
     url: string;
-}, type: "processed" | "raw" = "processed") {
-    const text = await page.data.getText(type);
+}) {
+    const processed = await page.data.getText("processed");
 
     return `# ${page.data.title} (${page.url})
 
-${text}`;
+${processed}`;
 }
