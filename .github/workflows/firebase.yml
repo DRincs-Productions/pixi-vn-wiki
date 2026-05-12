@@ -10,6 +10,10 @@ on:
   schedule:
     - cron: '0 0 * * *'
 
+concurrency:
+  group: firebase-ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   deploy:
 
@@ -20,7 +24,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [latest]
+        node-version: [20.19.0]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -47,7 +51,7 @@ jobs:
       run: |
           git add content/jsdoc/pixi-vn content/jsdoc/pixi-vn-json content/jsdoc/pixi-vn-ink
           if ! git diff --staged --quiet; then
-            git commit -m "chore: update jsdoc submodules to latest"
+            git commit -m "chore: update jsdoc submodules to latest [skip ci]"
             git pull --rebase origin main
             attempt=0
             while ! git push origin HEAD:main; do
