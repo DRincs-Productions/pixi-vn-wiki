@@ -44,15 +44,20 @@ def sanitize_text_line(line: str) -> str:
         if index % 2 == 1:
             continue
 
-        # Unescape backslash-escaped angle brackets that TypeDoc emits (e.g.
-        # `Array\<string\>`) so the rest of the sanitization pipeline can
-        # handle them uniformly as raw `<` / `>` characters.
-        chunk = chunk.replace("\\<", "<").replace("\\>", ">")
+        # TypeDoc emits backslash-escaped angle brackets for type annotations
+        # (e.g. `Array\<string\>`).  Convert them directly to HTML entities so
+        # the rest of the pipeline never sees them as potential JSX tags.
+        chunk = chunk.replace("\\<", "&lt;").replace("\\>", "&gt;")
 
         # Convert wiki-style aliases like {{PageName|DisplayText}} to the text
         # that should remain visible once the source file has been renamed to
         # MDX and the old wiki syntax is no longer meaningful in fumadocs.
         chunk = WIKI_LINK_RE.sub(lambda match: match.group(2), chunk)
+
+        # MDX evaluates bare `{…}` as JavaScript expressions.  TypeDoc often
+        # embeds object literals in prose (e.g. `{ color: 0xff0000 }`), so
+        # escape every curly brace to its HTML entity equivalent.
+        chunk = chunk.replace("{", "&#123;").replace("}", "&#125;")
         preserved_tokens: list[str] = []
 
         def replace_angle_token(match: re.Match[str]) -> str:
@@ -66,7 +71,11 @@ def sanitize_text_line(line: str) -> str:
             return token.replace("<", "&lt;").replace(">", "&gt;")
 
         chunk = RAW_ANGLE_TOKEN_RE.sub(replace_angle_token, chunk)
-        chunk = RAW_LT_RE.sub("&lt;", chunk).replace(">", "&gt;")
+        # Escape any remaining bare `<` that did not open a recognised tag.
+        # Note: we intentionally do NOT replace bare `>` here — doing so would
+        # corrupt markdown blockquotes (`> text`) and the closing `>` of JSX
+        # opening tags with attributes (e.g. `<DynamicLink href="…">`).
+        chunk = RAW_LT_RE.sub("&lt;", chunk)
 
         for preserved_index, token in enumerate(preserved_tokens):
             chunk = chunk.replace(f"@@PRESERVED_TOKEN_{preserved_index}@@", token)
