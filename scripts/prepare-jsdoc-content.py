@@ -29,7 +29,7 @@ RAW_ANGLE_TOKEN_RE = re.compile(r"</?[A-Za-z][^>\s]*>")
 RAW_LT_RE = re.compile(r"<(?![A-Za-z!/])")
 HTML_IMG_RE = re.compile(r"<img\b([^<>]*?)(?<!/)>")
 PASCAL_TAG_RE = re.compile(r"[A-Z][A-Za-z0-9]*[a-z][A-Za-z0-9]*")
-SUFFIX = ".md"
+SUFFIX = ".mdx"
 
 
 def sanitize_text_line(line: str) -> str:
