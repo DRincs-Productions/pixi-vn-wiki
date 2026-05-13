@@ -1,0 +1,68 @@
+---
+title: Canvas components
+description: Overview of built-in and custom canvas components in Pixi’VN, including extension and memory features.
+---
+
+Pixi’VN provides a set of canvas components. These components extend the [Pixi.js](https://pixijs.com/) components, adding various features, such as the ability to save their current state.
+
+**What are canvas components?** Components are reusable building blocks for canvas apps, allowing app makers to create custom controls to use inside an app or across apps using a component library. Components can use advanced features such as custom properties and enable complex capabilities.
+
+## Base components
+
+The available components are:
+
+- `Sprite` corresponds to the component [`PixiJS.Sprite`](https://pixijs.com/8.x/guides/components/sprites).
+- `Container` corresponds to the component [`PixiJS.Container`](https://pixijs.com/8.x/guides/components/containers).
+- <DynamicLink href="/start/canvas-image">ImageSprite</DynamicLink> is a component introduced by Pixi’VN.
+- <DynamicLink href="/start/canvas-image-container">ImageContainer</DynamicLink> is a component introduced by Pixi’VN.
+- <DynamicLink href="/start/canvas-video">VideoSprite</DynamicLink> is a component introduced by Pixi’VN.
+- <DynamicLink href="/start/canvas-text">Text</DynamicLink> is a component introduced by Pixi’VN.
+
+## Custom components
+
+You can create custom components by extending the base components. To do this, you need to use the decorator `@canvasComponentDecorator`.
+
+`@canvasComponentDecorator` is a decorator that saves the canvas component in memory (<DynamicLink href="/faq#enable-typescript-decorators">How to enable decorators in TypeScript?</DynamicLink>). Cette fonction accepte les paramètres suivants:
+
+- `name`: The id used by Pixi’VN to refer to this class (must be unique). If you don't pass the id, the class name will be used as the id.
+- `getInstance`: A function that returns an instance of the canvas component. This function is used when the canvas state is reset.
+- `copyProperty`: A function that copies the properties of the canvas component. This function is used when copying the properties of the canvas component into another instance of the same canvas component.
+
+It is necessary to override the `memory` property to store the custom component properties.
+In `get memory()`, it is very important to return the `className` property; this property must be equal to the id used in the decorator.
+
+For example, you can create an `AlienTinting` class that extends the `Sprite` class to manage the direction and speed of each individual alien in an animation.
+
+```ts title="canvas/components/AlienTinting.ts"
+const ALIEN_TINTING_TEST_ID = "AlienTintingTest"
+@canvasComponentDecorator({
+    name: ALIEN_TINTING_TEST_ID,
+})
+class AlienTintingTest extends Sprite<IAlienTintingMemory> {
+    readonly pixivnId: string = CANVAS_SPINE_ID;
+    override get memory() {
+        return {
+            ...super.memory,
+            pixivnId: CANVAS_SPINE_ID,
+            direction: this.direction,
+            turningSpeed: this.turningSpeed,
+            speed: this.speed,
+        }
+    }
+    override async setMemory(memory: IAlienTintingMemory) {
+        await super.setMemory(memory)
+        this.direction = memory.direction
+        this.turningSpeed = memory.turningSpeed
+        this.speed = memory.speed
+    }
+    direction: number = 0
+    turningSpeed: number = 0
+    speed: number = 0
+    static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
+        let sprite = Sprite.from(source, skipCache)
+        let mySprite = new AlienTintingTest()
+        mySprite.texture = sprite.texture
+        return mySprite
+    }
+}
+```

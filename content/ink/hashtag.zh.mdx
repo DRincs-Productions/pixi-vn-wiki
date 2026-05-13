@@ -1,0 +1,42 @@
+---
+title: 自定义 Hashtag 命令
+---
+
+**_ink_** 支持使用 `#` 字符定义自定义 hashtag 命令（也可称为标签命令）。 Pixi’VN 基于这一特性，为 ink 脚本扩展了额外功能，例如与画布进行交互。
+
+Pixi’VN 允许开发者在解析脚本中的 # 命令时进行拦截，从而实现自定义功能。 这一能力是通过 `HashtagCommands.add` 函数提供的。
+
+`HashtagCommands.add` 接收一个回调函数。每当解析到 ink 脚本中的 hashtag 命令时，都会调用该回调函数。 回调函数的返回值为布尔值或字符串， 用于决定该命令是否已被处理。
+
+- 若不返回任何值，或是返回 `false` ，则该命令将会交由 Pixi'VN 的默认逻辑处理。
+- 若返回 `true` ，则 Pixi'VN 的默认逻辑不会介入。
+- 若返回一个字符串，该字符串将作为新的 hashtag 命令继续处理。 例如说，如果你想实现"显示角色图片"的功能，原命令为`# show character alice xAlign 0.8 yAlign 1 with dissolve`，可以将其转换为 `# show imagecontainer alice [alice-body alice-eyes alice-mouth] xAlign 0.8 yAlign 1 with dissolve` ，从而复用已有的<DynamicLink href="/ink/canvas#show-a-image-container-in-ink">"添加容器"</DynamicLink>功能。
+
+该回调函数接收两个参数：
+
+- `script`：将 hashtag 命令按空格拆分后得到的数组。 若命令中需要包含空格，请用引号`""`括起来。 例如，这条 Hashtag 命令 `# command "Hello World"` 会被解析为 `["command", "Hello World"]` 。
+- `convertListStringToObj`：接收字符串数组并返回对象的函数。 该函数用于将字符串列表转换为对象。 例如，数组`["prop1", "value 1", "prop2", "value 2"]` 会被转换为 `{prop1: "value 1", prop2: "value 2"}`。
+
+```ts tab="main.ts"
+import { HashtagCommands } from '@drincs/pixi-vn-ink'
+
+HashtagCommands.add((script, convertListStringToObj) => {
+    // script: ["navigate", "scene_name", "relative", "path"]
+    if (script[0] === "navigate" && script.length > 1) {
+        let prop = undefined
+        if (script.length > 2) {
+            // prop: {relative: "path"}
+            prop = convertListStringToObj(script.slice(2))
+        }
+        navigateTo(script[1], prop)
+        return true
+    }
+    return false
+})
+```
+
+```ink tab="ink/start.ink"
+=== start ===
+# navigate /game relative path
+-> DONE
+```

@@ -1,0 +1,203 @@
+---
+title: Assets
+description: Overview of asset types and storage options (local or online) in Pixi’VN, with usage examples.
+---
+
+**What are assets?** Assets are all files that are not code, such as images, sounds, and videos.
+
+You can use assets saved locally in the project or online (for the second option, you need to make sure that the cloud service you are using allows _CORS requests_). If your assets are online, your game will require an internet connection. You should notify the user and block the game if there is no connection.
+
+If you are creating a visual novel, it is recommended to keep frequently used assets locally. For assets used only once in the game, it is better to publish them online.
+
+To load and manipulate assets (images, gifs, videos, etc.) you will need to use `Assets`. `Assets` is a class with many features and comes from the PixiJS library. For more information, read [here](https://pixijs.com/8.x/guides/components/assets). It is also very important that you read this documentation to better <DynamicLink href="/start/assets-management">organize the uploading of your assets</DynamicLink>.
+
+You mainly have two choices for where to save your assets: locally or online.
+
+## Local assets
+
+To save and use assets locally, you can use any folder—there are no restrictions. However, it is recommended to use the `assets` folder. Inside this folder, you can create subfolders to better organize your assets.
+
+Here is an example of how to import and load an asset into your project:
+
+```ts title="utils/assets.ts"
+import { Assets } from "@drincs/pixi-vn";
+import bg01hallway from "../assets/images/bg01-hallway.webp";
+
+Assets.add({
+    alias: "bg01-hallway",
+    src: bg01hallway,
+});
+```
+
+<Accordions>
+
+<Accordion title="pixijs_assetpack" id="pixijs-assetpack">
+
+AssetPack is a tool for optimizing local assets for the web. It can be used to transform, combine, and compress assets.
+
+If you want to use AssetPack, you can find the documentation [here](https://pixijs.io/assetpack).
+
+</Accordion>
+
+</Accordions>
+
+## Assets hosting
+
+You can save your assets online. This is a good option if you want to save space on your computer. You can use any cloud service that allows you to upload files and generate a public URL (CORS enabled).
+
+Here is an example of how to import and load an asset into your project:
+
+```ts title="utils/assets.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+Assets.add({
+    alias: "bg01-hallway",
+    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/bg01-hallway.webp",
+});
+```
+
+You can save your assets as you like, with complete freedom. If you plan to save your assets online, here are some of the options:
+
+<Accordions>
+
+<Accordion title="github" id="github">
+
+You can use Github to host your assets. You can use the raw link of the file in your project. The link will be in the following format:
+
+```text
+https://raw.githubusercontent.com/[repository]/raw/refs/heads/main/[file path]
+```
+
+- **Price**: Completely free.
+- **Space limits**: No space limits, but each single file must not exceed 100 MB.
+- **Type of files**: You can upload any type of file.
+- **Traffic**: Speed is not the best.
+- **Edit assets**: You can edit the file while keeping the same URL.
+
+</Accordion>
+
+<Accordion title="image_hosting" id="image-hosting">
+
+Image hosting is a service that allows you to upload images. There are many sites to upload images for free, for example [imgbb](https://imgbb.com/), [imgix](https://www.imgix.com/), [imgur](https://imgur.com/). You can use the link of the image in your project.
+
+- **Price**: Completely free, but you can pay for more features.
+- **Space limits**: No space limits, but each single file can have a maximum size.
+- **Type of files**: You can upload only images.
+- **Traffic**: Speed is good.
+- **Edit assets**: You can't edit the file while keeping the same URL.
+
+</Accordion>
+
+<Accordion title="cloud_storage" id="Cloud-storage">
+
+Cloud storage is a service that allows you to upload files online.
+
+- **Price**: Usually paid or with a free version with limits.
+- **Space limits**: Monthly cost based on space used (usually free if you do not exceed a certain threshold).
+- **Type of files**: You can upload any type of file.
+- **Traffic**: Speed is good.
+- **Edit assets**: You can edit the file while keeping the same URL.
+
+Here is a list of some of the most popular cloud storage services:
+
+- ![firebase-text](/firebase.svg) **Firebase Storage** is a cloud service that is very easy to use. Firebase has two plans: Spark (free) and Blaze (pay as you go). You can find more information [here](https://firebase.google.com/pricing).\
+  **Solving Firebase Storage CORS Issue**:
+  - Install [gcloud CLI](https://cloud.google.com/sdk/docs/install)
+  - Read this [documentation](https://medium.com/@we.viavek/setting-cors-in-firebase-19a2cce2fe28) to solve the CORS issue.
+- ![aws-text](/aws.svg) **Amazon S3** is a cloud service. Compared to its competitors, it has many settings, but it may be more difficult to use. There is a payment plan to use Amazon S3. You can find more information [here](https://aws.amazon.com/s3/pricing/).
+- ![supabase-text](/supabase.svg) **Supabase** is an open-source Firebase alternative. Supabase has two plans: Free and Pay as you go. You can find more information [here](https://supabase.io/pricing).
+- **Convex** is a cloud service that allows you to store and serve user-generated content, such as photos, videos, or other files. Convex has two plans: Free and Pay as you go. You can find more information [here](https://www.convex.dev/pricing).
+
+</Accordion>
+
+</Accordions>
+
+## Other features
+
+<Accordions>
+
+<Accordion title="caching_assets" id="caching-assets">
+
+<Callout title="Templates" type="info">
+
+In all templates, a service worker is included to cache external assets (images, sounds, videos, etc.) used in your game. This improves performance and reduces loading times for players.
+
+</Callout>
+
+For assets hosted online, the service worker caches them locally on the user's device after the first download. This means that subsequent requests for the same asset will be served from the cache, resulting in faster load times and reduced data usage.
+
+```js tab="public/service-worker.js"
+const CACHE_NAME = "external-assets-v1";
+const MAX_AGE_DAYS = 7;
+const MAX_AGE_MS = MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
+
+const lastUsed = {};
+
+// The fetch event handler below implements a simple cache-for-host strategy:
+// - It only attempts to cache responses for requests whose hostname is explicitly allowed in the switch below.
+// - Cached entries are kept in the "external-assets-v1" cache and tracked via `lastUsed` timestamps.
+// - If a cached response exists and is not older than MAX_AGE_DAYS, it is served directly.
+// - Otherwise the service worker fetches from the network, caches the successful response, and returns it.
+// - If the network fails and a cached response exists, the cached response is returned as a fallback.
+// NOTE: Add the hostnames of external asset providers you want to cache (CDNs, raw asset hosts, etc.) in the switch below.
+self.addEventListener("fetch", (event) => {
+    const request = event.request;
+    const url = new URL(request.url);
+
+    switch (url.hostname) {
+        case "raw.githubusercontent.com":
+            break;
+        // Add asset hostnames here to enable caching for them.
+        // Examples:
+        // case "raw.githubusercontent.com":
+        // case "cdn.jsdelivr.net":
+        // case "your.cdn.domain.com":
+        //     break;
+        default:
+            return;
+    }
+
+    event.respondWith(
+        (async () => {
+            const cache = await caches.open(CACHE_NAME);
+            const now = Date.now();
+            const cached = await cache.match(request);
+
+            if (cached && lastUsed[url.href]) {
+                const age = now - lastUsed[url.href];
+                if (age < MAX_AGE_MS) {
+                    lastUsed[url.href] = now;
+                    return cached;
+                }
+                await cache.delete(request);
+                delete lastUsed[url.href];
+            }
+
+            try {
+                const response = await fetch(request);
+                if (response && response.type === "cors" && response.status < 400) {
+                    await cache.put(request, response.clone());
+                    lastUsed[url.href] = now;
+                }
+                return response;
+            } catch (err) {
+                if (cached) return cached;
+                return fetch(request);
+            }
+        })()
+    );
+});
+```
+
+```ts tab="main.ts"
+// Register service worker
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js").catch(console.error);
+    });
+}
+```
+
+</Accordion>
+
+</Accordions>
