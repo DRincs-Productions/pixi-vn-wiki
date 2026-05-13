@@ -10,6 +10,7 @@ This script:
 from __future__ import annotations
 
 import re
+from html import unescape
 from pathlib import Path
 
 MODULES = (
@@ -52,8 +53,6 @@ def sanitize_text_line(line: str) -> str:
         # that should remain visible once the source file has been renamed to
         # MDX and the old wiki syntax is no longer meaningful in fumadocs.
         chunk = WIKI_LINK_RE.sub(lambda match: match.group(2), chunk)
-        chunk = chunk.replace("{", "&#123;").replace("}", "&#125;")
-
         preserved_tokens: list[str] = []
 
         def replace_angle_token(match: re.Match[str]) -> str:
@@ -90,6 +89,8 @@ def sanitize_markdown(content: str) -> str:
 def build_content(original: str, file_path: Path) -> str:
     title_match = TITLE_RE.search(original)
     title = title_match.group(1) if title_match else file_path.stem
+    title = unescape(title)
+    title = title.replace("\\<", "<").replace("\\>", ">")
     title = title.replace("\\", "\\\\").replace('"', '\\"')
 
     if title_match:
