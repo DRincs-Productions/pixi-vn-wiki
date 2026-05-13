@@ -53,8 +53,6 @@ def sanitize_text_line(line: str) -> str:
         # that should remain visible once the source file has been renamed to
         # MDX and the old wiki syntax is no longer meaningful in fumadocs.
         chunk = WIKI_LINK_RE.sub(lambda match: match.group(2), chunk)
-        chunk = chunk.replace("{", "&#123;").replace("}", "&#125;")
-
         preserved_tokens: list[str] = []
 
         def replace_angle_token(match: re.Match[str]) -> str:
