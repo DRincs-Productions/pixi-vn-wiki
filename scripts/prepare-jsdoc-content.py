@@ -54,17 +54,23 @@ def sanitize_text_line(line: str) -> str:
         chunk = WIKI_LINK_RE.sub(lambda match: match.group(2), chunk)
         chunk = chunk.replace("{", "&#123;").replace("}", "&#125;")
 
+        preserved_tokens: list[str] = []
+
         def replace_angle_token(match: re.Match[str]) -> str:
             token = match.group(0)
             inner = token[2:-1] if token.startswith("</") else token[1:-1]
             # Preserve PascalCase tags because they are usually real MDX/JSX
             # components from hand-authored jsdoc landing pages.
             if PASCAL_TAG_RE.fullmatch(inner):
-                return token
+                preserved_tokens.append(token)
+                return f"@@PRESERVED_TOKEN_{len(preserved_tokens) - 1}@@"
             return token.replace("<", "&lt;").replace(">", "&gt;")
 
         chunk = RAW_ANGLE_TOKEN_RE.sub(replace_angle_token, chunk)
-        chunk = RAW_LT_RE.sub("&lt;", chunk)
+        chunk = RAW_LT_RE.sub("&lt;", chunk).replace(">", "&gt;")
+
+        for preserved_index, token in enumerate(preserved_tokens):
+            chunk = chunk.replace(f"@@PRESERVED_TOKEN_{preserved_index}@@", token)
         chunks[index] = chunk
 
     return "".join(chunks)
