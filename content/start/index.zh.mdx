@@ -83,9 +83,11 @@ deno install npm:@drincs/pixi-vn
 
 ```html tab="map import" title="index.html"
 <script type="importmap">
-  { "imports": {
-      "@drincs/pixi-vn@<version>":        "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn/+esm"
-  } }
+  {
+    "imports": {
+      "@drincs/pixi-vn@<version>": "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn/+esm"
+    }
+  }
 </script>
 ```
 
@@ -93,7 +95,8 @@ deno install npm:@drincs/pixi-vn
 import pixivn from "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@<version>/+esm";
 ```
 
-<iframe src="https://codepen.io/BlackRam-oss/embed/oNrqgNd?default-tab=js%2Cresult"
+<iframe
+  src="https://codepen.io/BlackRam-oss/embed/oNrqgNd?default-tab=js%2Cresult"
   height="300"
   style={{
     width: "100%",
@@ -107,28 +110,18 @@ import pixivn from "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@<version>/+esm"
 
 <Accordion title="vite_js_plugin" id="vite-plugin">
 
-为了获得更好的开发体验，请使用 Vite 插件。
-
-此插件提供以下功能：
-
-- 用于管理角色、`labels` 和资源清单的端点。
-  - `GET /pixi-vn/characters` - 获取已注册的角色列表。
-  - `POST /pixi-vn/characters` - 更新角色列表。
-  - 获取已注册的 labels 列表。
-  - `POST /pixi-vn/labels` - 更新已注册的 `labels` 列表。
-  - `GET /pixi-vn/assets/manifest` - 获取资源清单。
-  - `POST /pixi-vn/assets/manifest` - 更新资源清单。
+For a better developer experience, use [`vitePluginPixivn`](/jsdoc/pixi-vn/vite/functions/vitePluginPixivn) and [`setupPixivnViteData`](/jsdoc/pixi-vn/vite-listener/functions/setupPixivnViteData) from the `@drincs/pixi-vn/vite` package.
 
 ```ts tab="vite.config.ts"
-import { defineConfig } from 'vite'
+import { defineConfig } from "vite";
 import { vitePluginPixivn } from "@drincs/pixi-vn/vite";
 export default defineConfig({
   // ...
   plugins: [
     // other plugins...
-    vitePluginPixivn()
-  ]
-})
+    vitePluginPixivn(),
+  ],
+});
 ```
 
 ```ts tab="main.ts"
@@ -146,24 +139,24 @@ setupPixivnViteData(); // [!code focus]
 To handle errors in Pixi’VN, you can use the `Game.addOnError` function. This function takes a callback that will be called whenever an error occurs in the game.
 
 ```ts title="main.ts"
-import { Game } from '@drincs/pixi-vn'
+import { Game } from "@drincs/pixi-vn";
 
 Game.addOnError((error, { notify }) => {
-    notify("An error occurred")
-    // Optionally send the error to GlitchTip, Sentry, etc.
-})
+  notify("An error occurred");
+  // Optionally send the error to GlitchTip, Sentry, etc.
+});
 ```
 
 You can also check if the error is an instance of `PixiError` to handle specific errors related to Pixi’VN.
 
 ```ts title="main.ts"
-import { PixiError } from '@drincs/pixi-vn'
+import { PixiError } from "@drincs/pixi-vn";
 
 Game.addOnError((error, { notify }) => {
-    if (error instanceof PixiError) {
-        // ...
-    }
-})
+  if (error instanceof PixiError) {
+    // ...
+  }
+});
 ```
 
 </Accordion>
@@ -187,28 +180,28 @@ Game.addOnError((error, { notify }) => {
 ```ts title="src/main.tsx"
 import { Game } from "@drincs/pixi-vn";
 
-const body = document.body
+const body = document.body;
 if (!body) {
-    throw new Error('body element not found')
+  throw new Error("body element not found");
 }
 
 Game.init(body, {
-    height: 1080,
-    width: 1920,
-    backgroundColor: "#303030",
+  height: 1080,
+  width: 1920,
+  backgroundColor: "#303030",
 }).then(() => {
-    // ...
-    Game.start("start", {})
+  // ...
+  Game.start("start", {});
 });
 
 // read more here: https://pixi-vn.web.app/start/other-narrative-features.html#how-manage-the-end-of-the-game
 Game.onEnd(async (props) => {
-    Game.clear();
-    // navigate to main menu
+  Game.clear();
+  // navigate to main menu
 });
 
 Game.addOnError((error, props) => {
-    console.error(`Error occurred`, error);
+  console.error(`Error occurred`, error);
 });
 
 Game.onNavigate((path) => navigateTo(path));
