@@ -27,7 +27,7 @@ WIKI_LINK_RE = re.compile(r"\{\{([^{}\n|]+)\|([^{}\n]+)\}\}")
 RAW_ANGLE_TOKEN_RE = re.compile(r"</?[A-Za-z][^>\s]*>")
 RAW_LT_RE = re.compile(r"<(?![A-Za-z!/])")
 HTML_IMG_RE = re.compile(r"<img\b([^<>]*?)(?<!/)>")
-HTML_TAG_LINE_RE = re.compile(r"^</?[a-z][a-z0-9-]*(?:\s|>|/)")
+HTML_TAG_START_RE = re.compile(r"^</?[a-z][a-z0-9-]*(?:\s|>|/)")
 PASCAL_TAG_RE = re.compile(r"[A-Z][A-Za-z0-9]*[a-z][A-Za-z0-9]*")
 SUFFIX = ".md"
 
@@ -37,7 +37,7 @@ def sanitize_text_line(line: str) -> str:
     if stripped.startswith("<"):
         line = line.replace("<br>", "<br />")
         line = HTML_IMG_RE.sub(r"<img\1 />", line)
-        if HTML_TAG_LINE_RE.match(stripped):
+        if HTML_TAG_START_RE.match(stripped):
             return line
 
     chunks = INLINE_CODE_RE.split(line)
