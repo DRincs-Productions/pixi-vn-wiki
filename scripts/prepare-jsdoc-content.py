@@ -43,6 +43,11 @@ def sanitize_text_line(line: str) -> str:
         if index % 2 == 1:
             continue
 
+        # Unescape backslash-escaped angle brackets that TypeDoc emits (e.g.
+        # `Array\<string\>`) so the rest of the sanitization pipeline can
+        # handle them uniformly as raw `<` / `>` characters.
+        chunk = chunk.replace("\\<", "<").replace("\\>", ">")
+
         # Convert wiki-style aliases like {{PageName|DisplayText}} to the text
         # that should remain visible once the source file has been renamed to
         # MDX and the old wiki syntax is no longer meaningful in fumadocs.
