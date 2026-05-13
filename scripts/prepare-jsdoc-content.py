@@ -10,6 +10,7 @@ This script:
 from __future__ import annotations
 
 import re
+from html import unescape
 from pathlib import Path
 
 MODULES = (
@@ -90,6 +91,8 @@ def sanitize_markdown(content: str) -> str:
 def build_content(original: str, file_path: Path) -> str:
     title_match = TITLE_RE.search(original)
     title = title_match.group(1) if title_match else file_path.stem
+    title = title.replace("\\<", "<").replace("\\>", ">")
+    title = unescape(title)
     title = title.replace("\\", "\\\\").replace('"', '\\"')
 
     if title_match:
