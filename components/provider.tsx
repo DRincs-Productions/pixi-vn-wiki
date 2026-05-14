@@ -22,7 +22,7 @@ export function Provider({ children, locale }: { children: ReactNode; locale?: s
             i18n={{
                 locale: isJsdocPath ? "en" : locale || "en",
                 onLocaleChange: isJsdocPath ? undefined : changeLanguage,
-                locales: isJsdocPath ? ["en"] : locales,
+                locales: isJsdocPath ? locales.filter((item) => item.locale === "en") : locales,
                 translations: { cn }[locale as string],
             }}
         >
