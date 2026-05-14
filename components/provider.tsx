@@ -15,7 +15,8 @@ export function Provider({ children, locale }: { children: ReactNode; locale?: s
     const changeLanguage = useBrowserLanguage();
     const pathname = usePathname();
     const isJsdocRoute = pathname.startsWith("/jsdoc");
-    const jsdocLocales = locales.filter((item) => item.locale === "en");
+    const englishLocale = locales.find((item) => item.locale === "en");
+    const jsdocLocales = englishLocale ? [englishLocale] : locales;
 
     return (
         <RootProvider
