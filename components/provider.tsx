@@ -15,6 +15,7 @@ export function Provider({ children, locale }: { children: ReactNode; locale?: s
     const changeLanguage = useBrowserLanguage();
     const pathname = usePathname();
     const isJsdocRoute = pathname.startsWith("/jsdoc");
+    const jsdocLocales = locales.filter((item) => item.locale === "en");
 
     return (
         <RootProvider
@@ -22,7 +23,7 @@ export function Provider({ children, locale }: { children: ReactNode; locale?: s
             i18n={{
                 locale: isJsdocRoute ? "en" : locale || "en",
                 onLocaleChange: changeLanguage,
-                locales: isJsdocRoute ? [locales[0]] : locales,
+                locales: isJsdocRoute ? jsdocLocales : locales,
                 translations: { cn }[locale as string],
             }}
         >
