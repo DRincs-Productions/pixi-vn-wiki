@@ -14,14 +14,15 @@ const cn: Partial<Translations> = {
 export function Provider({ children, locale }: { children: ReactNode; locale?: string }) {
     const changeLanguage = useBrowserLanguage();
     const pathname = usePathname();
+    const isJsdocPath = pathname.startsWith("/jsdoc");
 
     return (
         <RootProvider
             search={{ SearchDialog }}
             i18n={{
-                locale: pathname.startsWith("/jsdoc") ? "en" : locale || "en",
-                onLocaleChange: changeLanguage,
-                locales,
+                locale: isJsdocPath ? "en" : locale || "en",
+                onLocaleChange: isJsdocPath ? undefined : changeLanguage,
+                locales: isJsdocPath ? ["en"] : locales,
                 translations: { cn }[locale as string],
             }}
         >
