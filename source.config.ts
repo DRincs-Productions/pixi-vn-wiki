@@ -1,5 +1,6 @@
 import dark from "@shikijs/themes/github-dark";
 import light from "@shikijs/themes/github-light";
+import { remarkMdxMermaid } from "fumadocs-core/mdx-plugins";
 import { metaSchema, pageSchema } from "fumadocs-core/source/schema";
 import { defineConfig, defineDocs } from "fumadocs-mdx/config";
 import { inkLanguage } from "./lib/syntaxes";
@@ -27,7 +28,7 @@ export const docs = createDocsCollection("content/start");
 export default defineConfig({
     mdxOptions: {
         // MDX options
-        rehypePlugins: [],
+        remarkPlugins: [remarkMdxMermaid],
         rehypeCodeOptions: {
             lazy: true,
             inline: "tailing-curly-colon",
