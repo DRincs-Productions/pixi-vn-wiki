@@ -5,7 +5,6 @@ import {
     jsdocPixiVnInkSource,
     jsdocPixiVnJsonSource,
     jsdocPixiVnSource,
-    jsonSource,
     nqtrSource,
     renpySource,
     source,
@@ -18,7 +17,6 @@ export async function GET() {
         .getPages()
         .concat(inkSource.getPages())
         .concat(renpySource.getPages())
-        .concat(jsonSource.getPages())
         .concat(nqtrSource.getPages())
         .concat(faqSource.getPages())
         .filter((v) => v.locale === "en")

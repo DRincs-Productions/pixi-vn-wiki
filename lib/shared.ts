@@ -1,7 +1,6 @@
 export const appName = "Pixi’VN";
 export const startRoute = "/start";
 export const inkRoute = "/ink";
-export const jsonRoute = "/json";
 export const nqtrRoute = "/nqtr";
 export const faqRoute = "/faq";
 export const renpyRoute = "/renpy";

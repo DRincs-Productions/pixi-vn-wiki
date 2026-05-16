@@ -4,7 +4,6 @@ import {
     faqSource,
     getPageMarkdownUrl,
     inkSource,
-    jsonSource,
     nqtrSource,
     renpySource,
     source,
@@ -31,7 +30,7 @@ export default async function MDXPage({
 }: {
     lang?: string;
     slug?: string[];
-    folther: "start" | "ink" | "faq" | "renpy" | "nqtr" | "json";
+    folther: "start" | "ink" | "faq" | "renpy" | "nqtr";
 }) {
     let page;
     let pageBase;
@@ -47,10 +46,6 @@ export default async function MDXPage({
         case "faq":
             page = faqSource.getPage(slug, lang);
             pageBase = faqSource.getPage(slug);
-            break;
-        case "json":
-            page = jsonSource.getPage(slug, lang);
-            pageBase = jsonSource.getPage(slug);
             break;
         case "renpy":
             page = renpySource.getPage(slug, lang);
