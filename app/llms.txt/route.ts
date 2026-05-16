@@ -4,7 +4,6 @@ import {
     jsdocPixiVnInkSource,
     jsdocPixiVnJsonSource,
     jsdocPixiVnSource,
-    jsonSource,
     nqtrSource,
     renpySource,
     source,
@@ -28,8 +27,6 @@ export function GET() {
             )
             .concat("\n\n")
             .concat(llms(nqtrSource).index("en").replaceAll("# Docs", "## NQTR"))
-            .concat("\n\n")
-            .concat(llms(jsonSource).index("en").replaceAll("# Docs", "## Pixi'VN Json"))
             .concat("\n\n")
             .concat(llms(faqSource).index("en").replaceAll("# Docs", "## FAQ"))
             .concat("\n\n")

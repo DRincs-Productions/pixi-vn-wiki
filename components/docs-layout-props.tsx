@@ -1,5 +1,5 @@
 import { routing } from "@/i18n/routing";
-import { faqSource, inkSource, jsonSource, nqtrSource, renpySource, source } from "@/lib/source";
+import { faqSource, inkSource, nqtrSource, renpySource, source } from "@/lib/source";
 import { Image } from "fumadocs-core/framework";
 import { DocsLayoutProps } from "fumadocs-ui/layouts/docs";
 import { LinkItemType } from "fumadocs-ui/layouts/shared";
@@ -825,60 +825,6 @@ export async function nqtrTree(lang?: string): Promise<DocsLayoutProps["tree"]> 
                 type: "page",
                 name: "Quests",
                 url: `${preUrl}/nqtr/quest`,
-            },
-        ],
-    };
-}
-
-export async function jsonTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
-    const preUrl = lang ? `/${lang}` : "";
-    const t = await getTranslations({ locale: lang ?? routing.defaultLocale, namespace: "layout" });
-    return {
-        ...jsonSource.pageTree,
-        name: "Pixi’VN Json",
-        children: [
-            {
-                type: "page",
-                name: t("start"),
-                icon: <Album />,
-                url: `${preUrl}/json`,
-            },
-            { type: "separator", name: t("models") },
-            {
-                type: "folder",
-                name: "PixiVNJson",
-                icon: <File />,
-                index: {
-                    type: "page",
-                    name: "PixiVNJson",
-                    url: `${preUrl}/json/PixiVNJson`,
-                },
-                children: [
-                    {
-                        type: "page",
-                        name: t("choices"),
-                        icon: <File />,
-                        url: `${preUrl}/json/PixiVNJsonChoices`,
-                    },
-                    {
-                        type: "page",
-                        name: t("labels-flow"),
-                        icon: <File />,
-                        url: `${preUrl}/json/PixiVNJsonLabelToOpen`,
-                    },
-                    {
-                        type: "page",
-                        name: t("operations"),
-                        icon: <File />,
-                        url: `${preUrl}/json/PixiVNJsonOperation`,
-                    },
-                ],
-            },
-            {
-                type: "page",
-                name: t("conditions"),
-                icon: <File />,
-                url: `${preUrl}/json/PixiVNJsonConditionalStatements`,
             },
         ],
     };

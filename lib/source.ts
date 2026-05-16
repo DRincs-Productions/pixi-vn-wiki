@@ -5,7 +5,6 @@ import {
     jsdocPixiVnDocs,
     jsdocPixiVnInkDocs,
     jsdocPixiVnJsonDocs,
-    jsonDocs,
     nqtrDocs,
     renpyDocs,
 } from "collections/server";
@@ -21,7 +20,6 @@ import {
     jsdocPixiVnInkRoute,
     jsdocPixiVnJsonRoute,
     jsdocPixiVnRoute,
-    jsonRoute,
     nqtrRoute,
     renpyRoute,
     startRoute,
@@ -162,17 +160,6 @@ export const nqtrSource = loader({
     i18n,
 });
 
-export const jsonSource = loader({
-    // it assigns a URL to your pages
-    baseUrl: jsonRoute,
-    source: jsonDocs.toFumadocsSource(),
-    plugins: [],
-    icon(icon) {
-        if (icon && icon in icons) return createElement(icons[icon as keyof typeof icons]);
-    },
-    i18n,
-});
-
 function createJsdocLoader(
     baseUrl: string,
     docsSource: ReturnType<typeof jsdocPixiVnDocs.toFumadocsSource>,
@@ -211,7 +198,7 @@ export function getPageImage(page: InferPageType<typeof source>) {
 
 export function getPageMarkdownUrl(
     page: InferPageType<typeof source>,
-    folther: "start" | "ink" | "faq" | "renpy" | "nqtr" | "json",
+    folther: "start" | "ink" | "faq" | "renpy" | "nqtr",
 ) {
     const segments = [...page.slugs, "content.md"];
     const url =

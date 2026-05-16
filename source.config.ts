@@ -76,8 +76,6 @@ export const renpyDocs = createDocsCollection("content/renpy");
 
 export const nqtrDocs = createDocsCollection("content/nqtr");
 
-export const jsonDocs = createDocsCollection("content/json");
-
 export const jsdocPixiVnDocs = createDocsCollection("content/jsdoc/pixi-vn", false);
 
 export const jsdocPixiVnJsonDocs = createDocsCollection("content/jsdoc/pixi-vn-json", false);
