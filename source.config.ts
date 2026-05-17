@@ -4,7 +4,7 @@ import { remarkMdxMermaid } from "fumadocs-core/mdx-plugins";
 import { metaSchema, pageSchema } from "fumadocs-core/source/schema";
 import { defineConfig, defineDocs } from "fumadocs-mdx/config";
 import { inkLanguage } from "./lib/syntaxes";
-import { defineCollections } from 'fumadocs-mdx/config';
+import { defineCollections, applyMdxPreset } from 'fumadocs-mdx/config';
 
 const mdxOptions = applyMdxPreset()
 
