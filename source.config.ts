@@ -5,7 +5,11 @@ import { metaSchema, pageSchema } from "fumadocs-core/source/schema";
 import { applyMdxPreset, defineConfig, defineDocs } from "fumadocs-mdx/config";
 import { inkLanguage } from "./lib/syntaxes";
 
-const mdxOptions = applyMdxPreset();
+const mdOptions = applyMdxPreset({
+    rehypeCodeOptions: false,
+    remarkCodeTabOptions: false,
+    remarkPlugins: [],
+});
 
 function createDocsCollection(dir: string, mdx = true) {
     return defineDocs({
@@ -15,7 +19,7 @@ function createDocsCollection(dir: string, mdx = true) {
             postprocess: {
                 includeProcessedMarkdown: true,
             },
-            ...(mdx ? {} : { mdxOptions: { ...mdxOptions, format: "md" } }),
+            ...(mdx ? {} : { mdxOptions: mdOptions }),
         },
         meta: {
             schema: metaSchema,
