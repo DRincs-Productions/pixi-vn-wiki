@@ -1,6 +1,5 @@
 import DynamicLink from "@/components/dynamiclink";
 import * as AccordionsComponents from "@/components/mdx/accordion";
-import { Mermaid } from "@/components/mdx/mermaid";
 import ServerImage from "@/components/mdx/server-image";
 import * as TabsComponents from "fumadocs-ui/components/tabs";
 import defaultMdxComponents from "fumadocs-ui/mdx";
@@ -39,7 +38,6 @@ export function getMDXComponents(components?: MDXComponents) {
                 />
             );
         },
-        Mermaid,
         Comments: () => null,
         DynamicLink,
         ...components,
