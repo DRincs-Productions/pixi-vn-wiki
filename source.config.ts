@@ -8,7 +8,6 @@ import { inkLanguage } from "./lib/syntaxes";
 const mdOptions = applyMdxPreset({
     rehypeCodeOptions: false,
     remarkCodeTabOptions: false,
-    remarkPlugins: [],
 });
 
 function createDocsCollection(dir: string, mdx = true) {
