@@ -1,5 +1,7 @@
 import { inkLanguage } from "@/lib/syntaxes";
-import { type RehypeCodeOptions, rehypeCodeDefaultOptions } from "fumadocs-core/mdx-plugins";
+import dark from "@shikijs/themes/github-dark";
+import light from "@shikijs/themes/github-light";
+import type { RehypeCodeOptions } from "fumadocs-core/mdx-plugins";
 
 export const appName = "Pixi’VN";
 export const startRoute = "/start";
@@ -61,7 +63,14 @@ export const locales = [
 ];
 
 export const inkRehypeCodeOptions: RehypeCodeOptions = {
-    ...rehypeCodeDefaultOptions,
+    // ...rehypeCodeDefaultOptions,
+    lazy: true,
+    inline: "tailing-curly-colon",
+    themes: {
+        light: light,
+        dark: dark,
+    },
+    theme: dark,
     langs: [
         "ts",
         "js",
