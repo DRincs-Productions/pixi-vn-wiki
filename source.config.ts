@@ -1,6 +1,6 @@
 import { inkRehypeCodeOptions } from "@/lib/shared";
 import type { ProcessorOptions } from "@mdx-js/mdx";
-import { remarkMdxMermaid } from "fumadocs-core/mdx-plugins";
+import { remarkMdxMermaid, remarkNpm } from "fumadocs-core/mdx-plugins";
 import { metaSchema, pageSchema } from "fumadocs-core/source/schema";
 import { applyMdxPreset, defineConfig, defineDocs } from "fumadocs-mdx/config";
 
@@ -26,7 +26,7 @@ function createDocsCollection(
 export default defineConfig({
     mdxOptions: {
         // MDX options
-        remarkPlugins: [remarkMdxMermaid],
+        remarkPlugins: [remarkMdxMermaid, remarkNpm],
     },
 });
 
@@ -80,8 +80,23 @@ export const nqtrDocs = createDocsCollection(
     }),
 );
 
-export const jsdocPixiVnDocs = createDocsCollection("content/jsdoc/pixi-vn");
+export const jsdocPixiVnDocs = createDocsCollection(
+    "content/jsdoc/pixi-vn",
+    applyMdxPreset({
+        remarkCodeTabOptions: false,
+    }),
+);
 
-export const jsdocPixiVnJsonDocs = createDocsCollection("content/jsdoc/pixi-vn-json");
+export const jsdocPixiVnJsonDocs = createDocsCollection(
+    "content/jsdoc/pixi-vn-json",
+    applyMdxPreset({
+        remarkCodeTabOptions: false,
+    }),
+);
 
-export const jsdocPixiVnInkDocs = createDocsCollection("content/jsdoc/pixi-vn-ink");
+export const jsdocPixiVnInkDocs = createDocsCollection(
+    "content/jsdoc/pixi-vn-ink",
+    applyMdxPreset({
+        remarkCodeTabOptions: false,
+    }),
+);
