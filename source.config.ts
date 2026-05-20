@@ -83,6 +83,7 @@ export const nqtrDocs = createDocsCollection(
 export const jsdocPixiVnDocs = createDocsCollection(
     "content/jsdoc/pixi-vn",
     applyMdxPreset({
+        rehypeCodeOptions: false,
         remarkCodeTabOptions: false,
     }),
 );
@@ -90,6 +91,7 @@ export const jsdocPixiVnDocs = createDocsCollection(
 export const jsdocPixiVnJsonDocs = createDocsCollection(
     "content/jsdoc/pixi-vn-json",
     applyMdxPreset({
+        rehypeCodeOptions: false,
         remarkCodeTabOptions: false,
     }),
 );
@@ -97,6 +99,7 @@ export const jsdocPixiVnJsonDocs = createDocsCollection(
 export const jsdocPixiVnInkDocs = createDocsCollection(
     "content/jsdoc/pixi-vn-ink",
     applyMdxPreset({
+        rehypeCodeOptions: false,
         remarkCodeTabOptions: false,
     }),
 );
