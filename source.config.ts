@@ -1,4 +1,4 @@
-import { inkRehypeCodeOptions } from "@/lib/shared";
+import { fullRehypeCodeOptions, lightRehypeCodeOptions } from "@/lib/shared";
 import type { ProcessorOptions } from "@mdx-js/mdx";
 import { remarkMdxMermaid, remarkNpm } from "fumadocs-core/mdx-plugins";
 import { metaSchema, pageSchema } from "fumadocs-core/source/schema";
@@ -33,7 +33,7 @@ export default defineConfig({
 export const docs = createDocsCollection(
     "content/start",
     applyMdxPreset({
-        rehypeCodeOptions: inkRehypeCodeOptions,
+        rehypeCodeOptions: fullRehypeCodeOptions,
         remarkCodeTabOptions: {
             parseMdx: true,
         },
@@ -43,7 +43,7 @@ export const docs = createDocsCollection(
 export const inkDocs = createDocsCollection(
     "content/ink",
     applyMdxPreset({
-        rehypeCodeOptions: inkRehypeCodeOptions,
+        rehypeCodeOptions: fullRehypeCodeOptions,
         remarkCodeTabOptions: {
             parseMdx: true,
         },
@@ -53,7 +53,7 @@ export const inkDocs = createDocsCollection(
 export const faqDocs = createDocsCollection(
     "content/faq",
     applyMdxPreset({
-        rehypeCodeOptions: inkRehypeCodeOptions,
+        rehypeCodeOptions: fullRehypeCodeOptions,
         remarkCodeTabOptions: {
             parseMdx: true,
         },
@@ -63,7 +63,7 @@ export const faqDocs = createDocsCollection(
 export const renpyDocs = createDocsCollection(
     "content/renpy",
     applyMdxPreset({
-        rehypeCodeOptions: inkRehypeCodeOptions,
+        rehypeCodeOptions: fullRehypeCodeOptions,
         remarkCodeTabOptions: {
             parseMdx: true,
         },
@@ -73,7 +73,7 @@ export const renpyDocs = createDocsCollection(
 export const nqtrDocs = createDocsCollection(
     "content/nqtr",
     applyMdxPreset({
-        rehypeCodeOptions: inkRehypeCodeOptions,
+        rehypeCodeOptions: fullRehypeCodeOptions,
         remarkCodeTabOptions: {
             parseMdx: true,
         },
@@ -83,23 +83,23 @@ export const nqtrDocs = createDocsCollection(
 export const jsdocPixiVnDocs = createDocsCollection(
     "content/jsdoc/pixi-vn",
     applyMdxPreset({
-        rehypeCodeOptions: false,
-        remarkCodeTabOptions: false,
+        rehypeCodeOptions: lightRehypeCodeOptions,
+        // remarkCodeTabOptions: false,
     }),
 );
 
 export const jsdocPixiVnJsonDocs = createDocsCollection(
     "content/jsdoc/pixi-vn-json",
     applyMdxPreset({
-        rehypeCodeOptions: false,
-        remarkCodeTabOptions: false,
+        rehypeCodeOptions: lightRehypeCodeOptions,
+        // remarkCodeTabOptions: false,
     }),
 );
 
 export const jsdocPixiVnInkDocs = createDocsCollection(
     "content/jsdoc/pixi-vn-ink",
     applyMdxPreset({
-        rehypeCodeOptions: false,
-        remarkCodeTabOptions: false,
+        rehypeCodeOptions: lightRehypeCodeOptions,
+        // remarkCodeTabOptions: false,
     }),
 );
