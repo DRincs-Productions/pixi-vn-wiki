@@ -84,7 +84,7 @@ export const jsdocPixiVnDocs = createDocsCollection(
     "content/jsdoc/pixi-vn",
     applyMdxPreset({
         rehypeCodeOptions: lightRehypeCodeOptions,
-        // remarkCodeTabOptions: false,
+        remarkCodeTabOptions: false,
     }),
 );
 
@@ -92,7 +92,7 @@ export const jsdocPixiVnJsonDocs = createDocsCollection(
     "content/jsdoc/pixi-vn-json",
     applyMdxPreset({
         rehypeCodeOptions: lightRehypeCodeOptions,
-        // remarkCodeTabOptions: false,
+        remarkCodeTabOptions: false,
     }),
 );
 
@@ -100,6 +100,6 @@ export const jsdocPixiVnInkDocs = createDocsCollection(
     "content/jsdoc/pixi-vn-ink",
     applyMdxPreset({
         rehypeCodeOptions: lightRehypeCodeOptions,
-        // remarkCodeTabOptions: false,
+        remarkCodeTabOptions: false,
     }),
 );

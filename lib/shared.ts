@@ -98,12 +98,6 @@ export const fullRehypeCodeOptions: RehypeCodeOptions = {
 };
 
 export const lightRehypeCodeOptions: RehypeCodeOptions = {
-    lazy: true,
-    inline: "tailing-curly-colon",
-    themes: {
-        light: light,
-        dark: dark,
-    },
     theme: dark,
-    langs: ["ts", "js", "html", "tsx", "mdx"],
+    langs: ["ts", "js", "html", "tsx"],
 };
