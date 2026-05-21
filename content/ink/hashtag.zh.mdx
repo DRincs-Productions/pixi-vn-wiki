@@ -1,21 +1,21 @@
 ---
-title: 自定义 Hashtag 命令
+title: Custom hashtag command
 ---
 
-**_ink_** 支持使用 `#` 字符定义自定义 hashtag 命令（也可称为标签命令）。 Pixi’VN 基于这一特性，为 ink 脚本扩展了额外功能，例如与画布进行交互。
+***ink*** gives the ability to use the `#` character to define custom hashtag commands (or *tags*). Pixi’VN uses this feature to add custom functionality to the ink script, for example, to interact with the canvas.
 
-Pixi’VN 允许开发者在解析脚本中的 # 命令时进行拦截，从而实现自定义功能。 这一能力是通过 `HashtagCommands.add` 函数提供的。
+Pixi’VN gives the developer the ability to intercept the event that parses the scripts # to add custom functionality. This is done through the `HashtagCommands.add` function.
 
-`HashtagCommands.add` 接收一个回调函数。每当解析到 ink 脚本中的 hashtag 命令时，都会调用该回调函数。 回调函数的返回值为布尔值或字符串， 用于决定该命令是否已被处理。
+The `HashtagCommands.add` function receives a callback function that will be called whenever a hashtag command is found in the ink script. The callback function returns a boolean or a string. The return value will be used to determine if the script was processed.
 
-- 若不返回任何值，或是返回 `false` ，则该命令将会交由 Pixi'VN 的默认逻辑处理。
-- 若返回 `true` ，则 Pixi'VN 的默认逻辑不会介入。
-- 若返回一个字符串，该字符串将作为新的 hashtag 命令继续处理。 例如说，如果你想实现"显示角色图片"的功能，原命令为`# show character alice xAlign 0.8 yAlign 1 with dissolve`，可以将其转换为 `# show imagecontainer alice [alice-body alice-eyes alice-mouth] xAlign 0.8 yAlign 1 with dissolve` ，从而复用已有的<DynamicLink href="/ink/canvas#show-a-image-container-in-ink">"添加容器"</DynamicLink>功能。
+* If it is not returned or returns `false`, the script will be processed by the default functionality of Pixi’VN.
+* If it returns `true`, the script will not be processed by the default functionality of Pixi’VN.
+* If it returns a string, the string will be used as the new hashtag command. For example, if you want to add a feature that shows the image linked to a character `# show character alice xAlign 0.8 yAlign 1 with dissolve`, you can return `# show imagecontainer alice [alice-body alice-eyes alice-mouth] xAlign 0.8 yAlign 1 with dissolve` for leverage the <DynamicLink href="/ink/canvas#show-a-image-container-in-ink">existing functionality to add a container</DynamicLink>.
 
-该回调函数接收两个参数：
+The callback function receives two parameters:
 
-- `script`：将 hashtag 命令按空格拆分后得到的数组。 若命令中需要包含空格，请用引号`""`括起来。 例如，这条 Hashtag 命令 `# command "Hello World"` 会被解析为 `["command", "Hello World"]` 。
-- `convertListStringToObj`：接收字符串数组并返回对象的函数。 该函数用于将字符串列表转换为对象。 例如，数组`["prop1", "value 1", "prop2", "value 2"]` 会被转换为 `{prop1: "value 1", prop2: "value 2"}`。
+* `script`: an array with the hashtag command split by spaces. For add a space in a string, you need to use `""`. For example, the Hashtag-Script `# command "Hello World"` will be split into `["command", "Hello World"]`.
+* `convertListStringToObj`: a function that receives an array of strings and returns an object. This function is used to convert a list of strings into an object. For example, the array `["prop1", "value 1", "prop2", "value 2"]` will be converted to `{prop1: "value 1", prop2: "value 2"}`.
 
 ```ts tab="main.ts"
 import { HashtagCommands } from '@drincs/pixi-vn-ink'
