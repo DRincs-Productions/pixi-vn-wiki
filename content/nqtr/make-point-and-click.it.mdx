@@ -1,19 +1,19 @@
 ---
-title: Crea la tua prima Avventura Punta & Clicca
+title: Make your first Point & Click Adventure
 ---
 
 <Callout type="warn">
 
-Prima di proseguire, è importante considerare che questa pagina presuppone i concetti spiegati in <DynamicLink href="/start/make-visual-novel">"Crea la tua prima Visual Novel"</DynamicLink> e che tutte le funzionalità descritte in quella pagina possono essere applicate anche qui. Inoltre, è essenziale possedere una conoscenza intermedia di JS/TS (come funzioni, classi, interfacce e utilizzo di file `.d.ts`).
-Non proseguire se non possiedi queste conoscenze.
+Before continuing, it is important to consider that this page assumes the concepts explained in <DynamicLink href="/start/make-visual-novel">"Make your first Visual Novel"</DynamicLink>, and that all the features explained on that page can also be applied here. Additionally, having an intermediate knowledge of JS/TS (such as functions, classes, interfaces, and the use of `.d.ts` files) is essential.
+Do not continue if you do not have this knowledge.
 
 </Callout>
 
-Questo tutorial ti guiderà attraverso il processo di creazione della tua prima Avventura Punta & Clicca.
+This tutorial will guide you through the process of creating your first Point & Click Adventure.
 
-**Cos'è un'avventura punta e clicca (Point & Click Adventure)?** Un'avventura punta e clicca è un genere di gioco in cui il giocatore interagisce con l'ambiente e gli oggetti tramite il puntamento e il clic del mouse. Questi giochi spesso presentano enigmi, dialoghi e una narrazione avvincente.
+**What is a Point & Click Adventure?** A Point & Click Adventure is a game genre in which the player interacts with the environment and objects through mouse pointing and clicking. These games often feature puzzles, dialogues, and an engaging narrative.
 
-**How to implement it in a Pixi’VN project?** The Pixi’VN environment provides a utility library and base models, called `NQTR` (Navigation Quest Time Routine), which allow you to easily implement a navigation system, time management, and quests. Il funzionamento di NQTR si basa sulla creazione di istanze di classi conformi a interfacce specifiche, che verranno registrate e fornite dalle utility di NQTR. In questo modo è possibile creare un'interfaccia utente su misura per le esigenze del gioco. Alternatively, you can use the base models provided by NQTR and the UI included in the "Point & Click Adventure - React" template to create a complete game in a short time.
+**How to implement it in a Pixi’VN project?** The Pixi’VN environment provides a utility library and base models, called `NQTR` (Navigation Quest Time Routine), which allow you to easily implement a navigation system, time management, and quests. The way NQTR works is based on creating class instances that comply with specific interfaces, which will be registered and provided by the NQTR utilities. In this way, it is possible to create a UI tailored to the game's needs. Alternatively, you can use the base models provided by NQTR and the UI included in the "Point & Click Adventure - React" template to create a complete game in a short time.
 
 Additionally, it is very important to consider that elements can trigger `labels` (narratives), allowing you to switch to the narrative interface and back.
 
@@ -27,18 +27,18 @@ Una volta completata la creazione, è molto importante leggere il file `README.m
 
 Nel nostro caso, per avviare il progetto dovremo semplicemente eseguire i seguenti comandi:
 
-```bash
+```npm
 npm install
 npm start
 ```
 
-## Aggiungi elementi cliccabili
+## Add clickable elements
 
-La caratteristica principale di un'avventura punta e clicca è la possibilità di interagire con l'ambiente tramite clic del mouse. Per aggiungere elementi cliccabili, si consiglia di utilizzare un'interfaccia utente (nel nostro caso React o PixiJS) piuttosto che del canvas di Pixi'VN, poiché è più facile gestire eventi e interazioni.
+The main feature of a Point & Click Adventure is the ability to interact with the environment through mouse clicks. To add clickable elements, it is recommended to use UI (in our case React or PixiJS) rather than the Pixi’VN canvas, as it is easier to manage events and interactions.
 
-Nel template che stiamo utilizzando, durante la creazione degli elementi che vedremo in seguito, è possibile definire elementi grafici (come un'icona). Questi elementi grafici possono essere definiti utilizzando diversi tipi; in base a ciò, il sistema aggiungerà l'elemento grafico all'interfaccia utente <DynamicLink href="/start/interface-pixijs">PixiJS</DynamicLink> o all'interfaccia utente <DynamicLink href="/start/interface-react">React</DynamicLink>. In questo modo è possibile creare elementi cliccabili in modo semplice e veloce.
+In the template we are using, when creating the elements that we will see later, there is the possibility to define graphical elements (such as an icon). These graphical elements can be defined using different types; based on this, the system will add the graphical element to the <DynamicLink href="/start/interface-pixijs">PixiJS UI</DynamicLink> or to the <DynamicLink href="/start/interface-react">React</DynamicLink> UI. In this way, it is possible to create clickable elements in a simple and fast way.
 
-Usually, it is possible to define a graphical element as a string representing the asset alias. Il template offre anche la possibilità di utilizzare la classe <DynamicLink href="/nqtr/time#image-time-period">`TimeSlotsImage`</DynamicLink>, che consente di definire un'immagine diversa a seconda dell'ora del giorno.
+Usually, it is possible to define a graphical element as a string representing the asset alias. The template also provides the possibility to use the <DynamicLink href="/nqtr/time#image-time-period">`TimeSlotsImage`</DynamicLink> class, which allows you to define a different image depending on the time of day.
 
 ```ts
 export const nightcityMap = new Map("nightcity_map", {
@@ -50,7 +50,7 @@ export const nightcityMap = new Map("nightcity_map", {
 });
 ```
 
-Solitamente, è possibile definire un elemento grafico come un elemento React.
+Usually, it is possible to define a graphical element as a React element.
 
 ```tsx
 export const bed = new Activity(
@@ -65,41 +65,57 @@ export const bed = new Activity(
     },
     {
         name: "bed",
-        icon: (activity, props) => { // [!code focus]
-            return ( // [!code focus]
+        icon: (activity, props) => {
+            // [!code focus]
+            return (
+                // [!code focus]
                 <NqtrRoundIconButton // [!code focus]
                     disabled={activity.disabled} // [!code focus]
-                    onClick={() => { // [!code focus]
-                        activity.run(props).then(() => { // [!code focus]
+                    onClick={() => {
+                        // [!code focus]
+                        activity.run(props).then(() => {
+                            // [!code focus]
                             props.invalidateInterfaceData(); // [!code focus]
                         }); // [!code focus]
                     }} // [!code focus]
                     ariaLabel={props.uiTransition(activity.name)} // [!code focus]
-                    variant='solid' // [!code focus]
-                    color='primary' // [!code focus]
-                > {/* [!code focus] */}
+                    variant="solid" // [!code focus]
+                    color="primary" // [!code focus]
+                >
+                    {" "}
+                    {/* [!code focus] */}
                     <BedIcon // [!code focus]
-                        sx={{ // [!code focus]
-                            fontSize: { sx: "1.5rem", sm: "2rem", md: "2.5rem", lg: "3rem", xl: "3.5rem" }, // [!code focus]
+                        sx={{
+                            // [!code focus]
+                            fontSize: {
+                                sx: "1.5rem",
+                                sm: "2rem",
+                                md: "2.5rem",
+                                lg: "3rem",
+                                xl: "3.5rem",
+                            }, // [!code focus]
                         }} // [!code focus]
-                    /> {/* [!code focus] */}
+                    />{" "}
+                    {/* [!code focus] */}
                 </NqtrRoundIconButton> // [!code focus]
             ); // [!code focus]
         }, // [!code focus]
-    }
+    },
 );
 ```
 
-Inoltre, quando la proprietà `sprite` è disponibile, è possibile definire un elemento grafico come elemento PixiJS.
+Additionally, when the `sprite` property is available, it is possible to define a graphical element as a PixiJS element.
 
 ```ts
 import { Assets, Sprite, Texture } from "@drincs/pixi-vn/pixi.js";
 
 export const mcHome = new Location("mc_home", mainMap, {
     name: "MC Home",
-    sprite: async (location, { navigate }) => { // [!code focus]
+    sprite: async (location, { navigate }) => {
+        // [!code focus]
         const texture = await Assets.load<Texture>("icon_location_home"); // [!code focus]
-        const icon = new Sprite({ // [!code focus]
+        const icon = new Sprite({
+            // [!code focus]
             texture, // [!code focus]
             x: 300, // [!code focus]
             y: 200, // [!code focus]
@@ -108,9 +124,11 @@ export const mcHome = new Location("mc_home", mainMap, {
             eventMode: "static", // [!code focus]
             cursor: "pointer", // [!code focus]
         }); // [!code focus]
-        icon.on("pointerdown", () => { // [!code focus]
+        icon.on("pointerdown", () => {
+            // [!code focus]
             const entrance = location.entrance; // [!code focus]
-            if (entrance) { // [!code focus]
+            if (entrance) {
+                // [!code focus]
                 navigator.currentRoom = entrance; // [!code focus]
                 navigate(NAVIGATION_ROUTE); // [!code focus]
             } // [!code focus]
@@ -120,23 +138,23 @@ export const mcHome = new Location("mc_home", mainMap, {
 });
 ```
 
-## Navigazione e mappa
+## Navigation and map
 
 <Callout type="info">
 
-Puoi trovare una documentazione più dettagliata su questi elementi <DynamicLink href="/nqtr/navigation">qui</DynamicLink>.
+You can find more detailed documentation about these elements <DynamicLink href="/nqtr/navigation">here</DynamicLink>.
 
 </Callout>
 
-Il primo passo per creare un'avventura punta e clicca è creare gli elementi di navigazione. Questi elementi permettono al giocatore di muoversi all'interno del gioco e di interagire con l'ambiente.
+The first step to create a Point & Click Adventure is to create the navigation elements. These elements allow the player to move within the game and interact with the environment.
 
-Il sistema di navigazione è composto dai seguenti elementi:
+The navigation system is composed of the following elements:
 
-- `rooms`: Gli elementi fondamentali della navigazione, da cui si deduce la posizione di `mc` e `npc`.
-- `locations`: Un contenitore di `stanze`.
-- `maps`: Un contenitore di `luoghi`.
+* `rooms`: The core elements of navigation, from which the position of the `mc` and `npc` is deduced.
+* `locations`: A container of `rooms`.
+* `maps`: A container of `locations`.
 
-Ad esempio:
+For example:
 
 ```ts title="values/rooms.ts"
 import { RegisteredRooms } from "@drincs/nqtr";
@@ -224,7 +242,7 @@ You can find more detailed documentation on how to navigate between UI screens <
 
 </Callout>
 
-Ad esempio:
+For example:
 
 ```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
 === start ===
@@ -270,17 +288,37 @@ Before you can use the time management features, it is necessary to initialize t
 import { timeTracker } from "@drincs/nqtr";
 import { timeSlots } from "../constans";
 
-const weekDaysNames = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+const weekDaysNames = [
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+];
 export function initializeNQTR() {
     timeTracker.initialize({
         defaultTimeSpent: 1,
         dayStartTime: 0,
         dayEndTime: 24,
         timeSlots: [
-            { name: timeSlots.morning.description, startTime: timeSlots.morning.value },
-            { name: timeSlots.afternoon.description, startTime: timeSlots.afternoon.value },
-            { name: timeSlots.evening.description, startTime: timeSlots.evening.value },
-            { name: timeSlots.night.description, startTime: timeSlots.night.value },
+            {
+                name: timeSlots.morning.description,
+                startTime: timeSlots.morning.value,
+            },
+            {
+                name: timeSlots.afternoon.description,
+                startTime: timeSlots.afternoon.value,
+            },
+            {
+                name: timeSlots.evening.description,
+                startTime: timeSlots.evening.value,
+            },
+            {
+                name: timeSlots.night.description,
+                startTime: timeSlots.night.value,
+            },
         ],
         getDayName: (weekDayNumber: number) => {
             return weekDaysNames[weekDayNumber];
@@ -328,7 +366,7 @@ You can find more detailed documentation about these elements <DynamicLink href=
 
 A fundamental element in Point & Click Adventures is interactive elements, which allow the player to interact with the environment and progress the story. In NQTR, these elements are represented by `activity`. `activity` are elements that can be executed by the player and can have different consequences depending on the context in which they are performed.
 
-Ad esempio:
+For example:
 
 ```ts tab="values/activities.tsx"
 import { RegisteredActivities, timeTracker } from "@drincs/nqtr";
@@ -388,7 +426,7 @@ To use them, you must link them to a `room` [through the `activities` property](
 
 Alternatively, during the narrative session, it is possible to add an activity to a room using the `addActivity` function.
 
-Ad esempio:
+For example:
 
 ```ink tab="ink" groupId="narrative_language"
 == start ==
@@ -420,7 +458,7 @@ You can find more detailed documentation about these elements <DynamicLink href=
 
 The routine is composed of `commitment`, which represent a character’s obligation to perform a specific activity at a certain moment of the day. These commitments are very similar to `activity`, as they represent an activity that the character performs.
 
-Ad esempio:
+For example:
 
 ```ts tab="values/routine.tsx"
 import { RegisteredCommitments } from "@drincs/nqtr";
@@ -479,7 +517,7 @@ To use them, you need to link them to a `room` [through the `commitments` proper
 
 Alternatively, during the narrative session, it is possible to add a commitment to a room using the `addCommitment` function.
 
-Ad esempio:
+For example:
 
 ```ink tab="ink" groupId="narrative_language"
 == start ==
@@ -509,7 +547,7 @@ You can find more detailed documentation about these elements <DynamicLink href=
 
 `Quest` represent an objective or a series of objectives that the player can complete during the game. Quests are composed of `stage`, which represent the different phases of a quest. Each stage has a specific objective and can be completed in different ways depending on the player's choices.
 
-Ad esempio:
+For example:
 
 ```ts tab="values/quests/aliceQuest.tsx"
 import { RegisteredCommitments, RegisteredQuests, routine } from "@drincs/nqtr";
@@ -549,7 +587,8 @@ export const aliceQuest = new Quest(
             },
             name: "Take products",
             description: "Take products on the Terrace",
-            requestDescriptionToStart: "Wait for the products you ordered to arrive (2 day)",
+            requestDescriptionToStart:
+                "Wait for the products you ordered to arrive (2 day)",
             deltaDateRequired: 2,
         }),
         new Stage("talk_alice2", {
@@ -564,10 +603,14 @@ export const aliceQuest = new Quest(
             'To learn more about how the repo works, Talk to Alice. \nGoing when she is there will automatically start an "Event" (see aliceQuest.tsx to learn more). \nAfter that an action will be added to open the pc, in MC room. \n\n(during the quest you can talk to Alice and you will see her talking during the quests of the same Quest)',
         image: "alice_terrace0A",
         onStart: (quest, { notify, uiTransition }) => {
-            notify(uiTransition("notify_quest_is_started", { quest: quest.name }));
+            notify(
+                uiTransition("notify_quest_is_started", { quest: quest.name }),
+            );
         },
         onContinue: (stage, { notify, uiTransition }) => {
-            notify(uiTransition("notify_quest_is_updated", { quest: stage.name }));
+            notify(
+                uiTransition("notify_quest_is_updated", { quest: stage.name }),
+            );
         },
     },
 );
@@ -594,7 +637,7 @@ RegisteredCommitments.add(aliceQuest_talk);
 
 To start a quest, you need to call the `start` function on the quest itself. This will begin the first stage of the quest, allowing the player to start completing its objectives.
 
-Ad esempio:
+For example:
 
 ```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
 == start ==
@@ -615,7 +658,7 @@ export default startLabel;
 
 To continue a quest that has already been started, you need to call the `continue` function on the quest itself. This will complete the current stage of the quest and move on to the next one.
 
-Ad esempio:
+For example:
 
 ```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
 == start ==
@@ -642,7 +685,7 @@ You can find a complete list of query functions in the `Quest` class documentati
 
 </Callout>
 
-Ad esempio:
+For example:
 
 ```ink tab="ink" title="ink/variousActionsLabels.ink" groupId="narrative_language"
 === talkAliceQuest ===
@@ -689,7 +732,10 @@ export const talkAliceQuest = newLabel(
         if (aliceQuest.currentStageIndex == 0) {
             return [
                 async () => {
-                    narration.dialogue = { character: alice, text: "Hi, can you order me a new book from pc?" };
+                    narration.dialogue = {
+                        character: alice,
+                        text: "Hi, can you order me a new book from pc?",
+                    };
                 },
                 () => {
                     narration.dialogue = { character: mc, text: "Ok" };
@@ -705,16 +751,25 @@ export const talkAliceQuest = newLabel(
         } else if (aliceQuest.currentStageIndex == 1) {
             return [
                 async () => {
-                    narration.dialogue = { character: mc, text: "What book do you want me to order?" };
+                    narration.dialogue = {
+                        character: mc,
+                        text: "What book do you want me to order?",
+                    };
                 },
                 () => {
-                    narration.dialogue = { character: alice, text: "For me it is the same." };
+                    narration.dialogue = {
+                        character: alice,
+                        text: "For me it is the same.",
+                    };
                 },
             ];
         } else if (aliceQuest.currentStageIndex == 2) {
             return [
                 async () => {
-                    narration.dialogue = { character: mc, text: "I ordered the Book, hope you enjoy it." };
+                    narration.dialogue = {
+                        character: mc,
+                        text: "I ordered the Book, hope you enjoy it.",
+                    };
                 },
                 () => {
                     narration.dialogue = {
@@ -726,10 +781,16 @@ export const talkAliceQuest = newLabel(
         } else if (aliceQuest.currentStageIndex == 3) {
             return [
                 async () => {
-                    narration.dialogue = { character: mc, text: "Here's your book." };
+                    narration.dialogue = {
+                        character: mc,
+                        text: "Here's your book.",
+                    };
                 },
                 () => {
-                    narration.dialogue = { character: alice, text: "Thank you, I can finally read something new." };
+                    narration.dialogue = {
+                        character: alice,
+                        text: "Thank you, I can finally read something new.",
+                    };
                 },
                 (props) => {
                     aliceQuest.continue(props);
@@ -739,7 +800,10 @@ export const talkAliceQuest = newLabel(
         }
         return [
             () => {
-                narration.dialogue = { character: alice, text: "Thanks for the book." };
+                narration.dialogue = {
+                    character: alice,
+                    text: "Thanks for the book.",
+                };
             },
         ];
     },
@@ -761,14 +825,15 @@ Make me proud by creating an amazing Point & Click Adventure with Pixi’VN and 
 
 Now, you can try a small Point & Click Adventure created with the template to see in practice how the components work and interact with each other.
 
-<iframe src="https://nqtr-react-template.firebaseapp.com/"
-    title="Point & Click Adventure Demo"
-    style={{
-        width: "100%",
-        height: "400px",
-        border: "0",
-        borderRadius: "4px",
-        overflow: "hidden",
-    }}
-    allowFullScreen={true}
-></iframe>
+<iframe
+src="https://nqtr-react-template.firebaseapp.com/"
+title="Point & Click Adventure Demo"
+style={{
+      width: "100%",
+      height: "400px",
+      border: "0",
+      borderRadius: "4px",
+      overflow: "hidden",
+  }}
+allowFullScreen={true}
+/>
