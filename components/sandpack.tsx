@@ -1,7 +1,7 @@
 "use client";
 
 import {
-    SandpackFiles,
+    type SandpackFiles,
     SandpackLayout,
     SandpackPreview,
     SandpackProvider,
@@ -18,7 +18,7 @@ export function ReactTemplate({
 }) {
     return (
         <SandpackProvider
-            template="react-ts"
+            template="vite-react-ts"
             customSetup={{
                 dependencies: {
                     "@drincs/pixi-vn": "^1.6.3",

@@ -1,6 +1,6 @@
 "use client";
 
-import { SandpackFiles } from "@codesandbox/sandpack-react";
+import type { SandpackFiles } from "@codesandbox/sandpack-react";
 import { ReactTemplate } from "./sandpack";
 
 export function InkExample({
@@ -496,7 +496,7 @@ export function ShowComponentExample() {
 # show image "eggHead 2" eggHead xAlign 1 yAlign 1
 # show image flowerTop xAlign 0 yAlign 1 visible true cursor "pointer" alpha 0.5
 # show video my_video xAlign 1 yAlign 0
-# show text hello "Hello, this is a text" xAlign 0.5 yAlign 0.5 style \\\{ "fill": "red", "fontSize": 30 \\\}
+# show text hello "Hello, this is a text" xAlign 0.5 yAlign 0.5 style \\{ "fill": "red", "fontSize": 30 \\}
 # pause
 -> DONE\`;`,
                 "assets/manifest.ts": `import { AssetsManifest } from "@drincs/pixi-vn";

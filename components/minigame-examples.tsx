@@ -1,6 +1,6 @@
 "use client";
 
-import { SandpackFiles } from "@codesandbox/sandpack-react";
+import type { SandpackFiles } from "@codesandbox/sandpack-react";
 import { ReactTemplate } from "./sandpack";
 
 export function MiniGameExample({
