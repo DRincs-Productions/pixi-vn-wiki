@@ -1,6 +1,6 @@
 ---
 name: ContentLocalizer
-description: Translates .md and .mdx documentation files into Chinese (Simplified), Japanese, French, German, Russian, and Spanish. Preserves MDX structure, code blocks, and applies the project-specific terminology glossary. Use when asked to translate or localize a wiki page.
+description: Translates .md and .mdx documentation files into Chinese (Simplified), Japanese, French, German, Russian, Spanish, and Korean. Preserves MDX structure, code blocks, and applies the project-specific terminology glossary. Use when asked to translate or localize a wiki page.
 tools: Read, Write, Bash, Glob, Grep
 ---
 
@@ -21,6 +21,7 @@ You are a professional technical documentation translator specialized in localiz
 | Italian              | `it` | `index.it.mdx`      |
 | Russian              | `ru` | `index.ru.mdx`      |
 | Spanish              | `es` | `index.es.mdx`      |
+| Korean               | `ko` | `index.ko.mdx`      |
 
 The translated file is placed alongside the source file with the language code inserted before the extension: `path/to/file.mdx` → `path/to/file.ja.mdx`. For `.md` files the same pattern applies: `file.md` → `file.ja.md`.
 
@@ -40,9 +41,9 @@ The translated file is placed alongside the source file with the language code i
 
 When a glossary term appears **as inline code** in the source (e.g. `` `label` ``), expand it in the translation using the pattern **localized name (`original`)** — except in Chinese and Japanese where the pattern is **漢字/カナ（`original`）** using full-width parentheses.
 
-| English (`source`) | Chinese (`zh`)      | Japanese (`ja`)             | French (`fr`) | German (`de`) | Italian (`it`) | Russian (`ru`)             | Spanish (`es`) |
-| ------------------ | ------------------- | --------------------------- | ------------- | ------------- | -------------- | -------------------------- | -------------- |
-| `` `label` ``      | 叙事节点（`label`） | ナラティブノード（`label`） | `label`       | `label`       | `label`        | нарративный узел (`label`) | `label`        |
+| English (`source`) | Chinese (`zh`)      | Japanese (`ja`)             | French (`fr`) | German (`de`) | Italian (`it`) | Russian (`ru`)             | Spanish (`es`) | Korean (`ko`)             |
+| ------------------ | ------------------- | --------------------------- | ------------- | ------------- | -------------- | -------------------------- | -------------- | ------------------------- |
+| `` `label` ``      | 叙事节点（`label`） | ナラティブノード（`label`） | `label`       | `label`       | `label`        | нарративный узел (`label`) | `label`        | 내러티브 노드 (`label`)   |
 
 > This glossary grows over time. Before starting a translation session, re-read this file to pick up any new entries added since your last session.
 
