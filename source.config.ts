@@ -1,9 +1,11 @@
 import { fullRehypeCodeOptions } from "@/lib/shared";
 import type { ProcessorOptions } from "@mdx-js/mdx";
-import { remarkDirectiveAdmonition, remarkMdxMermaid, remarkNpm } from "fumadocs-core/mdx-plugins";
+import { remarkDirectiveAdmonition, remarkMdxMermaid } from "fumadocs-core/mdx-plugins";
 import { metaSchema, pageSchema } from "fumadocs-core/source/schema";
 import { applyMdxPreset, defineConfig, defineDocs } from "fumadocs-mdx/config";
 import remarkDirective from "remark-directive";
+
+const admonitionPlugins = [remarkMdxMermaid, remarkDirective, remarkDirectiveAdmonition] as const;
 
 function createDocsCollection(
     dir: string,
@@ -24,12 +26,7 @@ function createDocsCollection(
     });
 }
 
-export default defineConfig({
-    mdxOptions: {
-        // MDX options
-        remarkPlugins: [remarkMdxMermaid, remarkNpm, remarkDirective, remarkDirectiveAdmonition],
-    },
-});
+export default defineConfig({});
 
 export const docs = createDocsCollection(
     "content/start",
@@ -38,6 +35,7 @@ export const docs = createDocsCollection(
         remarkCodeTabOptions: {
             parseMdx: true,
         },
+        remarkPlugins: admonitionPlugins,
     }),
 );
 
@@ -48,6 +46,7 @@ export const inkDocs = createDocsCollection(
         remarkCodeTabOptions: {
             parseMdx: true,
         },
+        remarkPlugins: admonitionPlugins,
     }),
 );
 
@@ -58,6 +57,7 @@ export const faqDocs = createDocsCollection(
         remarkCodeTabOptions: {
             parseMdx: true,
         },
+        remarkPlugins: admonitionPlugins,
     }),
 );
 
@@ -68,6 +68,7 @@ export const renpyDocs = createDocsCollection(
         remarkCodeTabOptions: {
             parseMdx: true,
         },
+        remarkPlugins: admonitionPlugins,
     }),
 );
 
@@ -78,6 +79,7 @@ export const nqtrDocs = createDocsCollection(
         remarkCodeTabOptions: {
             parseMdx: true,
         },
+        remarkPlugins: admonitionPlugins,
     }),
 );
 
