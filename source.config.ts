@@ -1,4 +1,4 @@
-import { fullRehypeCodeOptions, lightRehypeCodeOptions } from "@/lib/shared";
+import { fullRehypeCodeOptions } from "@/lib/shared";
 import type { ProcessorOptions } from "@mdx-js/mdx";
 import { remarkMdxMermaid, remarkNpm } from "fumadocs-core/mdx-plugins";
 import { metaSchema, pageSchema } from "fumadocs-core/source/schema";
@@ -83,23 +83,26 @@ export const nqtrDocs = createDocsCollection(
 export const jsdocPixiVnDocs = createDocsCollection(
     "content/jsdoc/pixi-vn",
     applyMdxPreset({
-        rehypeCodeOptions: lightRehypeCodeOptions,
-        // remarkCodeTabOptions: falseremarkCodeTabOptions,
+        // rehypeCodeOptions: lightRehypeCodeOptions,
+        rehypeCodeOptions: false,
+        remarkCodeTabOptions: false,
     }),
 );
 
 export const jsdocPixiVnJsonDocs = createDocsCollection(
     "content/jsdoc/pixi-vn-json",
     applyMdxPreset({
-        rehypeCodeOptions: lightRehypeCodeOptions,
-        // remarkCodeTabOptions: false,
+        // rehypeCodeOptions: lightRehypeCodeOptions,
+        rehypeCodeOptions: false,
+        remarkCodeTabOptions: false,
     }),
 );
 
 export const jsdocPixiVnInkDocs = createDocsCollection(
     "content/jsdoc/pixi-vn-ink",
     applyMdxPreset({
-        rehypeCodeOptions: lightRehypeCodeOptions,
-        // remarkCodeTabOptions: false,
+        // rehypeCodeOptions: lightRehypeCodeOptions,
+        rehypeCodeOptions: false,
+        remarkCodeTabOptions: false,
     }),
 );
