@@ -98,7 +98,7 @@ export const fullRehypeCodeOptions: RehypeCodeOptions = {
 };
 
 export const lightRehypeCodeOptions: RehypeCodeOptions = {
-    lazy: false,
-    theme: dark,
-    langs: ["ts", "html"],
+    lazy: true,
+    theme: "github-dark-default",
+    langs: [],
 };
