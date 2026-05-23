@@ -5,8 +5,6 @@ import { metaSchema, pageSchema } from "fumadocs-core/source/schema";
 import { applyMdxPreset, defineConfig, defineDocs } from "fumadocs-mdx/config";
 import remarkDirective from "remark-directive";
 
-const admonitionPlugins = [remarkMdxMermaid, remarkDirective, remarkDirectiveAdmonition] as const;
-
 function createDocsCollection(
     dir: string,
     mdxOptions?: ProcessorOptions | ((environment: any) => Promise<ProcessorOptions>),
@@ -35,7 +33,7 @@ export const docs = createDocsCollection(
         remarkCodeTabOptions: {
             parseMdx: true,
         },
-        remarkPlugins: admonitionPlugins,
+        remarkPlugins: [remarkMdxMermaid, remarkDirective, remarkDirectiveAdmonition],
     }),
 );
 
@@ -46,7 +44,7 @@ export const inkDocs = createDocsCollection(
         remarkCodeTabOptions: {
             parseMdx: true,
         },
-        remarkPlugins: admonitionPlugins,
+        remarkPlugins: [remarkMdxMermaid, remarkDirective, remarkDirectiveAdmonition],
     }),
 );
 
@@ -57,7 +55,7 @@ export const faqDocs = createDocsCollection(
         remarkCodeTabOptions: {
             parseMdx: true,
         },
-        remarkPlugins: admonitionPlugins,
+        remarkPlugins: [remarkMdxMermaid, remarkDirective, remarkDirectiveAdmonition],
     }),
 );
 
@@ -68,7 +66,6 @@ export const renpyDocs = createDocsCollection(
         remarkCodeTabOptions: {
             parseMdx: true,
         },
-        remarkPlugins: admonitionPlugins,
     }),
 );
 
@@ -79,7 +76,7 @@ export const nqtrDocs = createDocsCollection(
         remarkCodeTabOptions: {
             parseMdx: true,
         },
-        remarkPlugins: admonitionPlugins,
+        remarkPlugins: [remarkMdxMermaid, remarkDirective, remarkDirectiveAdmonition],
     }),
 );
 
