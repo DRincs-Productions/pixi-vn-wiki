@@ -33,7 +33,7 @@ export const docs = createDocsCollection(
         remarkCodeTabOptions: {
             parseMdx: true,
         },
-        remarkPlugins: [remarkMdxMermaid, remarkDirective, remarkDirectiveAdmonition],
+        remarkPlugins: [remarkDirective, remarkDirectiveAdmonition],
     }),
 );
 
@@ -44,7 +44,7 @@ export const inkDocs = createDocsCollection(
         remarkCodeTabOptions: {
             parseMdx: true,
         },
-        remarkPlugins: [remarkMdxMermaid, remarkDirective, remarkDirectiveAdmonition],
+        remarkPlugins: [remarkDirective, remarkDirectiveAdmonition],
     }),
 );
 
@@ -55,17 +55,16 @@ export const faqDocs = createDocsCollection(
         remarkCodeTabOptions: {
             parseMdx: true,
         },
-        remarkPlugins: [remarkMdxMermaid, remarkDirective, remarkDirectiveAdmonition],
+        remarkPlugins: [remarkDirective, remarkDirectiveAdmonition],
     }),
 );
 
 export const renpyDocs = createDocsCollection(
     "content/renpy",
     applyMdxPreset({
-        rehypeCodeOptions: fullRehypeCodeOptions,
-        remarkCodeTabOptions: {
-            parseMdx: true,
-        },
+        rehypeCodeOptions: false,
+        remarkCodeTabOptions: false,
+        remarkPlugins: [remarkDirective, remarkDirectiveAdmonition],
     }),
 );
 
@@ -76,7 +75,7 @@ export const nqtrDocs = createDocsCollection(
         remarkCodeTabOptions: {
             parseMdx: true,
         },
-        remarkPlugins: [remarkMdxMermaid, remarkDirective, remarkDirectiveAdmonition],
+        remarkPlugins: [remarkDirective, remarkDirectiveAdmonition],
     }),
 );
 
@@ -95,6 +94,7 @@ export const jsdocPixiVnJsonDocs = createDocsCollection(
         // rehypeCodeOptions: lightRehypeCodeOptions,
         rehypeCodeOptions: false,
         remarkCodeTabOptions: false,
+        remarkPlugins: [remarkMdxMermaid],
     }),
 );
 
