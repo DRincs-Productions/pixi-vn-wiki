@@ -1,8 +1,9 @@
 import { fullRehypeCodeOptions } from "@/lib/shared";
 import type { ProcessorOptions } from "@mdx-js/mdx";
-import { remarkMdxMermaid, remarkNpm } from "fumadocs-core/mdx-plugins";
+import { remarkDirectiveAdmonition, remarkMdxMermaid, remarkNpm } from "fumadocs-core/mdx-plugins";
 import { metaSchema, pageSchema } from "fumadocs-core/source/schema";
 import { applyMdxPreset, defineConfig, defineDocs } from "fumadocs-mdx/config";
+import remarkDirective from "remark-directive";
 
 function createDocsCollection(
     dir: string,
@@ -26,7 +27,7 @@ function createDocsCollection(
 export default defineConfig({
     mdxOptions: {
         // MDX options
-        remarkPlugins: [remarkMdxMermaid, remarkNpm],
+        remarkPlugins: [remarkMdxMermaid, remarkNpm, remarkDirective, remarkDirectiveAdmonition],
     },
 });
 
