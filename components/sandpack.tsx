@@ -29,6 +29,10 @@ export function ReactTemplate({
                     "react-markdown": "latest",
                     "rehype-raw": "latest",
                     "remark-gfm": "latest",
+                    "@pixi/devtools": "latest",
+                    motion: "latest",
+                    "pixi.js": "latest",
+                    tone: "latest",
                     ...dependencies,
                 },
                 devDependencies: {
