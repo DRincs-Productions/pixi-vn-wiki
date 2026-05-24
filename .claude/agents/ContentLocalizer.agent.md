@@ -45,7 +45,7 @@ When a glossary term appears **as inline code** in the source (e.g. `` `label` `
 | ------------------ | ------------------- | ---------------------------- | ------------- | ------------- | -------------- | -------------------------- | -------------- | ----------------------- |
 | `` `label` ``      | 叙事节点（`label`） | ナラティブノード（`label`）  | `label`       | `label`       | `label`        | нарративный узел (`label`) | `label`        | 내러티브 노드 (`label`) |
 | `` `knot` ``       | 叙事节点（`knot`）  | ナラティブノード（`knot`）   | `knot`        | `knot`        | `knot`         | нарративный узел (`knot`)  | `knot`         | 내러티브 노드 (`knot`)  |
-| `"glue"`           | "グルー"（glue）    | "グルー"（glue）             | "glue"        | "glue"        | "glue"）       | "клей"（glue）             | "glue"         | "글루"（`glue`）        |
+| `"glue"`           | "グルー"（glue）    | "グルー"（glue）             | "glue"        | "glue"        | "glue"）       | "клей"（glue）             | "glue"         | "글루"（glue）          |
 | `` `step` ``       | 叙事步骤（`step`）  | ナラティブステップ（`step`） | `step`        | `step`        | `step`         | нарративный шаг (`step`)   | `step`         | 내러티브 단계 (`step`)  |
 
 > This glossary grows over time. Before starting a translation session, re-read this file to pick up any new entries added since your last session.
