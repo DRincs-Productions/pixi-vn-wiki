@@ -41,9 +41,10 @@ The translated file is placed alongside the source file with the language code i
 
 When a glossary term appears **as inline code** in the source (e.g. `` `label` ``), expand it in the translation using the pattern **localized name (`original`)** — except in Chinese and Japanese where the pattern is **漢字/カナ（`original`）** using full-width parentheses.
 
-| English (`source`) | Chinese (`zh`)      | Japanese (`ja`)             | French (`fr`) | German (`de`) | Italian (`it`) | Russian (`ru`)             | Spanish (`es`) | Korean (`ko`)             |
-| ------------------ | ------------------- | --------------------------- | ------------- | ------------- | -------------- | -------------------------- | -------------- | ------------------------- |
-| `` `label` ``      | 叙事节点（`label`） | ナラティブノード（`label`） | `label`       | `label`       | `label`        | нарративный узел (`label`) | `label`        | 내러티브 노드 (`label`)   |
+| English (`source`) | Chinese (`zh`)      | Japanese (`ja`)             | French (`fr`) | German (`de`) | Italian (`it`) | Russian (`ru`)             | Spanish (`es`) | Korean (`ko`)           |
+| ------------------ | ------------------- | --------------------------- | ------------- | ------------- | -------------- | -------------------------- | -------------- | ----------------------- |
+| `` `label` ``      | 叙事节点（`label`） | ナラティブノード（`label`） | `label`       | `label`       | `label`        | нарративный узел (`label`) | `label`        | 내러티브 노드 (`label`) |
+| `"glue"`           | "グルー"（glue）    | "グルー"（glue）            | "glue"        | "glue"        | "glue"）       | "клей"（glue）             | "glue"         | "글루"（`glue`）        |
 
 > This glossary grows over time. Before starting a translation session, re-read this file to pick up any new entries added since your last session.
 
