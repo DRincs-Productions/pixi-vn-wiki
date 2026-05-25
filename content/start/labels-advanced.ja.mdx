@@ -22,26 +22,32 @@ You can set this function by passing it to the `onLoadingLabel` property in the 
 * `stepIndex`: The index of the `step` being executed
 * `label`: The `label` being executed
 
-```ts title="labels/startLabel.ts"
-const startLabel = newLabel("start", [
-    async () => {
-        await showImage("image1", "path/to/image1.png")
-        await showImage("image2", "path/to/image2.png")
-    }
-], {
-    onLoadingLabel: async (stepIndex, label) => { // [!code focus]
-        await Assets.load("path/to/image1.png") // [!code focus]
-        await Assets.load("path/to/image2.png") // [!code focus]
-    } // [!code focus]
-})
+```ts title="content/labels/start.label.ts"
+const startLabel = newLabel(
+    "start",
+    [
+        async () => {
+            await showImage("image1", "path/to/image1.png");
+            await showImage("image2", "path/to/image2.png");
+        },
+    ],
+    {
+        onLoadingLabel: async (stepIndex, label) => {
+            // [!code focus]
+            await Assets.load("path/to/image1.png"); // [!code focus]
+            await Assets.load("path/to/image2.png"); // [!code focus]
+        }, // [!code focus]
+    },
+);
 ```
 
 You can also use `Game.onLoadingLabel` to intercept the loading of all `labels` globally.
 
 ```ts
-import { Game } from "@drincs/pixi-vn"
+import { Game } from "@drincs/pixi-vn";
 
-Game.onLoadingLabel((_stepId, label) => { // [!code focus]
+Game.onLoadingLabel((_stepId, label) => {
+    // [!code focus]
     Assets.backgroundLoadBundle(label.id); // [!code focus]
 }); // [!code focus]
 ```
@@ -55,29 +61,35 @@ Game.onLoadingLabel((_stepId, label) => { // [!code focus]
 * `stepIndex`: The index of the `step` being executed
 * `label`: The `label` containing the `step`
 
-```ts title="labels/startLabel.ts"
-const startLabel = newLabel("start", [
-    () => {
-        narration.dialogue = "Step 1"
+```ts title="content/labels/start.label.ts"
+const startLabel = newLabel(
+    "start",
+    [
+        () => {
+            narration.dialogue = "Step 1";
+        },
+        () => {
+            narration.dialogue = "Step 2";
+        },
+    ],
+    {
+        onStepStart: (stepIndex, label) => {
+            // [!code focus]
+            console.log(`Step ${stepIndex} started`); // [!code focus]
+        }, // [!code focus]
     },
-    () => {
-        narration.dialogue = "Step 2"
-    }
-], {
-    onStepStart: (stepIndex, label) => { // [!code focus]
-        console.log(`Step ${stepIndex} started`) // [!code focus]
-    } // [!code focus]
-})
+);
 ```
 
 You can also use `Game.onStepStart` to intercept the start of any `step` in any `label`.
 
 ```ts
-import { Game } from "@drincs/pixi-vn"
+import { Game } from "@drincs/pixi-vn";
 
-Game.onStepStart((stepIndex, label) => { // [!code focus]
-    console.log(`Step ${stepIndex} started`) // [!code focus]
-}) // [!code focus]
+Game.onStepStart((stepIndex, label) => {
+    // [!code focus]
+    console.log(`Step ${stepIndex} started`); // [!code focus]
+}); // [!code focus]
 ```
 
 </Accordion>
@@ -89,29 +101,35 @@ Game.onStepStart((stepIndex, label) => { // [!code focus]
 * `stepIndex`: The index of the `step` that ended
 * `label`: The `label` containing the `step`
 
-```ts title="labels/startLabel.ts"
-const startLabel = newLabel("start", [
-    () => {
-        narration.dialogue = "Step 1"
+```ts title="content/labels/start.label.ts"
+const startLabel = newLabel(
+    "start",
+    [
+        () => {
+            narration.dialogue = "Step 1";
+        },
+        () => {
+            narration.dialogue = "Step 2";
+        },
+    ],
+    {
+        onStepEnd: (stepIndex, label) => {
+            // [!code focus]
+            console.log(`Step ${stepIndex} ended`); // [!code focus]
+        }, // [!code focus]
     },
-    () => {
-        narration.dialogue = "Step 2"
-    }
-], {
-    onStepEnd: (stepIndex, label) => { // [!code focus]
-        console.log(`Step ${stepIndex} ended`) // [!code focus]
-    } // [!code focus]
-})
+);
 ```
 
 You can also use `Game.onStepEnd` to intercept the end of any `step` in any `label`.
 
 ```ts
-import { Game } from "@drincs/pixi-vn"
+import { Game } from "@drincs/pixi-vn";
 
-Game.onStepEnd((stepIndex, label) => { // [!code focus]
-    console.log(`Step ${stepIndex} ended`) // [!code focus]
-}) // [!code focus]
+Game.onStepEnd((stepIndex, label) => {
+    // [!code focus]
+    console.log(`Step ${stepIndex} ended`); // [!code focus]
+}); // [!code focus]
 ```
 
 </Accordion>
@@ -120,34 +138,32 @@ Game.onStepEnd((stepIndex, label) => { // [!code focus]
 
 When creating a new `label`, you can pass a function that returns the `steps` for that `label`. This allows you to change the `step` list dynamically based on a condition.
 
-```ts title="labels/startLabel.ts"
-import { storage, narration, newLabel } from "@drincs/pixi-vn"
+```ts title="content/labels/start.label.ts"
+import { storage, narration, newLabel } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label",
-    () => {
-        let condition = storage.getFlag("condition")
-        if (condition) {
-            return [
-                () => {
-                    narration.dialogue = "Step 2"
-                },
-                () => {
-                    narration.dialogue = "Restart";
-                },
-            ]
-        } else {
-            return [
-                () => {
-                    narration.dialogue = "Step 1"
-                },
-                async (props, { labelId }) => {
-                    storage.setFlag("condition", true)
-                    return await narration.jump(labelId, props)
-                }
-            ]
-        }
+export const startLabel = newLabel("start", () => {
+    let condition = storage.getFlag("condition");
+    if (condition) {
+        return [
+            () => {
+                narration.dialogue = "Step 2";
+            },
+            () => {
+                narration.dialogue = "Restart";
+            },
+        ];
+    } else {
+        return [
+            () => {
+                narration.dialogue = "Step 1";
+            },
+            async (props, { labelId }) => {
+                storage.setFlag("condition", true);
+                return await narration.jump(labelId, props);
+            },
+        ];
     }
-)
+});
 ```
 
 <ReturningDifferentStepLists />
