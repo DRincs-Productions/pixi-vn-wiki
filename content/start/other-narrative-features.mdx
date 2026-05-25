@@ -9,40 +9,38 @@ description: Covers additional narrative features in Pixi’VN, including end-of
 
 When all `steps` of all `labels` are executed, the game will stop. The developer is responsible for handling the end of the game, as visual novels can have different ending strategies:
 
-* The game ends when all `steps` are executed.
-* The game has no end; if all steps are completed, another `label` will be started or the player will have to interact with an interface that can potentially start another `label`.
-* The game ends when the player reaches a specific point, such as due to game over.
+- The game ends when all `steps` are executed.
+- The game has no end; if all steps are completed, another `label` will be started or the player will have to interact with an interface that can potentially start another `label`.
+- The game ends when the player reaches a specific point, such as due to game over.
 
 To manage the end of the game, set `Game.onEnd`. This function is called when the game ends and has the same signature as a `step`.
 
 For example, to end the game and navigate to an end screen:
 
 ```ts title="main.ts"
-import { Game } from '@drincs/pixi-vn'
+import { Game } from "@drincs/pixi-vn";
 
 Game.onEnd(async (props) => {
-    props.navigate("/end")
-})
+    props.navigate("/end");
+});
 ```
 
 If your game has no end and should restart or loop:
 
-```ts title="labels/startLabel.ts"
-export const startLabel = newLabel("start_label_id",
-    () => {
-        return [
-            // ...
-        ]
-    }
-)
+```ts title="content/labels/start.label.ts"
+export const startLabel = newLabel("start_label_id", () => {
+    return [
+        // ...
+    ];
+});
 ```
 
 ```ts title="main.ts"
-import { Game } from '@drincs/pixi-vn'
+import { Game } from "@drincs/pixi-vn";
 
 Game.onEnd(async (props) => {
-    narration.call(startLabel, props)
-})
+    narration.call(startLabel, props);
+});
 ```
 
 </Accordion>
@@ -51,10 +49,10 @@ Game.onEnd(async (props) => {
 
 Pixi’VN includes a built-in function to generate random numbers. Use `narration.getRandomNumber()` with the following parameters:
 
-* `min`: The minimum value.
-* `max`: The maximum value.
-* `options` (Optional):
-  * `onceonly`: If `true`, the number will be generated only once for the current `step` of the `label` (default: `false`). Note: `min` and `max` affect the storage of already generated numbers.
+- `min`: The minimum value.
+- `max`: The maximum value.
+- `options` (Optional):
+    - `onceonly`: If `true`, the number will be generated only once for the current `step` of the `label` (default: `false`). Note: `min` and `max` affect the storage of already generated numbers.
 
 </Accordion>
 
@@ -63,11 +61,11 @@ Pixi’VN includes a built-in function to generate random numbers. Use `narratio
 To check if a `label` has already been completed, use the `narration.isLabelAlreadyCompleted` function.
 This function has the following parameters:
 
-* `label`: The <DynamicLink href="/start/labels">`label`</DynamicLink> to check.
+- `label`: The <DynamicLink href="/start/labels">`label`</DynamicLink> to check.
 
 ```typescript
-const isLabelCompleted = narration.isLabelAlreadyCompleted(startLabel)
-const isLabelCompleted = narration.isLabelAlreadyCompleted("labelid")
+const isLabelCompleted = narration.isLabelAlreadyCompleted(startLabel);
+const isLabelCompleted = narration.isLabelAlreadyCompleted("labelid");
 ```
 
 </Accordion>
@@ -86,40 +84,38 @@ const isCurrentStepOpened = narration.isCurrentStepAlreadyOpened;
 
 To get the execution count for the current `step`, use `narration.currentStepTimesCounter`. **Important:** The counter is only incremented if `narration.currentStepTimesCounter` is executed.
 
-```ts title="labels/startLabel.ts"
-export const label = newLabel("id",
-    () => {
-        if (narration.currentStepTimesCounter === 0) { // ✅ will be incremented
-            // ...
-        } else {
-            // ...
-        }
+```ts title="content/labels/start.label.ts"
+export const label = newLabel("id", () => {
+    if (narration.currentStepTimesCounter === 0) {
+        // ✅ will be incremented
+        // ...
+    } else {
+        // ...
     }
-)
+});
 ```
 
-```ts title="labels/startLabel.ts"
-export const label = newLabel("id",
-    () => {
-        if (narration.currentStepTimesCounter === 0) { // ✅ will be incremented
-            // ...
-        } else if (narration.currentStepTimesCounter === 1) { // ✅ Not incremented again in this step
-            // ...
-        }
+```ts title="content/labels/start.label.ts"
+export const label = newLabel("id", () => {
+    if (narration.currentStepTimesCounter === 0) {
+        // ✅ will be incremented
+        // ...
+    } else if (narration.currentStepTimesCounter === 1) {
+        // ✅ Not incremented again in this step
+        // ...
     }
-)
+});
 ```
 
-```ts title="labels/startLabel.ts"
-export const label = newLabel("id",
-    () => {
-        if (flag) {
-            if (narration.currentStepTimesCounter === 1) { // ❌ Only incremented if "flag" is true
-                // ...
-            }
+```ts title="content/labels/start.label.ts"
+export const label = newLabel("id", () => {
+    if (flag) {
+        if (narration.currentStepTimesCounter === 1) {
+            // ❌ Only incremented if "flag" is true
+            // ...
         }
     }
-)
+});
 ```
 
 To reset the execution counter for the current `step`, set `narration.currentStepTimesCounter = 0`.

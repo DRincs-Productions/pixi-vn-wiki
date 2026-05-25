@@ -14,21 +14,21 @@ It is recommended to import the instances at project startup, see the `src/main.
 
 To create a new instance of `CommitmentBaseModel`, you need the following parameters:
 
-* `id`: A unique identifier (string). Used to reference the `commitment` in the game (must be unique).
-* `character`: The character or characters that are in the commitment and so in the room. It can be a single character or an array of characters.
-* `props`: An object with the commitment's properties:
-  * `name`: The name of the commitment (Optional).
-  * `image`: The image of the commitment (Optional). It can be a string with the path to the image or a function that returns a `ContainerChild` (Optional).
-  * `icon`: The React icon of the commitment (Optional). It can be a React element or a function that returns a React element (Optional).
-  * `onRun`: A function that is called when the commitment is run. It receives two parameters:
-    * The `commitment` instance itself.
-    * `event`: The event that triggered the run. It is an instance of `OnRunEvent<CommitmentInterface>`, which contains methods to navigate to other routes, jump to labels, and more.
-  * `disabled`: Whether the commitment is disabled. It can be a boolean or a function that returns a boolean (optional, default is `false`). If it is disabled, this commitment will not be taken into consideration, so the characters will not be in the room, but will be busy with other commitments.
-  * `hidden`: Whether the commitment is hidden. It can be a boolean or a function that returns a boolean (optional, default is `false`). If it is hidden, the commitment will not be displayed in the UI.
-  * `priority`: The priority of the commitment. The higher the number, the higher the priority (optional, default is `0`).
-  * `executionType`: The execution type of the commitment. It can be "automatic" or "interaction". If it is "automatic", the `onRun` function will be called automatically when the player is in the room. If it is "interaction", the player must interact with the character to run the `onRun` function (optional, default is "interaction").
-  * `dateScheduling`: Used to schedule what date it will be added and removed. It is an instance of `DateSchedulingInterface` (Optional).
-  * `timeSlot`: The time slot in which the commitment will be active. It is an instance of `TimeSchedulingInterface` (Optional).
+- `id`: A unique identifier (string). Used to reference the `commitment` in the game (must be unique).
+- `character`: The character or characters that are in the commitment and so in the room. It can be a single character or an array of characters.
+- `props`: An object with the commitment's properties:
+    - `name`: The name of the commitment (Optional).
+    - `image`: The image of the commitment (Optional). It can be a string with the path to the image or a function that returns a `ContainerChild` (Optional).
+    - `icon`: The React icon of the commitment (Optional). It can be a React element or a function that returns a React element (Optional).
+    - `onRun`: A function that is called when the commitment is run. It receives two parameters:
+        - The `commitment` instance itself.
+        - `event`: The event that triggered the run. It is an instance of `OnRunEvent<CommitmentInterface>`, which contains methods to navigate to other routes, jump to labels, and more.
+    - `disabled`: Whether the commitment is disabled. It can be a boolean or a function that returns a boolean (optional, default is `false`). If it is disabled, this commitment will not be taken into consideration, so the characters will not be in the room, but will be busy with other commitments.
+    - `hidden`: Whether the commitment is hidden. It can be a boolean or a function that returns a boolean (optional, default is `false`). If it is hidden, the commitment will not be displayed in the UI.
+    - `priority`: The priority of the commitment. The higher the number, the higher the priority (optional, default is `0`).
+    - `executionType`: The execution type of the commitment. It can be "automatic" or "interaction". If it is "automatic", the `onRun` function will be called automatically when the player is in the room. If it is "interaction", the player must interact with the character to run the `onRun` function (optional, default is "interaction").
+    - `dateScheduling`: Used to schedule what date it will be added and removed. It is an instance of `DateSchedulingInterface` (Optional).
+    - `timeSlot`: The time slot in which the commitment will be active. It is an instance of `TimeSchedulingInterface` (Optional).
 
 ```ts tab="values/routine.ts"
 import { CommitmentBaseModel, RegisteredCommitments } from "@drincs/nqtr";
@@ -134,7 +134,7 @@ You can also link a commitment to a room during the game. This feature is useful
 
 To link a commitment to a room during the game, you can use the `addCommitment` method.
 
-```ts tab="Typescript" title="labels/startLabel.ts" groupId="narrative_language"
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
 import { newLabel, showImageContainer } from "@drincs/pixi-vn";
 import { aliceSmokes } from "../routine";
 import { terrace } from "../rooms";
@@ -223,7 +223,7 @@ To get a `commitment` by its `id`, use the `RegisteredCommitments.get` function.
 ```ts
 import { RegisteredCommitments } from "@drincs/nqtr";
 
-const aliceWorks = RegisteredCommitments.get('alice_works');
+const aliceWorks = RegisteredCommitments.get("alice_works");
 ```
 
 ## Get all
@@ -263,9 +263,17 @@ import {
     OnRunProps,
 } from "@drincs/nqtr";
 import { CharacterInterface } from "@drincs/pixi-vn";
-import { PixiUIParam, PixiUIProp, ReactUIParam, ReactUIProp } from "./ui-elements";
+import {
+    PixiUIParam,
+    PixiUIProp,
+    ReactUIParam,
+    ReactUIProp,
+} from "./ui-elements";
 
-export default class Commitment extends CommitmentStoredClass implements CommitmentInterface {
+export default class Commitment
+    extends CommitmentStoredClass
+    implements CommitmentInterface
+{
     constructor(
         id: string,
         characters: CharacterInterface | CharacterInterface[],
@@ -315,7 +323,9 @@ export default class Commitment extends CommitmentStoredClass implements Commitm
     }
     private _defaultDisabled: boolean | (() => boolean) = false;
     get disabled(): boolean {
-        let value = this.getStorageProperty<boolean>("disabled") || this._defaultDisabled;
+        let value =
+            this.getStorageProperty<boolean>("disabled") ||
+            this._defaultDisabled;
         if (typeof value === "function") {
             return value();
         }
@@ -326,7 +336,8 @@ export default class Commitment extends CommitmentStoredClass implements Commitm
     }
     private _defaultHidden: boolean | (() => boolean) = false;
     get hidden(): boolean {
-        let value = this.getStorageProperty<boolean>("hidden") || this._defaultHidden;
+        let value =
+            this.getStorageProperty<boolean>("hidden") || this._defaultHidden;
         if (typeof value === "function") {
             return value();
         }
