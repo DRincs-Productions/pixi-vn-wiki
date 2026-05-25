@@ -1,6 +1,6 @@
+import LogoImg from "@/app/icon.png";
 import { DiscordIcon, PatreonIcon } from "@/components/ui/icons";
 import { i18n } from "@/lib/i18n";
-import LogoImg from "@/public/icon.png";
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import Image from "next/image";
 import { appName, discordUrl, gitConfig, patreonUrl } from "./shared";
