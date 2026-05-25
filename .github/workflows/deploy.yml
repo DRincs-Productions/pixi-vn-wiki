@@ -106,6 +106,8 @@ jobs:
       with:
         name: dist
         path: out
+    - name: Sync redirects to firebase.json
+      run: node scripts/sync-redirects.js
     # https://github.com/FirebaseExtended/action-hosting-deploy
     - name: Deploy to Firebase
       uses: FirebaseExtended/action-hosting-deploy@v0.10.0
@@ -127,6 +129,8 @@ jobs:
       with:
         name: dist
         path: out
+    - name: Sync redirects to vercel.json
+      run: node scripts/sync-redirects.js
     - name: Copy Vercel config to build output
       run: cp vercel.json out/vercel.json
     # https://github.com/amondnet/vercel-action
@@ -137,4 +141,30 @@ jobs:
         vercel-org-id: team_0GgWhwEZo6OVtYhxZta1dzGo
         vercel-project-id: prj_Wkwlmd2qOtn3rnxLInHxAQr0i26D
         vercel-args: '--prod'
+        vercel-version: 'latest'
         working-directory: ./out
+
+  deploy-netlify:
+
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download build artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: dist
+        path: out
+    - name: Sync redirects to netlify.toml
+      run: node scripts/sync-redirects.js
+    # https://github.com/nwtgck/actions-netlify
+    - name: Deploy to Netlify
+      uses: nwtgck/actions-netlify@v3.0
+      with:
+        publish-dir: './out'
+        production-deploy: true
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: 4ea09312-196a-4140-8b51-65c3e6315629
