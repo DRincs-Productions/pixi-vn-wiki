@@ -18,31 +18,29 @@ Per gestire la fine della partita, impostare `Game.onEnd`. Questa funzione viene
 Ad esempio, per terminare il gioco e passare alla schermata finale:
 
 ```ts title="main.ts"
-import { Game } from '@drincs/pixi-vn'
+import { Game } from "@drincs/pixi-vn";
 
 Game.onEnd(async (props) => {
-    props.navigate("/end")
-})
+    props.navigate("/end");
+});
 ```
 
 Se il gioco non ha fine e deve riavviarsi o andare in loop:
 
-```ts title="labels/startLabel.ts"
-export const startLabel = newLabel("start_label_id",
-    () => {
-        return [
-            // ...
-        ]
-    }
-)
+```ts title="content/labels/start.label.ts"
+export const startLabel = newLabel("start_label_id", () => {
+    return [
+        // ...
+    ];
+});
 ```
 
 ```ts title="main.ts"
-import { Game } from '@drincs/pixi-vn'
+import { Game } from "@drincs/pixi-vn";
 
 Game.onEnd(async (props) => {
-    narration.call(startLabel, props)
-})
+    narration.call(startLabel, props);
+});
 ```
 
 </Accordion>
@@ -66,8 +64,8 @@ This function has the following parameters:
 * `label`: L'<DynamicLink href="/start/labels">`etichetta`</DynamicLink> da controllare.
 
 ```typescript
-const isLabelCompleted = narration.isLabelAlreadyCompleted(startLabel)
-const isLabelCompleted = narration.isLabelAlreadyCompleted("labelid")
+const isLabelCompleted = narration.isLabelAlreadyCompleted(startLabel);
+const isLabelCompleted = narration.isLabelAlreadyCompleted("labelid");
 ```
 
 </Accordion>
@@ -86,40 +84,38 @@ const isCurrentStepOpened = narration.isCurrentStepAlreadyOpened;
 
 Per ottenere il conteggio delle esecuzioni per lo `step` corrente, utilizzare `narration.currentStepTimesCounter`. **Importante:** Il contatore viene incrementato solo se viene eseguito `narration.currentStepTimesCounter`.
 
-```ts title="labels/startLabel.ts"
-export const label = newLabel("id",
-    () => {
-        if (narration.currentStepTimesCounter === 0) { // ✅ will be incremented
-            // ...
-        } else {
-            // ...
-        }
+```ts title="content/labels/start.label.ts"
+export const label = newLabel("id", () => {
+    if (narration.currentStepTimesCounter === 0) {
+        // ✅ will be incremented
+        // ...
+    } else {
+        // ...
     }
-)
+});
 ```
 
-```ts title="labels/startLabel.ts"
-export const label = newLabel("id",
-    () => {
-        if (narration.currentStepTimesCounter === 0) { // ✅ will be incremented
-            // ...
-        } else if (narration.currentStepTimesCounter === 1) { // ✅ Not incremented again in this step
-            // ...
-        }
+```ts title="content/labels/start.label.ts"
+export const label = newLabel("id", () => {
+    if (narration.currentStepTimesCounter === 0) {
+        // ✅ will be incremented
+        // ...
+    } else if (narration.currentStepTimesCounter === 1) {
+        // ✅ Not incremented again in this step
+        // ...
     }
-)
+});
 ```
 
-```ts title="labels/startLabel.ts"
-export const label = newLabel("id",
-    () => {
-        if (flag) {
-            if (narration.currentStepTimesCounter === 1) { // ❌ Only incremented if "flag" is true
-                // ...
-            }
+```ts title="content/labels/start.label.ts"
+export const label = newLabel("id", () => {
+    if (flag) {
+        if (narration.currentStepTimesCounter === 1) {
+            // ❌ Only incremented if "flag" is true
+            // ...
         }
     }
-)
+});
 ```
 
 Per reimpostare il contatore di esecuzione per il `step` corrente, impostare `narration.currentStepTimesCounter = 0`.
