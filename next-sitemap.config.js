@@ -5,8 +5,7 @@ module.exports = {
     outDir: "./out",
     exclude: ["*/en/*"],
     transform: async (config, path) => {
-        const isJsdocRoute =
-            path === "/jsdoc" || path.startsWith("/jsdoc/");
+        const isJsdocRoute = path === "/jsdoc" || path.startsWith("/jsdoc/");
 
         return {
             loc: path,
