@@ -13,7 +13,7 @@ You can find an example of the choice menu UI screen in the <DynamicLink href="/
 
 <Callout title="ink" type="info">
 
-You can use this method with the *ink* syntax. See more <DynamicLink href="/ink/choices">here</DynamicLink>.
+Puedes usar este método con la sintaxis *ink*. See more <DynamicLink href="/ink/choices">here</DynamicLink>.
 
 </Callout>
 
@@ -59,24 +59,35 @@ This function has the following parameters:
 
 </Accordions>
 
-```ts title="labels/startLabel.ts"
-import { newChoiceOption, newCloseChoiceOption, narration, newLabel } from "@drincs/pixi-vn"
+```ts title="content/labels/start.label.ts"
+import {
+    newChoiceOption,
+    newCloseChoiceOption,
+    narration,
+    newLabel,
+} from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label",
-    [
-        async () => {
-            narration.dialogue = "Choose a fruit:"
-            narration.choices = [ // [!code focus]
-                newChoiceOption("Orange", orangeLabel, {}), // by default, the label will be called with "call" // [!code focus]
-                newChoiceOption("Banana", bananaLabel, {}, { type: "jump" }), // [!code focus]
-                newChoiceOption("Apple", appleLabel, { quantity: 5 }, { type: "call" }), // [!code focus]
-                newCloseChoiceOption("Cancel"), // [!code focus]
-            ] // [!code focus]
-        },
-        () => { narration.dialogue = "Restart" },
-        async (props) => await narration.jump("start_label", props)
-    ],
-)
+export const startLabel = newLabel("start", [
+    async () => {
+        narration.dialogue = "Choose a fruit:";
+        narration.choices = [
+            // [!code focus]
+            newChoiceOption("Orange", orangeLabel, {}), // by default, the label will be called with "call" // [!code focus]
+            newChoiceOption("Banana", bananaLabel, {}, { type: "jump" }), // [!code focus]
+            newChoiceOption(
+                "Apple",
+                appleLabel,
+                { quantity: 5 },
+                { type: "call" },
+            ), // [!code focus]
+            newCloseChoiceOption("Cancel"), // [!code focus]
+        ]; // [!code focus]
+    },
+    () => {
+        narration.dialogue = "Restart";
+    },
+    async (props) => await narration.jump("start", props),
+]);
 ```
 
 <ChoiceMenus />
@@ -96,18 +107,19 @@ To select a choice, use `narration.selectChoice`.
 ```typescript
 const item = narration.choices![0]; // get the first item
 
-narration.selectChoice(item, {
-    // Add StepLabelProps here
-    navigate: navigate, // example
-    // And the props to pass to the label
-    ...item.props
-})
+narration
+    .selectChoice(item, {
+        // Add StepLabelProps here
+        navigate: navigate, // example
+        // And the props to pass to the label
+        ...item.props,
+    })
     .then(() => {
         // ...
     })
     .catch((e) => {
         // ...
-    })
+    });
 ```
 
 ## Eliminar
@@ -125,19 +137,19 @@ You can customize a choice menu option by adding properties to the `ChoiceInterf
 Override the `ChoiceInterface` interface in your `.d.ts` file:
 
 ```ts tab="pixi-vn.d.ts"
-declare module '@drincs/pixi-vn' {
+declare module "@drincs/pixi-vn" {
     interface ChoiceInterface {
-        icon?: string
+        icon?: string;
     }
 }
 ```
 
-```ts tab="labels/startLabel.ts"
+```ts tab="content/labels/start.label.ts"
 narration.choices = [
     newChoiceOption("Orange", orangeLabel, {}, { icon: "orange.png" }),
     newChoiceOption("Banana", bananaLabel, {}, { icon: "banana.png" }),
     newChoiceOption("Apple", appleLabel, {}, { icon: "apple.png" }),
-]
+];
 ```
 
 ```tsx tab="screens/ChoiceMenu.tsx"
@@ -147,11 +159,13 @@ function ChoiceMenu({ choices }: { choices: StoredIndexedChoiceInterface[] }) {
             {choices.map((choice, index) => (
                 <div key={index}>
                     {choice.icon && <img src={choice.icon} alt={choice.text} />}
-                    <button onClick={() => narration.selectChoice(choice)}>{choice.text}</button>
+                    <button onClick={() => narration.selectChoice(choice)}>
+                        {choice.text}
+                    </button>
                 </div>
             ))}
         </div>
-    )
+    );
 }
 ```
 
@@ -172,14 +186,22 @@ export const INTERFACE_DATA_USE_QUEY_KEY = "interface_data_use_quey_key";
 const CHOICE_MENU_OPTIONS_USE_QUEY_KEY = "choice_menu_options_use_quey_key";
 export function useQueryChoiceMenuOptions() {
     return useQuery({
-        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, CHOICE_MENU_OPTIONS_USE_QUEY_KEY],
+        queryKey: [
+            INTERFACE_DATA_USE_QUEY_KEY,
+            CHOICE_MENU_OPTIONS_USE_QUEY_KEY,
+        ],
         queryFn: async () =>
             narration.choices?.map((option) => ({
                 ...option,
-                text: typeof option.text === "string" ? option.text : option.text.join(" "),
-                alreadyChosen: // [!code ++]
-                    narration.alreadyCurrentStepMadeChoices?.find((index) => index === option.choiceIndex) !== // [!code ++]
-                    undefined, // [!code ++]
+                text:
+                    typeof option.text === "string"
+                        ? option.text
+                        : option.text.join(" "),
+                // [!code ++]
+                alreadyChosen:
+                    narration.alreadyCurrentStepMadeChoices?.find(
+                        (index) => index === option.choiceIndex,
+                    ) !== undefined, // [!code ++] // [!code ++]
             })) || [],
     });
 }
