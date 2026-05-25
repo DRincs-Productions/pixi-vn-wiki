@@ -6,7 +6,7 @@ import { createMetadata } from "@/lib/metadata";
 import { discordUrl, patreonUrl } from "@/lib/shared";
 import { source } from "@/lib/source";
 import ArchImg from "@/public/arch.png";
-import LogoImg from "@/public/icon.webp";
+import LogoImg from "@/public/icon.png";
 import { cva } from "class-variance-authority";
 import { File, Files, Folder } from "fumadocs-ui/components/files";
 import { Tab, Tabs } from "fumadocs-ui/components/tabs";
