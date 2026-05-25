@@ -24,25 +24,24 @@ La libreria più popolare e ampiamente compatibile è **i18next**.
 Le traduzioni vengono memorizzate in più file JSON (uno per lingua), utilizzando coppie chiave-valore. La chiave è un identificatore univoco del testo e il valore è la stringa tradotta.
 
 ```ts tab="i18n.ts"
-import i18n from 'i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
-import { initReactI18next } from 'react-i18next';
-import strings_en from '../src/values/translations/strings_en.json';
-import strings_es from '../src/values/translations/strings_es.json';
+import i18n from "i18next";
+import LanguageDetector from "i18next-browser-languagedetector";
+import { initReactI18next } from "react-i18next";
+import strings_en from "../src/values/translations/strings_en.json";
+import strings_es from "../src/values/translations/strings_es.json";
 
 const getUserLang = (): string => {
     let userLang: string = navigator.language || "en";
     return userLang?.toLocaleLowerCase()?.split("-")[0];
-}
+};
 
 export const useI18n = () => {
     if (!i18n.isInitialized) {
-        i18n
-            .use(LanguageDetector)
+        i18n.use(LanguageDetector)
             .use(initReactI18next)
             .init({
                 debug: false,
-                fallbackLng: 'en',
+                fallbackLng: "en",
                 lng: getUserLang(),
                 interpolation: {
                     escapeValue: false,
@@ -51,16 +50,16 @@ export const useI18n = () => {
                     en: strings_en,
                     es: strings_es,
                     // Add more languages here
-                }
+                },
             });
     }
-}
+};
 ```
 
 ```ts tab="main.ts"
-import { useI18n } from './i18n';
+import { useI18n } from "./i18n";
 
-useI18n()
+useI18n();
 ```
 
 <Accordions>
@@ -72,7 +71,7 @@ Per tradurre l'interfaccia utente, utilizza la funzione `t` fornita da i18next. 
 For example:
 
 ```tsx tab="React"
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 export default function MyComponent() {
     const { t } = useTranslation("ui");
@@ -87,13 +86,13 @@ export default function MyComponent() {
 
 ```vue tab="Vue"
 <script setup>
-    import { useTranslation } from "i18next-vue";
-    const { t } = useTranslation("ui");
+import { useTranslation } from "i18next-vue";
+const { t } = useTranslation("ui");
 </script>
 
 <template>
     <div>
-        <button>{{ t('text_speed') }}</button>
+        <button>{{ t("text_speed") }}</button>
     </div>
 </template>
 ```
@@ -129,28 +128,27 @@ Nei progetti Pixi'VN, spesso è necessario tradurre il testo della narrazione ne
 
 Si consiglia di utilizzare la stringa originale come chiave di traduzione.
 
-```ts tab="labels/startLabel.ts"
-export const startLabel = newLabel("start_label",
-    [
-        ({ t }) => { // [!code focus]
-            narration.dialogue = {
-                character: liam,
-                text: t("Hello, my name is {{name}}", { name: "Liam" }) // [!code focus]
-            }
-        },
-    ]
-)
+```ts tab="content/labels/start.label.ts"
+export const startLabel = newLabel("start", [
+    ({ t }) => {
+        // [!code focus]
+        narration.dialogue = {
+            character: liam,
+            text: t("Hello, my name is {{name}}", { name: "Liam" }), // [!code focus]
+        };
+    },
+]);
 ```
 
 ```ts tab="pixi-vn.d.ts"
-declare module '@drincs/pixi-vn' {
+declare module "@drincs/pixi-vn" {
     interface StepLabelProps {
         /**
          * Translate a key to a string.
          * @param key The key to translate.
          * @returns The translated string.
          */
-        t: TFunction<[string], undefined>
+        t: TFunction<[string], undefined>;
         // ...
     }
 }
@@ -170,13 +168,15 @@ Se utilizzi `ink`, puoi estrarre automaticamente le stringhe dal testo `ink` per
 
 I file JSON di traduzione devono essere creati manualmente. Si consiglia di dividere le traduzioni in due sezioni (vedere `strings_es.json`):
 
-* Testi <DynamicLink href="/start/interface">UI</DynamicLink>: per schermate, impostazioni, pulsanti rapidi, ecc.: tutto ciò che non fa parte della narrazione.
-* Testi di <DynamicLink href="/start/narration">narrazione</DynamicLink>: per dialoghi, menu di scelta, ecc.
+* <DynamicLink href="/start/interface">UI</DynamicLink> texts: for screens,
+  settings, quick buttons, etc.—everything not part of the narration.
+* <DynamicLink href="/start/narration">Narration</DynamicLink> texts: for
+  dialogues, choice menus, etc.
 
 ```json tab="locales/strings_es.json"
 {
     "ui": {
-        "text_speed": "Velocidad del texto",
+        "text_speed": "Velocidad del texto"
         // ...
     },
     "narration": {
