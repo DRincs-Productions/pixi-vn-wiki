@@ -6,7 +6,7 @@ import { createMetadata } from "@/lib/metadata";
 import { discordUrl, patreonUrl } from "@/lib/shared";
 import { source } from "@/lib/source";
 import ArchImg from "@/public/arch.png";
-import LogoImg from "@/public/logo.webp";
+import LogoImg from "@/public/icon.webp";
 import { cva } from "class-variance-authority";
 import { File, Files, Folder } from "fumadocs-ui/components/files";
 import { Tab, Tabs } from "fumadocs-ui/components/tabs";
@@ -350,6 +350,7 @@ async function Contributing() {
                     href={patreonUrl}
                     target="_blank"
                     className={cn(buttonVariants({ variant: "outline" }))}
+                    rel="noopener"
                 >
                     {t("patreon")}
                 </a>
@@ -357,6 +358,7 @@ async function Contributing() {
                     href="https://pixi-vn.fanbox.cc/"
                     target="_blank"
                     className={cn(buttonVariants({ variant: "outline" }))}
+                    rel="noopener"
                 >
                     {t("fanbox")}
                 </a>
