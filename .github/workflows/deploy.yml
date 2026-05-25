@@ -96,6 +96,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     continue-on-error: true
+    outputs:
+      deployed: ${{ steps.result.outputs.deployed }}
 
     permissions:
       contents: read
@@ -111,18 +113,25 @@ jobs:
       run: node scripts/sync-redirects.js
     # https://github.com/FirebaseExtended/action-hosting-deploy
     - name: Deploy to Firebase
+      id: deploy
       uses: FirebaseExtended/action-hosting-deploy@v0.10.0
       with:
         repoToken: ${{ secrets.GITHUB_TOKEN }}
         firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PIXI_VN }}
         projectId: pixi-vn
         channelId: live # prod
+    - name: Set deploy result
+      id: result
+      if: always()
+      run: echo "deployed=${{ steps.deploy.conclusion == 'success' }}" >> $GITHUB_OUTPUT
 
   deploy-vercel:
 
     needs: build
     runs-on: ubuntu-latest
     continue-on-error: true
+    outputs:
+      deployed: ${{ steps.result.outputs.deployed }}
 
     steps:
     - uses: actions/checkout@v4
@@ -137,6 +146,7 @@ jobs:
       run: cp vercel.json out/vercel.json
     # https://github.com/amondnet/vercel-action
     - name: Deploy to Vercel
+      id: deploy
       uses: amondnet/vercel-action@v25
       with:
         vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -145,12 +155,18 @@ jobs:
         vercel-args: '--prod --archive=tgz'
         vercel-version: 'latest'
         working-directory: ./out
+    - name: Set deploy result
+      id: result
+      if: always()
+      run: echo "deployed=${{ steps.deploy.conclusion == 'success' }}" >> $GITHUB_OUTPUT
 
   deploy-netlify:
 
     needs: build
     runs-on: ubuntu-latest
     continue-on-error: true
+    outputs:
+      deployed: ${{ steps.result.outputs.deployed }}
 
     steps:
     - uses: actions/checkout@v4
@@ -163,6 +179,7 @@ jobs:
       run: node scripts/sync-redirects.js
     # https://github.com/nwtgck/actions-netlify
     - name: Deploy to Netlify
+      id: deploy
       uses: nwtgck/actions-netlify@v3.0
       with:
         publish-dir: './out'
@@ -171,6 +188,10 @@ jobs:
       env:
         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         NETLIFY_SITE_ID: 4ea09312-196a-4140-8b51-65c3e6315629
+    - name: Set deploy result
+      id: result
+      if: always()
+      run: echo "deployed=${{ steps.deploy.conclusion == 'success' }}" >> $GITHUB_OUTPUT
 
   update-cloudflare-dns:
 
@@ -182,6 +203,9 @@ jobs:
     - name: Check deployments and update Cloudflare DNS
       env:
         CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        FIREBASE_DEPLOYED: ${{ needs.deploy-firebase.outputs.deployed }}
+        VERCEL_DEPLOYED: ${{ needs.deploy-vercel.outputs.deployed }}
+        NETLIFY_DEPLOYED: ${{ needs.deploy-netlify.outputs.deployed }}
       run: |
         SOURCES=(
           "https://pixi-vn.web.app"
@@ -204,32 +228,36 @@ jobs:
           fi
         done
 
-        if [ -z "$TARGET_CNAME" ]; then
-          echo "All deployments failed or unreachable"
-          exit 1
+        if [ -n "$TARGET_CNAME" ]; then
+          echo "Target: pixi-vn.com → $TARGET_CNAME"
+
+          ZONE_ID=$(curl -sf "https://api.cloudflare.com/client/v4/zones?name=pixi-vn.com" \
+            -H "Authorization: Bearer $CF_API_TOKEN" | jq -r '.result[0].id')
+
+          RECORD_ID=$(curl -sf "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?type=CNAME&name=pixi-vn.com" \
+            -H "Authorization: Bearer $CF_API_TOKEN" | jq -r '.result[0].id')
+
+          PAYLOAD=$(jq -n --arg c "$TARGET_CNAME" \
+            '{"type":"CNAME","name":"pixi-vn.com","content":$c,"ttl":1,"proxied":true}')
+
+          if [ "$RECORD_ID" = "null" ] || [ -z "$RECORD_ID" ]; then
+            curl -sf -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
+              -H "Authorization: Bearer $CF_API_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "$PAYLOAD"
+            echo "DNS record created"
+          else
+            curl -sf -X PUT "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$RECORD_ID" \
+              -H "Authorization: Bearer $CF_API_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "$PAYLOAD"
+            echo "DNS record updated"
+          fi
+        else
+          echo "No reachable deployment found, DNS not updated"
         fi
 
-        echo "Target: pixi-vn.com → $TARGET_CNAME"
-
-        ZONE_ID=$(curl -sf "https://api.cloudflare.com/client/v4/zones?name=pixi-vn.com" \
-          -H "Authorization: Bearer $CF_API_TOKEN" | jq -r '.result[0].id')
-
-        RECORD_ID=$(curl -sf "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?type=CNAME&name=pixi-vn.com" \
-          -H "Authorization: Bearer $CF_API_TOKEN" | jq -r '.result[0].id')
-
-        PAYLOAD=$(jq -n --arg c "$TARGET_CNAME" \
-          '{"type":"CNAME","name":"pixi-vn.com","content":$c,"ttl":1,"proxied":true}')
-
-        if [ "$RECORD_ID" = "null" ] || [ -z "$RECORD_ID" ]; then
-          curl -sf -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
-            -H "Authorization: Bearer $CF_API_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d "$PAYLOAD"
-          echo "DNS record created"
-        else
-          curl -sf -X PUT "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$RECORD_ID" \
-            -H "Authorization: Bearer $CF_API_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d "$PAYLOAD"
-          echo "DNS record updated"
+        if [ "$FIREBASE_DEPLOYED" != "true" ] && [ "$VERCEL_DEPLOYED" != "true" ] && [ "$NETLIFY_DEPLOYED" != "true" ]; then
+          echo "All deployments failed"
+          exit 1
         fi
