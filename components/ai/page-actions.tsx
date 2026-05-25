@@ -27,7 +27,7 @@ export function ViewOptionsPopover({
     const items = useMemo(() => {
         const q = t("query_ai", {
             fullMarkdownUrl: `${fullMarkdownUrl}`.replaceAll("/en", ""),
-            llms: `https://pixi-vn.web.app/llms.txt`,
+            llms: `https://pixi-vn.com/llms.txt`,
         });
 
         return [

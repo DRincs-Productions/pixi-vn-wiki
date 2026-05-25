@@ -66,4 +66,4 @@ export function createMetadata(
     };
 }
 
-export const baseUrl = "https://pixi-vn.web.app";
+export const baseUrl = "https://pixi-vn.com";

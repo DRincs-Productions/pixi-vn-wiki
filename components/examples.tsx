@@ -135,7 +135,7 @@ export function CurrentDialogueExample() {
                 "labels/startLabel.ts": `import { narration, newLabel } from "@drincs/pixi-vn";
 import { eggHead } from "../values/characters";
 
-// What is a Label? https://pixi-vn.web.app/start/labels.html
+// What is a Label? https://pixi-vn.com/start/labels.html
 export const startLabel = newLabel("start", [
   () => {
     // in this example, not exists a character with id 'Alice'

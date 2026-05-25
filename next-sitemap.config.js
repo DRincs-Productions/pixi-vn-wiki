@@ -1,6 +1,6 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-    siteUrl: "https://pixi-vn.web.app/",
+    siteUrl: "https://pixi-vn.com/",
     generateRobotsTxt: true,
     outDir: "./out",
     exclude: ["*/en/*"],
