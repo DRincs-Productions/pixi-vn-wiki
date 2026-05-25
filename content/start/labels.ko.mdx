@@ -1,37 +1,37 @@
 ---
-title: Labels and steps
-description: Explains the core concepts of labels and steps in Pixi’VN, detailing how narrative flow is structured and managed within the game engine.
+title: 내러티브 노드 (label)와 내러티브 단계 (step)
+description: Pixi’VN의 레이블과 스텝의 핵심 개념을 설명하며, 게임 엔진 내에서 내러티브 흐름이 어떻게 구성되고 관리되는지를 자세히 설명합니다.
 ---
 
-Visual novels are typically a sequence of scenes with images and text. In Pixi’VN, the entire narrative flow is based on the concepts of `labels` and `steps`.
+비주얼 노벨은 일반적으로 이미지와 텍스트가 포함된 일련의 장면으로 구성됩니다. Pixi’VN에서는 전체 내러티브 흐름이 내러티브 노드 (`label`)와 내러티브 단계 (`step`)의 개념을 기반으로 합니다.
 
-A `label` is used to organize the narrative; it works as a "bookmark" or section of the story. Technically, a `label` is a class that acts as a container for `steps`.
+내러티브 노드 (`label`)는 내러티브를 구성하는 데 사용되며, 이야기의 "북마크" 또는 섹션으로 기능합니다. 기술적으로, 내러티브 노드 (`label`)는 내러티브 단계 (`step`)의 컨테이너 역할을 하는 클래스입니다.
 
-A `step` is an individual action or event that occurs within a `label`. Steps are used to display images, text, and other narrative elements.
+내러티브 단계 (`step`)는 내러티브 노드 (`label`) 내에서 발생하는 개별 동작 또는 이벤트입니다. 스텝은 이미지, 텍스트 및 기타 내러티브 요소를 표시하는 데 사용됩니다.
 
-:::tip[Nomenclature]
+:::tip[용어 설명]
 
-The term `label` is borrowed from Ren'Py, where it acts as a "bookmark" or "landmark" in the story. In the ink language, the equivalent term is `knot`.The term `step` is introduced by Pixi’VN to represent the individual actions or events that occur within a `label`.
+내러티브 노드 (`label`)라는 용어는 Ren'Py에서 가져온 것으로, 이야기의 "북마크" 또는 "랜드마크" 역할을 합니다. ink 언어에서 동등한 용어는 내러티브 노드 (`knot`)입니다.내러티브 단계 (`step`)라는 용어는 내러티브 노드 (`label`) 내에서 발생하는 개별 동작이나 이벤트를 나타내기 위해 Pixi’VN에서 도입한 용어입니다.
 
-The term `step` is introduced by Pixi’VN to represent the individual actions or events that occur within a `label`.
+내러티브 단계 (`step`)라는 용어는 내러티브 노드 (`label`) 내에서 발생하는 개별 동작이나 이벤트를 나타내기 위해 Pixi’VN에서 도입한 용어입니다.
 
 :::
 
 <Accordions>
 
-<Accordion title="Lifecycle" id="lifecycle">
+<Accordion title="생명 주기" id="lifecycle">
 
-1. The game starts by calling a `label`, with the [`Game.start`](/jsdoc/pixi-vn/index/namespaces/Game/functions/start) function. The first `step` of the `label` is executed automatically.
-2. After that, by connecting the [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) function to an event (such as a button click), each time the function is called, the next `step` of the `label` is executed. Some `steps` can also start other `labels`.
-3. The game ends only when all `steps` are completed. At that point, the [`Game.onEnd`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onEnd) function is triggered.
+1. 게임은 [`Game.start`](/jsdoc/pixi-vn/index/namespaces/Game/functions/start) 함수로 내러티브 노드 (`label`)를 호출하여 시작됩니다. 내러티브 노드의 첫 번째 내러티브 단계 (`step`)가 자동으로 실행됩니다.
+2. 그 후, [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) 함수를 이벤트(예: 버튼 클릭)에 연결하여, 함수가 호출될 때마다 내러티브 노드 (`label`)의 다음 내러티브 단계 (`step`)가 실행됩니다. 일부 내러티브 단계 (`step`)는 다른 내러티브 노드 (`label`)를 시작할 수도 있습니다.
+3. 모든 내러티브 단계 (`step`)가 완료될 때만 게임이 종료됩니다. 그 시점에 [`Game.onEnd`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onEnd) 함수가 트리거됩니다.
 
 </Accordion>
 
 </Accordions>
 
-## Add
+## 추가
 
-To create a `label`, use the [`newLabel`](/jsdoc/pixi-vn/index/functions/newLabel) function.
+내러티브 노드 (`label`)를 생성하려면 [`newLabel`](/jsdoc/pixi-vn/index/functions/newLabel) 함수를 사용하세요.
 
 ```ts title="content/labels/start.label.ts"
 import { narration, StepLabelProps } from "@drincs/pixi-vn";
@@ -50,13 +50,13 @@ export const startLabel = newLabel("start", [
 
 <Accordion title="`StepLabelProps`" id="steplabelprops">
 
-:::tip[Templates]
+:::tip[템플릿]
 
-In all templates, the `StepLabelProps` interface is already overridden. You can find it in the `pixi-vn.d.ts` file.
+모든 템플릿에서 `StepLabelProps` 인터페이스는 이미 재정의되어 있습니다. `pixi-vn.d.ts` 파일에서 확인할 수 있습니다.
 
 :::
 
-All <DynamicLink href="/start/labels-flow">narration flow control functions</DynamicLink> require an object matching the [`StepLabelProps`](/jsdoc/pixi-vn/index/interfaces/StepLabelProps) interface. You can "override" the `StepLabelProps` interface in your `.d.ts` file to specify required parameters.
+모든 <DynamicLink href="/start/labels-flow">내러티브 흐름 제어 함수</DynamicLink>는 [`StepLabelProps`](/jsdoc/pixi-vn/index/interfaces/StepLabelProps) 인터페이스에 맞는 객체를 필요로 합니다. `.d.ts` 파일에서 `StepLabelProps` 인터페이스를 "재정의"하여 필수 매개변수를 지정할 수 있습니다.
 
 ```ts tab="pixi-vn.d.ts"
 import { narration } from "@drincs/pixi-vn";
@@ -78,9 +78,9 @@ export const startLabel = newLabel("start", [
 
 </Accordion>
 
-<Accordion title="`step` pros" id="step-pros">
+<Accordion title="`step` 속성" id="step-pros">
 
-You can pass a type to the [`newLabel`](/jsdoc/pixi-vn/index/functions/newLabel) function to add custom parameters for that `label`, in addition to [`StepLabelProps`](#steplabelprops).
+[`newLabel`](/jsdoc/pixi-vn/index/functions/newLabel) 함수에 타입을 전달하여 [`StepLabelProps`](#steplabelprops) 외에 해당 내러티브 노드 (`label`)에 대한 사용자 정의 매개변수를 추가할 수 있습니다.
 
 ```ts title="content/labels/start.label.ts"
 import { narration } from "@drincs/pixi-vn";
@@ -103,7 +103,7 @@ narration.call(startLabel, {
 
 <Accordion title="`StepLabelResult`" id="step-results">
 
-Steps can return a [`StepLabelResult`](/jsdoc/pixi-vn/index/interfaces/StepLabelResult) object. You can "override" the `StepLabelResult` interface in your `.d.ts` file to define custom properties for `step` results.
+내러티브 단계는 [`StepLabelResult`](/jsdoc/pixi-vn/index/interfaces/StepLabelResult) 객체를 반환할 수 있습니다. `.d.ts` 파일에서 `StepLabelResult` 인터페이스를 "재정의"하여 내러티브 단계 (`step`) 결과에 대한 사용자 정의 속성을 정의할 수 있습니다.
 
 ```ts tab="pixi-vn.d.ts"
 declare module "@drincs/pixi-vn" {
