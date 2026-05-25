@@ -55,7 +55,7 @@ export class TintingTestTicker extends TickerBase<TintingTestTickerArgs> {
 /**
  * https://pixijs.com/examples/basic/tinting
  */
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     const totalDudes = 300;
 
@@ -136,7 +136,7 @@ export function CurrentDialogueExample() {
 import { eggHead } from "../values/characters";
 
 // What is a Label? https://pixi-vn.web.app/start/labels.html
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   () => {
     // in this example, not exists a character with id 'Alice'
     // so when you get the current dialogue, the character is a fake character with the name 'Alice'
@@ -183,7 +183,7 @@ export function DialogueGlueExample() {
             files={{
                 "labels/startLabel.ts": `import { narration, newLabel } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   () => {
     narration.dialogue = "Hello, my name is Alice and ...";
   },
@@ -203,7 +203,7 @@ export function HeredityFactorExample() {
             files={{
                 "labels/startLabel.ts": `import { canvas, moveIn, newLabel, pushIn, showImage, showWithDissolve, showWithFade, zoomIn } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     const alien = await showImage("alien", "eggHead", { anchor: 0.5, align: 0.5 });
 
@@ -276,7 +276,7 @@ export function MoveExample() {
             files={{
                 "labels/startLabel.ts": `import { canvas, ImageSprite, newLabel, showImage } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     const alien = await showImage("alien");
     canvas.animate(alien, { xAlign: 1, yAlign: 0 }, { ease: "easeOut" });
@@ -316,7 +316,7 @@ export function RotateExample() {
             files={{
                 "labels/startLabel.ts": `import { canvas, newLabel, showImage } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     const alien = await showImage("alien", "alien", { align: 0.5, anchor: 0.5 });
     canvas.animate(alien, { angle: 360 }, { duration: 1, type: "spring", repeat: Infinity, repeatDelay: 0.2 });
@@ -353,7 +353,7 @@ export function FadeExample() {
             files={{
                 "labels/startLabel.ts": `import { canvas, newLabel, showImage } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
     async () => {
         const alien = await showImage("alien", "alien", { align: 0.5, anchor: 0.5, alpha: 0 });
         canvas.animate(alien, { alpha: 1 }, { ease: "linear", duration: 1 });
@@ -390,7 +390,7 @@ export function ZoomExample() {
             files={{
                 "labels/startLabel.ts": `import { canvas, newLabel, showImage } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     const alien = await showImage("alien", "alien", { align: 0.5, anchor: 0.5, scale: 0 });
     canvas.animate(alien, { scaleX: 1, scaleY: 1 }, { ease: "circInOut", duration: 1 });
@@ -427,7 +427,7 @@ export function MirrorExample() {
             files={{
                 "labels/startLabel.ts": `import { canvas, newLabel, showImage } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     const alien = await showImage("alien", "alien", { align: 0.5, anchor: 0.5 });
     canvas.animate(alien, { scaleX: -1 });
@@ -465,7 +465,7 @@ export function ShakeExample() {
             files={{
                 "labels/startLabel.ts": `import { CANVAS_APP_GAME_LAYER_ALIAS, newLabel, shakeEffect, showImage } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     await showImage("bg", "bg", { scale: 1.3 });
     await showImage("alien", "alien", { align: 0.5 });
@@ -510,7 +510,7 @@ export function ShowImageContainerExample() {
             files={{
                 "labels/startLabel.ts": `import { canvas, MoveTicker, newLabel, showImageContainer } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     let james = await showImageContainer("james", ["m01-body", "m01-eyes", "m01-mouth"], {
       xAlign: 0.5,
@@ -564,7 +564,7 @@ export function AddImageContainerExample() {
             files={{
                 "labels/startLabel.ts": `import { addImageCointainer, canvas, ImageContainer, newLabel } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   () => {
     let james = addImageCointainer("james", ["m01-body", "m01-eyes", "m01-mouth"], {
       xAlign: 0.5,
@@ -618,7 +618,7 @@ export function AddCanvasComponents() {
             files={{
                 "labels/startLabel.ts": `import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     const sprite = new Sprite();
     const texture = await Assets.load("egg_head");
@@ -657,7 +657,7 @@ export function GetCanvasComponents() {
             files={{
                 "labels/startLabel.ts": `import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     const sprite = new Sprite();
     const texture = await Assets.load("egg_head");
@@ -703,7 +703,7 @@ export function RemoveCanvasComponents() {
             files={{
                 "labels/startLabel.ts": `import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     const sprite = new Sprite();
     const texture = await Assets.load("egg_head");
@@ -745,7 +745,7 @@ export function RemoveAllCanvasComponents() {
             files={{
                 "labels/startLabel.ts": `import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     const texture = await Assets.load("egg_head");
     for (let i = 0; i < 3; i++) {
@@ -791,7 +791,7 @@ export function AddListenerGivenEvent() {
                 "labels/startLabel.ts": `import { newLabel, showImage } from "@drincs/pixi-vn";
 import Events from "../canvas/events";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     const bunny = await showImage("bunny", "bunny", {
       align: 0.5,
@@ -844,7 +844,7 @@ export function ReturningDifferentStepLists() {
             files={{
                 "labels/startLabel.ts": `import { narration, newLabel, storage } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", () => {
+export const startLabel = newLabel("start", () => {
   let condition = storage.getFlag("condition");
   if (condition) {
     return [
@@ -878,7 +878,7 @@ export function ChoiceMenus() {
             files={{
                 "labels/startLabel.ts": `import { narration, newChoiceOption, newCloseChoiceOption, newLabel } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     narration.dialogue = "Choose a fruit:";
     narration.choices = [
@@ -891,7 +891,7 @@ export const startLabel = newLabel("start_label", [
   () => {
     narration.dialogue = "Restart";
   },
-  async (props) => await narration.jump("start_label", props),
+  async (props) => await narration.jump("start", props),
 ]);
 
 const appleLabel = newLabel<{ quantity: number }>("AppleLabel", [
@@ -920,7 +920,7 @@ export function InputPrompt() {
             files={{
                 "labels/startLabel.ts": `import { narration, newLabel } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   () => {
     narration.dialogue = "Hello";
   },
@@ -960,7 +960,7 @@ export function SequenceExample() {
             files={{
                 "labels/startLabel.ts": `import { canvas, newLabel, showImage } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     const alien = await showImage("alien");
     canvas.animate(
@@ -1004,7 +1004,7 @@ export function MotionSequenceExample() {
             files={{
                 "labels/startLabel.ts": `import { canvas, newLabel, showImage } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     const alien = await showImage("alien");
     canvas.animate(
@@ -1051,7 +1051,7 @@ export function DissolveTransitionExample() {
             files={{
                 "labels/startLabel.ts": `import { newLabel, removeWithDissolve, showWithDissolve } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     await showWithDissolve("alien", "egg_head");
     await showWithDissolve("human", {
@@ -1111,7 +1111,7 @@ export function FadeTransitionExample() {
             files={{
                 "labels/startLabel.ts": `import { newLabel, removeWithFade, showWithFade } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
     async () => {
         await showWithFade("alien", "egg_head", { duration: 5 }); // [!code focus]
         await showWithFade("human", { // [!code focus]
@@ -1171,7 +1171,7 @@ export function MoveinTransitionExample() {
             files={{
                 "labels/startLabel.ts": `import { moveIn, moveOut, newLabel } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
     async () => {
         await moveIn("alien", "egg_head", { direction: "up" }); // [!code focus]
         await moveIn("human", { // [!code focus]
@@ -1231,7 +1231,7 @@ export function PushinTransitionExample() {
             files={{
                 "labels/startLabel.ts": `import { newLabel, pushIn, pushOut } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
     async () => {
         await pushIn("alien", "egg_head"); // [!code focus]
         await pushIn("human", { // [!code focus]
@@ -1291,7 +1291,7 @@ export function ZoominTransitionExample() {
             files={{
                 "labels/startLabel.ts": `import { newLabel, zoomIn, zoomOut } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
     async () => {
         await zoomIn("alien", "egg_head"); // [!code focus]
         await zoomIn("human", { // [!code focus]
@@ -1351,7 +1351,7 @@ export function PositionwithpercentageExample() {
             files={{
                 "labels/startLabel.ts": `import { newLabel, showImage } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     await showImage("egg_head", "egg_head", {
       percentagePosition: 0.5,
@@ -1414,7 +1414,7 @@ export function AlignExample() {
             files={{
                 "labels/startLabel.ts": `import { newLabel, showImage } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     await showImage("egg_head", "egg_head", { align: 0.5 });
     await showImage("flower_top", "flower_top", { align: 0 });
@@ -1457,7 +1457,7 @@ export function ImageSpriteShow() {
             files={{
                 "labels/startLabel.ts": `import { newLabel, showImage } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     let alien1 = await showImage("alien");
     let alien2 = await showImage("alien2", "alien", {
@@ -1499,7 +1499,7 @@ export function ImageSpriteAdd() {
             files={{
                 "labels/startLabel.ts": `import { addImage, canvas, ImageSprite, newLabel } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   () => {
     let alien1 = addImage("alien");
     let alien2 = addImage("alien2", "alien", {
@@ -1550,7 +1550,7 @@ export function VideoSpriteShow() {
             files={{
                 "labels/startLabel.ts": `import { newLabel, showVideo } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     let video1 = await showVideo("video");
     let video2 = await showVideo("video2", "video", {
@@ -1592,7 +1592,7 @@ export function VideoSpriteAdd() {
             files={{
                 "labels/startLabel.ts": `import { addVideo, canvas, newLabel, VideoSprite } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   () => {
     let video1 = addVideo("video");
     let video2 = addVideo("video2", "video", {
@@ -1643,7 +1643,7 @@ export function VideoSpritePlayPause() {
             files={{
                 "labels/startLabel.ts": `import { canvas, narration, newLabel, showVideo, VideoSprite } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     narration.dialogue = "add video";
     await showVideo("video");
@@ -1696,7 +1696,7 @@ export function VideoSpriteLooping() {
             files={{
                 "labels/startLabel.ts": `import { newLabel, showVideo } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     let video = await showVideo("video");
     video.loop = true;
@@ -1733,7 +1733,7 @@ export function VideoSpriteRestart() {
             files={{
                 "labels/startLabel.ts": `import { canvas, narration, newLabel, showVideo, VideoSprite } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
     async () => {
         narration.dialogue = "add video";
         await showVideo("video");
@@ -1777,7 +1777,7 @@ export function TextCanvas() {
             files={{
                 "labels/startLabel.ts": `import { newLabel, showText } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     let text = await showText("text", "Hello World!", {
       xAlign: 0.5,
@@ -1800,7 +1800,7 @@ export function TextCanvasStyle() {
             files={{
                 "labels/startLabel.ts": `import { canvas, newLabel, Text, TextStyle } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   () => {
     const skewStyle = new TextStyle({
       fontFamily: "Arial",
@@ -1838,7 +1838,7 @@ export function ChoicesAlreadyMade() {
             files={{
                 "labels/startLabel.ts": `import { narration, newChoiceOption, newCloseChoiceOption, newLabel } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     narration.dialogue = "Choose a fruit:";
     narration.choices = [
@@ -2000,7 +2000,7 @@ export function SoundExample() {
             files={{
                 "labels/startLabel.ts": `import { narration, newLabel, sound } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   async () => {
     await sound.play("sfx_whoosh", { delay: 0.1 });
     await sound.play("bgm_cheerful", { loop: true, channel: "bgm" });

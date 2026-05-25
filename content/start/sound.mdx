@@ -14,25 +14,26 @@ The sound module is a wrapper around the [Tone.js](https://tonejs.github.io/exam
 
 <Callout title="ink" type="info">
 
-You can use this method with the *ink* syntax. See more <DynamicLink href="/ink/sound">here</DynamicLink>.
+You can use this method with the _ink_ syntax. See more <DynamicLink href="/ink/sound">here</DynamicLink>.
 
 </Callout>
 
 It is composed of the following elements, which will be referenced later:
 
-* `sound` (manager) is the controller of the entire audio system. It is used to manage `channels`, start and control musical `media`, and retrieve information or modify sound `assets`. You can set values to adjust the overall audio level. These settings are not stored in save files and are mainly intended for game settings.
-* `channels` is a sub-level of the sound manager and can be seen as a container. It is used to contain, start, and manage musical `media`. You can set values to affect only the contained media. These settings are not stored in save files and are mainly intended for game settings.
-* `media` are instances of a sound that has been started. You can set values that apply only to themselves. All settings applied to them are saved in the game save. These settings are mainly intended to be modified during gameplay. They are contained within a `channel` in a one-to-many relationship. Each media has a unique `alias`.
-* `assets` (sound assets), as the name suggests, are the assets used during the game to play sounds. You can set values to influence all media that use this asset. These settings are not saved and are mainly intended to be configured during game initialization when loading assets.
+- `sound` (manager) is the controller of the entire audio system. It is used to manage `channels`, start and control musical `media`, and retrieve information or modify sound `assets`. You can set values to adjust the overall audio level. These settings are not stored in save files and are mainly intended for game settings.
+- `channels` is a sub-level of the sound manager and can be seen as a container. It is used to contain, start, and manage musical `media`. You can set values to affect only the contained media. These settings are not stored in save files and are mainly intended for game settings.
+- `media` are instances of a sound that has been started. You can set values that apply only to themselves. All settings applied to them are saved in the game save. These settings are mainly intended to be modified during gameplay. They are contained within a `channel` in a one-to-many relationship. Each media has a unique `alias`.
+- `assets` (sound assets), as the name suggests, are the assets used during the game to play sounds. You can set values to influence all media that use this asset. These settings are not saved and are mainly intended to be configured during game initialization when loading assets.
 
 ```ts tab="labels/startLabel.ts"
 import { narration, newLabel, sound } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
     async () => {
         await sound.play("sfx_whoosh", { delay: 0.1 });
         await sound.play("bgm_cheerful", { loop: true, channel: "bgm" });
-        narration.dialogue = "Hello, I'm a cheerful background music that will loop forever until you stop me.";
+        narration.dialogue =
+            "Hello, I'm a cheerful background music that will loop forever until you stop me.";
     },
     () => {
         sound.pause("bgm_cheerful");
@@ -124,7 +125,7 @@ export default manifest;
 
 It is also recommended to define `channels` immediately after game initialization. During the definition of `channels`, you can configure their settings, which are all intuitive and based on PixiJS Sound, except for:
 
-* `background` (Optional): this is a boolean value that can be used to define `channels` intended for background sounds such as music or ambient audio. Unlike other sounds, they will not be stopped between narrative `step`s.
+- `background` (Optional): this is a boolean value that can be used to define `channels` intended for background sounds such as music or ambient audio. Unlike other sounds, they will not be stopped between narrative `step`s.
 
 ```ts title="main.ts"
 import { Game, sound } from "@drincs/pixi-vn";
@@ -150,18 +151,18 @@ The basic functionality is to start a sound (`asset`). This can be done using th
 
 This function has the following parameters:
 
-* `alias`: The alias to identify the `media`.
-* `soundUrl` (Optional): The URL or path. If you have initialized the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink>, you can use the alias of the sound. If you don't provide the URL, then the alias is used as the URL.
-* `options` (Optional): The options for the `media`.
-  * `delay`: The delay before the sound starts, in seconds.
-  * `loop`: Override default loop, default to the Sound's loop setting.
-  * `speed`: Override default speed, default to the Sound's speed setting.
-  * `volume`: Override default volume, default to the Sound's volume setting.
-  * `start`: Start time offset in seconds.
-  * `end`: End time in seconds.
-  * `muted`: If sound instance is muted by default.
-  * `filters`: Filters that apply to play. Only supported with WebAudio.
-  * `channel`: The alias of the `channel` to which the `media` will be assigned. If not specified, it will be assigned to `sound.defaultChannelAlias`.
+- `alias`: The alias to identify the `media`.
+- `soundUrl` (Optional): The URL or path. If you have initialized the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink>, you can use the alias of the sound. If you don't provide the URL, then the alias is used as the URL.
+- `options` (Optional): The options for the `media`.
+    - `delay`: The delay before the sound starts, in seconds.
+    - `loop`: Override default loop, default to the Sound's loop setting.
+    - `speed`: Override default speed, default to the Sound's speed setting.
+    - `volume`: Override default volume, default to the Sound's volume setting.
+    - `start`: Start time offset in seconds.
+    - `end`: End time in seconds.
+    - `muted`: If sound instance is muted by default.
+    - `filters`: Filters that apply to play. Only supported with WebAudio.
+    - `channel`: The alias of the `channel` to which the `media` will be assigned. If not specified, it will be assigned to `sound.defaultChannelAlias`.
 
 <Accordions>
 
@@ -224,11 +225,11 @@ sound.findChannel("sfx").resumeAll();
 ```ts
 import { sound } from "@drincs/pixi-vn";
 
-sound.pause("bgm_cheerful")
-sound.pauseAll()
+sound.pause("bgm_cheerful");
+sound.pauseAll();
 
-sound.resume("bgm_cheerful")
-sound.resumeAll()
+sound.resume("bgm_cheerful");
+sound.resumeAll();
 ```
 
 </Accordion>
@@ -253,7 +254,7 @@ It is possible to edit almost all settings at any time for different purposes.
 import { sound } from "@drincs/pixi-vn";
 
 const bgmMedia = sound.find("bgm_cheerful");
-if (bgmMedia) bgmMedia.volume.value = 90
+if (bgmMedia) bgmMedia.volume.value = 90;
 ```
 
 </Accordion>
@@ -263,7 +264,7 @@ if (bgmMedia) bgmMedia.volume.value = 90
 ```ts
 import { sound } from "@drincs/pixi-vn";
 
-sound.findChannel("sfx").volume = 90
+sound.findChannel("sfx").volume = 90;
 ```
 
 </Accordion>
@@ -273,7 +274,7 @@ sound.findChannel("sfx").volume = 90
 ```ts
 import { sound } from "@drincs/pixi-vn";
 
-sound.volumeAll = 90
+sound.volumeAll = 90;
 ```
 
 </Accordion>

@@ -460,7 +460,7 @@ export default function ChoiceMenu() {
 
 const startLabel = `import { narration, newLabel } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
   () => (narration.dialogue = "Hello"),
   (props, { labelId }) => narration.jump(labelId, props),
 ]);`;

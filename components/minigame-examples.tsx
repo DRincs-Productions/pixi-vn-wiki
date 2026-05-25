@@ -15,7 +15,7 @@ export function MiniGameExample({
             files={{
                 "labels/startLabel.ts": `import { newLabel } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [() => {}]);`,
+export const startLabel = newLabel("start", [() => {}]);`,
                 "App.tsx": `import MiniGame from "./screens/MiniGame";
 
 export default function App() {
