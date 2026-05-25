@@ -19,17 +19,26 @@ Then, decorate the class with the `@tickerDecorator` decorator. The decorator ca
 For example:
 
 ```typescript title="canvas/tickers/RotateTicker.ts"
-import { canvas, Container, TickerBase, tickerDecorator, TickerValue } from "@drincs/pixi-vn";
+import {
+    canvas,
+    Container,
+    TickerBase,
+    tickerDecorator,
+    TickerValue,
+} from "@drincs/pixi-vn";
 
 @tickerDecorator() // or @tickerDecorator('RotateTicker')
-export default class RotateTicker extends TickerBase<{ speed?: number; clockwise?: boolean }> {
+export default class RotateTicker extends TickerBase<{
+    speed?: number;
+    clockwise?: boolean;
+}> {
     fn(
         t: TickerValue,
         args: {
             speed?: number;
             clockwise?: boolean;
         },
-        aliases: string[]
+        aliases: string[],
     ): void {
         let speed = args.speed === undefined ? 0.1 : args.speed;
         let clockwise = args.clockwise === undefined ? true : args.clockwise;
@@ -53,14 +62,25 @@ To add a ticker you must use the `canvas.addTicker` function. This function rece
 
 The function returns the id of the ticker that was added.
 
-```ts tab="labels/startLabel.ts"
+```ts tab="content/labels/start.label.ts"
 import { canvas, newLabel, RotateTicker, showImage } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
     async () => {
-        await showImage("egg_head", "egg_head", { yAlign: 0.5, xAlign: 0.25, anchor: 0.5 });
-        await showImage("flower_top", "flower_top", { yAlign: 0.5, xAlign: 0.75, anchor: 0.5 });
-        let tikerId = canvas.addTicker(["egg_head", "flower_top"], new RotateTicker({})); // [!code focus]
+        await showImage("egg_head", "egg_head", {
+            yAlign: 0.5,
+            xAlign: 0.25,
+            anchor: 0.5,
+        });
+        await showImage("flower_top", "flower_top", {
+            yAlign: 0.5,
+            xAlign: 0.75,
+            anchor: 0.5,
+        });
+        let tikerId = canvas.addTicker(
+            ["egg_head", "flower_top"],
+            new RotateTicker({}),
+        ); // [!code focus]
     },
 ]);
 ```
@@ -69,8 +89,14 @@ export const startLabel = newLabel("start_label", [
 import { Assets } from "@drincs/pixi-vn";
 
 export async function defineAssets() {
-    Assets.add({ alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" });
-    Assets.add({ alias: "flower_top", src: "https://pixijs.com/assets/flowerTop.png" });
+    Assets.add({
+        alias: "egg_head",
+        src: "https://pixijs.com/assets/eggHead.png",
+    });
+    Assets.add({
+        alias: "flower_top",
+        src: "https://pixijs.com/assets/flowerTop.png",
+    });
 }
 ```
 
@@ -83,19 +109,21 @@ If you want to run a sequence of tickers, you can use the `canvas.addTickersSequ
 * `canvasElementAlias`: The alias of the canvas element that will use the ticker. Please note that a component alias can only have one sequence sequence of tickers to it. If you add a new sequence of tickers to the same alias, the new sequence will replace the old one.
 * `tickers`: An array of tickers to be run in sequence.
 
-```ts tab="labels/startLabel.ts"
+```ts tab="content/labels/start.label.ts"
 import { canvas, newLabel, RotateTicker, showImage } from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
-async () => {
-    await showImage("egg_head", "egg_head", { anchor: 0.5 });
-    let tikerId = canvas.addTickersSequence("egg_head", [ // [!code focus]
-        new MoveTicker({ // [!code focus]
-            destination: { x: 0.5, y: 0.5, type: "align" }, // [!code focus]
-        }), // [!code focus]
-        new RotateTicker({ speed: 2, clockwise: false }, 2), // [!code focus]
-    ]); // [!code focus]
-},
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("egg_head", "egg_head", { anchor: 0.5 });
+        let tikerId = canvas.addTickersSequence("egg_head", [
+            // [!code focus]
+            new MoveTicker({
+                // [!code focus]
+                destination: { x: 0.5, y: 0.5, type: "align" }, // [!code focus]
+            }), // [!code focus]
+            new RotateTicker({ speed: 2, clockwise: false }, 2), // [!code focus]
+        ]); // [!code focus]
+    },
 ]);
 ```
 
@@ -103,7 +131,10 @@ async () => {
 import { Assets } from "@drincs/pixi-vn";
 
 export async function defineAssets() {
-    Assets.add({ alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" });
+    Assets.add({
+        alias: "egg_head",
+        src: "https://pixijs.com/assets/eggHead.png",
+    });
 }
 ```
 
@@ -113,13 +144,20 @@ export async function defineAssets() {
 
 If you want to pause the steps for a while, you can use the `Pause` token. The `Pause` token receives the time in seconds to pause.
 
-```ts tab="labels/startLabel.ts"
-import { canvas, newLabel, Pause, RotateTicker, showImage } from "@drincs/pixi-vn";
+```ts tab="content/labels/start.label.ts"
+import {
+    canvas,
+    newLabel,
+    Pause,
+    RotateTicker,
+    showImage,
+} from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
     async () => {
         await showImage("egg_head", "egg_head", { anchor: 0.5, align: 0.5 });
-        let tikerId = canvas.addTickersSequence("egg_head", [ // [!code focus]
+        let tikerId = canvas.addTickersSequence("egg_head", [
+            // [!code focus]
             new RotateTicker({ speed: 1, clockwise: true }, 2), // [!code focus]
             Pause(1), // [!code focus]
             new RotateTicker({ speed: 1, clockwise: false }, 2), // [!code focus]
@@ -132,7 +170,10 @@ export const startLabel = newLabel("start_label", [
 import { Assets } from "@drincs/pixi-vn";
 
 export async function defineAssets() {
-    Assets.add({ alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" });
+    Assets.add({
+        alias: "egg_head",
+        src: "https://pixijs.com/assets/eggHead.png",
+    });
 }
 ```
 
@@ -142,16 +183,23 @@ export async function defineAssets() {
 
 If you want to repeat the steps, you can use the `Repeat` token.
 
-```ts tab="labels/startLabel.ts"
-import { canvas, newLabel, Repeat, RotateTicker, showImage } from "@drincs/pixi-vn";
+```ts tab="content/labels/start.label.ts"
+import {
+    canvas,
+    newLabel,
+    Repeat,
+    RotateTicker,
+    showImage,
+} from "@drincs/pixi-vn";
 
-export const startLabel = newLabel("start_label", [
+export const startLabel = newLabel("start", [
     async () => {
         await showImage("egg_head", "egg_head", {
             anchor: 0.5,
             align: 0.5,
         });
-        let tikerId = canvas.addTickersSequence("egg_head", [ // [!code focus]
+        let tikerId = canvas.addTickersSequence("egg_head", [
+            // [!code focus]
             new RotateTicker({ speed: 1, clockwise: true }, 2), // [!code focus]
             new RotateTicker({ speed: 2, clockwise: false }, 2), // [!code focus]
             Repeat, // [!code focus]
@@ -164,7 +212,10 @@ export const startLabel = newLabel("start_label", [
 import { Assets } from "@drincs/pixi-vn";
 
 export async function defineAssets() {
-    Assets.add({ alias: "egg_head", src: "https://pixijs.com/assets/eggHead.png" });
+    Assets.add({
+        alias: "egg_head",
+        src: "https://pixijs.com/assets/eggHead.png",
+    });
 }
 ```
 
