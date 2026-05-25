@@ -3,7 +3,7 @@
 # https://www.youtube.com/watch?v=kLEp5tGDqcI
 # https://docs.github.com/en/actions/learn-github-actions/environment-variables
 
-name: Firebase CI
+name: Deploy CI
 
 on:
   workflow_dispatch:
@@ -11,11 +11,11 @@ on:
     - cron: '0 0 * * *'
 
 concurrency:
-  group: firebase-ci-${{ github.ref }}
+  group: deploy-ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  build:
 
     runs-on: ubuntu-latest
 
@@ -78,21 +78,63 @@ jobs:
       # because index.mdx pages are served without a trailing slash.
       # These changes are intentionally NOT committed — they are only needed for the build.
       run: python3 scripts/fix-jsdoc-links.py
+    - name: Sync redirects to firebase.json and vercel.json
+      run: node scripts/sync-redirects.js
     - name: npm install and build
       run: |
         npm install
         node scripts/fetch-schemas.js
         NODE_OPTIONS=--max-old-space-size=6096 npm run build && npm run export
-    - name: Archive Build
+    - name: Upload build artifact
       uses: actions/upload-artifact@v4
       with:
         name: dist
         path: out
+
+  deploy-firebase:
+
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download build artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: dist
+        path: out
     # https://github.com/FirebaseExtended/action-hosting-deploy
-    - name: Deploy
+    - name: Deploy to Firebase
       uses: FirebaseExtended/action-hosting-deploy@v0.10.0
       with:
         repoToken: ${{ secrets.GITHUB_TOKEN }}
         firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PIXI_VN }}
         projectId: pixi-vn
         channelId: live # prod
+
+  deploy-vercel:
+
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download build artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: dist
+        path: out
+    - name: Copy Vercel config to build output
+      run: cp vercel.json out/vercel.json
+    # https://github.com/amondnet/vercel-action
+    - name: Deploy to Vercel
+      uses: amondnet/vercel-action@v25
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        vercel-org-id: team_0GgWhwEZo6OVtYhxZta1dzGo
+        vercel-project-id: prj_Wkwlmd2qOtn3rnxLInHxAQr0i26D
+        vercel-args: '--prod'
+        working-directory: ./out
