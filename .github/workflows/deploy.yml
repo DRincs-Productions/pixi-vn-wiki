@@ -168,3 +168,65 @@ jobs:
       env:
         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         NETLIFY_SITE_ID: 4ea09312-196a-4140-8b51-65c3e6315629
+
+  update-cloudflare-dns:
+
+    needs: [deploy-firebase, deploy-vercel, deploy-netlify]
+    if: always()
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check deployments and update Cloudflare DNS
+      env:
+        CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+      run: |
+        SOURCES=(
+          "https://pixi-vn.web.app"
+          "https://pixi-vn.vercel.app"
+          "https://pixi-vn.netlify.app"
+        )
+        CNAMES=(
+          "pixi-vn.web.app"
+          "pixi-vn.vercel.app"
+          "pixi-vn.netlify.app"
+        )
+
+        TARGET_CNAME=""
+        for i in "${!SOURCES[@]}"; do
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "${SOURCES[$i]}")
+          echo "${SOURCES[$i]} → $STATUS"
+          if [ "$STATUS" = "200" ]; then
+            TARGET_CNAME="${CNAMES[$i]}"
+            break
+          fi
+        done
+
+        if [ -z "$TARGET_CNAME" ]; then
+          echo "No working deployment found, skipping DNS update"
+          exit 0
+        fi
+
+        echo "Target: pixi-vn.com → $TARGET_CNAME"
+
+        ZONE_ID=$(curl -sf "https://api.cloudflare.com/client/v4/zones?name=pixi-vn.com" \
+          -H "Authorization: Bearer $CF_API_TOKEN" | jq -r '.result[0].id')
+
+        RECORD_ID=$(curl -sf "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?type=CNAME&name=pixi-vn.com" \
+          -H "Authorization: Bearer $CF_API_TOKEN" | jq -r '.result[0].id')
+
+        PAYLOAD=$(jq -n --arg c "$TARGET_CNAME" \
+          '{"type":"CNAME","name":"pixi-vn.com","content":$c,"ttl":1,"proxied":true}')
+
+        if [ "$RECORD_ID" = "null" ] || [ -z "$RECORD_ID" ]; then
+          curl -sf -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
+            -H "Authorization: Bearer $CF_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD"
+          echo "DNS record created"
+        else
+          curl -sf -X PUT "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$RECORD_ID" \
+            -H "Authorization: Bearer $CF_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD"
+          echo "DNS record updated"
+        fi
