@@ -18,7 +18,7 @@ export function ReactTemplate({
 }) {
     return (
         <SandpackProvider
-            template="vite-react-ts"
+            template="react-ts"
             customSetup={{
                 dependencies: {
                     react: "latest",
