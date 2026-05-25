@@ -1,37 +1,37 @@
 ---
-title: Labels and steps
-description: Explains the core concepts of labels and steps in Pixi’VN, detailing how narrative flow is structured and managed within the game engine.
+title: ラベルとステップ
+description: Pixi’VN におけるラベルとステップのコアコンセプトを解説し、ゲームエンジン内でナラティブフローがどのように構成・管理されるかを詳述します。
 ---
 
-Visual novels are typically a sequence of scenes with images and text. In Pixi’VN, the entire narrative flow is based on the concepts of `labels` and `steps`.
+ビジュアルノベルは通常、画像とテキストを含む一連のシーンで構成されます。 Pixi’VN では、ナラティブフロー全体がナラティブノード（`label`）とナラティブステップ（`step`）のコンセプトに基づいています。
 
-A `label` is used to organize the narrative; it works as a "bookmark" or section of the story. Technically, a `label` is a class that acts as a container for `steps`.
+ナラティブノード（`label`）はナラティブを整理するために使用され、ストーリーの「ブックマーク」またはセクションとして機能します。 技術的には、ナラティブノード（`label`）はナラティブステップ（`step`）のコンテナとして機能するクラスです。
 
-A `step` is an individual action or event that occurs within a `label`. Steps are used to display images, text, and other narrative elements.
+ナラティブステップ（`step`）は、ナラティブノード（`label`）内で発生する個々のアクションまたはイベントです。 ステップは画像、テキスト、その他のナラティブ要素を表示するために使用されます。
 
-:::tip[Nomenclature]
+:::tip[用語説明]
 
-The term `label` is borrowed from Ren'Py, where it acts as a "bookmark" or "landmark" in the story. In the ink language, the equivalent term is `knot`.The term `step` is introduced by Pixi’VN to represent the individual actions or events that occur within a `label`.
+ナラティブノード（`label`）という用語は Ren'Py から借用されており、ストーリーの「ブックマーク」または「ランドマーク」として機能します。 ink 言語では、対応する用語はナラティブノード（`knot`）です。ナラティブステップ（`step`）は、ナラティブノード（`label`）内で発生する個々のアクションやイベントを表すために Pixi’VN が導入した用語です。
 
-The term `step` is introduced by Pixi’VN to represent the individual actions or events that occur within a `label`.
+ナラティブステップ（`step`）は、ナラティブノード（`label`）内で発生する個々のアクションやイベントを表すために Pixi’VN が導入した用語です。
 
 :::
 
 <Accordions>
 
-<Accordion title="Lifecycle" id="lifecycle">
+<Accordion title="ライフサイクル" id="lifecycle">
 
-1. The game starts by calling a `label`, with the [`Game.start`](/jsdoc/pixi-vn/index/namespaces/Game/functions/start) function. The first `step` of the `label` is executed automatically.
-2. After that, by connecting the [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) function to an event (such as a button click), each time the function is called, the next `step` of the `label` is executed. Some `steps` can also start other `labels`.
-3. The game ends only when all `steps` are completed. At that point, the [`Game.onEnd`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onEnd) function is triggered.
+1. ゲームは [`Game.start`](/jsdoc/pixi-vn/index/namespaces/Game/functions/start) 関数でナラティブノード（`label`）を呼び出すことで開始されます。 ナラティブノードの最初のナラティブステップ（`step`）は自動的に実行されます。
+2. その後、[`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) 関数をイベント（ボタンクリックなど）に接続することで、関数が呼び出されるたびに、ナラティブノード（`label`）の次のナラティブステップ（`step`）が実行されます。 一部のナラティブステップ（`step`）は他のナラティブノード（`label`）を開始することもできます。
+3. すべてのナラティブステップ（`step`）が完了したときにのみゲームが終了します。 その時点で、[`Game.onEnd`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onEnd) 関数がトリガーされます。
 
 </Accordion>
 
 </Accordions>
 
-## Add
+## 追加
 
-To create a `label`, use the [`newLabel`](/jsdoc/pixi-vn/index/functions/newLabel) function.
+ナラティブノード（`label`）を作成するには、[`newLabel`](/jsdoc/pixi-vn/index/functions/newLabel) 関数を使用します。
 
 ```ts title="content/labels/start.label.ts"
 import { narration, StepLabelProps } from "@drincs/pixi-vn";
@@ -50,13 +50,13 @@ export const startLabel = newLabel("start", [
 
 <Accordion title="`StepLabelProps`" id="steplabelprops">
 
-:::tip[Templates]
+:::tip[テンプレート]
 
-In all templates, the `StepLabelProps` interface is already overridden. You can find it in the `pixi-vn.d.ts` file.
+すべてのテンプレートで、`StepLabelProps` インターフェースはすでにオーバーライドされています。 `pixi-vn.d.ts` ファイルで確認できます。
 
 :::
 
-All <DynamicLink href="/start/labels-flow">narration flow control functions</DynamicLink> require an object matching the [`StepLabelProps`](/jsdoc/pixi-vn/index/interfaces/StepLabelProps) interface. You can "override" the `StepLabelProps` interface in your `.d.ts` file to specify required parameters.
+すべての <DynamicLink href="/start/labels-flow">ナラティブフロー制御関数</DynamicLink> は、[`StepLabelProps`](/jsdoc/pixi-vn/index/interfaces/StepLabelProps) インターフェースに一致するオブジェクトを必要とします。 `.d.ts` ファイルで `StepLabelProps` インターフェースを「オーバーライド」して、必要なパラメーターを指定できます。
 
 ```ts tab="pixi-vn.d.ts"
 import { narration } from "@drincs/pixi-vn";
@@ -78,9 +78,9 @@ export const startLabel = newLabel("start", [
 
 </Accordion>
 
-<Accordion title="`step` pros" id="step-pros">
+<Accordion title="`step` のカスタムプロパティ" id="step-pros">
 
-You can pass a type to the [`newLabel`](/jsdoc/pixi-vn/index/functions/newLabel) function to add custom parameters for that `label`, in addition to [`StepLabelProps`](#steplabelprops).
+[`newLabel`](/jsdoc/pixi-vn/index/functions/newLabel) 関数に型を渡すことで、[`StepLabelProps`](#steplabelprops) に加えて、そのナラティブノード（`label`）にカスタムパラメーターを追加できます。
 
 ```ts title="content/labels/start.label.ts"
 import { narration } from "@drincs/pixi-vn";
