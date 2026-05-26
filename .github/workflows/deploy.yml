@@ -188,9 +188,43 @@ jobs:
       if: always()
       run: echo "deployed=${{ steps.deploy.conclusion == 'success' }}" >> $GITHUB_OUTPUT
 
+  deploy-cloudflare:
+
+    needs: build
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    outputs:
+      deployed: ${{ steps.result.outputs.deployed }}
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download build artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: dist
+        path: out
+    - name: Generate _redirects for Cloudflare Pages
+      run: |
+        node scripts/sync-redirects.js
+        cp _redirects out/_redirects
+    # https://github.com/cloudflare/pages-action
+    - name: Deploy to Cloudflare Pages
+      id: deploy
+      uses: cloudflare/pages-action@v1
+      with:
+        apiToken: ${{ secrets.CF_API_TOKEN }}
+        accountId: ${{ secrets.CF_ACCOUNT_ID }}
+        projectName: pixi-vn
+        directory: out
+        gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+    - name: Set deploy result
+      id: result
+      if: always()
+      run: echo "deployed=${{ steps.deploy.conclusion == 'success' }}" >> $GITHUB_OUTPUT
+
   update-cloudflare-dns:
 
-    needs: [deploy-firebase, deploy-vercel, deploy-netlify]
+    needs: [deploy-firebase, deploy-vercel, deploy-netlify, deploy-cloudflare]
     if: always()
     runs-on: ubuntu-latest
 
@@ -201,13 +235,16 @@ jobs:
         FIREBASE_DEPLOYED: ${{ needs.deploy-firebase.outputs.deployed }}
         VERCEL_DEPLOYED: ${{ needs.deploy-vercel.outputs.deployed }}
         NETLIFY_DEPLOYED: ${{ needs.deploy-netlify.outputs.deployed }}
+        CLOUDFLARE_DEPLOYED: ${{ needs.deploy-cloudflare.outputs.deployed }}
       run: |
         SOURCES=(
+          "https://pixi-vn.drincs-contact.workers.dev"
           "https://pixi-vn.web.app"
           "https://pixi-vn.vercel.app"
           "https://pixi-vn.netlify.app"
         )
         CNAMES=(
+          "pixi-vn.drincs-contact.workers.dev"
           "pixi-vn.web.app"
           "pixi-vn.vercel.app"
           "pixi-vn.netlify.app"
@@ -252,7 +289,7 @@ jobs:
           echo "No reachable deployment found, DNS not updated"
         fi
 
-        if [ "$FIREBASE_DEPLOYED" != "true" ] && [ "$VERCEL_DEPLOYED" != "true" ] && [ "$NETLIFY_DEPLOYED" != "true" ]; then
+        if [ "$FIREBASE_DEPLOYED" != "true" ] && [ "$VERCEL_DEPLOYED" != "true" ] && [ "$NETLIFY_DEPLOYED" != "true" ] && [ "$CLOUDFLARE_DEPLOYED" != "true" ]; then
           echo "All deployments failed"
           exit 1
         fi
