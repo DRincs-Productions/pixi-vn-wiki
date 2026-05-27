@@ -172,17 +172,11 @@ jobs:
         path: out
     - name: Sync redirects to netlify.toml
       run: node scripts/sync-redirects.js
-    # https://github.com/nwtgck/actions-netlify
+    - name: Install Netlify CLI
+      run: npm install -g netlify-cli
     - name: Deploy to Netlify
       id: deploy
-      uses: nwtgck/actions-netlify@v3.0
-      with:
-        publish-dir: './out'
-        production-deploy: true
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-      env:
-        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        NETLIFY_SITE_ID: 4ea09312-196a-4140-8b51-65c3e6315629
+      run: netlify deploy --dir=./out --prod --auth=${{ secrets.NETLIFY_AUTH_TOKEN }} --site=4ea09312-196a-4140-8b51-65c3e6315629
     - name: Set deploy result
       id: result
       if: always()
