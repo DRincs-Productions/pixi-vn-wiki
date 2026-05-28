@@ -22,10 +22,10 @@ if (bgmMedia) bgmMedia.volume.value = 90; // [!code ++]
 Additionally, it will no longer be possible to modify audio assets directly.
 
 ```ts
-sound.backgroundLoadBundle(AUDIO_BUNDLE_NAME)
-    .then(() => {  // [!code --]
-        sound.edit("bgm_cheerful", { volume: 90 });  // [!code --]
-    }); // [!code --]
+sound.backgroundLoadBundle(AUDIO_BUNDLE_NAME).then(() => {
+    // [!code --]
+    sound.edit("bgm_cheerful", { volume: 90 }); // [!code --]
+}); // [!code --]
 ```
 
 ### Migration from v1.6.x to v1.7.0
@@ -43,7 +43,8 @@ const htmlLayer = canvas.addHtmlLayer("ui", root, {
 Additionally, some features have been deprecated to centralize navigation management into a single function. You should now use `Game.onNavigate` to handle navigation between UI screens, instead of passing a navigation function to every function that requires one (for example `Game.restoreGameState`).
 
 ```ts
-Game.onNavigate((path) => { // [!code ++]
+Game.onNavigate((path) => {
+    // [!code ++]
     navigateTo(path); // [!code ++]
 }); // [!code ++]
 
@@ -54,29 +55,29 @@ Game.restoreGameState(data); // [!code ++]
 Finally, the ability to implement a custom UI storage has been added, allowing automatic rerendering when game variables change. To do this, you need to use the `storage.setStorageHandler` function to set a handler that updates the state of your custom UI storage whenever a game variable is modified.
 
 ```ts
-import { Store } from '@tanstack/store'
+import { Store } from "@tanstack/store";
 // Create a TanStack store that mirrors the game storage variables
-const gameStore = new Store<Record<string, unknown>>({})
+const gameStore = new Store<Record<string, unknown>>({});
 
 storage.setStorageHandler({
     onSetVariable: (key, value) => {
-        gameStore.setState((state) => ({ ...state, [key]: value }))
+        gameStore.setState((state) => ({ ...state, [key]: value }));
     },
     onRemoveVariable: (key) => {
         gameStore.setState((state) => {
-            const next = { ...state }
-            delete next[key]
-            return next
-        })
+            const next = { ...state };
+            delete next[key];
+            return next;
+        });
     },
     onClearOldTempVariable: (key) => {
         gameStore.setState((state) => {
-            const next = { ...state }
-            delete next[key]
-            return next
-        })
+            const next = { ...state };
+            delete next[key];
+            return next;
+        });
     },
-})
+});
 ```
 
 ### Migration from v1.5.x to v1.6.0
@@ -120,8 +121,8 @@ Also, to have a cleaner start to the game, `Game.start` has been added. `Game.st
 
 ```ts
 Game.clear(); // [!code --]
-narration.call("start", gameProps) // [!code --]
-Game.start("start", gameProps) // [!code ++]
+narration.call("start", gameProps); // [!code --]
+Game.start("start", gameProps); // [!code ++]
 ```
 
 The storage keyword system has also been improved by adopting a common naming convention using `:` as a separator, and by adding the ability to use prefixes to better identify keys (for example `character:alice:friendship`). This change was made to improve the cache management of storage and to make it easier to identify the type of data stored. (This change does not affect the API and will not cause any issues with existing saves).
@@ -158,16 +159,17 @@ In v1.5.4, the canvas resizing logic has also been changed. If you used an offic
 @plugin "tailwindcss-motion";
 
 html, /* [!code ++] */
-body { /* [!code ++] */
-  background-color: #242424; /* [!code ++] */
-  height: 100%; /* [!code ++] */
+body {
+    /* [!code ++] */
+    background-color: #242424; /* [!code ++] */
+    height: 100%; /* [!code ++] */
 } /* [!code ++] */
 
 body {
-  margin: 0;
-  min-height: 100vh; /* [!code ++] */
-  display: flex;
-  overflow: hidden;
+    margin: 0;
+    min-height: 100vh; /* [!code ++] */
+    display: flex;
+    overflow: hidden;
 }
 ```
 
@@ -180,10 +182,11 @@ In this release, some functions for managing "navigation of the narrative" have 
 For this reason it was necessary to modify the `stepHistory.back()` function and the `Game.init()` function. `stepHistory.back()` now requires a path navigation function rather than a `StepLabelProps` function. You can now define the path navigation function in `Game.init()`.
 
 ```ts
-stepHistory.back((_path) => { // [!code --]
+stepHistory.back((_path) => {
+    // [!code --]
     // TODO: navigate in the url path // [!code --]
-    // READ THIS: https://pixi-vn.web.app/start/interface.html#navigate-switch-between-ui-screens // [!code --]
-}) // [!code --]
+    // READ THIS: https://pixi-vn.com/start/interface.html#navigate-switch-between-ui-screens // [!code --]
+}); // [!code --]
 const gameProps = {}; // [!code ++]
 stepHistory.back(gameProps); // [!code ++]
 ```
@@ -193,7 +196,8 @@ Game.init(body, {
     height: 1080,
     width: 1920,
     backgroundColor: "#303030",
-    navigate: (_path) => { // [!code ++]
+    navigate: (_path) => {
+        // [!code ++]
         // TODO: navigate in the url path // [!code ++]
     }, // [!code ++]
 }).then(() => {
@@ -301,20 +305,24 @@ To make the saves compatible, you need to modify the save file (remember that it
 ```json title="save.json"
 {
     // ...
-    "___nqtr-temporary_commitment___": [ // [!code --]
+    "___nqtr-temporary_commitment___": [
+        // [!code --]
         "alice_sleep", // [!code --]
-        "alice_eat", // [!code --]
+        "alice_eat" // [!code --]
     ], // [!code --]
-    "___nqtr-temporary_commitment___": { // [!code ++]
-        "alice_sleep": { // [!code ++]
+    "___nqtr-temporary_commitment___": {
+        // [!code ++]
+        "alice_sleep": {
+            // [!code ++]
             "id": "alice_sleep", // [!code ++]
             "roomId": "alice_room" // [!code ++]
         }, // [!code ++]
-        "alice_eat": { // [!code ++]
+        "alice_eat": {
+            // [!code ++]
             "id": "alice_eat", // [!code ++]
             "roomId": "alice_room" // [!code ++]
-        }, // [!code ++]
-    }, // [!code ++]
+        } // [!code ++]
+    } // [!code ++]
     // ...
 }
 ```
@@ -381,7 +389,8 @@ export default class Room extends RoomStoredClass implements RoomInterface {
         },
     ) {
         super(id, location, props.activities); // [!code --]
-        super(id, location, { // [!code ++]
+        super(id, location, {
+            // [!code ++]
             activities: props.activities || [], // [!code ++]
             routine: props.routine || [], // [!code ++]
         }); // [!code ++]
