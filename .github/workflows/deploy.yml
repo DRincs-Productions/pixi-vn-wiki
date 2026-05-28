@@ -270,26 +270,44 @@ jobs:
         if [ -n "$TARGET_CNAME" ]; then
           echo "Target: pixi-vn.com → $TARGET_CNAME (proxied: $TARGET_PROXIED)"
 
-          ZONE_ID=$(curl -sf "https://api.cloudflare.com/client/v4/zones?name=pixi-vn.com" \
-            -H "Authorization: Bearer $CF_API_TOKEN" | jq -r '.result[0].id')
+          ZONE_RESP=$(curl -s "https://api.cloudflare.com/client/v4/zones?name=pixi-vn.com" \
+            -H "Authorization: Bearer $CF_API_TOKEN")
+          ZONE_ID=$(echo "$ZONE_RESP" | jq -r '.result[0].id')
+          echo "Zone ID: $ZONE_ID"
+          if [ "$ZONE_ID" = "null" ] || [ -z "$ZONE_ID" ]; then
+            echo "ERROR: could not retrieve zone ID. API response: $ZONE_RESP"
+            exit 1
+          fi
 
-          RECORD_ID=$(curl -sf "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?type=CNAME&name=pixi-vn.com" \
-            -H "Authorization: Bearer $CF_API_TOKEN" | jq -r '.result[0].id')
+          RECORD_RESP=$(curl -s "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?type=CNAME&name=pixi-vn.com" \
+            -H "Authorization: Bearer $CF_API_TOKEN")
+          RECORD_ID=$(echo "$RECORD_RESP" | jq -r '.result[0].id')
+          echo "Record ID: $RECORD_ID"
 
           PAYLOAD=$(jq -n --arg c "$TARGET_CNAME" --arg p "$TARGET_PROXIED" \
             '{"type":"CNAME","name":"pixi-vn.com","content":$c,"ttl":1,"proxied":($p == "true")}')
 
           if [ "$RECORD_ID" = "null" ] || [ -z "$RECORD_ID" ]; then
-            curl -sf -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
+            RESP=$(curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
               -H "Authorization: Bearer $CF_API_TOKEN" \
               -H "Content-Type: application/json" \
-              -d "$PAYLOAD"
+              -d "$PAYLOAD")
+            echo "DNS create response: $RESP"
+            if [ "$(echo "$RESP" | jq -r '.success')" != "true" ]; then
+              echo "ERROR: DNS record creation failed"
+              exit 1
+            fi
             echo "DNS record created"
           else
-            curl -sf -X PUT "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$RECORD_ID" \
+            RESP=$(curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$RECORD_ID" \
               -H "Authorization: Bearer $CF_API_TOKEN" \
               -H "Content-Type: application/json" \
-              -d "$PAYLOAD"
+              -d "$PAYLOAD")
+            echo "DNS update response: $RESP"
+            if [ "$(echo "$RESP" | jq -r '.success')" != "true" ]; then
+              echo "ERROR: DNS record update failed"
+              exit 1
+            fi
             echo "DNS record updated"
           fi
         else
