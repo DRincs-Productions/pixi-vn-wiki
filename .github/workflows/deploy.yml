@@ -231,6 +231,7 @@ jobs:
         NETLIFY_DEPLOYED: ${{ needs.deploy-netlify.outputs.deployed }}
         CLOUDFLARE_DEPLOYED: ${{ needs.deploy-cloudflare.outputs.deployed }}
       run: |
+        # Vercel requires proxied:false and its own CNAME alias (not the .vercel.app URL).
         SOURCES=(
           "https://pixi-vn.pages.dev"
           "https://pixi-vn.web.app"
@@ -240,22 +241,30 @@ jobs:
         CNAMES=(
           "pixi-vn.pages.dev"
           "pixi-vn.web.app"
-          "pixi-vn.vercel.app"
+          "af2ae560bfbc8dab.vercel-dns-017.com"
           "pixi-vn.netlify.app"
+        )
+        PROXIED=(
+          "true"
+          "true"
+          "false"
+          "true"
         )
 
         TARGET_CNAME=""
+        TARGET_PROXIED="true"
         for i in "${!SOURCES[@]}"; do
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "${SOURCES[$i]}")
           echo "${SOURCES[$i]} → $STATUS"
           if [ "$STATUS" = "200" ]; then
             TARGET_CNAME="${CNAMES[$i]}"
+            TARGET_PROXIED="${PROXIED[$i]}"
             break
           fi
         done
 
         if [ -n "$TARGET_CNAME" ]; then
-          echo "Target: pixi-vn.com → $TARGET_CNAME"
+          echo "Target: pixi-vn.com → $TARGET_CNAME (proxied: $TARGET_PROXIED)"
 
           ZONE_ID=$(curl -sf "https://api.cloudflare.com/client/v4/zones?name=pixi-vn.com" \
             -H "Authorization: Bearer $CF_API_TOKEN" | jq -r '.result[0].id')
@@ -263,8 +272,8 @@ jobs:
           RECORD_ID=$(curl -sf "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?type=CNAME&name=pixi-vn.com" \
             -H "Authorization: Bearer $CF_API_TOKEN" | jq -r '.result[0].id')
 
-          PAYLOAD=$(jq -n --arg c "$TARGET_CNAME" \
-            '{"type":"CNAME","name":"pixi-vn.com","content":$c,"ttl":1,"proxied":true}')
+          PAYLOAD=$(jq -n --arg c "$TARGET_CNAME" --arg p "$TARGET_PROXIED" \
+            '{"type":"CNAME","name":"pixi-vn.com","content":$c,"ttl":1,"proxied":($p == "true")}')
 
           if [ "$RECORD_ID" = "null" ] || [ -z "$RECORD_ID" ]; then
             curl -sf -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
@@ -283,7 +292,32 @@ jobs:
           echo "No reachable deployment found, DNS not updated"
         fi
 
+        FAILED=false
+
         if [ "$FIREBASE_DEPLOYED" != "true" ] && [ "$VERCEL_DEPLOYED" != "true" ] && [ "$NETLIFY_DEPLOYED" != "true" ] && [ "$CLOUDFLARE_DEPLOYED" != "true" ]; then
           echo "All deployments failed"
+          FAILED=true
+        fi
+
+        echo "Verifying https://pixi-vn.com..."
+        VERIFY_STATUS=""
+        for attempt in 1 2 3 4 5; do
+          VERIFY_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "https://pixi-vn.com")
+          echo "Attempt $attempt: https://pixi-vn.com → $VERIFY_STATUS"
+          if [ "$VERIFY_STATUS" = "200" ]; then
+            echo "DNS verification passed"
+            break
+          fi
+          if [ "$attempt" -lt 5 ]; then
+            sleep 10
+          fi
+        done
+
+        if [ "$VERIFY_STATUS" != "200" ]; then
+          echo "ERROR: https://pixi-vn.com is not reachable"
+          FAILED=true
+        fi
+
+        if [ "$FAILED" = "true" ]; then
           exit 1
         fi
