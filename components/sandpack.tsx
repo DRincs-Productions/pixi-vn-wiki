@@ -33,6 +33,8 @@ export function ReactTemplate({
                     motion: "latest",
                     "pixi.js": "latest",
                     tone: "latest",
+                    "@babel/plugin-proposal-private-methods": "latest",
+                    "@babel/plugin-proposal-class-properties": "latest",
                     ...dependencies,
                 },
                 devDependencies: {
@@ -59,6 +61,8 @@ export function ReactTemplate({
                 "constants.ts": constants,
                 "labels/index.ts": labels,
                 "values/characters.ts": "",
+                ".babelrc": babelrc,
+
                 ...files,
             }}
             style={{
@@ -616,3 +620,10 @@ export const WIDTH = 720;
 export const BACKGROUND_COLOR = "#303030";`;
 
 const labels = `import "./startLabel";`;
+
+const babelrc = `{
+  "plugins": [
+    "@babel/plugin-proposal-private-methods",
+    "@babel/plugin-proposal-class-properties"
+  ]
+}`;
