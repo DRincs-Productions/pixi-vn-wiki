@@ -1,23 +1,23 @@
 ---
-title: Manage narration flow with labels
-description: Describes how to control the narrative flow in Pixi’VN using labels, including call, jump, and close labels function.
+title: 使用叙事节点管理叙事流程
+description: 描述如何在 Pixi'VN 中使用叙事节点控制叙事流程，包括调用、跳转和关闭叙事节点等功能。
 ---
 
-The narration flow is managed by functions such as `call`, `jump`, `continue`, `back`, and `closeLabel`, all available in the `narration` object.
+叙事流程通过 `call`、`jump`、`continue`、`back` 和 `closeLabel` 等函数管理，所有这些函数均可在 `narration` 对象中使用。
 
-## Run a label
+## 运行叙事节点
 
 :::tip[*ink*]
 
-您可以使用 *ink* 语法使用此方法。 See more <DynamicLink href="/ink/labels#run-a-knot">here</DynamicLink>.
+您可以使用 *ink* 语法使用此方法。 您可以使用 *ink* 语法来使用此方法。详见 <DynamicLink href="/ink/labels#run-a-knot">此处</DynamicLink>。
 
 :::
 
 <Accordions>
 
-<Accordion title="`call` a `label`" id="call-a-label">
+<Accordion title="`call` 一个叙事节点（`label`）" id="call-a-label">
 
-To call a `label`, use the [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) function.
+要调用叙事节点（`label`），请使用 [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) 函数。
 
 ```ts
 import { narration } from "@drincs/pixi-vn";
@@ -25,15 +25,15 @@ import { narration } from "@drincs/pixi-vn";
 narration.call(startLabel, {});
 ```
 
-When you call a `label`, the first `step` of that `label` is executed. If another `label` was running before the call, the remaining `steps` of that previous `label` will resume after the called `label` finishes.
+当您调用叙事节点（`label`）时，该叙事节点（`label`）的第一个叙事步骤（`step`）会被执行。 如果在调用之前有另一个叙事节点（`label`）正在运行，则在被调用的叙事节点（`label`）完成后，前一个叙事节点（`label`）剩余的叙事步骤（`steps`）将恢复执行。
 
-For example, if the game is running `step` 5 of `label` A and you **call** `label` B, after all `steps` of `label` B are executed, the game continues with `step` 6 of `label` A.
+例如，如果游戏正在运行叙事节点（`label`）A 的第 5 个叙事步骤（`step`），而您**调用**叙事节点（`label`）B，则在叙事节点（`label`）B 的所有叙事步骤（`steps`）执行完毕后，游戏将继续执行叙事节点（`label`）A 的第 6 个叙事步骤（`step`）。
 
-[`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) returns the <DynamicLink href="/start/labels#step-results">result</DynamicLink> of the first `step` of the called `label`.
+[`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) 返回被调用的叙事节点（`label`）第一个叙事步骤（`step`）的 <DynamicLink href="/start/labels#step-results">结果</DynamicLink>。
 
 ---
 
-If you execute [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) inside a `step`, you should return the result of [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) and use `await`. This ensures the history is managed correctly.
+如果您在叙事步骤（`step`）内执行 [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call)，您应该返回 [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) 的结果并使用 `await`。 这可以确保历史记录被正确管理。
 
 ```ts title="content/labels/start.label.ts"
 import { narration, newLabel } from "@drincs/pixi-vn";
@@ -48,9 +48,9 @@ export const startLabel = newLabel("start", [
 
 </Accordion>
 
-<Accordion title="`jump` a `label`" id="jump-to-a-label">
+<Accordion title="`jump` 到一个叙事节点（`label`）" id="jump-to-a-label">
 
-To jump to a `label`, use the [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) function.
+要跳转到叙事节点（`label`），请使用 [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) 函数。
 
 ```ts
 import { narration } from "@drincs/pixi-vn";
@@ -58,15 +58,15 @@ import { narration } from "@drincs/pixi-vn";
 narration.jump(startLabel, {});
 ```
 
-When you jump to a `label`, the current `label`'s `steps` are stopped and the new `label`'s `steps` begin.
+当您跳转到叙事节点（`label`）时，当前叙事节点（`label`）的叙事步骤（`steps`）将停止，新叙事节点（`label`）的叙事步骤（`steps`）开始执行。
 
-For example, if the game is running `step` 5 of `label` A, and you **call** `label` B, but then **jump** to `label` C, after `label` C finishes, the game continues with `step` 6 of `label` A. When you jump to `label` C, `label` B is closed.
+例如，如果游戏正在运行叙事节点（`label`）A 的第 5 个叙事步骤（`step`），而您**调用**叙事节点（`label`）B，但随后**跳转**到叙事节点（`label`）C，则在叙事节点（`label`）C 完成后，游戏将继续执行叙事节点（`label`）A 的第 6 个叙事步骤（`step`）。当您跳转到叙事节点（`label`）C 时，叙事节点（`label`）B 会被关闭。
 
-[`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) returns the <DynamicLink href="/start/labels#all-steps-result">result of the first `step` of the called `label`</DynamicLink>.
+[`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) 返回被调用叙事节点（`label`）<DynamicLink href="/start/labels#all-steps-result">第一个叙事步骤（`step`）的结果</DynamicLink>。
 
 ---
 
-If you execute [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) inside a `step`, you should return the result of [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) and use `await`. This ensures the first `step` of the new `label` is awaited.
+如果您在叙事步骤（`step`）内执行 [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump)，您应该返回 [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) 的结果并使用 `await`。 这可以确保新叙事节点（`label`）的第一个叙事步骤（`step`）被等待。
 
 ```ts title="content/labels/start.label.ts"
 import { narration } from "@drincs/pixi-vn";
@@ -81,9 +81,9 @@ export const startLabel = newLabel("start", [
 
 </Accordion>
 
-<Accordion title="Start the game" id="start-game">
+<Accordion title="启动游戏" id="start-game">
 
-To start the game, use the [`Game.start`](/jsdoc/pixi-vn/index/namespaces/Game/functions/start) function. This function is equivalent to calling a `label`, but it is recommended to use it for a cleaner startup.
+要启动游戏，请使用 [`Game.start`](/jsdoc/pixi-vn/index/namespaces/Game/functions/start) 函数。 此函数等同于调用叙事节点（`label`），但建议使用它以获得更简洁的启动流程。
 
 ```ts title="content/labels/start.label.ts"
 import { Game } from "@drincs/pixi-vn";
@@ -95,17 +95,17 @@ Game.start(startLabel, gameProps);
 
 </Accordions>
 
-## Continue and go back in steps
+## 在叙事步骤中继续和返回
 
-### Continue
+### 继续
 
 :::tip[UI 界面]
 
-You can find the example of the "continue" button in the <DynamicLink href="/start/interface-examples#go-next">interface examples</DynamicLink> section.
+您可以在 <DynamicLink href="/start/interface-examples#go-next">界面示例</DynamicLink> 部分找到"继续"按钮的示例。
 
 :::
 
-To execute the next `step`, use the [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) function.
+要执行下一个叙事步骤（`step`），请使用 [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) 函数。
 
 ```ts
 import { narration } from "@drincs/pixi-vn";
@@ -113,7 +113,7 @@ import { narration } from "@drincs/pixi-vn";
 await narration.continue({});
 ```
 
-[`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) is asynchronous, so you can use `.then` to, for example, disable a "Next" button until the `step` is complete.
+[`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) 是异步的，因此您可以使用 `.then` 来，例如，在叙事步骤（`step`）完成之前禁用"下一步"按钮。
 
 ```ts
 import { narration } from "@drincs/pixi-vn";
@@ -126,9 +126,9 @@ narration.continue({}).then((result) => {
 
 <Accordions>
 
-<Accordion title="Execute continue inside a `step`" id="call-continue-inside-a-step">
+<Accordion title="在叙事步骤（`step`）内执行 continue" id="call-continue-inside-a-step">
 
-If you call [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) inside a `step`, the "continue" request will be queued and executed when the queue is empty.
+如果您在叙事步骤（`step`）内调用 [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue)，"continue" 请求将被加入队列，并在队列为空时执行。
 
 ```ts title="content/labels/start.label.ts"
 import { narration, newLabel } from "@drincs/pixi-vn";
@@ -140,7 +140,7 @@ export const startLabel = newLabel("start", [
 ]);
 ```
 
-Here is an example to illustrate how the queue works:
+以下是一个说明队列工作原理的示例：
 
 ```ts title="content/labels/start.label.ts"
 import { narration, newLabel } from "@drincs/pixi-vn";
@@ -163,26 +163,27 @@ const label2 = newLabel("label_02", [
 ]);
 ```
 
-In this example, the output will be `2`, `1`, `3`. The steps are:
+在此示例中，输出将为 `2`、`1`、`3`。 步骤如下：
 
-1. `await narration.call(label2, props)` calls label2 and awaits its first `step`. (1 item in the queue)
-2. The first `step` of label2 executes `await narration.continue(props)`, but the continue request is queued because the queue is not empty. (2 items in the queue)
-3. `console.log(2)` runs, finishing the first `step` of label2. (1 item in the queue)
-4. `console.log(1)` runs, finishing the first `step` of startLabel. (0 items in the queue)
-5. Now the continue request is executed, and the second `step` of startLabel runs. (1 item in the queue)
-6. `console.log(3)` runs, finishing the second `step` of startLabel. (0 items in the queue)
+1. `await narration.call(label2, props)` 调用 label2 并等待其第一个叙事步骤（`step`）。 （队列中有 1 项）
+2. label2 的第一个叙事步骤（`step`）执行 `await narration.continue(props)`，但由于队列不为空，continue 请求被加入队列。 （队列中有 2 项）
+3. `console.log(2)` 运行，完成 label2 的第一个叙事步骤（`step`）。 （队列中有 1 项）
+4. `console.log(1)` 运行，完成 startLabel 的第一个叙事步骤（`step`）。 （队列中有 0 项）
+5. 现在 continue 请求被执行，startLabel 的第二个叙事步骤（`step`）运行。
+   （队列中有 1 项）
+6. `console.log(3)` 运行，完成 startLabel 的第二个叙事步骤（`step`）。 （队列中有 0 项）
 
 </Accordion>
 
-<Accordion title="Check if can go to the next `step`" id="can-go-next">
+<Accordion title="检查是否可以进入下一个叙事步骤（`step`）" id="can-go-next">
 
-You can use the [`narration.canContinue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#cancontinue) property to check if the next `step` can be executed.
+您可以使用 [`narration.canContinue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#cancontinue) 属性来检查是否可以执行下一个叙事步骤（`step`）。
 
-[`narration.canContinue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#cancontinue) is `false` when:
+当以下情况时，[`narration.canContinue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#cancontinue) 为 `false`：
 
-* A `step` is running
-* The player must <DynamicLink href="/start/choices">make a choice</DynamicLink>
-* The player must <DynamicLink href="/start/input">enter a value</DynamicLink>
+* 叙事步骤（`step`）正在运行
+* 玩家必须 <DynamicLink href="/start/choices">做出选择</DynamicLink>
+* 玩家必须 <DynamicLink href="/start/input">输入值</DynamicLink>
 
 ```tsx title="components/NextButton.tsx"
 import { narration } from "@drincs/pixi-vn";
@@ -205,15 +206,15 @@ function NextButton() {
 
 </Accordions>
 
-### Go back
+### 返回
 
 :::tip[UI 界面]
 
-You can find the example of the go back button in the <DynamicLink href="/start/interface-examples#go-back">interface examples</DynamicLink> section.
+您可以在 <DynamicLink href="/start/interface-examples#go-back">界面示例</DynamicLink> 部分找到返回按钮的示例。
 
 :::
 
-At every `step`, the system saves the current state of the game. To go back to the previous `step`, use the [`stepHistory.back`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#back) function.
+在每个叙事步骤（`step`），系统都会保存游戏的当前状态。 要返回上一个叙事步骤（`step`），请使用 [`stepHistory.back`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#back) 函数。
 
 <Accordions>
 
@@ -383,6 +384,3 @@ export function useWheelActions({
 </Accordion>
 
 </Accordions>
-
-```
-```
