@@ -1,0 +1,128 @@
+---
+title: Steam
+description: How to integrate Steam into your game using the built-in Tauri + Steamworks support included in this template.
+---
+
+:::tip[Mobile]
+
+Steam is not supported on iOS or Android — the feature is automatically disabled on those targets.
+
+:::
+
+The multiplatform template includes a **ready-to-use Steam integration** built on [Tauri](https://tauri.app/) and the Rust crate [`steamworks`](https://crates.io/crates/steamworks) (a wrapper around the Steamworks SDK). Everything is opt-in: the feature is excluded from the build by default and adds zero overhead when unused.
+
+## Enabling Steam support
+
+Edit `steam_appid.txt` in the repo root and replace the value with your real Steam App ID.\
+Use `480` (Spacewar) for local testing without a published app.
+
+```txt title="steam_appid.txt"
+480
+```
+
+Open `src-tauri/Cargo.toml` and add `steam` to the default features list:
+
+```toml title="src-tauri/Cargo.toml"
+default = ["steam"]
+```
+
+Alternatively, pass `--features steam` to any `cargo` or `tauri build` command without touching the file.
+
+Steam requires the native library to be present next to the executable at runtime:
+
+| Platform | File                 |
+| -------- | -------------------- |
+| Windows  | `steam_api64.dll`    |
+| Linux    | `libsteam_api.so`    |
+| macOS    | `libsteam_api.dylib` |
+
+The `steamworks-sys` crate copies the library into the build output automatically; you only need to make sure Tauri bundles it alongside the executable.
+
+## JavaScript/TypeScript API
+
+Import the `steam` namespace from `@/lib/steam` and call any function directly.\
+All functions are safe to call even when Steam is unavailable or the app runs in a browser: they simply return `null` / `false` / `0` without throwing.
+
+```ts
+import { steam } from "@/lib/steam";
+```
+
+### General
+
+| Function                | Returns                                     | Description                                                        |
+| ----------------------- | ------------------------------------------- | ------------------------------------------------------------------ |
+| `steam.isAvailable()`   | `Promise\<boolean>`        | `true` when the Steam client is running and the SDK is initialised |
+| `steam.getPlayerName()` | `Promise\<string \| null>` | Display name of the logged-in user                                 |
+| `steam.getAppId()`      | `Promise\<number \| null>` | Numeric App ID of the running application                          |
+
+### Achievements
+
+| Function                          | Returns                              | Description                                                                           |
+| --------------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------- |
+| `steam.unlockAchievement(id)`     | `Promise\<void>`    | Unlock and persist an achievement; `id` must match the API Name in Steamworks Partner |
+| `steam.isAchievementUnlocked(id)` | `Promise\<boolean>` | Check whether the user has already unlocked an achievement                            |
+| `steam.clearAchievement(id)`      | `Promise\<void>`    | Reset an achievement — for development / QA only                                      |
+
+### Stats
+
+| Function                          | Returns                             | Description                                                                     |
+| --------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------- |
+| `steam.setStatInt(name, value)`   | `Promise\<void>`   | Write an integer stat (call `storeStats()` to persist)                          |
+| `steam.getStatInt(name)`          | `Promise\<number>` | Read an integer stat (returns `0` on error)                                     |
+| `steam.setStatFloat(name, value)` | `Promise\<void>`   | Write a float stat (call `storeStats()` to persist)                             |
+| `steam.getStatFloat(name)`        | `Promise\<number>` | Read a float stat (returns `0` on error)                                        |
+| `steam.storeStats()`              | `Promise\<void>`   | Commit all pending stat changes — called automatically by achievement functions |
+
+### DLC
+
+| Function                      | Returns                              | Description                                                             |
+| ----------------------------- | ------------------------------------ | ----------------------------------------------------------------------- |
+| `steam.isDlcInstalled(appId)` | `Promise\<boolean>` | `true` if the user owns and has installed the DLC with the given App ID |
+
+### Overlay
+
+| Function                    | Returns                           | Description                                                                                                                                           |
+| --------------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `steam.openOverlay(dialog)` | `Promise\<void>` | Open the Steam overlay to a specific page (`"achievements"`, `"friends"`, `"community"`, `"stats"`, `"settings"`, `"officialgamegroup"`, `"players"`) |
+| `steam.openStore(appId?)`   | `Promise\<void>` | Open the Steam Store page for this game (or a different `appId`)                                                                                      |
+
+## Base implementation
+
+For reference, the base implementation is located in `src-tauri/src/steam.rs` and the API is exposed to the frontend via Tauri's `invoke` system in `src-tauri/src/lib.rs`.
+
+```toml tab="src-tauri/Cargo.toml"
+[features]
+default = []          # change to ["steam"] to enable
+steam = ["dep:steamworks"]
+
+[dependencies]
+steamworks = { version = "0.13", optional = true }
+```
+
+```rust tab="src-tauri/src/lib.rs"
+#[cfg(all(feature = "steam", not(target_os = "ios"), not(target_os = "android")))]
+mod steam;
+
+// inside run():
+#[cfg(all(feature = "steam", not(target_os = "ios"), not(target_os = "android")))]
+{
+    builder = builder
+        .manage(steam::SteamClient { client: Mutex::new(steam::try_init()) })
+        .invoke_handler(tauri::generate_handler![
+            steam::steam_is_available,
+            steam::steam_get_player_name,
+            steam::steam_get_app_id,
+            steam::steam_unlock_achievement,
+            steam::steam_is_achievement_unlocked,
+            steam::steam_clear_achievement,
+            steam::steam_set_stat_int,
+            steam::steam_get_stat_int,
+            steam::steam_set_stat_float,
+            steam::steam_get_stat_float,
+            steam::steam_store_stats,
+            steam::steam_is_dlc_installed,
+            steam::steam_open_overlay,
+            steam::steam_open_store,
+        ]);
+}
+```
