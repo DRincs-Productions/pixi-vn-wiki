@@ -18,14 +18,14 @@ export function ReactTemplate({
 }) {
     return (
         <SandpackProvider
-            template="react"
+            template="react-ts"
             options={{ bundlerURL: "https://sandpack-bundler.codesandbox.io" }}
             customSetup={{
                 dependencies: {
                     react: "latest",
                     "react-dom": "latest",
                     "react-scripts": "latest",
-                    "@drincs/pixi-vn": "1.8.5",
+                    "@drincs/pixi-vn": "1.8.7",
                     "@tanstack/react-query": "latest",
                     "react-markdown": "latest",
                     "rehype-raw": "latest",
