@@ -18,12 +18,11 @@ export function ReactTemplate({
 }) {
     return (
         <SandpackProvider
-            template="react-ts"
+            template="vite-react-ts"
             customSetup={{
                 dependencies: {
                     react: "latest",
                     "react-dom": "latest",
-                    "react-scripts": "latest",
                     "@drincs/pixi-vn": "1.8.5",
                     "@tanstack/react-query": "latest",
                     "react-markdown": "latest",
@@ -36,15 +35,13 @@ export function ReactTemplate({
                     ...dependencies,
                 },
                 devDependencies: {
-"@babel/plugin-proposal-private-methods": "latest",
-                    "@babel/plugin-proposal-class-properties": "latest",
                     "@types/react": "latest",
                     "@types/react-dom": "latest",
                     typescript: "latest",
                 },
             }}
             files={{
-                "public/index.html": indexhtml,
+                "index.html": indexhtml,
                 "App.tsx": App,
                 "styles.css": styles,
                 "components/BackButton.tsx": BackButton,
@@ -56,12 +53,11 @@ export function ReactTemplate({
                 "labels/startLabel.ts": startLabel,
                 "utils/assets-utility.ts": assetsUtility,
                 "assets/manifest.ts": manifest,
-                "index.tsx": index,
+                "src/main.tsx": index,
                 "hooks/useNarrationFunctions.ts": useNarrationFunctions,
                 "constants.ts": constants,
                 "labels/index.ts": labels,
                 "values/characters.ts": "",
-                "babel.config.json": babelrc,
 
                 ...files,
             }}
@@ -94,6 +90,7 @@ const indexhtml = `<!DOCTYPE html>
   </head>
   <body>
     <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>`;
 
@@ -484,13 +481,13 @@ export async function defineAssets() {
 const index = `import { Assets, Container, Game, canvas, sound } from "@drincs/pixi-vn";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
-import App from "./App";
-import { BACKGROUND_COLOR, HEIGHT, WIDTH } from "./constants";
-import { INTERFACE_DATA_USE_QUEY_KEY } from "./hooks/useQueryInterface";
-import "./labels";
-import { startLabel } from "./labels/startLabel";
-import "./styles.css";
-import { defineAssets } from "./utils/assets-utility";
+import App from "../App";
+import { BACKGROUND_COLOR, HEIGHT, WIDTH } from "../constants";
+import { INTERFACE_DATA_USE_QUEY_KEY } from "../hooks/useQueryInterface";
+import "../labels";
+import { startLabel } from "../labels/startLabel";
+import "../styles.css";
+import { defineAssets } from "../utils/assets-utility";
 
 // Canvas setup with PIXI
 const body = document.body;
@@ -621,9 +618,3 @@ export const BACKGROUND_COLOR = "#303030";`;
 
 const labels = `import "./startLabel";`;
 
-const babelrc = `{
-  "plugins": [
-    ["@babel/plugin-proposal-class-properties", { "loose": true }],
-    ["@babel/plugin-proposal-private-methods", { "loose": true }]
-  ]
-}`;
