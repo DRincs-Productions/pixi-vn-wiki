@@ -24,7 +24,7 @@ export function ReactTemplate({
                     react: "latest",
                     "react-dom": "latest",
                     "react-scripts": "latest",
-                    "@drincs/pixi-vn": "1.8.9",
+                    "@drincs/pixi-vn": "1.8.10",
                     "@tanstack/react-query": "latest",
                     "react-markdown": "latest",
                     "rehype-raw": "latest",
