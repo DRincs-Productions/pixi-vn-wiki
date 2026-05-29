@@ -1,23 +1,23 @@
 ---
-title: Manage narration flow with labels
-description: Describes how to control the narrative flow in Pixi’VN using labels, including call, jump, and close labels function.
+title: Erzählfluss mit Labels verwalten
+description: Beschreibt, wie der Erzählfluss in Pixi'VN mithilfe von Labels gesteuert wird, einschließlich der Funktionen call, jump und Labels schließen.
 ---
 
-The narration flow is managed by functions such as `call`, `jump`, `continue`, `back`, and `closeLabel`, all available in the `narration` object.
+Der Erzählfluss wird durch Funktionen wie `call`, `jump`, `continue`, `back` und `closeLabel` gesteuert, die alle im `narration`-Objekt verfügbar sind.
 
-## Run a label
+## Ein Label ausführen
 
 :::tip[*ink*]
 
-Sie können diese Methode mit der *ink*-Syntax verwenden. See more <DynamicLink href="/ink/labels#run-a-knot">here</DynamicLink>.
+Sie können diese Methode mit der *ink*-Syntax verwenden. Mehr dazu <DynamicLink href="/ink/labels#run-a-knot">hier</DynamicLink>.
 
 :::
 
 <Accordions>
 
-<Accordion title="`call` a `label`" id="call-a-label">
+<Accordion title="Ein `label` `call`en" id="call-a-label">
 
-To call a `label`, use the [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) function.
+Um ein `label` aufzurufen, verwende die Funktion [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call).
 
 ```ts
 import { narration } from "@drincs/pixi-vn";
@@ -25,15 +25,15 @@ import { narration } from "@drincs/pixi-vn";
 narration.call(startLabel, {});
 ```
 
-When you call a `label`, the first `step` of that `label` is executed. If another `label` was running before the call, the remaining `steps` of that previous `label` will resume after the called `label` finishes.
+Wenn du ein `label` aufrufst, wird der erste `step` dieses `label` ausgeführt. Wenn zuvor ein anderes `label` lief, werden die verbleibenden `steps` dieses vorherigen `label` fortgesetzt, nachdem das aufgerufene `label` beendet ist.
 
-For example, if the game is running `step` 5 of `label` A and you **call** `label` B, after all `steps` of `label` B are executed, the game continues with `step` 6 of `label` A.
+Wenn zum Beispiel das Spiel `step` 5 von `label` A ausführt und du `label` B **aufrufst**, setzt das Spiel nach der Ausführung aller `steps` von `label` B mit `step` 6 von `label` A fort.
 
-[`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) returns the <DynamicLink href="/start/labels#step-results">result</DynamicLink> of the first `step` of the called `label`.
+[`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) gibt das <DynamicLink href="/start/labels#step-results">Ergebnis</DynamicLink> des ersten `step` des aufgerufenen `label` zurück.
 
 ---
 
-If you execute [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) inside a `step`, you should return the result of [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) and use `await`. This ensures the history is managed correctly.
+Wenn du [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) innerhalb eines `step` ausführst, solltest du das Ergebnis von [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) zurückgeben und `await` verwenden. Dies stellt sicher, dass der Verlauf korrekt verwaltet wird.
 
 ```ts title="content/labels/start.label.ts"
 import { narration, newLabel } from "@drincs/pixi-vn";
@@ -48,9 +48,9 @@ export const startLabel = newLabel("start", [
 
 </Accordion>
 
-<Accordion title="`jump` a `label`" id="jump-to-a-label">
+<Accordion title="Zu einem `label` `jump`en" id="jump-to-a-label">
 
-To jump to a `label`, use the [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) function.
+Um zu einem `label` zu springen, verwende die Funktion [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump).
 
 ```ts
 import { narration } from "@drincs/pixi-vn";
@@ -58,15 +58,15 @@ import { narration } from "@drincs/pixi-vn";
 narration.jump(startLabel, {});
 ```
 
-When you jump to a `label`, the current `label`'s `steps` are stopped and the new `label`'s `steps` begin.
+Wenn du zu einem `label` springst, werden die `steps` des aktuellen `label` gestoppt und die `steps` des neuen `label` beginnen.
 
-For example, if the game is running `step` 5 of `label` A, and you **call** `label` B, but then **jump** to `label` C, after `label` C finishes, the game continues with `step` 6 of `label` A. When you jump to `label` C, `label` B is closed.
+Wenn zum Beispiel das Spiel `step` 5 von `label` A ausführt und du `label` B **aufrufst**, aber dann zu `label` C **springst**, setzt das Spiel nach dem Ende von `label` C mit `step` 6 von `label` A fort. Wenn du zu `label` C springst, wird `label` B geschlossen.
 
-[`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) returns the <DynamicLink href="/start/labels#all-steps-result">result of the first `step` of the called `label`</DynamicLink>.
+[`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) gibt das <DynamicLink href="/start/labels#all-steps-result">Ergebnis des ersten `step` des aufgerufenen `label`</DynamicLink> zurück.
 
 ---
 
-If you execute [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) inside a `step`, you should return the result of [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) and use `await`. This ensures the first `step` of the new `label` is awaited.
+Wenn du [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) innerhalb eines `step` ausführst, solltest du das Ergebnis von [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) zurückgeben und `await` verwenden. Dies stellt sicher, dass der erste `step` des neuen `label` abgewartet wird.
 
 ```ts title="content/labels/start.label.ts"
 import { narration } from "@drincs/pixi-vn";
@@ -81,9 +81,9 @@ export const startLabel = newLabel("start", [
 
 </Accordion>
 
-<Accordion title="Start the game" id="start-game">
+<Accordion title="Das Spiel starten" id="start-game">
 
-To start the game, use the [`Game.start`](/jsdoc/pixi-vn/index/namespaces/Game/functions/start) function. This function is equivalent to calling a `label`, but it is recommended to use it for a cleaner startup.
+Um das Spiel zu starten, verwende die Funktion [`Game.start`](/jsdoc/pixi-vn/index/namespaces/Game/functions/start). Diese Funktion entspricht dem Aufrufen eines `label`, es wird jedoch empfohlen, sie für einen saubereren Start zu verwenden.
 
 ```ts title="content/labels/start.label.ts"
 import { Game } from "@drincs/pixi-vn";
@@ -95,17 +95,17 @@ Game.start(startLabel, gameProps);
 
 </Accordions>
 
-## Continue and go back in steps
+## Steps fortsetzen und zurückgehen
 
-### Continue
+### Fortsetzen
 
 :::tip[UI-Bildschirm]
 
-You can find the example of the "continue" button in the <DynamicLink href="/start/interface-examples#go-next">interface examples</DynamicLink> section.
+Ein Beispiel für den "Weiter"-Button findet sich im Abschnitt <DynamicLink href="/start/interface-examples#go-next">Interface-Beispiele</DynamicLink>.
 
 :::
 
-To execute the next `step`, use the [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) function.
+Um den nächsten `step` auszuführen, verwende die Funktion [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue).
 
 ```ts
 import { narration } from "@drincs/pixi-vn";
@@ -113,7 +113,7 @@ import { narration } from "@drincs/pixi-vn";
 await narration.continue({});
 ```
 
-[`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) is asynchronous, so you can use `.then` to, for example, disable a "Next" button until the `step` is complete.
+[`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) ist asynchron, daher kann `.then` verwendet werden, um zum Beispiel einen "Weiter"-Button zu deaktivieren, bis der `step` abgeschlossen ist.
 
 ```ts
 import { narration } from "@drincs/pixi-vn";
@@ -126,9 +126,9 @@ narration.continue({}).then((result) => {
 
 <Accordions>
 
-<Accordion title="Execute continue inside a `step`" id="call-continue-inside-a-step">
+<Accordion title="continue innerhalb eines `step` ausführen" id="call-continue-inside-a-step">
 
-If you call [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) inside a `step`, the "continue" request will be queued and executed when the queue is empty.
+Wenn du [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) innerhalb eines `step` aufrufst, wird die "continue"-Anfrage in die Warteschlange eingereiht und ausgeführt, wenn die Warteschlange leer ist.
 
 ```ts title="content/labels/start.label.ts"
 import { narration, newLabel } from "@drincs/pixi-vn";
@@ -140,7 +140,7 @@ export const startLabel = newLabel("start", [
 ]);
 ```
 
-Here is an example to illustrate how the queue works:
+Hier ist ein Beispiel, das die Funktionsweise der Warteschlange veranschaulicht:
 
 ```ts title="content/labels/start.label.ts"
 import { narration, newLabel } from "@drincs/pixi-vn";
@@ -163,26 +163,26 @@ const label2 = newLabel("label_02", [
 ]);
 ```
 
-In this example, the output will be `2`, `1`, `3`. The steps are:
+In diesem Beispiel lautet die Ausgabe `2`, `1`, `3`. Die Schritte sind:
 
-1. `await narration.call(label2, props)` calls label2 and awaits its first `step`. (1 item in the queue)
-2. The first `step` of label2 executes `await narration.continue(props)`, but the continue request is queued because the queue is not empty. (2 items in the queue)
-3. `console.log(2)` runs, finishing the first `step` of label2. (1 item in the queue)
-4. `console.log(1)` runs, finishing the first `step` of startLabel. (0 items in the queue)
-5. Now the continue request is executed, and the second `step` of startLabel runs. (1 item in the queue)
-6. `console.log(3)` runs, finishing the second `step` of startLabel. (0 items in the queue)
+1. `await narration.call(label2, props)` ruft label2 auf und wartet auf dessen ersten `step`. (1 Element in der Warteschlange)
+2. Der erste `step` von label2 führt `await narration.continue(props)` aus, aber die continue-Anfrage wird in die Warteschlange eingereiht, weil die Warteschlange nicht leer ist. (2 Elemente in der Warteschlange)
+3. `console.log(2)` wird ausgeführt und beendet den ersten `step` von label2. (1 Element in der Warteschlange)
+4. `console.log(1)` wird ausgeführt und beendet den ersten `step` von startLabel. (0 Elemente in der Warteschlange)
+5. Die continue-Anfrage wird jetzt ausgeführt, und der zweite `step` von startLabel läuft. (1 Element in der Warteschlange)
+6. `console.log(3)` wird ausgeführt und beendet den zweiten `step` von startLabel. (0 Elemente in der Warteschlange)
 
 </Accordion>
 
-<Accordion title="Check if can go to the next `step`" id="can-go-next">
+<Accordion title="Prüfen, ob zum nächsten `step` gewechselt werden kann" id="can-go-next">
 
-You can use the [`narration.canContinue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#cancontinue) property to check if the next `step` can be executed.
+Die Eigenschaft [`narration.canContinue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#cancontinue) kann verwendet werden, um zu prüfen, ob der nächste `step` ausgeführt werden kann.
 
-[`narration.canContinue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#cancontinue) is `false` when:
+[`narration.canContinue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#cancontinue) ist `false`, wenn:
 
-* A `step` is running
-* The player must <DynamicLink href="/start/choices">make a choice</DynamicLink>
-* The player must <DynamicLink href="/start/input">enter a value</DynamicLink>
+* Ein `step` ausgeführt wird
+* Der Spieler eine <DynamicLink href="/start/choices">Entscheidung treffen</DynamicLink> muss
+* Der Spieler einen <DynamicLink href="/start/input">Wert eingeben</DynamicLink> muss
 
 ```tsx title="components/NextButton.tsx"
 import { narration } from "@drincs/pixi-vn";
@@ -205,23 +205,23 @@ function NextButton() {
 
 </Accordions>
 
-### Go back
+### Zurückgehen
 
 :::tip[UI-Bildschirm]
 
-You can find the example of the go back button in the <DynamicLink href="/start/interface-examples#go-back">interface examples</DynamicLink> section.
+Ein Beispiel für den Zurück-Button findet sich im Abschnitt <DynamicLink href="/start/interface-examples#go-back">Interface-Beispiele</DynamicLink>.
 
 :::
 
-At every `step`, the system saves the current state of the game. To go back to the previous `step`, use the [`stepHistory.back`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#back) function.
+Bei jedem `step` speichert das System den aktuellen Zustand des Spiels. Um zum vorherigen `step` zurückzugehen, verwende die Funktion [`stepHistory.back`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#back).
 
 <Accordions>
 
-<Accordion title="Check if can go back" id="can-go-back">
+<Accordion title="Prüfen, ob zurückgegangen werden kann" id="can-go-back">
 
-You can use the [`stepHistory.canGoBack`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#cangoback) property to check if going back is possible.
+Die Eigenschaft [`stepHistory.canGoBack`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#cangoback) kann verwendet werden, um zu prüfen, ob ein Zurückgehen möglich ist.
 
-[`stepHistory.canGoBack`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#cangoback) is `false` when there are no `steps` in the history to restore.
+[`stepHistory.canGoBack`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#cangoback) ist `false`, wenn keine `steps` im Verlauf zum Wiederherstellen vorhanden sind.
 
 ```ts
 import { stepHistory } from "@drincs/pixi-vn";
@@ -233,9 +233,9 @@ if (stepHistory.canGoBack) {
 
 </Accordion>
 
-<Accordion title="Block the possibility of going back" id="block-the-possibility-of-going-back">
+<Accordion title="Die Möglichkeit des Zurückgehens blockieren" id="block-the-possibility-of-going-back">
 
-You can block the "go back" by calling [`stepHistory.blockGoBack`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#blockgoback).
+Das "Zurückgehen" kann durch den Aufruf von [`stepHistory.blockGoBack`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#blockgoback) blockiert werden.
 
 ```typescript
 import { stepHistory } from "@drincs/pixi-vn";
@@ -247,13 +247,13 @@ stepHistory.blockGoBack();
 
 </Accordions>
 
-## Close labels
+## Labels schließen
 
 <Accordions>
 
-<Accordion title="Close current label" id="close-current-label">
+<Accordion title="Aktuelles `label` schließen" id="close-current-label">
 
-To close the current `label`, use the [`narration.closeCurrentLabel`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#closecurrentlabel) function.
+Um das aktuelle `label` zu schließen, verwende die Funktion [`narration.closeCurrentLabel`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#closecurrentlabel).
 
 ```typescript
 import { narration } from "@drincs/pixi-vn";
@@ -263,9 +263,9 @@ narration.closeCurrentLabel();
 
 </Accordion>
 
-<Accordion title="Close all labels" id="close-all-labels">
+<Accordion title="Alle `labels` schließen" id="close-all-labels">
 
-To close all `labels`, use the [`narration.closeAllLabels`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#closealllabels) function. **If you call this function and do not call any `label` afterwards, the game will end**
+Um alle `labels` zu schließen, verwende die Funktion [`narration.closeAllLabels`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#closealllabels). **Wenn du diese Funktion aufrufst und danach kein `label` aufrufst, endet das Spiel**
 
 ```typescript
 import { narration } from "@drincs/pixi-vn";
@@ -281,17 +281,17 @@ narration.closeAllLabels();
 
 <Accordions>
 
-<Accordion title="Rollback and Rollforward" id="rollback-rollforward">
+<Accordion title="Rollback und Rollforward" id="rollback-rollforward">
 
 :::tip[Vorlagen]
 
-In all templates, this implementation is already included.
+In allen Templates ist diese Implementierung bereits enthalten.
 
 :::
 
-If you execute multiple [`stepHistory.back`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#back) and [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) requests synchronously, the system will internally queue them and calculate the delta to execute only the necessary processes.
+Wenn du mehrere [`stepHistory.back`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#back)- und [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue)-Anfragen synchron ausführst, reiht das System sie intern in eine Warteschlange ein und berechnet das Delta, um nur die notwendigen Prozesse auszuführen.
 
-So you can implement rollback and rollforward features using the [`stepHistory.back`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#back) and [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) functions.
+Du kannst daher Rollback- und Rollforward-Funktionen mithilfe der Funktionen [`stepHistory.back`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#back) und [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) implementieren.
 
 ```tsx title="lib/hooks/quick-tools-hooks.ts"
 import { HTML_CANVAS_LAYER_NAME, HTML_UI_LAYER_NAME } from "@/constans";
