@@ -19,7 +19,6 @@ export function ReactTemplate({
     return (
         <SandpackProvider
             template="react-ts"
-            options={{ bundlerURL: "https://sandpack-bundler.codesandbox.io" }}
             customSetup={{
                 dependencies: {
                     react: "latest",
