@@ -1,23 +1,23 @@
 ---
-title: Manage narration flow with labels
-description: Describes how to control the narrative flow in Pixi’VN using labels, including call, jump, and close labels function.
+title: 레이블로 내러티브 흐름 관리하기
+description: Pixi'VN에서 내러티브 노드 (`label`)를 사용해 내러티브 흐름을 제어하는 방법을 설명합니다. call, jump, 내러티브 노드 닫기 함수를 포함합니다.
 ---
 
-The narration flow is managed by functions such as `call`, `jump`, `continue`, `back`, and `closeLabel`, all available in the `narration` object.
+내러티브 흐름은 `call`, `jump`, `continue`, `back`, `closeLabel` 등의 함수로 관리되며, 이 모든 함수는 `narration` 객체에서 사용할 수 있습니다.
 
-## Run a label
+## 내러티브 노드 실행하기
 
 :::tip[*ink*]
 
-이 메서드는 *ink* 문법과 함께 사용할 수 있습니다. See more <DynamicLink href="/ink/labels#run-a-knot">here</DynamicLink>.
+이 메서드는 *ink* 문법과 함께 사용할 수 있습니다. <DynamicLink href="/ink/labels#run-a-knot">여기</DynamicLink>에서 자세히 알아보세요.
 
 :::
 
 <Accordions>
 
-<Accordion title="`call` a `label`" id="call-a-label">
+<Accordion title="내러티브 노드 (`label`) " id="call-a-label">
 
-To call a `label`, use the [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) function.
+내러티브 노드 (`label`)를 호출하려면 [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) 함수를 사용하세요.
 
 ```ts
 import { narration } from "@drincs/pixi-vn";
@@ -25,15 +25,15 @@ import { narration } from "@drincs/pixi-vn";
 narration.call(startLabel, {});
 ```
 
-When you call a `label`, the first `step` of that `label` is executed. If another `label` was running before the call, the remaining `steps` of that previous `label` will resume after the called `label` finishes.
+내러티브 노드 (`label`)를 호출하면 해당 내러티브 노드 (`label`)의 첫 번째 내러티브 단계 (`step`)가 실행됩니다. 호출 전에 다른 내러티브 노드 (`label`)가 실행 중이었다면, 호출된 내러티브 노드 (`label`)가 완료된 후 이전 내러티브 노드 (`label`)의 나머지 내러티브 단계 (`steps`)가 재개됩니다.
 
-For example, if the game is running `step` 5 of `label` A and you **call** `label` B, after all `steps` of `label` B are executed, the game continues with `step` 6 of `label` A.
+예를 들어, 게임이 내러티브 노드 (`label`) A의 내러티브 단계 (`step`) 5를 실행 중일 때 내러티브 노드 (`label`) B를 **호출**하면, 내러티브 노드 (`label`) B의 모든 내러티브 단계 (`steps`)가 실행된 후 게임은 내러티브 노드 (`label`) A의 내러티브 단계 (`step`) 6부터 계속됩니다.
 
-[`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) returns the <DynamicLink href="/start/labels#step-results">result</DynamicLink> of the first `step` of the called `label`.
+[`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call)은 호출된 내러티브 노드 (`label`)의 첫 번째 내러티브 단계 (`step`)의 <DynamicLink href="/start/labels#step-results">결과</DynamicLink>를 반환합니다.
 
 ---
 
-If you execute [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) inside a `step`, you should return the result of [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) and use `await`. This ensures the history is managed correctly.
+내러티브 단계 (`step`) 내에서 [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call)을 실행하는 경우, [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call)의 결과를 반환하고 `await`를 사용해야 합니다. 이렇게 하면 히스토리가 올바르게 관리됩니다.
 
 ```ts title="content/labels/start.label.ts"
 import { narration, newLabel } from "@drincs/pixi-vn";
@@ -48,9 +48,9 @@ export const startLabel = newLabel("start", [
 
 </Accordion>
 
-<Accordion title="`jump` a `label`" id="jump-to-a-label">
+<Accordion title="내러티브 노드 (`label`)로 `jump` 하기&#x22; id=&#x22;jump-to-a-label" id="jump-to-a-label">
 
-To jump to a `label`, use the [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) function.
+내러티브 노드 (`label`)로 점프하려면 [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) 함수를 사용하세요.
 
 ```ts
 import { narration } from "@drincs/pixi-vn";
@@ -58,15 +58,15 @@ import { narration } from "@drincs/pixi-vn";
 narration.jump(startLabel, {});
 ```
 
-When you jump to a `label`, the current `label`'s `steps` are stopped and the new `label`'s `steps` begin.
+내러티브 노드 (`label`)로 점프하면 현재 내러티브 노드 (`label`)의 내러티브 단계 (`steps`)가 중단되고 새 내러티브 노드 (`label`)의 내러티브 단계 (`steps`)가 시작됩니다.
 
-For example, if the game is running `step` 5 of `label` A, and you **call** `label` B, but then **jump** to `label` C, after `label` C finishes, the game continues with `step` 6 of `label` A. When you jump to `label` C, `label` B is closed.
+예를 들어, 게임이 내러티브 노드 (`label`) A의 내러티브 단계 (`step`) 5를 실행 중일 때 내러티브 노드 (`label`) B를 **호출**했다가 내러티브 노드 (`label`) C로 **점프**하면, 내러티브 노드 (`label`) C가 완료된 후 게임은 내러티브 노드 (`label`) A의 내러티브 단계 (`step`) 6부터 계속됩니다. 내러티브 노드 (`label`) C로 점프하면 내러티브 노드 (`label`) B가 닫힙니다.
 
-[`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) returns the <DynamicLink href="/start/labels#all-steps-result">result of the first `step` of the called `label`</DynamicLink>.
+[`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump)는 호출된 내러티브 노드 (`label`)의 <DynamicLink href="/start/labels#all-steps-result">첫 번째 내러티브 단계 (`step`)의 결과</DynamicLink>를 반환합니다.
 
 ---
 
-If you execute [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) inside a `step`, you should return the result of [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) and use `await`. This ensures the first `step` of the new `label` is awaited.
+내러티브 단계 (`step`) 내에서 [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump)를 실행하는 경우, [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump)의 결과를 반환하고 `await`를 사용해야 합니다. 이렇게 하면 새 내러티브 노드 (`label`)의 첫 번째 내러티브 단계 (`step`)가 올바르게 대기됩니다.
 
 ```ts title="content/labels/start.label.ts"
 import { narration } from "@drincs/pixi-vn";
@@ -81,9 +81,9 @@ export const startLabel = newLabel("start", [
 
 </Accordion>
 
-<Accordion title="Start the game" id="start-game">
+<Accordion title="게임 시작하기" id="start-game">
 
-To start the game, use the [`Game.start`](/jsdoc/pixi-vn/index/namespaces/Game/functions/start) function. This function is equivalent to calling a `label`, but it is recommended to use it for a cleaner startup.
+게임을 시작하려면 [`Game.start`](/jsdoc/pixi-vn/index/namespaces/Game/functions/start) 함수를 사용하세요. 이 함수는 내러티브 노드 (`label`)를 호출하는 것과 동일하지만, 더 깔끔한 시작을 위해 사용하는 것을 권장합니다.
 
 ```ts title="content/labels/start.label.ts"
 import { Game } from "@drincs/pixi-vn";
@@ -95,17 +95,17 @@ Game.start(startLabel, gameProps);
 
 </Accordions>
 
-## Continue and go back in steps
+## 단계에서 계속하기와 뒤로 가기
 
-### Continue
+### 계속하기
 
 :::tip[UI 화면]
 
-You can find the example of the "continue" button in the <DynamicLink href="/start/interface-examples#go-next">interface examples</DynamicLink> section.
+"계속하기" 버튼의 예시는 <DynamicLink href="/start/interface-examples#go-next">인터페이스 예시</DynamicLink> 섹션에서 확인할 수 있습니다.
 
 :::
 
-To execute the next `step`, use the [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) function.
+다음 내러티브 단계 (`step`)를 실행하려면 [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) 함수를 사용하세요.
 
 ```ts
 import { narration } from "@drincs/pixi-vn";
@@ -113,7 +113,7 @@ import { narration } from "@drincs/pixi-vn";
 await narration.continue({});
 ```
 
-[`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) is asynchronous, so you can use `.then` to, for example, disable a "Next" button until the `step` is complete.
+[`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue)는 비동기적이므로, `.then`을 사용하여 예를 들어 내러티브 단계 (`step`)가 완료될 때까지 "다음" 버튼을 비활성화할 수 있습니다.
 
 ```ts
 import { narration } from "@drincs/pixi-vn";
@@ -126,9 +126,9 @@ narration.continue({}).then((result) => {
 
 <Accordions>
 
-<Accordion title="Execute continue inside a `step`" id="call-continue-inside-a-step">
+<Accordion title="내러티브 단계 (`step`) 내에서 continue 실행하기" id="call-continue-inside-a-step">
 
-If you call [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) inside a `step`, the "continue" request will be queued and executed when the queue is empty.
+내러티브 단계 (`step`) 내에서 [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue)를 호출하면 "continue" 요청이 대기열에 추가되고 대기열이 비었을 때 실행됩니다.
 
 ```ts title="content/labels/start.label.ts"
 import { narration, newLabel } from "@drincs/pixi-vn";
@@ -140,7 +140,7 @@ export const startLabel = newLabel("start", [
 ]);
 ```
 
-Here is an example to illustrate how the queue works:
+대기열 동작 방식을 설명하는 예시입니다:
 
 ```ts title="content/labels/start.label.ts"
 import { narration, newLabel } from "@drincs/pixi-vn";
@@ -163,26 +163,27 @@ const label2 = newLabel("label_02", [
 ]);
 ```
 
-In this example, the output will be `2`, `1`, `3`. The steps are:
+이 예시에서 출력은 `2`, `1`, `3`이 됩니다. 단계는 다음과 같습니다:
 
-1. `await narration.call(label2, props)` calls label2 and awaits its first `step`. (1 item in the queue)
-2. The first `step` of label2 executes `await narration.continue(props)`, but the continue request is queued because the queue is not empty. (2 items in the queue)
-3. `console.log(2)` runs, finishing the first `step` of label2. (1 item in the queue)
-4. `console.log(1)` runs, finishing the first `step` of startLabel. (0 items in the queue)
-5. Now the continue request is executed, and the second `step` of startLabel runs. (1 item in the queue)
-6. `console.log(3)` runs, finishing the second `step` of startLabel. (0 items in the queue)
+1. `await narration.call(label2, props)`가 label2를 호출하고 첫 번째 내러티브 단계 (`step`)를 기다립니다. (대기열에 1개)
+2. label2의 첫 번째 내러티브 단계 (`step`)가 `await narration.continue(props)`를 실행하지만, 대기열이 비어 있지 않으므로 continue 요청이 대기열에 추가됩니다. (대기열에 2개)
+3. `console.log(2)`가 실행되어 label2의 첫 번째 내러티브 단계 (`step`)가 완료됩니다. (대기열에 1개)
+4. `console.log(1)`이 실행되어 startLabel의 첫 번째 내러티브 단계 (`step`)가 완료됩니다. (대기열에 0개)
+5. continue 요청이 실행되고 startLabel의 두 번째 내러티브 단계 (`step`)가 실행됩니다.
+   (대기열에 1개)
+6. `console.log(3)`이 실행되어 startLabel의 두 번째 내러티브 단계 (`step`)가 완료됩니다. (대기열에 0개)
 
 </Accordion>
 
-<Accordion title="Check if can go to the next `step`" id="can-go-next">
+<Accordion title="다음 내러티브 단계 (`step`)로 이동 가능 여부 확인하기" id="can-go-next">
 
-You can use the [`narration.canContinue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#cancontinue) property to check if the next `step` can be executed.
+[`narration.canContinue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#cancontinue) 속성을 사용하여 다음 내러티브 단계 (`step`)를 실행할 수 있는지 확인할 수 있습니다.
 
-[`narration.canContinue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#cancontinue) is `false` when:
+[`narration.canContinue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#cancontinue)가 `false`인 경우:
 
-* A `step` is running
-* The player must <DynamicLink href="/start/choices">make a choice</DynamicLink>
-* The player must <DynamicLink href="/start/input">enter a value</DynamicLink>
+* 내러티브 단계 (`step`)가 실행 중인 경우
+* 플레이어가 <DynamicLink href="/start/choices">선택</DynamicLink>을 해야 하는 경우
+* 플레이어가 <DynamicLink href="/start/input">값을 입력</DynamicLink>해야 하는 경우
 
 ```tsx title="components/NextButton.tsx"
 import { narration } from "@drincs/pixi-vn";
@@ -205,23 +206,23 @@ function NextButton() {
 
 </Accordions>
 
-### Go back
+### 뒤로 가기
 
 :::tip[UI 화면]
 
-You can find the example of the go back button in the <DynamicLink href="/start/interface-examples#go-back">interface examples</DynamicLink> section.
+뒤로 가기 버튼의 예시는 <DynamicLink href="/start/interface-examples#go-back">인터페이스 예시</DynamicLink> 섹션에서 확인할 수 있습니다.
 
 :::
 
-At every `step`, the system saves the current state of the game. To go back to the previous `step`, use the [`stepHistory.back`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#back) function.
+모든 내러티브 단계 (`step`)에서 시스템은 게임의 현재 상태를 저장합니다. 이전 내러티브 단계 (`step`)로 돌아가려면 [`stepHistory.back`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#back) 함수를 사용하세요.
 
 <Accordions>
 
-<Accordion title="Check if can go back" id="can-go-back">
+<Accordion title="뒤로 갈 수 있는지 확인하기" id="can-go-back">
 
-You can use the [`stepHistory.canGoBack`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#cangoback) property to check if going back is possible.
+[`stepHistory.canGoBack`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#cangoback) 속성을 사용하여 뒤로 가기가 가능한지 확인할 수 있습니다.
 
-[`stepHistory.canGoBack`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#cangoback) is `false` when there are no `steps` in the history to restore.
+복원할 내러티브 단계 (`steps`)가 히스토리에 없으면 [`stepHistory.canGoBack`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#cangoback)은 `false`입니다.
 
 ```ts
 import { stepHistory } from "@drincs/pixi-vn";
@@ -233,9 +234,9 @@ if (stepHistory.canGoBack) {
 
 </Accordion>
 
-<Accordion title="Block the possibility of going back" id="block-the-possibility-of-going-back">
+<Accordion title="뒤로 가기 기능 차단하기" id="block-the-possibility-of-going-back">
 
-You can block the "go back" by calling [`stepHistory.blockGoBack`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#blockgoback).
+[`stepHistory.blockGoBack`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#blockgoback)을 호출하여 "뒤로 가기"를 차단할 수 있습니다.
 
 ```typescript
 import { stepHistory } from "@drincs/pixi-vn";
@@ -247,13 +248,13 @@ stepHistory.blockGoBack();
 
 </Accordions>
 
-## Close labels
+## 내러티브 노드 닫기
 
 <Accordions>
 
-<Accordion title="Close current label" id="close-current-label">
+<Accordion title="현재 내러티브 노드 (`label`) 닫기" id="close-current-label">
 
-To close the current `label`, use the [`narration.closeCurrentLabel`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#closecurrentlabel) function.
+현재 내러티브 노드 (`label`)를 닫으려면 [`narration.closeCurrentLabel`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#closecurrentlabel) 함수를 사용하세요.
 
 ```typescript
 import { narration } from "@drincs/pixi-vn";
@@ -263,9 +264,9 @@ narration.closeCurrentLabel();
 
 </Accordion>
 
-<Accordion title="Close all labels" id="close-all-labels">
+<Accordion title="모든 내러티브 노드 (`labels`) 닫기" id="close-all-labels">
 
-To close all `labels`, use the [`narration.closeAllLabels`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#closealllabels) function. **If you call this function and do not call any `label` afterwards, the game will end**
+모든 내러티브 노드 (`labels`)를 닫으려면 [`narration.closeAllLabels`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#closealllabels) 함수를 사용하세요. **이 함수를 호출한 후 어떤 내러티브 노드 (`label`)도 호출하지 않으면 게임이 종료됩니다**
 
 ```typescript
 import { narration } from "@drincs/pixi-vn";
@@ -281,17 +282,17 @@ narration.closeAllLabels();
 
 <Accordions>
 
-<Accordion title="Rollback and Rollforward" id="rollback-rollforward">
+<Accordion title="롤백과 롤포워드" id="rollback-rollforward">
 
 :::tip[템플릿]
 
-In all templates, this implementation is already included.
+모든 템플릿에는 이 구현이 이미 포함되어 있습니다.
 
 :::
 
-If you execute multiple [`stepHistory.back`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#back) and [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) requests synchronously, the system will internally queue them and calculate the delta to execute only the necessary processes.
+여러 [`stepHistory.back`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#back)과 [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) 요청을 동기적으로 실행하면, 시스템이 내부적으로 대기열에 추가하고 필요한 프로세스만 실행하도록 델타를 계산합니다.
 
-So you can implement rollback and rollforward features using the [`stepHistory.back`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#back) and [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) functions.
+따라서 [`stepHistory.back`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#back)과 [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) 함수를 사용하여 롤백 및 롤포워드 기능을 구현할 수 있습니다.
 
 ```tsx title="lib/hooks/quick-tools-hooks.ts"
 import { HTML_CANVAS_LAYER_NAME, HTML_UI_LAYER_NAME } from "@/constans";
