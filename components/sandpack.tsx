@@ -61,7 +61,7 @@ export function ReactTemplate({
                 "constants.ts": constants,
                 "labels/index.ts": labels,
                 "values/characters.ts": "",
-                ".babelrc": babelrc,
+                "babel.config.json": babelrc,
 
                 ...files,
             }}
@@ -623,7 +623,7 @@ const labels = `import "./startLabel";`;
 
 const babelrc = `{
   "plugins": [
-    "@babel/plugin-proposal-private-methods",
-    "@babel/plugin-proposal-class-properties"
+    ["@babel/plugin-proposal-class-properties", { "loose": true }],
+    ["@babel/plugin-proposal-private-methods", { "loose": true }]
   ]
 }`;
