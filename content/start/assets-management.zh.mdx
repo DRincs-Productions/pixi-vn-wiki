@@ -1,30 +1,30 @@
 ---
-title: Assets management
+title: 资源管理
 description: Organization, referencing, and loading of assets (images, sounds, videos) in Pixi’VN using aliases and manifests.
 ---
 
-To load and manipulate assets (images, gifs, videos, etc.) 需要使用 `Assets`。 `Assets` is a class with many features and comes from the PixiJS library. For more information, read [here](https://pixijs.com/8.x/guides/components/assets).
+要加载和操作资源（图像、gif、视频等）， 需要使用 `Assets`。 `Assets` 是一个功能丰富的类，来自 PixiJS 库。 更多信息请参阅[此处](https://pixijs.com/8.x/guides/components/assets)。
 
-In all Pixi’VN functions, you can directly use the image URL, even if it is not defined in `Assets`.
+在 Pixi'VN 中使用别名和清单来组织、引用和加载资源（图像、声音、视频）。
 
 ```ts
 let alien1 = await showImage("alien", "https://pixijs.com/assets/eggHead.png");
 ```
 
-This method has some drawbacks:
+这种方法有一些缺点：
 
-* Changing the URL of an asset from one version to another may cause incompatibilities.
-* The player will have to wait for a short loading time every time they press "continue" and a <DynamicLink href="/start/labels">`step`</DynamicLink> is started that uses assets.
-* Writing the entire URL in code will increase its length and make it less readable.
+* 从一个版本到另一个版本更改资源的 URL 可能导致不兼容。
+* 每次玩家按下"继续"并且启动了一个使用资源的<DynamicLink href="/start/labels">`step`</DynamicLink>时，玩家都必须等待短暂的加载时间。
+* 在代码中写入完整的 URL 会使代码变长且可读性降低。
 
-For these reasons, it is recommended to handle assets in the following ways.
+出于这些原因，建议通过以下方式处理资源。
 
-## Initialize the asset matrix at project start
+## 在项目启动时初始化资源矩阵
 
-Initializing the asset matrix at the beginning of the project allows you to reference assets by a unique alias without having to use the URL/path. Using the alias you can change the URL of an asset without having to worry about version compatibility.
+在项目开始时初始化资源矩阵，使您可以通过唯一的别名引用资源，而无需使用 URL/路径。 使用别名可以更改资源的 URL，而无需担心版本兼容性。
 
-To do this, it is recommended to create an asynchronous function `defineAssets` that will be called at the start of the project.
-In the `defineAssets` function, use `Assets` (e.g. `Assets.add`, `Assets.addBundle`, and `Assets.init`) to assign aliases to URLs. You can find more information about them [here](https://pixijs.com/8.x/guides/components/assets) to assign an alias to each asset.
+为此，建议创建一个异步函数 `defineAssets`，在项目启动时调用。
+在 `defineAssets` 函数中，使用 `Assets`（例如 `Assets.add`、`Assets.addBundle` 和 `Assets.init`）为 URL 分配别名。 您可以[在此处](https://pixijs.com/8.x/guides/components/assets)找到有关为每个资源分配别名的更多信息。
 
 ```ts tab="utils/defineAssets.ts"
 import { Assets, sound } from "@drincs/pixi-vn";
@@ -91,25 +91,25 @@ const manifest: AssetsManifest = {
 export default manifest;
 ```
 
-## Load assets
+## 加载资源
 
-By default, assets are loaded only when needed.
+默认情况下，资源仅在需要时加载。
 
-But **if the assets are not saved locally**, but in an <DynamicLink href="/start/assets#assets-hosting">"assets hosting"</DynamicLink>, their loading may take some time. This means that starting a `step` may not be immediate. So, after starting the execution of the <DynamicLink href="/start/labels-flow#continue">next `step`</DynamicLink> (for example with the "next" button), the player may have to wait some time to "view" the changes and be able to run another `step`.
+但是**如果资源未保存在本地**，而是托管在<DynamicLink href="/start/assets#assets-hosting">"资源托管"</DynamicLink>中，其加载可能需要一些时间。 这意味着启动一个 `step` 可能不是即时完成的。 因此，在开始执行<DynamicLink href="/start/labels-flow#continue">下一个 `step`</DynamicLink>（例如通过"继续"按钮）后，玩家可能需要等待一段时间才能"看到"变化并运行另一个 `step`。
 
-Performing these loadings at each `step` may be annoying to the player, even if they are very short.
+在每个 `step` 执行这些加载可能会让玩家感到厌烦，即使它们非常短暂。
 
-To solve this problem, the developer can group multiple loadings at a certain stage of the game. In this way, the player will not have continuous loadings, but fewer, even if longer.
+为了解决这个问题，开发者可以在游戏的某个阶段将多次加载合并为一组。 这样一来，玩家就不会遇到连续的加载，而是次数更少、但可能更长的加载。
 
-Here are various ways to load the assets:
+以下是加载资源的几种方式：
 
 <Accordions>
 
-<Accordion title="load_assets_at_project_start" id="load-assets-at-project-start">
+<Accordion title="在项目启动时加载资源" id="load-assets-at-project-start">
 
-It is possible to load assets at project startup before the player can interact with the project, for example during the startup loading screen. It is suggested to use this procedure only for assets used in the main page or for assets used frequently, and not to exceed 100MB.
+可以在项目启动时、玩家能够与项目交互之前加载资源，例如在启动加载画面期间。 建议仅对主页面使用的资源或频繁使用的资源采用此方法，并且不要超过 100MB。
 
-To do this, you must use the `Assets.load` function and wait for it to finish (with `await`) when the project starts. You can learn more about the `Assets.load` function [here](https://pixijs.com/8.x/guides/components/assets).
+为此，您必须在项目启动时使用 `Assets.load` 函数并等待其完成（使用 `await`）。 您可以[在此处](https://pixijs.com/8.x/guides/components/assets)了解更多关于 `Assets.load` 函数的信息。
 
 ```ts tab="utils/defineAssets.ts"
 import { Assets, sound } from "@drincs/pixi-vn";
@@ -182,11 +182,11 @@ export default manifest;
 
 </Accordion>
 
-<Accordion title="load_assets_in_the_background_at_project_start" id="load-assets-in-the-background-at-project-start">
+<Accordion title="在项目启动时后台加载资源" id="load-assets-in-the-background-at-project-start">
 
-It is possible to load assets in the background when the project starts, reducing loading times when your project starts. It is recommended not to exceed 2GB.
+可以在项目启动时在后台加载资源，从而缩短项目的启动加载时间。 建议不要超过 2GB。
 
-To do this, you can use the `Assets.backgroundLoad` function when the project starts. You can learn more about the `Assets.backgroundLoad` function [here](https://pixijs.com/8.x/guides/components/assets).
+为此，您可以在项目启动时使用 `Assets.backgroundLoad` 函数。 您可以[在此处](https://pixijs.com/8.x/guides/components/assets)了解更多关于 `Assets.backgroundLoad` 函数的信息。
 
 ```ts tab="utils/defineAssets.ts"
 import { Assets, sound } from "@drincs/pixi-vn";
@@ -262,19 +262,19 @@ export default manifest;
 
 </Accordion>
 
-<Accordion title="load_assets_at_label_start" id="load-assets-at-label-start">
+<Accordion title="在标签启动时加载资源" id="load-assets-at-label-start">
 
 <Callout title="ink" type="info">
 
-您可以使用 *ink* 语法使用此方法。 See more <DynamicLink href="/ink/assets">here</DynamicLink>.
+您可以使用 *ink* 语法使用此方法。 查看更多信息请参阅<DynamicLink href="/ink/assets">此处</DynamicLink>。
 
 </Callout>
 
-To group the loadings from one `step` to another of a `label` into a single loading, it is possible to load all or part of the assets used by the `label` before it starts. Since this does not reduce the waiting times for the player, but adds them to a single loading, it is recommended to [load them in the background](#load-assets-in-the-background-at-label-start).
+为了将 `label` 中从一个 `step` 到另一个 `step` 的加载合并为单次加载，可以在 `label` 启动之前加载该 `label` 使用的全部或部分资源。 由于这并不会减少玩家的等待时间，而是将其合并到单次加载中，因此建议[在后台加载它们](#load-assets-in-the-background-at-label-start)。
 
-To do this, you must use the `Assets.load` function and wait for it to finish (with `await`) when the `label` starts. You will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function.
+为此，您必须在 `label` 启动时使用 `Assets.load` 函数并等待其完成（使用 `await`）。 您将使用<DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink>函数。
 
-For cleaner code, it is recommended to define a bundle in your manifest with the id corresponding to the `label` id and define within it the assets that will be used in that `label`.
+为了使代码更整洁，建议在清单中定义一个与 `label` id 对应的资源包，并在其中定义该 `label` 将使用的资源。
 
 ```ts title="content/labels/start.label.ts"
 import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
@@ -331,11 +331,11 @@ export default manifest;
 
 </Accordion>
 
-<Accordion title="load_assets_in_the_background_at_label_start" id="load-assets-in-the-background-at-label-start">
+<Accordion title="在标签启动时后台加载资源" id="load-assets-in-the-background-at-label-start">
 
-<Callout title="Already present in the templates" type="info">
+<Callout title="模板中已存在" type="info">
 
-In all templates, when a `label` is started, the background loading of the bundle (if it exists) with the id corresponding to the `label` will be started. So, it is enough to **create a manifest with a bundle for each `label`**. Here is the implementation used to allow this:
+在所有模板中，当 `label` 启动时，如果存在与 `label` 对应的 id 的资源包，将启动该资源包的后台加载。 因此，只需**为每个 `label` 创建一个带有资源包的清单**即可。 以下是用于实现此功能的代码：
 
 ```ts title="main.ts"
 import { Assets, Game } from "@drincs/pixi-vn";
@@ -345,11 +345,11 @@ Game.onLoadingLabel((_stepId, { id }) => Assets.backgroundLoadBundle(id));
 
 </Callout>
 
-To make the game smoother by trying to remove asset loading times from one `step` to another, it is possible to start a "loading group" at the beginning of a `label`. This means that you may potentially not feel any loading, especially in the later `steps` of the `label`.
+为了让游戏更加流畅，通过尝试消除从一个 `step` 到另一个 `step` 的资源加载等待时间，可以在 `label` 开始时启动一个"加载组"。 这意味着您可能感觉不到任何加载，尤其是在 `label` 的后续 `steps` 中。
 
-To do this, you can use the `Assets.backgroundLoad` function when the `label` starts. You can learn more about the `Assets.backgroundLoad` function [here](https://pixijs.com/8.x/guides/components/assets). And, you will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function.
+为此，您可以在 `label` 启动时使用 `Assets.backgroundLoad` 函数。 您可以[在此处](https://pixijs.com/8.x/guides/components/assets)了解更多关于 `Assets.backgroundLoad` 函数的信息。 并且，您将使用<DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink>函数。
 
-For cleaner code, it is recommended to define a bundle in your manifest with the id corresponding to the `label` id and define within it the assets that will be used in that `label`.
+为了使代码更整洁，建议在清单中定义一个与 `label` id 对应的资源包，并在其中定义该 `label` 将使用的资源。
 
 ```ts title="content/labels/start.label.ts"
 import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
