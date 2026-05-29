@@ -33,11 +33,11 @@ export function ReactTemplate({
                     motion: "latest",
                     "pixi.js": "latest",
                     tone: "latest",
-                    "@babel/plugin-proposal-private-methods": "latest",
-                    "@babel/plugin-proposal-class-properties": "latest",
                     ...dependencies,
                 },
                 devDependencies: {
+"@babel/plugin-proposal-private-methods": "latest",
+                    "@babel/plugin-proposal-class-properties": "latest",
                     "@types/react": "latest",
                     "@types/react-dom": "latest",
                     typescript: "latest",
