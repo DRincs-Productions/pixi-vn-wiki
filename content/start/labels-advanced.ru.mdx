@@ -1,23 +1,23 @@
 ---
-title: Advanced label features
-description: Explains advanced label options in Pixi’VN, such as onLoadingLabel, onStepStart, onStepEnd, and dynamic step lists.
+title: Расширенные функции меток
+description: Объясняет расширенные параметры меток в Pixi'VN, такие как onLoadingLabel, onStepStart, onStepEnd и динамические списки шагов.
 ---
 
 import { ReturningDifferentStepLists } from "@/components/examples";
 
-This section covers advanced <DynamicLink href="/start/labels">label</DynamicLink> features. These are not required to create a basic game, but can help you build more complex and interactive experiences.
+Этот раздел охватывает расширенные функции <DynamicLink href="/start/labels">нарративных узлов</DynamicLink>. Они не обязательны для создания базовой игры, но могут помочь вам создавать более сложные и интерактивные впечатления.
 
 <Accordions>
 
 <Accordion title="`onLoadingLabel`" id="onloadinglabel">
 
-[`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) is a function executed in [`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart) if the `step` index is 0, and also when the user loads a save file.
+[`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) — это функция, выполняемая в [`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart), если индекс нарративного шага (`step`) равен 0, а также при загрузке пользователем файла сохранения.
 
-When a save file is loaded, all [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) functions of the [`narration.openedLabels`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#openedlabels) (the current `label` and all `labels` in the stack) are executed.
+При загрузке файла сохранения выполняются все функции [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) из [`narration.openedLabels`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#openedlabels) (текущий нарративный узел (`label`) и все нарративные узлы (`labels`) в стеке).
 
-This is useful, for example, to ensure all images used in the `label` are cached before the `label` starts.
+Это полезно, например, для того чтобы убедиться, что все изображения, используемые в нарративном узле (`label`), закешированы до его запуска.
 
-You can set this function by passing it to the [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) property in the `label` options.
+Вы можете задать эту функцию, передав её в свойство [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) в параметрах нарративного узла (`label`).
 
 ```ts title="content/labels/start.label.ts"
 const startLabel = newLabel(
@@ -29,8 +29,7 @@ const startLabel = newLabel(
         },
     ],
     {
-        onLoadingLabel: async (stepIndex, label) => {
-            // [!code focus]
+        onLoadingLabel: async (stepIndex, label) => { // [!code focus]
             await Assets.load("path/to/image1.png"); // [!code focus]
             await Assets.load("path/to/image2.png"); // [!code focus]
         }, // [!code focus]
@@ -38,13 +37,12 @@ const startLabel = newLabel(
 );
 ```
 
-You can also use [`Game.onLoadingLabel`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onLoadingLabel) to intercept the loading of all `labels` globally.
+Вы также можете использовать [`Game.onLoadingLabel`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onLoadingLabel) для глобального перехвата загрузки всех нарративных узлов (`labels`).
 
 ```ts
 import { Game } from "@drincs/pixi-vn";
 
-Game.onLoadingLabel((_stepId, label) => {
-    // [!code focus]
+Game.onLoadingLabel((_stepId, label) => { // [!code focus]
     Assets.backgroundLoadBundle(label.id); // [!code focus]
 }); // [!code focus]
 ```
@@ -53,7 +51,7 @@ Game.onLoadingLabel((_stepId, label) => {
 
 <Accordion title="`onStepStart`" id="onstepstart">
 
-[`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart) is a function executed before each `step` of a `label`. Set it via the [`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart) property in the `label` options.
+[`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart) — это функция, выполняемая перед каждым нарративным шагом (`step`) нарративного узла (`label`). Задайте её через свойство [`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart) в параметрах нарративного узла (`label`).
 
 ```ts title="content/labels/start.label.ts"
 const startLabel = newLabel(
@@ -67,21 +65,19 @@ const startLabel = newLabel(
         },
     ],
     {
-        onStepStart: (stepIndex, label) => {
-            // [!code focus]
+        onStepStart: (stepIndex, label) => { // [!code focus]
             console.log(`Step ${stepIndex} started`); // [!code focus]
         }, // [!code focus]
     },
 );
 ```
 
-You can also use [`Game.onStepStart`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onStepStart) to intercept the start of any `step` in any `label`.
+Вы также можете использовать [`Game.onStepStart`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onStepStart) для перехвата начала любого нарративного шага (`step`) в любом нарративном узле (`label`).
 
 ```ts
 import { Game } from "@drincs/pixi-vn";
 
-Game.onStepStart((stepIndex, label) => {
-    // [!code focus]
+Game.onStepStart((stepIndex, label) => { // [!code focus]
     console.log(`Step ${stepIndex} started`); // [!code focus]
 }); // [!code focus]
 ```
@@ -90,7 +86,7 @@ Game.onStepStart((stepIndex, label) => {
 
 <Accordion title="`onStepEnd`" id="onstepend">
 
-[`onStepEnd`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepend) is a function executed after each `step` of a `label`. Set it via the [`onStepEnd`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepend) property in the `label` options.
+[`onStepEnd`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepend) — это функция, выполняемая после каждого нарративного шага (`step`) нарративного узла (`label`). Задайте её через свойство [`onStepEnd`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepend) в параметрах нарративного узла (`label`).
 
 ```ts title="content/labels/start.label.ts"
 const startLabel = newLabel(
@@ -104,30 +100,28 @@ const startLabel = newLabel(
         },
     ],
     {
-        onStepEnd: (stepIndex, label) => {
-            // [!code focus]
+        onStepEnd: (stepIndex, label) => { // [!code focus]
             console.log(`Step ${stepIndex} ended`); // [!code focus]
         }, // [!code focus]
     },
 );
 ```
 
-You can also use [`Game.onStepEnd`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onStepEnd) to intercept the end of any `step` in any `label`.
+Вы также можете использовать [`Game.onStepEnd`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onStepEnd) для перехвата окончания любого нарративного шага (`step`) в любом нарративном узле (`label`).
 
 ```ts
 import { Game } from "@drincs/pixi-vn";
 
-Game.onStepEnd((stepIndex, label) => {
-    // [!code focus]
+Game.onStepEnd((stepIndex, label) => { // [!code focus]
     console.log(`Step ${stepIndex} ended`); // [!code focus]
 }); // [!code focus]
 ```
 
 </Accordion>
 
-<Accordion title="Dynamic `step` list" id="dynamic-step-list">
+<Accordion title="Динамический список `step`" id="dynamic-step-list">
 
-When creating a new `label`, you can pass a function that returns the `steps` for that `label`. This allows you to change the `step` list dynamically based on a condition.
+При создании нового нарративного узла (`label`) вы можете передать функцию, которая возвращает нарративные шаги (`steps`) для этого нарративного узла (`label`). Это позволяет динамически изменять список нарративных шагов (`step`) в зависимости от условия.
 
 ```ts title="content/labels/start.label.ts"
 import { storage, narration, newLabel } from "@drincs/pixi-vn";
