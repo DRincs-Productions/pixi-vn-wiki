@@ -1,6 +1,7 @@
 import { fullRehypeCodeOptions } from "@/lib/shared";
 import type { ProcessorOptions } from "@mdx-js/mdx";
 import { remarkDirectiveAdmonition, remarkMdxMermaid } from "fumadocs-core/mdx-plugins";
+import { remarkMdxFiles } from "fumadocs-core/mdx-plugins/remark-mdx-files";
 import { metaSchema, pageSchema } from "fumadocs-core/source/schema";
 import { applyMdxPreset, defineConfig, defineDocs } from "fumadocs-mdx/config";
 import remarkDirective from "remark-directive";
@@ -33,7 +34,7 @@ export const docs = createDocsCollection(
         remarkCodeTabOptions: {
             parseMdx: true,
         },
-        remarkPlugins: [remarkDirective, remarkDirectiveAdmonition],
+        remarkPlugins: [remarkDirective, remarkDirectiveAdmonition, remarkMdxFiles],
     }),
 );
 
