@@ -1,23 +1,23 @@
 ---
-title: Advanced label features
-description: Explains advanced label options in Pixi’VN, such as onLoadingLabel, onStepStart, onStepEnd, and dynamic step lists.
+title: 고급 레이블 기능
+description: Pixi'VN의 고급 레이블 옵션(onLoadingLabel, onStepStart, onStepEnd, 동적 단계 목록 등)을 설명합니다.
 ---
 
 import { ReturningDifferentStepLists } from "@/components/examples";
 
-This section covers advanced <DynamicLink href="/start/labels">label</DynamicLink> features. These are not required to create a basic game, but can help you build more complex and interactive experiences.
+이 섹션에서는 고급 <DynamicLink href="/start/labels">내러티브 노드</DynamicLink> 기능을 다룹니다. 기본 게임을 만드는 데 필수적이지는 않지만, 더 복잡하고 인터랙티브한 경험을 구축하는 데 도움이 될 수 있습니다.
 
 <Accordions>
 
 <Accordion title="`onLoadingLabel`" id="onloadinglabel">
 
-[`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) is a function executed in [`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart) if the `step` index is 0, and also when the user loads a save file.
+[`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel)은 내러티브 단계 (`step`) 인덱스가 0인 경우 [`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart)에서 실행되는 함수이며, 사용자가 저장 파일을 불러올 때도 실행됩니다.
 
-When a save file is loaded, all [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) functions of the [`narration.openedLabels`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#openedlabels) (the current `label` and all `labels` in the stack) are executed.
+저장 파일이 불러와지면 [`narration.openedLabels`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#openedlabels)의 모든 [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) 함수(현재 내러티브 노드 (`label`) 및 스택에 있는 모든 내러티브 노드 (`labels`))가 실행됩니다.
 
-This is useful, for example, to ensure all images used in the `label` are cached before the `label` starts.
+예를 들어, 내러티브 노드 (`label`)가 시작되기 전에 해당 내러티브 노드 (`label`)에서 사용되는 모든 이미지가 캐시되었는지 확인하는 데 유용합니다.
 
-You can set this function by passing it to the [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) property in the `label` options.
+내러티브 노드 (`label`) 옵션의 [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) 속성에 전달하여 이 함수를 설정할 수 있습니다.
 
 ```ts title="content/labels/start.label.ts"
 const startLabel = newLabel(
@@ -29,8 +29,7 @@ const startLabel = newLabel(
         },
     ],
     {
-        onLoadingLabel: async (stepIndex, label) => {
-            // [!code focus]
+        onLoadingLabel: async (stepIndex, label) => { // [!code focus]
             await Assets.load("path/to/image1.png"); // [!code focus]
             await Assets.load("path/to/image2.png"); // [!code focus]
         }, // [!code focus]
@@ -38,13 +37,12 @@ const startLabel = newLabel(
 );
 ```
 
-You can also use [`Game.onLoadingLabel`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onLoadingLabel) to intercept the loading of all `labels` globally.
+[`Game.onLoadingLabel`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onLoadingLabel)을 사용하여 모든 내러티브 노드 (`labels`)의 로딩을 전역적으로 가로챌 수도 있습니다.
 
 ```ts
 import { Game } from "@drincs/pixi-vn";
 
-Game.onLoadingLabel((_stepId, label) => {
-    // [!code focus]
+Game.onLoadingLabel((_stepId, label) => { // [!code focus]
     Assets.backgroundLoadBundle(label.id); // [!code focus]
 }); // [!code focus]
 ```
@@ -53,7 +51,7 @@ Game.onLoadingLabel((_stepId, label) => {
 
 <Accordion title="`onStepStart`" id="onstepstart">
 
-[`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart) is a function executed before each `step` of a `label`. Set it via the [`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart) property in the `label` options.
+[`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart)는 내러티브 노드 (`label`)의 각 내러티브 단계 (`step`) 전에 실행되는 함수입니다. 내러티브 노드 (`label`) 옵션의 [`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart) 속성을 통해 설정합니다.
 
 ```ts title="content/labels/start.label.ts"
 const startLabel = newLabel(
@@ -67,21 +65,19 @@ const startLabel = newLabel(
         },
     ],
     {
-        onStepStart: (stepIndex, label) => {
-            // [!code focus]
+        onStepStart: (stepIndex, label) => { // [!code focus]
             console.log(`Step ${stepIndex} started`); // [!code focus]
         }, // [!code focus]
     },
 );
 ```
 
-You can also use [`Game.onStepStart`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onStepStart) to intercept the start of any `step` in any `label`.
+[`Game.onStepStart`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onStepStart)를 사용하여 모든 내러티브 노드 (`label`)의 모든 내러티브 단계 (`step`) 시작을 가로챌 수도 있습니다.
 
 ```ts
 import { Game } from "@drincs/pixi-vn";
 
-Game.onStepStart((stepIndex, label) => {
-    // [!code focus]
+Game.onStepStart((stepIndex, label) => { // [!code focus]
     console.log(`Step ${stepIndex} started`); // [!code focus]
 }); // [!code focus]
 ```
@@ -90,7 +86,7 @@ Game.onStepStart((stepIndex, label) => {
 
 <Accordion title="`onStepEnd`" id="onstepend">
 
-[`onStepEnd`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepend) is a function executed after each `step` of a `label`. Set it via the [`onStepEnd`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepend) property in the `label` options.
+[`onStepEnd`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepend)는 내러티브 노드 (`label`)의 각 내러티브 단계 (`step`) 후에 실행되는 함수입니다. 내러티브 노드 (`label`) 옵션의 [`onStepEnd`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepend) 속성을 통해 설정합니다.
 
 ```ts title="content/labels/start.label.ts"
 const startLabel = newLabel(
@@ -104,30 +100,28 @@ const startLabel = newLabel(
         },
     ],
     {
-        onStepEnd: (stepIndex, label) => {
-            // [!code focus]
+        onStepEnd: (stepIndex, label) => { // [!code focus]
             console.log(`Step ${stepIndex} ended`); // [!code focus]
         }, // [!code focus]
     },
 );
 ```
 
-You can also use [`Game.onStepEnd`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onStepEnd) to intercept the end of any `step` in any `label`.
+[`Game.onStepEnd`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onStepEnd)를 사용하여 모든 내러티브 노드 (`label`)의 모든 내러티브 단계 (`step`) 종료를 가로챌 수도 있습니다.
 
 ```ts
 import { Game } from "@drincs/pixi-vn";
 
-Game.onStepEnd((stepIndex, label) => {
-    // [!code focus]
+Game.onStepEnd((stepIndex, label) => { // [!code focus]
     console.log(`Step ${stepIndex} ended`); // [!code focus]
 }); // [!code focus]
 ```
 
 </Accordion>
 
-<Accordion title="Dynamic `step` list" id="dynamic-step-list">
+<Accordion title="동적 `step` 목록" id="dynamic-step-list">
 
-When creating a new `label`, you can pass a function that returns the `steps` for that `label`. This allows you to change the `step` list dynamically based on a condition.
+새로운 내러티브 노드 (`label`)를 만들 때, 해당 내러티브 노드 (`label`)의 내러티브 단계 (`steps`)를 반환하는 함수를 전달할 수 있습니다. 이를 통해 조건에 따라 내러티브 단계 (`step`) 목록을 동적으로 변경할 수 있습니다.
 
 ```ts title="content/labels/start.label.ts"
 import { storage, narration, newLabel } from "@drincs/pixi-vn";
