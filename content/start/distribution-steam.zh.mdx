@@ -28,17 +28,27 @@ default = ["steam"]
 
 Alternatively, pass `--features steam` to any `cargo` or `tauri build` command without touching the file.
 
-Steam requires the native library to be present next to the executable at runtime:
+The `steamworks` Rust crate already ships the native redistributable libraries for all platforms — **nothing to download manually**. The `build.rs` in this template copies the correct file into `src-tauri/` automatically during compilation.
 
-| Platform | File                 |
-| -------- | -------------------- |
-| Windows  | `steam_api64.dll`    |
-| Linux    | `libsteam_api.so`    |
-| macOS    | `libsteam_api.dylib` |
+### Bundling for distribution
 
-The `steamworks-sys` crate copies the library into the build output automatically; you only need to make sure Tauri bundles it alongside the executable.
+To include the library in the final installer you need to tell Tauri to bundle it. Create a platform-specific config file for the platform you are targeting — you only need the one(s) that apply to you:
 
-## JavaScript/TypeScript API
+```json title="src-tauri/tauri.windows.conf.json"
+{ "bundle": { "resources": ["steam_api64.dll"] } }
+```
+
+```json title="src-tauri/tauri.linux.conf.json"
+{ "bundle": { "resources": ["libsteam_api.so"] } }
+```
+
+```json title="src-tauri/tauri.macos.conf.json"
+{ "bundle": { "resources": ["libsteam_api.dylib"] } }
+```
+
+Tauri v2 merges the matching file into `tauri.conf.json` automatically at build time. Create only the files for the platforms you want to distribute on — one, two, or all three.
+
+## API
 
 Import the `steam` namespace from `@/lib/steam` and call any function directly.\
 All functions are safe to call even when Steam is unavailable or the app runs in a browser: they simply return `null` / `false` / `0` without throwing.
@@ -47,44 +57,135 @@ All functions are safe to call even when Steam is unavailable or the app runs in
 import { steam } from "@/lib/steam";
 ```
 
-### General
+<Accordions>
 
-| Function                | Returns                                     | Description                                                        |
-| ----------------------- | ------------------------------------------- | ------------------------------------------------------------------ |
-| `steam.isAvailable()`   | `Promise\<boolean>`        | `true` when the Steam client is running and the SDK is initialised |
-| `steam.getPlayerName()` | `Promise\<string \| null>` | Display name of the logged-in user                                 |
-| `steam.getAppId()`      | `Promise\<number \| null>` | Numeric App ID of the running application                          |
+<Accordion title="`General`" id="general">
 
-### Achievements
+**`steam.isAvailable()`** returns `true` when the Steam client is running and the SDK is initialised. Use it to gate any Steam-specific UI or logic.
 
-| Function                          | Returns                              | Description                                                                           |
-| --------------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------- |
-| `steam.unlockAchievement(id)`     | `Promise\<void>`    | Unlock and persist an achievement; `id` must match the API Name in Steamworks Partner |
-| `steam.isAchievementUnlocked(id)` | `Promise\<boolean>` | Check whether the user has already unlocked an achievement                            |
-| `steam.clearAchievement(id)`      | `Promise\<void>`    | Reset an achievement — for development / QA only                                      |
+```ts tab="JavaScript/TypeScript"
+const available = await steam.isAvailable();
+if (available) {
+    console.log("Steam is running");
+}
+```
 
-### Stats
+**`steam.getPlayerName()`** returns the display name of the logged-in Steam user, or `null` if Steam is unavailable.
 
-| Function                          | Returns                             | Description                                                                     |
-| --------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------- |
-| `steam.setStatInt(name, value)`   | `Promise\<void>`   | Write an integer stat (call `storeStats()` to persist)                          |
-| `steam.getStatInt(name)`          | `Promise\<number>` | Read an integer stat (returns `0` on error)                                     |
-| `steam.setStatFloat(name, value)` | `Promise\<void>`   | Write a float stat (call `storeStats()` to persist)                             |
-| `steam.getStatFloat(name)`        | `Promise\<number>` | Read a float stat (returns `0` on error)                                        |
-| `steam.storeStats()`              | `Promise\<void>`   | Commit all pending stat changes — called automatically by achievement functions |
+```ts tab="JavaScript/TypeScript"
+const name = await steam.getPlayerName();
+if (name) {
+    console.log(`Welcome, ${name}!`);
+}
+```
 
-### DLC
+**`steam.getAppId()`** returns the numeric App ID of the running application as registered on Steamworks, or `null` if Steam is unavailable.
 
-| Function                      | Returns                              | Description                                                             |
-| ----------------------------- | ------------------------------------ | ----------------------------------------------------------------------- |
-| `steam.isDlcInstalled(appId)` | `Promise\<boolean>` | `true` if the user owns and has installed the DLC with the given App ID |
+```ts tab="JavaScript/TypeScript"
+const appId = await steam.getAppId();
+console.log(`Running app: ${appId}`);
+```
 
-### Overlay
+</Accordion>
 
-| Function                    | Returns                           | Description                                                                                                                                           |
-| --------------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `steam.openOverlay(dialog)` | `Promise\<void>` | Open the Steam overlay to a specific page (`"achievements"`, `"friends"`, `"community"`, `"stats"`, `"settings"`, `"officialgamegroup"`, `"players"`) |
-| `steam.openStore(appId?)`   | `Promise\<void>` | Open the Steam Store page for this game (or a different `appId`)                                                                                      |
+<Accordion title="Achievements" id="achievements">
+
+**`steam.unlockAchievement(id)`** unlocks and persists an achievement. The `id` must match the API Name set in the Steamworks Partner dashboard.
+
+```ts tab="JavaScript/TypeScript"
+await steam.unlockAchievement("FIRST_WIN");
+```
+
+**`steam.isAchievementUnlocked(id)`** returns `true` if the user has already unlocked the given achievement. Use it to avoid showing unlock animations more than once.
+
+```ts tab="JavaScript/TypeScript"
+const unlocked = await steam.isAchievementUnlocked("FIRST_WIN");
+if (!unlocked) {
+    await steam.unlockAchievement("FIRST_WIN");
+}
+```
+
+**`steam.clearAchievement(id)`** resets an achievement back to locked. This is intended for development and QA only — do not call it in production.
+
+```ts tab="JavaScript/TypeScript"
+await steam.clearAchievement("FIRST_WIN");
+```
+
+</Accordion>
+
+<Accordion title="Stats" id="stats">
+
+**`steam.setStatInt(name, value)`** writes an integer stat. Changes are staged locally; call `storeStats()` to commit them to Steam.
+
+```ts tab="JavaScript/TypeScript"
+await steam.setStatInt("TOTAL_KILLS", 42);
+await steam.storeStats();
+```
+
+**`steam.getStatInt(name)`** reads an integer stat. Returns `0` if the stat does not exist or Steam is unavailable.
+
+```ts tab="JavaScript/TypeScript"
+const kills = await steam.getStatInt("TOTAL_KILLS");
+console.log(`Total kills: ${kills}`);
+```
+
+**`steam.setStatFloat(name, value)`** writes a float stat. Same staging behaviour as `setStatInt` — requires `storeStats()` to persist.
+
+```ts tab="JavaScript/TypeScript"
+await steam.setStatFloat("ACCURACY", 0.87);
+await steam.storeStats();
+```
+
+**`steam.getStatFloat(name)`** reads a float stat. Returns `0` if the stat does not exist or Steam is unavailable.
+
+```ts tab="JavaScript/TypeScript"
+const accuracy = await steam.getStatFloat("ACCURACY");
+console.log(`Accuracy: ${(accuracy * 100).toFixed(1)}%`);
+```
+
+**`steam.storeStats()`** commits all pending stat changes to Steam. Achievement unlock functions call this automatically, but you must call it manually after `setStatInt` or `setStatFloat`.
+
+```ts tab="JavaScript/TypeScript"
+await steam.setStatInt("GAMES_PLAYED", current + 1);
+await steam.storeStats();
+```
+
+</Accordion>
+
+<Accordion title="DLC" id="dlc">
+
+**`steam.isDlcInstalled(appId)`** returns `true` if the user owns and has installed the DLC identified by the given App ID. Use it to gate DLC content at runtime.
+
+```ts
+const hasDlc = await steam.isDlcInstalled(1234560);
+if (hasDlc) {
+    // unlock DLC chapter
+}
+```
+
+</Accordion>
+
+<Accordion title="Overlay" id="overlay">
+
+**`steam.openOverlay(dialog)`** opens the Steam overlay to a specific page. Accepted values are `"achievements"`, `"friends"`, `"community"`, `"stats"`, `"settings"`, `"officialgamegroup"`, and `"players"`.
+
+```ts
+await steam.openOverlay("achievements");
+```
+
+**`steam.openStore(appId?)`** opens the Steam Store page for this game. Pass a different `appId` to link to another app, for example a DLC or a sequel.
+
+```ts
+// Open the store page for this game
+await steam.openStore();
+
+// Open the store page for a specific DLC
+await steam.openStore(1234560);
+```
+
+</Accordion>
+
+</Accordions>
 
 ## Base implementation
 
