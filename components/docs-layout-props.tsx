@@ -1,8 +1,8 @@
 import { routing } from "@/i18n/routing";
 import { faqSource, inkSource, nqtrSource, renpySource, source } from "@/lib/source";
 import { Image } from "fumadocs-core/framework";
-import { DocsLayoutProps } from "fumadocs-ui/layouts/docs";
-import { LinkItemType } from "fumadocs-ui/layouts/shared";
+import type { DocsLayoutProps } from "fumadocs-ui/layouts/docs";
+import type { LinkItemType } from "fumadocs-ui/layouts/shared";
 import {
     Album,
     ArrowBigUpDash,
@@ -12,7 +12,6 @@ import {
     CircleQuestionMark,
     Crop,
     Database,
-    File,
     FunctionSquare,
     Gamepad2,
     Globe,
@@ -29,7 +28,7 @@ import {
     User,
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { VSCodeIcon } from "./ui/icons";
 
 export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
@@ -857,12 +856,6 @@ export async function sidebar(lang?: string): Promise<
                 icon: <Image width={16} height={16} src="/ink.svg" alt="ink" />,
                 description: "ink narration",
                 url: `${preUrl}/ink`,
-            },
-            {
-                title: "Ren’Py (Cooming soon)",
-                icon: <Image width={16} height={16} src="/renpy.svg" alt="Ren'Py" />,
-                description: "Ren’Py narration",
-                url: `${preUrl}/renpy`,
             },
             {
                 title: "FAQ",
