@@ -50,6 +50,12 @@ When a glossary term appears **as inline code** in the source (e.g. `` `label` `
 
 > This glossary grows over time. Before starting a translation session, re-read this file to pick up any new entries added since your last session.
 
+## Language-Specific Notes
+
+### Italian (`it`)
+
+- **`label` is grammatically feminine** — use feminine articles, adjectives, and pronouns throughout. Examples: *la `label`*, *una `label`*, *della `label`*, *nella `label`*, *questa `label`*; plurals: *le `labels`*, *delle `labels`*, *tutte le `labels`*.
+
 ## Workflow
 
 1. **Read** the source file (the base file without a language suffix).
