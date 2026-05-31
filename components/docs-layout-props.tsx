@@ -516,9 +516,21 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                         ],
                     },
                     {
-                        type: "page",
+                        type: "folder",
                         name: t("distribution-desktop-mobile"),
-                        url: `${preUrl}/start/distribution-desktop-mobile`,
+                        defaultOpen: true,
+                        index: {
+                            type: "page",
+                            name: t("distribution-website"),
+                            url: `${preUrl}/start/distribution-desktop-mobile`,
+                        },
+                        children: [
+                            {
+                                type: "page",
+                                name: t("distribution-steam"),
+                                url: `${preUrl}/start/distribution-steam`,
+                            },
+                        ],
                     },
                 ],
             },
