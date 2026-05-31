@@ -94,6 +94,8 @@ Because Tauri integrates deeply with the system environment, you will likely nee
 
 The template includes a set of pre-configured **launch configurations** for VS Code. If you are not familiar with them: launch configurations are shortcuts that tell VS Code how to start your project (and optionally attach a debugger), so you do not need to type commands in the terminal every time. You can access them from the **Run and Debug** panel (the play-button icon in the left sidebar, or press `F5`). Select the configuration you want from the dropdown at the top of the panel and press the green play button.
 
+![VS Code Run and Debug panel showing the available launch configurations](/launch-configuration-dropdown.png)
+
 The following configurations are available:
 
 * **Debug Game**: his is the configuration you will use most often during development — every time you save a file, the browser refreshes automatically. Keep in mind that in this mode animations may not be perfectly smooth and asset loading can be slower than in the final published build.
@@ -143,80 +145,72 @@ All commands must be run from the root of the project.
 
 ### Project structure
 
-The `public` folder contains all the static files that are served as-is by the web server — they are never processed or bundled by Vite.
+<Files>
+    <Folder name="project" defaultOpen>
+        <Folder name="public" defaultOpen>
+            <Folder name="assets" defaultOpen>
+                <File name="img.png" />
+            </Folder>
+            <File name="icon.png" />
+        </Folder>
+        <Folder name="src" defaultOpen>
+            <Folder name="assets" defaultOpen>
+                <File name="manifest.gen.json" />
+                <File name="index.ts" />
+            </Folder>
+            <Folder name="components" />
+            <Folder name="content">
+                <Folder name="ink" defaultOpen>
+                    <File name="hashtag-commands.ts" />
+                    <File name="text-replaces.ts" />
+                </Folder>
+                <Folder name="labels" defaultOpen>
+                    <File name="start.label.ts" />
+                </Folder>
+                <File name="characters.ts" />
+            </Folder>
+            <Folder name="lib">
+                <Folder name="hooks" />
+                <Folder name="query" />
+                <Folder name="stores" />
+                <Folder name="utils" />
+                <File name="i18n.ts" />
+                <File name="steam.ts" />
+            </Folder>
+            <Folder name="locales" defaultOpen>
+                <File name="en.json" />
+            </Folder>
+            <Folder name="models" />
+            <Folder name="routes" />
+            <File name="constants.ts" />
+            <File name="main.tsx" />
+            <File name="pixi-vn.d.ts" />
+            <File name="styles.css" />
+        </Folder>
+        <Folder name="src-tauri" />
+    </Folder>
+</Files>
 
-```files
-project
-├── public
-│   ├─── assets
-│   |   └─── img.png
-│   └─── icon.png
-├── src
-│   ├─── assets
-|   |   ├─── manifest.gen.json
-|   |   └─── index.ts
-│   ├─── components
-|   ├─── content
-|   |   ├─── ink
-|   |   |   ├─── hashtag-commands.ts
-|   |   |   └─── text-replaces.ts
-|   |   ├─── labels
-|   |   |   └─── start.label.ts
-|   |   └─── characters.ts
-│   ├─── lib
-|   |   ├─── hooks
-|   |   ├─── query
-|   |   ├─── stores
-|   |   ├─── utils
-│   │   ├─── i18n.ts
-│   │   └─── steam.ts
-│   ├── locales
-│   |   └─── en.json
-│   ├── models
-│   ├── routes
-│   ├── constants.ts
-│   ├── main.tsx
-│   ├── pixi-vn.d.ts
-│   └── styles.css
-├── src-tauri
-```
-
-The `public` folder contains all the static files that are served directly to the browser without being processed or bundled by Vite. It has two main sub-folders:
-
-* `public/assets/` — place all your game assets here (images, audio, fonts, etc.). The project automatically analyses this folder using [Pixi Asset Pack](https://pixijs.io/assetpack/) and generates `src/assets/manifest.gen.json`, which lists all discovered assets so the engine can load them efficiently.
-* `public/icon.png` — the source icon for your project. Replace this file with your own artwork, then run `npm run icon` to automatically generate all the icon variants needed for PWA, desktop (Tauri), and mobile platforms.
-
-The `src/assets/index.ts` file is the central entry point for all game assets. It imports the auto-generated `manifest.gen.json` (produced by Pixi Asset Pack from the contents of `public/assets/`) and re-exports it so the engine can use it at runtime.
-
-The `src/components/` folder contains all the **React UI components** of your game (screens, menus, dialogue boxes, etc.). Game logic lives in `src/content/`, not here.
-
-`src/content/` is a special folder: everything inside it is automatically imported when the project starts, making it the right place to define all the game elements. It contains:
-
-* `ink/hashtag-commands.ts` — custom hashtag commands parsed from ***ink*** scripts. See <DynamicLink href="/ink/hashtag">***ink*** hashtag commands</DynamicLink>.
-* `ink/text-replaces.ts` — text replacement rules applied to ***ink*** dialogue. See <DynamicLink href="/ink/replacement">***ink*** text replacements</DynamicLink>.
-* `labels/` — JS/TS labels that define the game flow and scenes. It is recommended to follow the `.label.ts` naming convention (e.g. `start.label.ts`).
-* `characters.ts` — defines the characters that appear in the game.
-
-`src/lib/` contains all the utility JavaScript/TypeScript code that supports the project's internals:
-
-* `src/i18n.ts` configures the internationalisation (translation) system. Everything related to supporting multiple languages is set up here. Learn more in <DynamicLink href="/start/translate">Translations</DynamicLink>.
-* `src/steam.ts` exposes an API to interact with Steam (achievements, cloud saves, etc.). It is only relevant for desktop projects. Learn more in <DynamicLink href="/start/distribution-steam">Steam distribution</DynamicLink>.
-
-`locales/` contains the translation files for the game's UI texts, one JSON file per language (e.g. `en.json`). These files are loaded by `src/i18n.ts` at runtime. Learn more in <DynamicLink href="/start/translate">Translations</DynamicLink>.
-
-`models/` is where you put the game's custom classes and TypeScript types.
-
-`routes/` leverages [TanStack Router](https://tanstack.com/router) to auto-generate the mapping between URL paths and UI screens. Learn more in <DynamicLink href="/start/interface-navigate">Navigation</DynamicLink>.
-
-`constants.ts` holds project-wide constants (screen sizes, configuration values, etc.).
-
-`main.tsx` is the application entry point where Pixi'VN is initialised before the game starts.
-
-`pixi-vn.d.ts` contains TypeScript declaration overrides for the `@drincs/pixi-vn` library, allowing you to extend or customise its types to match your project.
-
-`styles.css` is the global stylesheet. The project uses [shadcn/ui](https://ui.shadcn.com/), so most styling is component-based, but you can add global rules here. Learn more in <DynamicLink href="/start/interface-font">Fonts & styles</DynamicLink>.
-
-`src-tauri/` contains the Rust source code managed by Tauri. It is only present in multi-platform templates and is what enables the game to run as a native desktop or mobile application.
+* `public/assets/` — game assets (images, audio, fonts, etc.). Auto-analysed by [Pixi Asset Pack](https://pixijs.io/assetpack/) to generate `src/assets/manifest.gen.json`.
+* `public/icon.png` — source icon. Replace it and run `npm run icon` to regenerate all PWA/desktop/mobile variants.
+* `src/assets/index.ts` — re-exports the auto-generated asset manifest for the engine.
+* `src/components/` — React UI components (screens, menus, dialogue boxes, etc.).
+* `src/content/` — auto-imported at startup; define all game elements here:
+  * `ink/hashtag-commands.ts` — custom hashtag commands from ***ink*** scripts. See <DynamicLink href="/ink/hashtag">***ink*** hashtag commands</DynamicLink>.
+  * `ink/text-replaces.ts` — text replacements for ***ink*** dialogue. See <DynamicLink href="/ink/replacement">***ink*** text replacements</DynamicLink>.
+  * `labels/` — labels defining game flow and scenes (use the `.label.ts` naming convention).
+  * `characters.ts` — character definitions.
+* `src/lib/` — utilities and internals:
+  * `i18n.ts` — internationalisation setup. See <DynamicLink href="/start/translate">Translations</DynamicLink>.
+  * `steam.ts` — Steam API (achievements, cloud saves). See <DynamicLink href="/start/distribution-steam">Steam distribution</DynamicLink>.
+* `src/locales/` — one translation JSON per language (e.g. `en.json`). See <DynamicLink href="/start/translate">Translations</DynamicLink>.
+* `src/models/` — custom classes and TypeScript types.
+* `src/routes/` — [TanStack Router](https://tanstack.com/router) route definitions. See <DynamicLink href="/start/interface-navigate">Navigation</DynamicLink>.
+* `src/constants.ts` — project-wide constants (screen sizes, config values, etc.).
+* `src/main.tsx` — application entry point; initialises Pixi'VN.
+* `src/pixi-vn.d.ts` — TypeScript declaration overrides for `@drincs/pixi-vn`.
+* `src/styles.css` — global stylesheet ([shadcn/ui](https://ui.shadcn.com/)). See <DynamicLink href="/start/interface-font">Fonts & styles</DynamicLink>.
+* `src-tauri/` — Rust/Tauri source (multi-platform templates only); enables native desktop and mobile builds.
 
 ### Template screens
 
