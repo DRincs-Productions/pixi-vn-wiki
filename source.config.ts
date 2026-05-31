@@ -1,4 +1,4 @@
-import { fullRehypeCodeOptions } from "@/lib/shared";
+import { fullRehypeCodeOptions, lightRehypeCodeOptions } from "@/lib/shared";
 import type { ProcessorOptions } from "@mdx-js/mdx";
 import { remarkDirectiveAdmonition, remarkMdxMermaid } from "fumadocs-core/mdx-plugins";
 import { remarkMdxFiles } from "fumadocs-core/mdx-plugins/remark-mdx-files";
@@ -92,9 +92,10 @@ export const jsdocPixiVnDocs = createDocsCollection(
 export const jsdocPixiVnJsonDocs = createDocsCollection(
     "content/jsdoc/pixi-vn-json",
     applyMdxPreset({
-        // rehypeCodeOptions: lightRehypeCodeOptions,
-        rehypeCodeOptions: false,
-        remarkCodeTabOptions: false,
+        rehypeCodeOptions: lightRehypeCodeOptions,
+        remarkCodeTabOptions: {
+            parseMdx: true,
+        },
         remarkPlugins: [remarkMdxMermaid],
     }),
 );
