@@ -1,23 +1,23 @@
 ---
-title: Advanced label features
-description: Explains advanced label options in Pixi’VN, such as onLoadingLabel, onStepStart, onStepEnd, and dynamic step lists.
+title: Erweiterte Label-Funktionen
+description: Erklärt erweiterte Label-Optionen in Pixi'VN, wie onLoadingLabel, onStepStart, onStepEnd und dynamische Step-Listen.
 ---
 
 import { ReturningDifferentStepLists } from "@/components/examples";
 
-This section covers advanced <DynamicLink href="/start/labels">label</DynamicLink> features. These are not required to create a basic game, but can help you build more complex and interactive experiences.
+Dieser Abschnitt behandelt erweiterte <DynamicLink href="/start/labels">Label</DynamicLink>-Funktionen. Diese sind nicht erforderlich, um ein einfaches Spiel zu erstellen, können aber dabei helfen, komplexere und interaktivere Erlebnisse zu entwickeln.
 
 <Accordions>
 
 <Accordion title="`onLoadingLabel`" id="onloadinglabel">
 
-[`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) is a function executed in [`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart) if the `step` index is 0, and also when the user loads a save file.
+[`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) ist eine Funktion, die in [`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart) ausgeführt wird, wenn der `step`-Index 0 ist, und auch wenn der Benutzer einen Spielstand lädt.
 
-When a save file is loaded, all [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) functions of the [`narration.openedLabels`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#openedlabels) (the current `label` and all `labels` in the stack) are executed.
+Wenn ein Spielstand geladen wird, werden alle [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel)-Funktionen der [`narration.openedLabels`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#openedlabels) (das aktuelle `label` und alle `labels` im Stack) ausgeführt.
 
-This is useful, for example, to ensure all images used in the `label` are cached before the `label` starts.
+Dies ist beispielsweise nützlich, um sicherzustellen, dass alle im `label` verwendeten Bilder zwischengespeichert werden, bevor das `label` startet.
 
-You can set this function by passing it to the [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) property in the `label` options.
+Sie können diese Funktion festlegen, indem Sie sie an die [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel)-Eigenschaft in den `label`-Optionen übergeben.
 
 ```ts title="content/labels/start.label.ts"
 const startLabel = newLabel(
@@ -29,8 +29,7 @@ const startLabel = newLabel(
         },
     ],
     {
-        onLoadingLabel: async (stepIndex, label) => {
-            // [!code focus]
+        onLoadingLabel: async (stepIndex, label) => { // [!code focus]
             await Assets.load("path/to/image1.png"); // [!code focus]
             await Assets.load("path/to/image2.png"); // [!code focus]
         }, // [!code focus]
@@ -38,13 +37,12 @@ const startLabel = newLabel(
 );
 ```
 
-You can also use [`Game.onLoadingLabel`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onLoadingLabel) to intercept the loading of all `labels` globally.
+Sie können auch [`Game.onLoadingLabel`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onLoadingLabel) verwenden, um das Laden aller `labels` global abzufangen.
 
 ```ts
 import { Game } from "@drincs/pixi-vn";
 
-Game.onLoadingLabel((_stepId, label) => {
-    // [!code focus]
+Game.onLoadingLabel((_stepId, label) => { // [!code focus]
     Assets.backgroundLoadBundle(label.id); // [!code focus]
 }); // [!code focus]
 ```
@@ -53,7 +51,7 @@ Game.onLoadingLabel((_stepId, label) => {
 
 <Accordion title="`onStepStart`" id="onstepstart">
 
-[`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart) is a function executed before each `step` of a `label`. Set it via the [`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart) property in the `label` options.
+[`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart) ist eine Funktion, die vor jedem `step` eines `label` ausgeführt wird. Legen Sie sie über die [`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart)-Eigenschaft in den `label`-Optionen fest.
 
 ```ts title="content/labels/start.label.ts"
 const startLabel = newLabel(
@@ -67,21 +65,19 @@ const startLabel = newLabel(
         },
     ],
     {
-        onStepStart: (stepIndex, label) => {
-            // [!code focus]
+        onStepStart: (stepIndex, label) => { // [!code focus]
             console.log(`Step ${stepIndex} started`); // [!code focus]
         }, // [!code focus]
     },
 );
 ```
 
-You can also use [`Game.onStepStart`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onStepStart) to intercept the start of any `step` in any `label`.
+Sie können auch [`Game.onStepStart`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onStepStart) verwenden, um den Start eines beliebigen `step` in einem beliebigen `label` abzufangen.
 
 ```ts
 import { Game } from "@drincs/pixi-vn";
 
-Game.onStepStart((stepIndex, label) => {
-    // [!code focus]
+Game.onStepStart((stepIndex, label) => { // [!code focus]
     console.log(`Step ${stepIndex} started`); // [!code focus]
 }); // [!code focus]
 ```
@@ -90,7 +86,7 @@ Game.onStepStart((stepIndex, label) => {
 
 <Accordion title="`onStepEnd`" id="onstepend">
 
-[`onStepEnd`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepend) is a function executed after each `step` of a `label`. Set it via the [`onStepEnd`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepend) property in the `label` options.
+[`onStepEnd`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepend) ist eine Funktion, die nach jedem `step` eines `label` ausgeführt wird. Legen Sie sie über die [`onStepEnd`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepend)-Eigenschaft in den `label`-Optionen fest.
 
 ```ts title="content/labels/start.label.ts"
 const startLabel = newLabel(
@@ -104,30 +100,28 @@ const startLabel = newLabel(
         },
     ],
     {
-        onStepEnd: (stepIndex, label) => {
-            // [!code focus]
+        onStepEnd: (stepIndex, label) => { // [!code focus]
             console.log(`Step ${stepIndex} ended`); // [!code focus]
         }, // [!code focus]
     },
 );
 ```
 
-You can also use [`Game.onStepEnd`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onStepEnd) to intercept the end of any `step` in any `label`.
+Sie können auch [`Game.onStepEnd`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onStepEnd) verwenden, um das Ende eines beliebigen `step` in einem beliebigen `label` abzufangen.
 
 ```ts
 import { Game } from "@drincs/pixi-vn";
 
-Game.onStepEnd((stepIndex, label) => {
-    // [!code focus]
+Game.onStepEnd((stepIndex, label) => { // [!code focus]
     console.log(`Step ${stepIndex} ended`); // [!code focus]
 }); // [!code focus]
 ```
 
 </Accordion>
 
-<Accordion title="Dynamic `step` list" id="dynamic-step-list">
+<Accordion title="Dynamische `step`-Liste" id="dynamic-step-list">
 
-When creating a new `label`, you can pass a function that returns the `steps` for that `label`. This allows you to change the `step` list dynamically based on a condition.
+Beim Erstellen eines neuen `label` können Sie eine Funktion übergeben, die die `steps` für dieses `label` zurückgibt. Dadurch können Sie die `step`-Liste dynamisch basierend auf einer Bedingung ändern.
 
 ```ts title="content/labels/start.label.ts"
 import { storage, narration, newLabel } from "@drincs/pixi-vn";
