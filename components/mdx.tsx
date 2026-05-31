@@ -1,11 +1,12 @@
 import DynamicLink from "@/components/dynamiclink";
 import * as AccordionsComponents from "@/components/mdx/accordion";
+import * as FilesComponents from "@/components/mdx/files";
+import { Mermaid } from "@/components/mdx/mermaid";
 import ServerImage from "@/components/mdx/server-image";
 import * as TabsComponents from "fumadocs-ui/components/tabs";
 import defaultMdxComponents from "fumadocs-ui/mdx";
 import * as icons from "lucide-react";
 import type { MDXComponents } from "mdx/types";
-import { Mermaid } from "@/components/mdx/mermaid";
 
 export function getMDXComponents(components?: MDXComponents) {
     return {
@@ -13,6 +14,7 @@ export function getMDXComponents(components?: MDXComponents) {
         ...defaultMdxComponents,
         ...TabsComponents,
         ...AccordionsComponents,
+        ...FilesComponents,
         img: ServerImage as any,
         Sandbox: ({
             entry,

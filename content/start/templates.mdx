@@ -187,8 +187,6 @@ project
 │   ├── pixi-vn.d.ts
 │   └── styles.css
 ├── src-tauri
-├── .gitignore
-└── biome.json
 ```
 
 The `public` folder contains all the static files that are served directly to the browser without being processed or bundled by Vite. It has two main sub-folders:
@@ -212,4 +210,26 @@ The `src/components/` folder contains all the **React UI components** of your ga
 - `src/i18n.ts` configures the internationalisation (translation) system. Everything related to supporting multiple languages is set up here. Learn more in <DynamicLink href="/start/translate">Translations</DynamicLink>.
 - `src/steam.ts` exposes an API to interact with Steam (achievements, cloud saves, etc.). It is only relevant for desktop projects. Learn more in <DynamicLink href="/start/distribution-steam">Steam distribution</DynamicLink>.
 
+`locales/` contains the translation files for the game's UI texts, one JSON file per language (e.g. `en.json`). These files are loaded by `src/i18n.ts` at runtime. Learn more in <DynamicLink href="/start/translate">Translations</DynamicLink>.
+
+`models/` is where you put the game's custom classes and TypeScript types.
+
+`routes/` leverages [TanStack Router](https://tanstack.com/router) to auto-generate the mapping between URL paths and UI screens. Learn more in <DynamicLink href="/start/interface-navigate">Navigation</DynamicLink>.
+
+`constants.ts` holds project-wide constants (screen sizes, configuration values, etc.).
+
+`main.tsx` is the application entry point where Pixi'VN is initialised before the game starts.
+
+`pixi-vn.d.ts` contains TypeScript declaration overrides for the `@drincs/pixi-vn` library, allowing you to extend or customise its types to match your project.
+
+`styles.css` is the global stylesheet. The project uses [shadcn/ui](https://ui.shadcn.com/), so most styling is component-based, but you can add global rules here. Learn more in <DynamicLink href="/start/interface-font">Fonts & styles</DynamicLink>.
+
+`src-tauri/` contains the Rust source code managed by Tauri. It is only present in multi-platform templates and is what enables the game to run as a native desktop or mobile application.
+
 ### Template screens
+
+The template comes with a set of pre-built screens that cover the essential parts of a visual novel. Each screen is a React component connected to a route managed by TanStack Router.
+
+- **Main menu** (`/`) — the first screen the player sees when they launch the game. It provides the entry point to start a new game, continue a saved one, and open the settings.
+- **Narration screen** (`/game/narration`) — the core gameplay screen where the story is displayed. It renders dialogue, character sprites, backgrounds, and choices.
+- **Settings** — the settings panel does not have its own dedicated route. Instead it uses [Search Params](https://tanstack.com/router/latest/docs/framework/react/guide/search-params) to overlay itself on top of whatever screen is currently active. This approach keeps the URL clean while still allowing the player to open settings from anywhere in the game, and to navigate between settings sections (audio, display, language, etc.) without losing track of where they were.
