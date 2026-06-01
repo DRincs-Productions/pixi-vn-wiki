@@ -106,6 +106,14 @@ jobs:
         path: out
     - name: Sync redirects to firebase.json
       run: node scripts/sync-redirects.js
+    - name: Add catch-all redirect to pixi-vn.com in firebase.json
+      run: |
+        node -e "
+          const fs = require('fs');
+          const f = JSON.parse(fs.readFileSync('firebase.json', 'utf-8'));
+          f.hosting.redirects.push({ source: '/:path*', destination: 'https://pixi-vn.com/:path*', type: 301 });
+          fs.writeFileSync('firebase.json', JSON.stringify(f, null, 2) + '\n');
+        "
     # https://github.com/FirebaseExtended/action-hosting-deploy
     - name: Deploy to Firebase
       id: deploy
@@ -239,18 +247,15 @@ jobs:
         # Cloudflare Pages requires proxied:true and the custom domain must be added in Pages settings.
         SOURCES=(
           "https://pixi-vn.pages.dev"
-          "https://pixi-vn.web.app"
           "https://pixi-vn.vercel.app"
           "https://pixi-vn.netlify.app"
         )
         CNAMES=(
           "pixi-vn.pages.dev"
-          "pixi-vn.web.app"
           "af2ae560bfbc8dab.vercel-dns-017.com"
           "pixi-vn.netlify.app"
         )
         PROXIED=(
-          "true"
           "true"
           "false"
           "true"
