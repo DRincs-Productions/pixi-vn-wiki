@@ -103,8 +103,9 @@ export const jsdocPixiVnJsonDocs = createDocsCollection(
 export const jsdocPixiVnInkDocs = createDocsCollection(
     "content/jsdoc/pixi-vn-ink",
     applyMdxPreset({
-        // rehypeCodeOptions: lightRehypeCodeOptions,
-        rehypeCodeOptions: false,
-        remarkCodeTabOptions: false,
+        rehypeCodeOptions: fullRehypeCodeOptions,
+        remarkCodeTabOptions: {
+            parseMdx: true,
+        },
     }),
 );
