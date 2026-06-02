@@ -11,8 +11,10 @@ export default function ServerImage(
         style?: React.CSSProperties;
     } & ImgHTMLAttributes<HTMLImageElement>,
 ) {
-    const { alt, src, title, style, ...rest } = props;
-    console.log("Rendering image with src:", src, "and alt:", alt);
+    let { alt, src, title, style, ...rest } = props;
+    if (typeof src === "object" && "src" in src) {
+        src = (src as any).src as string;
+    }
 
     if (alt?.endsWith("-h3")) {
         return (
