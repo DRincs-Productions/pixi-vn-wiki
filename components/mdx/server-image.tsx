@@ -12,6 +12,7 @@ export default function ServerImage(
     } & ImgHTMLAttributes<HTMLImageElement>,
 ) {
     const { alt, src, title, style, ...rest } = props;
+    console.log("Rendering image with src:", src, "and alt:", alt);
 
     if (alt?.endsWith("-h3")) {
         return (
