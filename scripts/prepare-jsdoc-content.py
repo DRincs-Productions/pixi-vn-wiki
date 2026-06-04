@@ -91,6 +91,9 @@ def build_content(original: str, file_path: Path) -> str:
     title = title_match.group(1) if title_match else file_path.stem
     title = unescape(title)
     title = title.replace("\\<", "<").replace("\\>", ">").replace("\\_", "_")
+    if "~~" in title:
+        title = re.sub(r"~~(.+?)~~", r"\1", title)
+        title += " (deprecated)"
     title = title.replace("\\", "\\\\").replace('"', '\\"')
 
     if title_match:
