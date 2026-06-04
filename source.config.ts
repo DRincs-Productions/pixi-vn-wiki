@@ -83,9 +83,10 @@ export const nqtrDocs = createDocsCollection(
 export const jsdocPixiVnDocs = createDocsCollection(
     "content/jsdoc/pixi-vn",
     applyMdxPreset({
-        // rehypeCodeOptions: lightRehypeCodeOptions,
-        rehypeCodeOptions: false,
-        remarkCodeTabOptions: false,
+        rehypeCodeOptions: lightRehypeCodeOptions,
+        remarkCodeTabOptions: {
+            parseMdx: true,
+        },
     }),
 );
 
