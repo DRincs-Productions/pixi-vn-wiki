@@ -47,7 +47,7 @@ def sanitize_text_line(line: str) -> str:
         # Unescape backslash-escaped angle brackets that TypeDoc emits (e.g.
         # `Array\<string\>`) so the rest of the sanitization pipeline can
         # handle them uniformly as raw `<` / `>` characters.
-        chunk = chunk.replace("\\<", "<").replace("\\>", ">")
+        chunk = chunk.replace("\\<", "<").replace("\\>", ">").replace("\\_", "_")
 
         # Convert wiki-style aliases like {{PageName|DisplayText}} to the text
         # that should remain visible once the source file has been renamed to
@@ -90,7 +90,7 @@ def build_content(original: str, file_path: Path) -> str:
     title_match = TITLE_RE.search(original)
     title = title_match.group(1) if title_match else file_path.stem
     title = unescape(title)
-    title = title.replace("\\<", "<").replace("\\>", ">")
+    title = title.replace("\\<", "<").replace("\\>", ">").replace("\\_", "_")
     title = title.replace("\\", "\\\\").replace('"', '\\"')
 
     if title_match:
