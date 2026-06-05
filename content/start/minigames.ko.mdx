@@ -65,7 +65,7 @@ export default function MiniGame() {
             });
             ticker.start();
         },
-        [ticker] // They must not be changed during the game otherwise the game will restart
+        [ticker], // They must not be changed during the game otherwise the game will restart
     );
 
     const options = useMemo(
@@ -76,7 +76,7 @@ export default function MiniGame() {
                 window.removeEventListener("keydown", onKeyDown);
             },
         }),
-        [ticker, onKeyDown] // They must not be changed during the game otherwise the game will restart
+        [ticker, onKeyDown], // They must not be changed during the game otherwise the game will restart
     );
 
     const { loading } = useMinigame(game, options);
@@ -131,12 +131,14 @@ export default function useMinigame(
     props?: {
         onStart?: () => Promise<void>;
         onExit?: (layer: Layer) => void;
-    }
+    },
 ) {
     const loading = useRef(false);
 
     // Keep latest callbacks in refs to avoid effect restarts
-    const startRef = useRef<() => Promise<void>>(props?.onStart ?? (async () => {}));
+    const startRef = useRef<() => Promise<void>>(
+        props?.onStart ?? (async () => {}),
+    );
     const exitRef = useRef<(layer: Layer) => void>(props?.onExit);
 
     // Update refs when props change, without changing effect identity
@@ -151,7 +153,10 @@ export default function useMinigame(
     useEffect(() => {
         // Create the layer and start the game once
         loading.current = true;
-        const layer = canvas.addLayer(CANVAS_MINIGAME_LAYER_NAME, new Container());
+        const layer = canvas.addLayer(
+            CANVAS_MINIGAME_LAYER_NAME,
+            new Container(),
+        );
         if (!layer) {
             console.error("Failed to create UI layer for minigame");
             return;
@@ -188,7 +193,7 @@ The Pixi’VN Team welcomes new proposals and contributions to make this library
 
 <Accordions>
 
-<Accordion title="minigame_snake" id="snake">
+<Accordion title="Snake (minigame)" id="snake">
 
 ```tsx tab="React"
 import { canvas, Layer } from "@drincs/pixi-vn";
@@ -203,16 +208,23 @@ export default function SnakeGame() {
 
     const directionRef = useRef({ x: 1, y: 0 });
     const setDirection = (x: number, y: number) => {
-        if ((x !== 0 && directionRef.current.x === 0) || (y !== 0 && directionRef.current.y === 0)) {
+        if (
+            (x !== 0 && directionRef.current.x === 0) ||
+            (y !== 0 && directionRef.current.y === 0)
+        ) {
             directionRef.current = { x, y };
         }
     };
 
     const onKeyDown = useCallback((e: KeyboardEvent) => {
-        if (e.key === "ArrowUp" && directionRef.current.y === 0) setDirection(0, -1);
-        else if (e.key === "ArrowDown" && directionRef.current.y === 0) setDirection(0, 1);
-        else if (e.key === "ArrowLeft" && directionRef.current.x === 0) setDirection(-1, 0);
-        else if (e.key === "ArrowRight" && directionRef.current.x === 0) setDirection(1, 0);
+        if (e.key === "ArrowUp" && directionRef.current.y === 0)
+            setDirection(0, -1);
+        else if (e.key === "ArrowDown" && directionRef.current.y === 0)
+            setDirection(0, 1);
+        else if (e.key === "ArrowLeft" && directionRef.current.x === 0)
+            setDirection(-1, 0);
+        else if (e.key === "ArrowRight" && directionRef.current.x === 0)
+            setDirection(1, 0);
     }, []);
 
     const game = useCallback(
@@ -271,7 +283,12 @@ export default function SnakeGame() {
                 head.y += directionRef.current.y * gridSize;
 
                 // Collision with the wall
-                if (head.x < 0 || head.y < 0 || head.x >= canvas.width || head.y >= canvas.height) {
+                if (
+                    head.x < 0 ||
+                    head.y < 0 ||
+                    head.x >= canvas.width ||
+                    head.y >= canvas.height
+                ) {
                     endGame();
                     return;
                 }
@@ -287,7 +304,9 @@ export default function SnakeGame() {
                 // Eat the apple
                 if (head.x === apple.x && head.y === apple.y) {
                     const newSegment = new Graphics();
-                    newSegment.rect(0, 0, gridSize, gridSize).fill({ color: 0x00ff00 });
+                    newSegment
+                        .rect(0, 0, gridSize, gridSize)
+                        .fill({ color: 0x00ff00 });
                     newSegment.position.set(head.x, head.y);
                     layer.addChild(newSegment);
                     snake.push(newSegment);
@@ -299,7 +318,7 @@ export default function SnakeGame() {
 
             ticker.start();
         },
-        [ticker]
+        [ticker],
     );
 
     const options = useMemo(
@@ -310,7 +329,7 @@ export default function SnakeGame() {
                 window.removeEventListener("keydown", onKeyDown);
             },
         }),
-        [ticker, onKeyDown]
+        [ticker, onKeyDown],
     );
 
     useMinigame(game, options);
@@ -361,20 +380,32 @@ export default function SnakeGame() {
                 }}
             >
                 <div style={{ marginTop: "10px" }}>
-                    <button style={{ fontSize: "30px" }} onClick={() => setDirection(0, -1)}>
+                    <button
+                        style={{ fontSize: "30px" }}
+                        onClick={() => setDirection(0, -1)}
+                    >
                         ⬆️
                     </button>
                 </div>
                 <div>
-                    <button style={{ fontSize: "30px", marginRight: "50px" }} onClick={() => setDirection(-1, 0)}>
+                    <button
+                        style={{ fontSize: "30px", marginRight: "50px" }}
+                        onClick={() => setDirection(-1, 0)}
+                    >
                         ⬅️
                     </button>
-                    <button style={{ fontSize: "30px" }} onClick={() => setDirection(1, 0)}>
+                    <button
+                        style={{ fontSize: "30px" }}
+                        onClick={() => setDirection(1, 0)}
+                    >
                         ➡️
                     </button>
                 </div>
                 <div>
-                    <button style={{ fontSize: "30px" }} onClick={() => setDirection(0, 1)}>
+                    <button
+                        style={{ fontSize: "30px" }}
+                        onClick={() => setDirection(0, 1)}
+                    >
                         ⬇️
                     </button>
                 </div>
