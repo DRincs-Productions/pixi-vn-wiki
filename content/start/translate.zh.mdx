@@ -1,27 +1,27 @@
 ---
 title: 国际化
-description: 本文介绍如何借助i18next为你的Pixi'VN游戏添加多语言支持，涵盖界面与剧情文本的翻译策略。 视觉小说该如何做多语言适配？
+description: 本页面介绍如何使用 i18next 为您的 Pixi’VN 游戏添加多语言支持，包括 UI 和叙事翻译策略。 如何翻译视觉小说？
 ---
 
-在视觉小说及同类游戏中，让玩家自由选择母语是非常常见的需求。
+在视觉小说及类似游戏中，通常允许玩家选择其母语。
 
-对于Pixi'VN项目，我们建议使用外部库来管理翻译内容。 这样你就可以灵活选用最契合项目需求的实现方案。
+对于您的 Pixi’VN 项目，您应该使用外部库来处理翻译。 这让您可以灵活选择最适合自身需求的实现方式。
 
-目前生态中最流行、兼容性最好的方案就是**i18next**。
+最流行且兼容性最广的库是 **i18next**。
 
 ![i18next-h2](/i18next.svg)
 
 ## i18next
 
-**什么是 i18next**？i18next是一个面向JavaScript的国际化框架。 使用前，需要先安装并初始化它。 具体可查阅[i18next官网](https://www.i18next.com/)。
+**什么是 i18next？** i18next 是一个用于 JavaScript 的国际化框架。 要使用它，您需要安装并初始化它。 了解更多请访问 [i18next 官网](https://www.i18next.com/)。
 
 :::tip[模板]
 
-所有模板均已预装并配置好i18next。 你可以直接开始翻译游戏内容。
+在所有模板中，i18next 已包含并配置完毕。 您可以立即开始翻译游戏。
 
 :::
 
-翻译内容以多个JSON文件存储（每种语言一个），采用键 - 值对形式。 键是文本的唯一标识符，值是对应语言的翻译结果。
+翻译内容存储在多个 JSON 文件中（每种语言一个），使用键值对形式。 键是文本的唯一标识符，值是翻译后的字符串。
 
 ```ts title="lib/i18n.ts"
 import i18n, { type ReadCallback } from "i18next";
@@ -75,11 +75,11 @@ function getLocalesResource(
 
 <Accordions>
 
-<Accordion title="Translate the UI" id="translate-ui">
+<Accordion title="翻译 UI" id="translate-ui">
 
-界面文本翻译只需调用 i18next 提供的`t`函数， 传入对应的翻译键，即可获取当前语言下的文本。
+要翻译 UI，请使用 i18next 提供的 `t` 函数。 将翻译键传递给 `t`，即可获取玩家语言对应的文本。
 
-For example:
+例如：
 
 ```tsx tab="React"
 import { useTranslation } from "react-i18next";
@@ -121,23 +121,23 @@ const { t } = useTranslation("ui");
 
 </Accordion>
 
-<Accordion title="Translate the narration (TypeScript/JavaScript)" id="translate-narration">
+<Accordion title="翻译叙事（TypeScript/JavaScript）" id="translate-narration">
 
 :::tip[模板]
 
-在所有模板中，`StepLabelProps`接口都已内置 t 函数。 详见`pixi-vn.d.ts`。
+在所有模板中，`StepLabelProps` 接口已包含 `t` 函数。 参见 `pixi-vn.d.ts`。
 
 :::
 
 :::tip
 
-建议在<DynamicLink href="/start/labels">标签</DynamicLink>内部使用`t`函数，而不是直接在UI组件中调用。这样可以充分利用[i18n的插值功能](https://i18next.com/translation-function/interpolation)。
+建议在 <DynamicLink href="/start/labels">label</DynamicLink> 中使用 `t`，而不是直接在 UI 中使用，这样可以利用 [i18n 插值](https://i18next.com/translation-function/interpolation)。
 
 :::
 
-在Pixi'VN项目中，你经常需要在TypeScript/JavaScript<DynamicLink href="/start/labels">标签</DynamicLink>中翻译剧情文本。 为此，翻译函数必须包含在<DynamicLink href="/start/labels#steplabelprops">`StepLabelProps`接口</DynamicLink>.中。
+在 Pixi’VN 项目中，您通常需要在 TypeScript/JavaScript <DynamicLink href="/start/labels">叙事节点（`labels`）</DynamicLink> 中翻译叙事文本。 为此，翻译函数必须包含在 <DynamicLink href="/start/labels#steplabelprops">`StepLabelProps` 接口</DynamicLink>中。
 
-建议直接使用原始字符串作为翻译键，便于管理与识别。
+建议使用原始字符串作为翻译键。
 
 ```ts tab="content/labels/start.label.ts"
 export const startLabel = newLabel("start", [
@@ -196,14 +196,14 @@ export function useGameProps(): StepLabelProps {
 
 :::tip[*ink*]
 
-If you use *ink*, you can automatically extract strings from *ink* text for translation. 具体方法见<DynamicLink href="/ink/translate">此</DynamicLink>。
+如果您使用 *ink*，可以自动从 *ink* 文本中提取字符串用于翻译。 了解更多 <DynamicLink href="/ink/translate">此处</DynamicLink>。
 
 :::
 
-翻译用的JSON文件需手动创建。 It is recommended to split translations into two sections (see `es.json`):
+翻译 JSON 文件需要手动创建。 建议将翻译分为两个部分（参见 `es.json`）：
 
-* UI texts: for screens, settings, quick buttons, etc.—everything not part of the narration.
-* Narration texts: for dialogues, choice menus, etc.
+* UI 文本：用于屏幕、设置、快捷按钮等——所有不属于叙事的内容。
+* 叙事文本：用于对话、选项菜单等。
 
 ```json tab="locales/es.json"
 {
