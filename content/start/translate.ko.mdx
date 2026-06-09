@@ -15,51 +15,62 @@ The most popular and widely compatible library is **i18next**.
 
 **What is i18next?** i18next is an internationalization framework for JavaScript. To use it, you need to install and initialize it. Learn more on the [i18next website](https://www.i18next.com/).
 
-<Callout title="템플릿" type="info">
+:::tip[템플릿]
 
 In all templates, i18next is already included and configured. You can start translating your game right away.
 
-</Callout>
+:::
 
 Translations are stored in multiple JSON files (one per language), using key-value pairs. The key is a unique identifier for the text, and the value is the translated string.
 
-```ts tab="i18n.ts"
-import i18n from "i18next";
+```ts title="lib/i18n.ts"
+import i18n, { type ReadCallback } from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
+import ChainedBackend from "i18next-chained-backend";
 import { initReactI18next } from "react-i18next";
-import strings_en from "../src/values/translations/strings_en.json";
-import strings_es from "../src/values/translations/strings_es.json";
 
-const getUserLang = (): string => {
-    let userLang: string = navigator.language || "en";
-    return userLang?.toLocaleLowerCase()?.split("-")[0];
-};
+class Backend extends ChainedBackend {
+    override async read(lng: string, ns: string, callback: ReadCallback) {
+        try {
+            const object = await getLocalesResource(lng);
+            const result = object[ns];
+            callback(null, result);
+        } catch (error) {
+            callback(error as Error, { data: null });
+        }
+    }
+}
 
-export const useI18n = () => {
+export const useI18n = async () => {
     if (!i18n.isInitialized) {
-        i18n.use(LanguageDetector)
+        return await i18n
+            .use(Backend)
+            .use(LanguageDetector)
             .use(initReactI18next)
             .init({
                 debug: false,
                 fallbackLng: "en",
-                lng: getUserLang(),
+                supportedLngs: ["en"],
                 interpolation: {
                     escapeValue: false,
                 },
-                resources: {
-                    en: strings_en,
-                    es: strings_es,
-                    // Add more languages here
+                load: "currentOnly",
+                detection: {
+                    order: ["localStorage"],
+                    caches: ["localStorage"],
+                },
+                missingInterpolationHandler(_text, value, _options) {
+                    return value[1];
                 },
             });
     }
 };
-```
 
-```ts tab="main.ts"
-import { useI18n } from "./i18n";
-
-useI18n();
+function getLocalesResource(
+    lng: string,
+): Promise<Record<string, Record<string, string>>> {
+    return import(`./../locales/${lng}.json`);
+}
 ```
 
 <Accordions>
@@ -112,17 +123,17 @@ const { t } = useTranslation("ui");
 
 <Accordion title="Translate the narration (TypeScript/JavaScript)" id="translate-narration">
 
-<Callout title="템플릿" type="info">
+:::tip[템플릿]
 
 In all templates, the `StepLabelProps` interface already includes a `t` function. See `pixi-vn.d.ts`.
 
-</Callout>
+:::
 
-<Callout type="info">
+:::tip
 
 It is recommended to use `t` inside the <DynamicLink href="/start/labels">label</DynamicLink> rather than directly in the UI, so you can take advantage of [i18n Interpolation](https://i18next.com/translation-function/interpolation).
 
-</Callout>
+:::
 
 In Pixi’VN projects, you often need to translate narration text in TypeScript/JavaScript <DynamicLink href="/start/labels">`labels`</DynamicLink>. To enable this, the translation function must be in the <DynamicLink href="/start/labels#steplabelprops">`StepLabelProps` interface</DynamicLink>.
 
@@ -131,16 +142,17 @@ It is recommended to use the original string as the translation key.
 ```ts tab="content/labels/start.label.ts"
 export const startLabel = newLabel("start", [
     ({ t }) => {
-        // [!code focus]
         narration.dialogue = {
             character: liam,
-            text: t("Hello, my name is {{name}}", { name: "Liam" }), // [!code focus]
+            text: t("Hello, my name is {{name}}", { name: "Liam" }),
         };
     },
 ]);
 ```
 
 ```ts tab="pixi-vn.d.ts"
+import type { TFunction } from "i18next";
+
 declare module "@drincs/pixi-vn" {
     interface StepLabelProps {
         /**
@@ -154,26 +166,46 @@ declare module "@drincs/pixi-vn" {
 }
 ```
 
+```ts tab="locales/es.json"
+{
+    "narration": {
+        "Hello, my name is {{name}}": "Hola, mi nombre es {{name}}"
+        // ...
+    }
+}
+```
+
+```ts tab="lib/hooks/props-hooks.ts"
+import { useTranslation } from "react-i18next";
+
+export function useGameProps(): StepLabelProps {
+    const { t } = useTranslation(["narration"]);
+
+    return {
+        // ...
+        t,
+    };
+}
+```
+
 </Accordion>
 
 </Accordions>
 
 ## Create
 
-<Callout title="ink" type="info">
+:::tip[*ink*]
 
-If you use `ink`, you can automatically extract strings from `ink` text for translation. See more <DynamicLink href="/ink/translate">here</DynamicLink>.
+If you use *ink*, you can automatically extract strings from *ink* text for translation. See more <DynamicLink href="/ink/translate">here</DynamicLink>.
 
-</Callout>
+:::
 
-Translation JSON files must be created manually. It is recommended to split translations into two sections (see `strings_es.json`):
+Translation JSON files must be created manually. It is recommended to split translations into two sections (see `es.json`):
 
-* <DynamicLink href="/start/interface">UI</DynamicLink> texts: for screens,
-  settings, quick buttons, etc.—everything not part of the narration.
-* <DynamicLink href="/start/narration">Narration</DynamicLink> texts: for
-  dialogues, choice menus, etc.
+* UI texts: for screens, settings, quick buttons, etc.—everything not part of the narration.
+* Narration texts: for dialogues, choice menus, etc.
 
-```json tab="locales/strings_es.json"
+```json tab="locales/es.json"
 {
     "ui": {
         "text_speed": "Velocidad del texto"
