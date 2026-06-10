@@ -39,10 +39,12 @@ import {
 export const startLabel = newLabel("start", [
     async () => {
         narration.dialogue = "Choose a fruit:";
-        narration.choices = [ // [!code focus]
+        narration.choices = [
+            // [!code focus]
             newChoiceOption("Orange", orangeLabel, {}), // by default, the label will be called with "call" // [!code focus]
             newChoiceOption("Banana", bananaLabel, {}, { type: "jump" }), // [!code focus]
-            newChoiceOption( // [!code focus]
+            newChoiceOption(
+                // [!code focus]
                 "Apple", // [!code focus]
                 appleLabel, // [!code focus]
                 { quantity: 5 }, // [!code focus]
@@ -96,45 +98,6 @@ To clear the choice options, set `narration.choices = undefined`.
 
 ```ts
 narration.choices = undefined;
-```
-
-## Custom class
-
-You can customize a choice menu option by adding properties to the [`ChoiceInterface`](/jsdoc/pixi-vn/index/interfaces/ChoiceInterface) interface. For example, add an `icon` property to display an icon.
-
-Override the [`ChoiceInterface`](/jsdoc/pixi-vn/index/interfaces/ChoiceInterface) interface in your `.d.ts` file:
-
-```ts tab="pixi-vn.d.ts"
-declare module "@drincs/pixi-vn" {
-    interface ChoiceInterface {
-        icon?: string;
-    }
-}
-```
-
-```ts tab="content/labels/start.label.ts"
-narration.choices = [
-    newChoiceOption("Orange", orangeLabel, {}, { icon: "orange.png" }),
-    newChoiceOption("Banana", bananaLabel, {}, { icon: "banana.png" }),
-    newChoiceOption("Apple", appleLabel, {}, { icon: "apple.png" }),
-];
-```
-
-```tsx tab="screens/ChoiceMenu.tsx"
-function ChoiceMenu({ choices }: { choices: StoredIndexedChoiceInterface[] }) {
-    return (
-        <div>
-            {choices.map((choice, index) => (
-                <div key={index}>
-                    {choice.icon && <img src={choice.icon} alt={choice.text} />}
-                    <button onClick={() => narration.selectChoice(choice)}>
-                        {choice.text}
-                    </button>
-                </div>
-            ))}
-        </div>
-    );
-}
 ```
 
 ## Other features
@@ -217,6 +180,47 @@ export default function ChoiceMenu() {
 ```
 
 <ChoicesAlreadyMade />
+
+</Accordion>
+
+<Accordion title="Custom class" id="custom-class">
+
+You can customize a choice menu option by adding properties to the [`ChoiceInterface`](/jsdoc/pixi-vn/index/interfaces/ChoiceInterface) interface. For example, add an `icon` property to display an icon.
+
+Override the [`ChoiceInterface`](/jsdoc/pixi-vn/index/interfaces/ChoiceInterface) interface in your `.d.ts` file:
+
+```ts tab="pixi-vn.d.ts"
+declare module "@drincs/pixi-vn" {
+    interface ChoiceInterface {
+        icon?: string;
+    }
+}
+```
+
+```ts tab="content/labels/start.label.ts"
+narration.choices = [
+    newChoiceOption("Orange", orangeLabel, {}, { icon: "orange.png" }),
+    newChoiceOption("Banana", bananaLabel, {}, { icon: "banana.png" }),
+    newChoiceOption("Apple", appleLabel, {}, { icon: "apple.png" }),
+];
+```
+
+```tsx tab="screens/ChoiceMenu.tsx"
+function ChoiceMenu({ choices }: { choices: StoredIndexedChoiceInterface[] }) {
+    return (
+        <div>
+            {choices.map((choice, index) => (
+                <div key={index}>
+                    {choice.icon && <img src={choice.icon} alt={choice.text} />}
+                    <button onClick={() => narration.selectChoice(choice)}>
+                        {choice.text}
+                    </button>
+                </div>
+            ))}
+        </div>
+    );
+}
+```
 
 </Accordion>
 
