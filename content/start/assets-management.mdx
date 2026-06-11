@@ -93,75 +93,49 @@ Here are the most common and recommended moments to load assets in advance:
 
 It is possible to load assets at project startup before the player can interact with the project, for example during the startup loading screen. It is suggested to use this procedure only for assets used in the main page or for assets used frequently, and not to exceed 100MB.
 
-To do this, you must use the `Assets.load` function and wait for it to finish (with `await`) when the project starts. You can learn more about the `Assets.load` function [here](https://pixijs.com/8.x/guides/components/assets).
+To do this, you must use the `Assets.load` function and wait for it to finish (with `await`) when the project starts.
 
-```ts tab="utils/defineAssets.ts"
+```ts tab="lib/utils/assets-utility.ts"
+import { manifest } from "@/assets";
 import { Assets, sound } from "@drincs/pixi-vn";
-import manifest from "../assets/manifest";
 
+let assetsInitialized = false;
+
+/**
+ * Define all the assets that will be used in the game.
+ * This function will be called before the game starts.
+ */
 export async function defineAssets() {
-    // manifest
-    await Assets.init({ manifest });
-    // single asset
-    Assets.add({
-        alias: "eggHead",
-        src: "https://pixijs.com/assets/eggHead.png",
-    });
-    Assets.add({
-        alias: "flowerTop",
-        src: "https://pixijs.com/assets/flowerTop.png",
-    });
-    Assets.add({ alias: "video", src: "https://pixijs.com/assets/video.mp4" });
-    sound.add("bird", "https://pixijs.io/sound/examples/resources/bird.mp3");
-    sound.add(
-        "musical",
-        "https://pixijs.io/sound/examples/resources/musical.mp3",
-    );
-    // bundle
-    Assets.addBundle("liam", {
-        "liam-head": "liam_head.png",
-        "liam-body": "liam_body.png",
-        "liam-arms": "liam_arms.png",
-    });
+    if (!assetsInitialized) {
+        await Assets.init({ manifest });
+        assetsInitialized = true;
+    }
 
-    // The game will not start until these assets are loaded. // [!code focus]
-    await Assets.load("eggHead"); // [!code focus]
-    await Assets.loadBundle("liam"); // [!code focus]
+    // The game will not start until these asserts are loaded.
+    await Assets.loadBundle("base");
 }
 ```
 
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
+```ts tab="assets/index.ts"
+import type { AssetsManifest } from "@drincs/pixi-vn";
 
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
+export const manifest: AssetsManifest = {
     bundles: [
-        // screens
         {
-            name: "main_menu",
+            name: "base",
             assets: [
                 {
-                    alias: "background_main_menu",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/main-menu.png",
+                    alias: "eggHead",
+                    src: "https://pixijs.com/assets/eggHead.png",
                 },
-            ],
-        },
-        // labels
-        {
-            name: "start",
-            assets: [
                 {
-                    alias: "bg01-hallway",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/bg01-hallway.webp",
+                    alias: "flowerTop",
+                    src: "https://pixijs.com/assets/flowerTop.png",
                 },
             ],
         },
     ],
 };
-export default manifest;
 ```
 
 </Accordion>
@@ -225,7 +199,7 @@ const manifest: AssetsManifest = {
             assets: [
                 {
                     alias: "background_main_menu",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/main-menu.png",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/main-menu.png",
                 },
             ],
         },
@@ -235,7 +209,7 @@ const manifest: AssetsManifest = {
             assets: [
                 {
                     alias: "bg01-hallway",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/bg01-hallway.webp",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/breakdown/bg01-hallway.webp",
                 },
             ],
         },
