@@ -1,23 +1,34 @@
 ---
-title: Assets management
-description: Organization, referencing, and loading of assets (images, sounds, videos) in Pixi’VN using aliases and manifests.
+title: Loading assets
 ---
+
+Especially for games with online assets, following good loading practices is essential to avoid long wait times and keep the experience smooth for the player.
 
 To load and manipulate assets (images, gifs, videos, etc.) you will need to use `Assets`. `Assets` is a class with many features and comes from the PixiJS library. For more information, read [here](https://pixijs.com/8.x/guides/components/assets).
 
-In all Pixi’VN functions, you can directly use the image URL, even if it is not defined in `Assets`.
+To load an asset, always use its **alias** — the unique identifier defined in the manifest or when registering the asset. Using the `src` path directly is strongly discouraged: it couples your code to the file location, making it fragile when paths or hosting change.
 
-```ts
-let alien1 = await showImage("alien", "https://pixijs.com/assets/eggHead.png");
+```ts name="main.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+const texture = await Assets.load("eggHead");
 ```
 
-This method has some drawbacks:
-
-- Changing the URL of an asset from one version to another may cause incompatibilities.
-- The player will have to wait for a short loading time every time they press "continue" and a <DynamicLink href="/start/labels">`step`</DynamicLink> is started that uses assets.
-- Writing the entire URL in code will increase its length and make it less readable.
-
-For these reasons, it is recommended to handle assets in the following ways.
+```json name="assets/manifest.gen.json"
+{
+    "bundles": [
+        {
+            "name": "default",
+            "assets": [
+                {
+                    "alias": "eggHead",
+                    "src": "./assets/eggHead.png"
+                }
+            ]
+        }
+    ]
+}
+```
 
 ## Initialize the asset matrix at project start
 
