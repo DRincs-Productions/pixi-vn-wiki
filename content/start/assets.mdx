@@ -322,88 +322,56 @@ export const manifest: AssetsManifest = {
 
 :::tip[Templates]
 
-In all templates, a service worker is included to cache external assets (images, sounds, videos, etc.) used in your game. This improves performance and reduces loading times for players.
+In all templates, assets loaded from external URLs are automatically cached by the service worker for offline use. This is configured in the `vite.config.ts` file using the `vite-plugin-pwa` plugin.
 
 :::
 
-For assets hosted online, the service worker caches them locally on the user's device after the first download. This means that subsequent requests for the same asset will be served from the cache, resulting in faster load times and reduced data usage.
+For online games, caching external assets is crucial: it avoids re-downloading the same files on every session, reduces latency, and allows the game to work even when the connection is temporarily unavailable.
 
-```js tab="public/service-worker.js"
-const CACHE_NAME = "external-assets-v1";
-const MAX_AGE_DAYS = 7;
-const MAX_AGE_MS = MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
+This is handled by [VitePWA](https://vite-pwa-org.netlify.app/), which is pre-configured in the templates. You can customize the caching behavior directly in `vite.config.ts`:
 
-const lastUsed = {};
+- **`CACHED_EXTERNAL_HOSTNAMES`** — list of external hostnames whose assets should be cached. Add any CDN or remote host you use.
+- **`cacheableResponse`** — defines which HTTP responses are eligible for caching (e.g. status `0` for opaque responses and `200` for successful ones).
+- **`expiration`** — controls how long cached assets are kept. By default assets are cached for 7 days (`maxAgeSeconds: 7 * 24 * 60 * 60`).
 
-// The fetch event handler below implements a simple cache-for-host strategy:
-// - It only attempts to cache responses for requests whose hostname is explicitly allowed in the switch below.
-// - Cached entries are kept in the "external-assets-v1" cache and tracked via `lastUsed` timestamps.
-// - If a cached response exists and is not older than MAX_AGE_DAYS, it is served directly.
-// - Otherwise the service worker fetches from the network, caches the successful response, and returns it.
-// - If the network fails and a cached response exists, the cached response is returned as a fallback.
-// NOTE: Add the hostnames of external asset providers you want to cache (CDNs, raw asset hosts, etc.) in the switch below.
-self.addEventListener("fetch", (event) => {
-    const request = event.request;
-    const url = new URL(request.url);
+```ts title="vite.config.ts"
+import { defineConfig } from "vite";
+import { VitePWA } from "vite-plugin-pwa";
 
-    switch (url.hostname) {
-        case "raw.githubusercontent.com":
-            break;
-        // Add asset hostnames here to enable caching for them.
-        // Examples:
-        // case "raw.githubusercontent.com":
-        // case "cdn.jsdelivr.net":
-        // case "your.cdn.domain.com":
-        //     break;
-        default:
-            return;
-    }
+/**
+ * List of external hostnames whose responses should be cached by the service worker.
+ * Add any CDN or remote asset host here to enable offline caching for it.
+ * Examples:
+ *   "cdn.jsdelivr.net"
+ *   "your.cdn.domain.com"
+ */
+const CACHED_EXTERNAL_HOSTNAMES: string[] = ["raw.githubusercontent.com"];
 
-    event.respondWith(
-        (async () => {
-            const cache = await caches.open(CACHE_NAME);
-            const now = Date.now();
-            const cached = await cache.match(request);
-
-            if (cached && lastUsed[url.href]) {
-                const age = now - lastUsed[url.href];
-                if (age < MAX_AGE_MS) {
-                    lastUsed[url.href] = now;
-                    return cached;
-                }
-                await cache.delete(request);
-                delete lastUsed[url.href];
-            }
-
-            try {
-                const response = await fetch(request);
-                if (
-                    response &&
-                    response.type === "cors" &&
-                    response.status < 400
-                ) {
-                    await cache.put(request, response.clone());
-                    lastUsed[url.href] = now;
-                }
-                return response;
-            } catch (err) {
-                if (cached) return cached;
-                return fetch(request);
-            }
-        })(),
-    );
-});
-```
-
-```ts tab="main.ts"
-// Register service worker
-if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-        navigator.serviceWorker
-            .register("/service-worker.js")
-            .catch(console.error);
-    });
-}
+export default defineConfig(() => ({
+    plugins: [
+        VitePWA({
+            // ...
+            workbox: {
+                runtimeCaching: [
+                    {
+                        urlPattern: ({ url }) =>
+                            CACHED_EXTERNAL_HOSTNAMES.includes(url.hostname),
+                        handler: "CacheFirst",
+                        options: {
+                            cacheName: "external-assets-v1",
+                            cacheableResponse: {
+                                statuses: [0, 200],
+                            },
+                            expiration: {
+                                maxAgeSeconds: 7 * 24 * 60 * 60,
+                            },
+                        },
+                    },
+                ],
+            },
+        }),
+    ],
+}));
 ```
 
 </Accordion>
