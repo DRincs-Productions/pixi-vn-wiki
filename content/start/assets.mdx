@@ -35,7 +35,7 @@ You can learn more about PixiJS AssetPack on the [PixiJS website](https://pixijs
 
 </Accordions>
 
-PixiJS AssetPack is already pre-configured in the Pixi'VN project templates through the Vite.js integration — automating the processing and optimization of your assets so you can focus on building your project.
+PixiJS AssetPack is already pre-configured in the Pixi’VN project templates through the Vite.js integration — automating the processing and optimization of your assets so you can focus on building your project.
 
 During development (`vite dev`) it watches the `public/assets` folder for changes and processes them on the fly. During the production build (`vite build`) it runs a full optimization pass before bundling.
 
@@ -241,6 +241,72 @@ Cloud storage is a service that allows you to upload any type of file online. Th
 </Accordion>
 
 </Accordions>
+
+Once you have your assets ready, you need to manually define which ones your game can use and how they are grouped into bundles. It is strongly recommended to follow the [asset loading best practices](/assets-management) to minimize loading times and avoid blocking the game unnecessarily.
+
+All Pixi’VN templates include a `src/assets/index.ts` file that you can edit to register your assets:
+
+```ts tab="src/assets/index.ts"
+import generatedManifestJson from "@/assets/manifest.gen.json";
+import { AUDIO_BUNDLE_NAME } from "@/constants";
+import { startLabel } from "@/content/labels/start.label";
+import type { FileRouteTypes } from "@/routeTree.gen";
+import type { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        ...generatedManifestJson.bundles,
+        {
+            name: AUDIO_BUNDLE_NAME,
+            assets: [
+                {
+                    alias: "bgm_cheerful",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/audio/bgm_cheerful.wav",
+                },
+                {
+                    alias: "sfx_whoosh",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/audio/sfx_whoosh.wav",
+                },
+            ],
+        },
+        // screens
+        {
+            // main menu
+            name: "/" as FileRouteTypes["fullPaths"],
+            assets: [
+                {
+                    alias: "background_main_menu",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/main-menu.png",
+                },
+            ],
+        },
+        // labels
+        {
+            name: startLabel.id,
+            assets: [
+                {
+                    alias: "bg01-hallway",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/breakdown/bg01-hallway.webp",
+                },
+            ],
+        },
+        // characters
+        {
+            name: "mc",
+            assets: [
+                {
+                    alias: "mc-neutral",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/characters/mc-neutral.png",
+                },
+            ],
+        },
+    ],
+};
+```
 
 ## Other features
 
