@@ -6,6 +6,8 @@ Especially for games with online assets, following good loading practices is ess
 
 To load and manipulate assets (images, gifs, videos, etc.) you will need to use `Assets`. `Assets` is a class with many features and comes from the PixiJS library. For more information, read [here](https://pixijs.com/8.x/guides/components/assets).
 
+## Use aliases to load assets
+
 To load an asset, always use its **alias** — the unique identifier defined in the manifest or when registering the asset. Using the `src` path directly is strongly discouraged: it couples your code to the file location, making it fragile when paths or hosting change.
 
 ```ts name="main.ts"
@@ -30,76 +32,53 @@ const texture = await Assets.load("eggHead");
 }
 ```
 
-## Initialize the asset matrix at project start
+## Organize assets into bundles
 
-Initializing the asset matrix at the beginning of the project allows you to reference assets by a unique alias without having to use the URL/path. Using the alias you can change the URL of an asset without having to worry about version compatibility.
+A best practice is to group assets into **bundles** rather than registering them individually. Bundles allow you to load a whole set of assets with a single call, and to defer loading until the assets are actually needed.
 
-To do this, it is recommended to create an asynchronous function `defineAssets` that will be called at the start of the project.
-In the `defineAssets` function, use `Assets` (e.g. `Assets.add`, `Assets.addBundle`, and `Assets.init`) to assign aliases to URLs. You can find more information about them [here](https://pixijs.com/8.x/guides/components/assets) to assign an alias to each asset.
+:::tip
 
-```ts tab="utils/defineAssets.ts"
-import { Assets, sound } from "@drincs/pixi-vn";
-import manifest from "../assets/manifest";
+For local assets, naming bundles based on where they are used is less critical — since local files load instantly, there is no real benefit in splitting them by screen or label. This convention is most valuable for online assets, where targeted loading directly reduces wait times.
 
-export async function defineAssets() {
-    // manifest
-    await Assets.init({ manifest });
-    // single asset
-    Assets.add({
-        alias: "eggHead",
-        src: "https://pixijs.com/assets/eggHead.png",
-    });
-    Assets.add({
-        alias: "flowerTop",
-        src: "https://pixijs.com/assets/flowerTop.png",
-    });
-    Assets.add({ alias: "video", src: "https://pixijs.com/assets/video.mp4" });
-    sound.add("bird", "https://pixijs.io/sound/examples/resources/bird.mp3");
-    sound.add(
-        "musical",
-        "https://pixijs.io/sound/examples/resources/musical.mp3",
-    );
-    // bundle
-    Assets.addBundle("liam", {
-        "liam-head": "liam_head.png",
-        "liam-body": "liam_body.png",
-        "liam-arms": "liam_arms.png",
-    });
-}
-```
+:::
 
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
+It is recommended to name each bundle based on **where it will be used**. For example:
 
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
+- use the label's id (e.g. `startLabel.id`) as the bundle name for assets used in that specific label
+- use the route path (e.g. `"/"`) as the bundle name for assets used in the corresponding screen, such as the main menu
+
+This way, you can load exactly the right assets at the right moment, without loading more than necessary.
+
+```ts title="src/assets/index.ts"
+import { startLabel } from "@/content/labels/start.label";
+import type { FileRouteTypes } from "@/routeTree.gen";
+import type { AssetsManifest } from "@drincs/pixi-vn";
+
+export const manifest: AssetsManifest = {
     bundles: [
         // screens
         {
-            name: "main_menu",
+            // main menu
+            name: "/" as FileRouteTypes["fullPaths"],
             assets: [
                 {
                     alias: "background_main_menu",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/main-menu.png",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/main-menu.png",
                 },
             ],
         },
         // labels
         {
-            name: "start",
+            name: startLabel.id,
             assets: [
                 {
                     alias: "bg01-hallway",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/bg01-hallway.webp",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/breakdown/bg01-hallway.webp",
                 },
             ],
         },
     ],
 };
-export default manifest;
 ```
 
 ## Load assets
