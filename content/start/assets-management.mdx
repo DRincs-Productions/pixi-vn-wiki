@@ -316,4 +316,54 @@ export const manifest: AssetsManifest = {
 
 </Accordion>
 
+<Accordion title="Load assets before a screen is shown" id="load-assets-before-screen">
+
+It is possible to load assets before a screen is shown. This is useful when a screen uses images or other resources that must be ready before the component renders.
+
+In this example, TanStack Router is used, which is already included in all templates. You can find more information about it <DynamicLink href="/start/interface-navigate">here</DynamicLink>.
+
+The `loader` function runs before the route component mounts. You can call `Assets.loadBundle` inside `loader` to preload the bundle associated with that route.
+
+Additionally, you can use `pendingComponent` to display a loading indicator while the assets are being fetched, so the user sees a meaningful transition instead of a blank screen.
+
+```tsx title="routes/game/narration.tsx"
+import { NarrationPendingComponent } from "@/components/loading";
+import { NarrationScreen } from "@/components/screens/narration";
+import { Assets } from "@drincs/pixi-vn";
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/game/narration")({
+    component: NarrationElement,
+    pendingComponent: NarrationPendingComponent,
+    loader: async () => {
+        await Assets.loadBundle("/game/narration");
+    },
+});
+
+function NarrationElement() {
+    return <NarrationScreen />;
+}
+```
+
+```ts tab="assets/index.ts"
+import type { AssetsManifest } from "@drincs/pixi-vn";
+import startLabel from "@/content/labels/start.label";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "/game/narration",
+            assets: [
+                {
+                    alias: "next-button",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/assets/next-button.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+</Accordion>
+
 </Accordions>
