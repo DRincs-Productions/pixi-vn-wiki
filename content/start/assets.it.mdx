@@ -3,60 +3,200 @@ title: Assets
 description: Overview of asset types and storage options (local or online) in Pixi’VN, with usage examples.
 ---
 
-**What are assets?** Assets are all files that are not code, such as images, sounds, and videos.
-
-You can use assets saved locally in the project or online (for the second option, you need to make sure that the cloud service you are using allows *CORS requests*). If your assets are online, your game will require an internet connection. You should notify the user and block the game if there is no connection.
-
-If you are creating a visual novel, it is recommended to keep frequently used assets locally. For assets used only once in the game, it is better to publish them online.
-
-To load and manipulate assets (images, gifs, videos, etc.) sarà necessario utilizzare `Assets`. `Assets` is a class with many features and comes from the PixiJS library. For more information, read [here](https://pixijs.com/8.x/guides/components/assets). It is also very important that you read this documentation to better <DynamicLink href="/start/assets-management">organize the uploading of your assets</DynamicLink>.
-
-You mainly have two choices for where to save your assets: locally or online.
-
-## Local assets
-
-To save and use assets locally, you can use any folder—there are no restrictions. However, it is recommended to use the `assets` folder. Inside this folder, you can create subfolders to better organize your assets.
-
-Here is an example of how to import and load an asset into your project:
-
-```ts title="utils/assets.ts"
-import { Assets } from "@drincs/pixi-vn";
-import bg01hallway from "../assets/images/bg01-hallway.webp";
-
-Assets.add({
-    alias: "bg01-hallway",
-    src: bg01hallway,
-});
-```
-
 <Accordions>
 
-<Accordion title="PixiJS AssetPack" id="pixijs-assetpack">
+<Accordion title="What are assets?" id="what-is-assets">
 
-AssetPack is a tool for optimizing local assets for the web. It can be used to transform, combine, and compress assets.
-
-If you want to use AssetPack, you can find the documentation [here](https://pixijs.io/assetpack).
+Assets are all files that are not code, such as images, sounds, and videos.
 
 </Accordion>
 
 </Accordions>
 
-## Assets hosting
+You can use assets saved locally in the project or online (for the second option, you need to make sure that the cloud service you are using allows *CORS requests*). If your assets are online, your game will require an internet connection. You should notify the user and block the game if there is no connection.
 
-You can save your assets online. This is a good option if you want to save space on your computer. You can use any cloud service that allows you to upload files and generate a public URL (CORS enabled).
+If you are creating a visual novel, it is recommended to keep frequently used assets locally. For assets used only once in the game, it is better to publish them online.
 
-Here is an example of how to import and load an asset into your project:
+You mainly have two choices for where to save your assets: locally or online.
 
-```ts title="utils/assets.ts"
-import { Assets } from "@drincs/pixi-vn";
+## Local assets
 
-Assets.add({
-    alias: "bg01-hallway",
-    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/bg01-hallway.webp",
-});
+To save and use assets locally, you can use any folder—there are no restrictions. However, it is recommended to use the `public/assets` folder. Inside this folder, you can create subfolders to better organize your assets.
+
+<Accordions>
+
+<Accordion title="What is PixiJS AssetPack?" id="what-is-pixijsassetpack">
+
+PixiJS AssetPack is a tool for optimizing local assets for the web. It can be used to transform, combine, and compress assets.
+
+You can learn more about PixiJS AssetPack on the [PixiJS website](https://pixijs.io/assetpack).
+
+</Accordion>
+
+</Accordions>
+
+PixiJS AssetPack is already pre-configured in the Pixi’VN project templates through the Vite.js integration — automating the processing and optimization of your assets so you can focus on building your project.
+
+During development (`vite dev`) it watches the `public/assets` folder for changes and processes them on the fly. During the production build (`vite build`) it runs a full optimization pass before bundling.
+
+The optimizations it applies include:
+
+* **Compression** — reduces file sizes for faster loading.
+* **Format conversion** — converts images to modern formats (e.g. WebP, AVIF) when supported.
+* **Texture atlases** — combines multiple small images into a single sprite sheet to reduce draw calls.
+
+Once processing is complete, it generates the `src/assets/manifest.gen.json` file, which contains the list of all asset bundles and their paths. This file is then used by PixiJS to load assets efficiently.
+
+<Files>
+    <Folder name="project" defaultOpen>
+        <Folder name="public" defaultOpen>
+            <Folder name="assets" defaultOpen>
+                <Folder name="audio" defaultOpen>
+                    <File name="bgm_cheerful.wav" />
+                    <File name="sfx_whoosh.wav" />
+                </Folder>
+                <Folder name="mainmenu" defaultOpen>
+                    <File name="background_main_menu.png" />
+                </Folder>
+                <Folder name="start" defaultOpen>
+                    <File name="bg01-hallway.webp" />
+                </Folder>
+                <Folder name="mc" defaultOpen>
+                    <File name="mc-neutral.png" />
+                </Folder>
+            </Folder>
+        </Folder>
+        <Folder name="src" defaultOpen>
+            <Folder name="assets">
+                <File name="manifest.gen.json" />
+                <File name="index.ts" />
+            </Folder>
+        </Folder>
+        <File name=".assetpack.ts" />
+        <File name="vite.config.ts" />
+    </Folder>
+</Files>
+
+```json tab="src/assets/manifest.gen.json"
+{
+    "bundles": [
+        {
+            "name": "audio",
+            "assets": [
+                {
+                    "alias": "bgm_cheerful",
+                    "src": "./assets/audio/bgm_cheerful.wav"
+                },
+                {
+                    "alias": "sfx_whoosh",
+                    "src": "./assets/audio/sfx_whoosh.wav"
+                }
+            ]
+        },
+        {
+            "name": "mainmenu",
+            "assets": [
+                {
+                    "alias": "background_main_menu",
+                    "src": "./assets/mainmenu/background_main_menu.png"
+                }
+            ]
+        },
+        {
+            "name": "start",
+            "assets": [
+                {
+                    "alias": "bg01-hallway",
+                    "src": "./assets/start/bg01-hallway.webp"
+                }
+            ]
+        },
+        {
+            "name": "mc",
+            "assets": [
+                {
+                    "alias": "mc-neutral",
+                    "src": "./assets/mc/mc-neutral.png"
+                }
+            ]
+        }
+    ]
+}
 ```
 
-You can save your assets as you like, with complete freedom. If you plan to save your assets online, here are some of the options:
+```ts tab=".assetpack.ts"
+import type { AssetPackConfig } from "@assetpack/core";
+import { pixiPipes } from "@assetpack/core/pixi";
+
+const config: AssetPackConfig = {
+    entry: "./src/assets",
+    output: "./public/assets",
+    ignore: ["**/*.ts", "**/*.js", "**/*.gen.*"],
+    pipes: [
+        ...pixiPipes({
+            manifest: {
+                output: "src/assets/manifest.gen.json",
+                createShortcuts: true,
+            },
+        }),
+    ],
+};
+
+export default config;
+```
+
+```ts tab="vite.config.ts"
+import { AssetPack } from "@assetpack/core";
+import { defineConfig, type Plugin, type ResolvedConfig } from "vite";
+import assetPackConfig from "./.assetpack.ts";
+
+export default defineConfig(() => ({
+    plugins: [
+        assetpackPlugin(),
+        // ...
+    ],
+}));
+
+function assetpackPlugin(): Plugin {
+    let mode: ResolvedConfig["command"];
+    let ap: AssetPack | undefined;
+
+    return {
+        name: "vite-plugin-assetpack",
+        configResolved(resolvedConfig) {
+            mode = resolvedConfig.command;
+            if (!resolvedConfig.publicDir) return;
+            if (assetPackConfig.output) return;
+            const publicDir = resolvedConfig.publicDir.replace(
+                process.cwd(),
+                "",
+            );
+            assetPackConfig.output = `.${publicDir}/assets/`;
+        },
+        buildStart: async () => {
+            if (mode === "serve") {
+                if (ap) return;
+                ap = new AssetPack(assetPackConfig);
+                void ap.watch();
+            } else {
+                await new AssetPack(assetPackConfig).run();
+            }
+        },
+        buildEnd: async () => {
+            if (ap) {
+                await ap.stop();
+                ap = undefined;
+            }
+        },
+    };
+}
+```
+
+## Assets hosting
+
+You can save your assets online. This is a good option if you want to save space in your project or if you want create a game playable online without the need to download it first. You can use any cloud service that allows you to upload files and generate a public URL (CORS enabled).
+
+Here are some popular options for hosting your assets online:
 
 <Accordions>
 
@@ -90,7 +230,7 @@ Image hosting is a service that allows you to upload images. There are many site
 
 <Accordion title="Cloud storage" id="Cloud-storage">
 
-Cloud storage is a service that allows you to upload files online.
+Cloud storage is a service that allows you to upload any type of file online. There are many popular options, for example [Cloudflare R2](https://www.cloudflare.com/developer-platform/r2/), [Firebase Storage](https://firebase.google.com/pricing), [Amazon S3](https://aws.amazon.com/s3/pricing/), [Supabase](https://supabase.io/pricing), [Convex](https://www.convex.dev/pricing).
 
 * **Price**: Usually paid or with a free version with limits.
 * **Space limits**: Monthly cost based on space used (usually free if you do not exceed a certain threshold).
@@ -98,19 +238,77 @@ Cloud storage is a service that allows you to upload files online.
 * **Traffic**: Speed is good.
 * **Edit assets**: You can edit the file while keeping the same URL.
 
-Here is a list of some of the most popular cloud storage services:
-
-* ![firebase-text](/firebase.svg) **Firebase Storage** is a cloud service that is very easy to use. Firebase has two plans: Spark (free) and Blaze (pay as you go). You can find more information [here](https://firebase.google.com/pricing).\
-  **Solving Firebase Storage CORS Issue**:
-  * Install [gcloud CLI](https://cloud.google.com/sdk/docs/install)
-  * Read this [documentation](https://medium.com/@we.viavek/setting-cors-in-firebase-19a2cce2fe28) to solve the CORS issue.
-* ![aws-text](/aws.svg) **Amazon S3** is a cloud service. Compared to its competitors, it has many settings, but it may be more difficult to use. There is a payment plan to use Amazon S3. You can find more information [here](https://aws.amazon.com/s3/pricing/).
-* ![supabase-text](/supabase.svg) **Supabase** is an open-source Firebase alternative. Supabase has two plans: Free and Pay as you go. You can find more information [here](https://supabase.io/pricing).
-* **Convex** is a cloud service that allows you to store and serve user-generated content, such as photos, videos, or other files. Convex has two plans: Free and Pay as you go. You can find more information [here](https://www.convex.dev/pricing).
-
 </Accordion>
 
 </Accordions>
+
+Once you have your assets ready, you need to manually define which ones your game can use and how they are grouped into bundles.
+
+:::tip
+
+It is strongly recommended to follow the <DynamicLink href="/start/assets-management">asset loading best practices</DynamicLink> to minimize loading times and avoid blocking the game unnecessarily.
+
+:::
+
+All Pixi’VN templates include a `src/assets/index.ts` file that you can edit to register your assets:
+
+```ts title="src/assets/index.ts"
+import generatedManifestJson from "@/assets/manifest.gen.json";
+import { AUDIO_BUNDLE_NAME } from "@/constants";
+import { startLabel } from "@/content/labels/start.label";
+import type { FileRouteTypes } from "@/routeTree.gen";
+import type { AssetsManifest } from "@drincs/pixi-vn";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        ...generatedManifestJson.bundles,
+        {
+            name: AUDIO_BUNDLE_NAME,
+            assets: [
+                {
+                    alias: "bgm_cheerful",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/audio/bgm_cheerful.wav",
+                },
+                {
+                    alias: "sfx_whoosh",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/audio/sfx_whoosh.wav",
+                },
+            ],
+        },
+        // screens
+        {
+            // main menu
+            name: "/" as FileRouteTypes["fullPaths"],
+            assets: [
+                {
+                    alias: "background_main_menu",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/main-menu.png",
+                },
+            ],
+        },
+        // labels
+        {
+            name: startLabel.id,
+            assets: [
+                {
+                    alias: "bg01-hallway",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/breakdown/bg01-hallway.webp",
+                },
+            ],
+        },
+        // characters
+        {
+            name: "mc",
+            assets: [
+                {
+                    alias: "mc-neutral",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/characters/mc-neutral.png",
+                },
+            ],
+        },
+    ],
+};
+```
 
 ## Altre funzionalità
 
@@ -118,90 +316,58 @@ Here is a list of some of the most popular cloud storage services:
 
 <Accordion title="Memorizzazione nella cache delle risorse" id="caching-assets">
 
-<Callout title="Modelli" type="info">
+:::tip[Modelli]
 
-In all templates, a service worker is included to cache external assets (images, sounds, videos, etc.) used in your game. This improves performance and reduces loading times for players.
+In all templates, assets loaded from external URLs are automatically cached by the service worker for offline use. This is configured in the `vite.config.ts` file using the `vite-plugin-pwa` plugin.
 
-</Callout>
+:::
 
-For assets hosted online, the service worker caches them locally on the user's device after the first download. This means that subsequent requests for the same asset will be served from the cache, resulting in faster load times and reduced data usage.
+For online games, caching external assets is crucial: it avoids re-downloading the same files on every session, reduces latency, and allows the game to work even when the connection is temporarily unavailable.
 
-```js tab="public/service-worker.js"
-const CACHE_NAME = "external-assets-v1";
-const MAX_AGE_DAYS = 7;
-const MAX_AGE_MS = MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
+This is handled by [VitePWA](https://vite-pwa-org.netlify.app/), which is pre-configured in the templates. You can customize the caching behavior directly in `vite.config.ts`:
 
-const lastUsed = {};
+* **`CACHED_EXTERNAL_HOSTNAMES`** — list of external hostnames whose assets should be cached. Add any CDN or remote host you use.
+* **`cacheableResponse`** — defines which HTTP responses are eligible for caching (e.g. status `0` for opaque responses and `200` for successful ones).
+* **`expiration`** — controls how long cached assets are kept. By default assets are cached for 7 days (`maxAgeSeconds: 7 * 24 * 60 * 60`).
 
-// The fetch event handler below implements a simple cache-for-host strategy:
-// - It only attempts to cache responses for requests whose hostname is explicitly allowed in the switch below.
-// - Cached entries are kept in the "external-assets-v1" cache and tracked via `lastUsed` timestamps.
-// - If a cached response exists and is not older than MAX_AGE_DAYS, it is served directly.
-// - Otherwise the service worker fetches from the network, caches the successful response, and returns it.
-// - If the network fails and a cached response exists, the cached response is returned as a fallback.
-// NOTE: Add the hostnames of external asset providers you want to cache (CDNs, raw asset hosts, etc.) in the switch below.
-self.addEventListener("fetch", (event) => {
-    const request = event.request;
-    const url = new URL(request.url);
+```ts title="vite.config.ts"
+import { defineConfig } from "vite";
+import { VitePWA } from "vite-plugin-pwa";
 
-    switch (url.hostname) {
-        case "raw.githubusercontent.com":
-            break;
-        // Add asset hostnames here to enable caching for them.
-        // Examples:
-        // case "raw.githubusercontent.com":
-        // case "cdn.jsdelivr.net":
-        // case "your.cdn.domain.com":
-        //     break;
-        default:
-            return;
-    }
+/**
+ * List of external hostnames whose responses should be cached by the service worker.
+ * Add any CDN or remote asset host here to enable offline caching for it.
+ * Examples:
+ *   "cdn.jsdelivr.net"
+ *   "your.cdn.domain.com"
+ */
+const CACHED_EXTERNAL_HOSTNAMES: string[] = ["raw.githubusercontent.com"];
 
-    event.respondWith(
-        (async () => {
-            const cache = await caches.open(CACHE_NAME);
-            const now = Date.now();
-            const cached = await cache.match(request);
-
-            if (cached && lastUsed[url.href]) {
-                const age = now - lastUsed[url.href];
-                if (age < MAX_AGE_MS) {
-                    lastUsed[url.href] = now;
-                    return cached;
-                }
-                await cache.delete(request);
-                delete lastUsed[url.href];
-            }
-
-            try {
-                const response = await fetch(request);
-                if (
-                    response &&
-                    response.type === "cors" &&
-                    response.status < 400
-                ) {
-                    await cache.put(request, response.clone());
-                    lastUsed[url.href] = now;
-                }
-                return response;
-            } catch (err) {
-                if (cached) return cached;
-                return fetch(request);
-            }
-        })(),
-    );
-});
-```
-
-```ts tab="main.ts"
-// Register service worker
-if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-        navigator.serviceWorker
-            .register("/service-worker.js")
-            .catch(console.error);
-    });
-}
+export default defineConfig(() => ({
+    plugins: [
+        VitePWA({
+            // ...
+            workbox: {
+                runtimeCaching: [
+                    {
+                        urlPattern: ({ url }) =>
+                            CACHED_EXTERNAL_HOSTNAMES.includes(url.hostname),
+                        handler: "CacheFirst",
+                        options: {
+                            cacheName: "external-assets-v1",
+                            cacheableResponse: {
+                                statuses: [0, 200],
+                            },
+                            expiration: {
+                                maxAgeSeconds: 7 * 24 * 60 * 60,
+                            },
+                        },
+                    },
+                ],
+            },
+        }),
+    ],
+}));
 ```
 
 </Accordion>
