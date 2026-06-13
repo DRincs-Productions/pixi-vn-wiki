@@ -1,107 +1,91 @@
 ---
-title: 资源管理
-description: Organization, referencing, and loading of assets (images, sounds, videos) in Pixi’VN using aliases and manifests.
+title: Loading assets
 ---
 
-要加载和操作资源（图像、gif、视频等）， 需要使用 `Assets`。 `Assets` 是一个功能丰富的类，来自 PixiJS 库。 更多信息请参阅[此处](https://pixijs.com/8.x/guides/components/assets)。
+Especially for games with online assets, following good loading practices is essential to avoid long wait times and keep the experience smooth for the player.
 
-在 Pixi'VN 中使用别名和清单来组织、引用和加载资源（图像、声音、视频）。
+To load and manipulate assets (images, gifs, videos, etc.) you will need to use `Assets`. `Assets` is a class with many features and comes from the PixiJS library. For more information, read [here](https://pixijs.com/8.x/guides/components/assets).
 
-```ts
-let alien1 = await showImage("alien", "https://pixijs.com/assets/eggHead.png");
+## Use aliases to load assets
+
+To load an asset, always use its **alias** — the unique identifier defined in the manifest or when registering the asset. Using the `src` path directly is strongly discouraged: it couples your code to the file location, making it fragile when paths or hosting change.
+
+```ts title="main.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+const texture = await Assets.load("eggHead");
 ```
 
-这种方法有一些缺点：
-
-* 从一个版本到另一个版本更改资源的 URL 可能导致不兼容。
-* 每次玩家按下"继续"并且启动了一个使用资源的<DynamicLink href="/start/labels">`step`</DynamicLink>时，玩家都必须等待短暂的加载时间。
-* 在代码中写入完整的 URL 会使代码变长且可读性降低。
-
-出于这些原因，建议通过以下方式处理资源。
-
-## 在项目启动时初始化资源矩阵
-
-在项目开始时初始化资源矩阵，使您可以通过唯一的别名引用资源，而无需使用 URL/路径。 使用别名可以更改资源的 URL，而无需担心版本兼容性。
-
-为此，建议创建一个异步函数 `defineAssets`，在项目启动时调用。
-在 `defineAssets` 函数中，使用 `Assets`（例如 `Assets.add`、`Assets.addBundle` 和 `Assets.init`）为 URL 分配别名。 您可以[在此处](https://pixijs.com/8.x/guides/components/assets)找到有关为每个资源分配别名的更多信息。
-
-```ts tab="utils/defineAssets.ts"
-import { Assets, sound } from "@drincs/pixi-vn";
-import manifest from "../assets/manifest";
-
-export async function defineAssets() {
-    // manifest
-    await Assets.init({ manifest });
-    // single asset
-    Assets.add({
-        alias: "eggHead",
-        src: "https://pixijs.com/assets/eggHead.png",
-    });
-    Assets.add({
-        alias: "flowerTop",
-        src: "https://pixijs.com/assets/flowerTop.png",
-    });
-    Assets.add({ alias: "video", src: "https://pixijs.com/assets/video.mp4" });
-    sound.add("bird", "https://pixijs.io/sound/examples/resources/bird.mp3");
-    sound.add(
-        "musical",
-        "https://pixijs.io/sound/examples/resources/musical.mp3",
-    );
-    // bundle
-    Assets.addBundle("liam", {
-        "liam-head": "liam_head.png",
-        "liam-body": "liam_body.png",
-        "liam-arms": "liam_arms.png",
-    });
+```json title="assets/manifest.gen.json"
+{
+    "bundles": [
+        {
+            "name": "default",
+            "assets": [
+                {
+                    "alias": "eggHead",
+                    "src": "./assets/eggHead.png"
+                }
+            ]
+        }
+    ]
 }
 ```
 
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
+## Organize assets into bundles
 
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
+A best practice is to group assets into **bundles** rather than registering them individually. Bundles allow you to load a whole set of assets with a single call, and to defer loading until the assets are actually needed.
+
+:::tip
+
+For local assets, naming bundles based on where they are used is less critical — since local files load instantly, there is no real benefit in splitting them by screen or label. This convention is most valuable for online assets, where targeted loading directly reduces wait times.
+
+:::
+
+It is recommended to name each bundle based on **where it will be used**. 例如：
+
+* use the label's id (e.g. `startLabel.id`) as the bundle name for assets used in that specific label
+* use the route path (e.g. `"/"`) as the bundle name for assets used in the corresponding screen, such as the main menu
+
+This way, you can load exactly the right assets at the right moment, without loading more than necessary.
+
+```ts title="assets/index.ts"
+import { startLabel } from "@/content/labels/start.label";
+import type { FileRouteTypes } from "@/routeTree.gen";
+import type { AssetsManifest } from "@drincs/pixi-vn";
+
+export const manifest: AssetsManifest = {
     bundles: [
         // screens
         {
-            name: "main_menu",
+            // main menu
+            name: "/" as FileRouteTypes["fullPaths"],
             assets: [
                 {
                     alias: "background_main_menu",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/main-menu.png",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/main-menu.png",
                 },
             ],
         },
         // labels
         {
-            name: "start",
+            name: startLabel.id,
             assets: [
                 {
                     alias: "bg01-hallway",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/bg01-hallway.webp",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/breakdown/bg01-hallway.webp",
                 },
             ],
         },
     ],
 };
-export default manifest;
 ```
 
-## 加载资源
+## When to load assets
 
-默认情况下，资源仅在需要时加载。
+By default, assets are loaded on demand — only when they are actually needed. However, loading at the last moment can cause noticeable pauses during gameplay.
 
-但是**如果资源未保存在本地**，而是托管在<DynamicLink href="/start/assets#assets-hosting">"资源托管"</DynamicLink>中，其加载可能需要一些时间。 这意味着启动一个 `step` 可能不是即时完成的。 因此，在开始执行<DynamicLink href="/start/labels-flow#continue">下一个 `step`</DynamicLink>（例如通过"继续"按钮）后，玩家可能需要等待一段时间才能"看到"变化并运行另一个 `step`。
-
-在每个 `step` 执行这些加载可能会让玩家感到厌烦，即使它们非常短暂。
-
-为了解决这个问题，开发者可以在游戏的某个阶段将多次加载合并为一组。 这样一来，玩家就不会遇到连续的加载，而是次数更少、但可能更长的加载。
-
-以下是加载资源的几种方式：
+Here are the most common and recommended moments to load assets in advance:
 
 <Accordions>
 
@@ -109,75 +93,49 @@ export default manifest;
 
 可以在项目启动时、玩家能够与项目交互之前加载资源，例如在启动加载画面期间。 建议仅对主页面使用的资源或频繁使用的资源采用此方法，并且不要超过 100MB。
 
-为此，您必须在项目启动时使用 `Assets.load` 函数并等待其完成（使用 `await`）。 您可以[在此处](https://pixijs.com/8.x/guides/components/assets)了解更多关于 `Assets.load` 函数的信息。
+为此，您必须在项目启动时使用 `Assets.load` 函数并等待其完成（使用 `await`）。
 
-```ts tab="utils/defineAssets.ts"
+```ts tab="lib/utils/assets-utility.ts"
+import { manifest } from "@/assets";
 import { Assets, sound } from "@drincs/pixi-vn";
-import manifest from "../assets/manifest";
 
+let assetsInitialized = false;
+
+/**
+ * Define all the assets that will be used in the game.
+ * This function will be called before the game starts.
+ */
 export async function defineAssets() {
-    // manifest
-    await Assets.init({ manifest });
-    // single asset
-    Assets.add({
-        alias: "eggHead",
-        src: "https://pixijs.com/assets/eggHead.png",
-    });
-    Assets.add({
-        alias: "flowerTop",
-        src: "https://pixijs.com/assets/flowerTop.png",
-    });
-    Assets.add({ alias: "video", src: "https://pixijs.com/assets/video.mp4" });
-    sound.add("bird", "https://pixijs.io/sound/examples/resources/bird.mp3");
-    sound.add(
-        "musical",
-        "https://pixijs.io/sound/examples/resources/musical.mp3",
-    );
-    // bundle
-    Assets.addBundle("liam", {
-        "liam-head": "liam_head.png",
-        "liam-body": "liam_body.png",
-        "liam-arms": "liam_arms.png",
-    });
+    if (!assetsInitialized) {
+        await Assets.init({ manifest });
+        assetsInitialized = true;
+    }
 
-    // The game will not start until these assets are loaded. // [!code focus]
-    await Assets.load("eggHead"); // [!code focus]
-    await Assets.loadBundle("liam"); // [!code focus]
+    // The game will not start until these asserts are loaded.
+    await Assets.loadBundle("base");
 }
 ```
 
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
+```ts tab="assets/index.ts"
+import type { AssetsManifest } from "@drincs/pixi-vn";
 
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
+export const manifest: AssetsManifest = {
     bundles: [
-        // screens
         {
-            name: "main_menu",
+            name: "base",
             assets: [
                 {
-                    alias: "background_main_menu",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/main-menu.png",
+                    alias: "eggHead",
+                    src: "https://pixijs.com/assets/eggHead.png",
                 },
-            ],
-        },
-        // labels
-        {
-            name: "start",
-            assets: [
                 {
-                    alias: "bg01-hallway",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/bg01-hallway.webp",
+                    alias: "flowerTop",
+                    src: "https://pixijs.com/assets/flowerTop.png",
                 },
             ],
         },
     ],
 };
-export default manifest;
 ```
 
 </Accordion>
@@ -219,9 +177,9 @@ export async function defineAssets() {
     // The game will start immediately, but these assets will be loaded in the background. // [!code focus]
     Assets.backgroundLoadBundle(["liam"]); // [!code focus]
     // Load an individual asset in the background // [!code focus]
-    Assets.backgroundLoad({
-        alias: "flowerTop",
-        src: "https://pixijs.com/assets/flowerTop.png",
+    Assets.backgroundLoad({ // [!code focus]
+        alias: "flowerTop", // [!code focus]
+        src: "https://pixijs.com/assets/flowerTop.png", // [!code focus]
     }); // [!code focus]
 }
 ```
@@ -241,7 +199,7 @@ const manifest: AssetsManifest = {
             assets: [
                 {
                     alias: "background_main_menu",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/main-menu.png",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/main-menu.png",
                 },
             ],
         },
@@ -251,7 +209,7 @@ const manifest: AssetsManifest = {
             assets: [
                 {
                     alias: "bg01-hallway",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/bg01-hallway.webp",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/breakdown/bg01-hallway.webp",
                 },
             ],
         },
@@ -290,8 +248,7 @@ const startLabel = newLabel(
         },
     ],
     {
-        onLoadingLabel: async (_stepId, label) => {
-            // [!code focus]
+        onLoadingLabel: async (_stepId, label) => { // [!code focus]
             // The label will not start until these assets are loaded. // [!code focus]
             await Assets.loadBundle(label.id); // [!code focus]
         }, // [!code focus]
@@ -365,8 +322,7 @@ const startLabel = newLabel(
         },
     ],
     {
-        onLoadingLabel: async (_stepId, label) => {
-            // [!code focus]
+        onLoadingLabel: async (_stepId, label) => { // [!code focus]
             // The label will start immediately, but these assets will be loaded in the background. // [!code focus]
             Assets.backgroundLoadBundle(label.id); // [!code focus]
         }, // [!code focus]
