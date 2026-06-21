@@ -1,15 +1,15 @@
 ---
-title: Loading assets
-description: Learn how to load and manage assets in Pixi’VN using aliases, bundles, and different loading strategies to keep your game smooth.
+title: アセットの読み込み
+description: エイリアス、バンドル、さまざまな読み込み戦略を使用して、Pixi’VN でアセットを読み込み・管理する方法を学び、ゲームをスムーズに保ちましょう。
 ---
 
-Especially for games with online assets, following good loading practices is essential to avoid long wait times and keep the experience smooth for the player.
+特にオンラインアセットを使用するゲームでは、適切な読み込み方法を実践することが、長い待機時間を避けてプレイヤーの体験をスムーズに保つために不可欠です。
 
-To load and manipulate assets (images, gifs, videos, etc.) you will need to use `Assets`. `Assets` is a class with many features and comes from the PixiJS library. For more information, read [here](https://pixijs.com/8.x/guides/components/assets).
+アセット（画像、GIF、動画など） を読み込んで操作するには、`Assets` を使用する必要があります。 `Assets` は多くの機能を持つクラスで、PixiJS ライブラリから提供されています。 詳細については、[こちら](https://pixijs.com/8.x/guides/components/assets)をご覧ください。
 
-## Use aliases to load assets
+## エイリアスを使ってアセットを読み込む
 
-To load an asset, always use its **alias** — the unique identifier defined in the manifest or when registering the asset. Using the `src` path directly is strongly discouraged: it couples your code to the file location, making it fragile when paths or hosting change.
+アセットを読み込む際は、常にその**エイリアス**（マニフェストまたはアセット登録時に定義した一意の識別子）を使用してください。 `src` パスを直接使用することは強く推奨されません。パスやホスティングが変更された際にコードが壊れやすくなるためです。
 
 ```ts title="main.ts"
 import { Assets } from "@drincs/pixi-vn";
@@ -33,22 +33,22 @@ const texture = await Assets.load("eggHead");
 }
 ```
 
-## Organize assets into bundles
+## アセットをバンドルにまとめる
 
-A best practice is to group assets into **bundles** rather than registering them individually. Bundles allow you to load a whole set of assets with a single call, and to defer loading until the assets are actually needed.
+アセットを個別に登録するのではなく、**バンドル**にグループ化することがベストプラクティスです。 バンドルを使うことで、1 回の呼び出しでアセットのセット全体を読み込んだり、実際に必要になるまで読み込みを遅延させたりすることができます。
 
 :::tip
 
-For local assets, naming bundles based on where they are used is less critical — since local files load instantly, there is no real benefit in splitting them by screen or label. This convention is most valuable for online assets, where targeted loading directly reduces wait times.
+ローカルアセットの場合、バンドルを使用場所に基づいて命名することの重要性は低くなります — ローカルファイルは即座に読み込まれるため、スクリーンやナラティブノード（`label`）ごとに分割しても実質的なメリットはありません。 この規則は、ターゲットを絞った読み込みが待機時間を直接削減するオンラインアセットで最も有効です。
 
 :::
 
-It is recommended to name each bundle based on **where it will be used**. 例：
+各バンドルには**使用される場所**に基づいた名前を付けることが推奨されます。 例：
 
-* use the label's id (e.g. `startLabel.id`) as the bundle name for assets used in that specific label
-* use the route path (e.g. `"/"`) as the bundle name for assets used in the corresponding screen, such as the main menu
+* 特定のナラティブノード（`label`）で使用するアセットのバンドル名には、そのナラティブノード（`label`）の id（例：`startLabel.id`）を使用する
+* 対応するスクリーン（メインメニューなど）で使用するアセットのバンドル名には、ルートパス（例：`"/"`）を使用する
 
-This way, you can load exactly the right assets at the right moment, without loading more than necessary.
+こうすることで、必要以上に読み込むことなく、適切なタイミングで適切なアセットだけを読み込むことができます。
 
 ```ts title="assets/index.ts"
 import { startLabel } from "@/content/labels/start.label";
@@ -82,19 +82,19 @@ export const manifest: AssetsManifest = {
 };
 ```
 
-## When to load assets
+## アセットを読み込むタイミング
 
-By default, assets are loaded on demand — only when they are actually needed. However, loading at the last moment can cause noticeable pauses during gameplay.
+デフォルトでは、アセットはオンデマンドで読み込まれます — 実際に必要になったときにのみ読み込まれます。 しかし、最後の瞬間に読み込むと、ゲームプレイ中に目立つ一時停止が生じる可能性があります。
 
-Here are the most common and recommended moments to load assets in advance:
+事前にアセットを読み込む最も一般的で推奨されるタイミングを以下に示します：
 
 <Accordions>
 
-<Accordion title="Load assets at project start" id="load-assets-at-project-start">
+<Accordion title="プロジェクト開始時にアセットを読み込む" id="load-assets-at-project-start">
 
-It is possible to load assets at project startup before the player can interact with the project, for example during the startup loading screen. It is suggested to use this procedure only for assets used in the main page or for assets used frequently, and not to exceed 100MB.
+プロジェクトの起動時（例えばスタートアップのローディング画面中）に、プレイヤーがプロジェクトを操作できるようになる前にアセットを読み込むことができます。 この手順は、メインページで使用するアセットや頻繁に使用するアセットにのみ使用し、100MB を超えないようにすることが推奨されます。
 
-To do this, you must use the `Assets.load` function and wait for it to finish (with `await`) when the project starts.
+これを行うには、プロジェクト開始時に `Assets.load` 関数を使用し、それが完了するまで（`await` を使って）待機する必要があります。
 
 ```ts tab="lib/utils/assets-utility.ts"
 import { manifest } from "@/assets";
@@ -141,11 +141,11 @@ export const manifest: AssetsManifest = {
 
 </Accordion>
 
-<Accordion title="Load assets in the background at project start" id="load-assets-in-the-background-at-project-start">
+<Accordion title="プロジェクト開始時にバックグラウンドでアセットを読み込む" id="load-assets-in-the-background-at-project-start">
 
-It is possible to load assets in the background when the project starts, reducing loading times when your project starts. It is recommended not to exceed 2GB.
+プロジェクト開始時にバックグラウンドでアセットを読み込むことができ、プロジェクト起動時の読み込み時間を短縮できます。 2GB を超えないようにすることが推奨されます。
 
-To do this, you can use the `Assets.backgroundLoad` function when the project starts. You can learn more about the `Assets.backgroundLoad` function [here](https://pixijs.com/8.x/guides/components/assets).
+これを行うには、プロジェクト開始時に `Assets.backgroundLoad` 関数を使用します。 `Assets.backgroundLoad` 関数の詳細については、[こちら](https://pixijs.com/8.x/guides/components/assets)をご覧ください。
 
 ```ts tab="lib/utils/assets-utility.ts"
 import { manifest } from "@/assets";
@@ -188,19 +188,19 @@ export const manifest: AssetsManifest = {
 
 </Accordion>
 
-<Accordion title="Load assets at label start" id="load-assets-at-label-start">
+<Accordion title="ナラティブノード（label）開始時にアセットを読み込む" id="load-assets-at-label-start">
 
 :::tip[*ink*]
 
-このメソッドは *ink* 構文で使用できます。 See more <DynamicLink href="/ink/assets">here</DynamicLink>.
+このメソッドは *ink* 構文で使用できます。 詳細は<DynamicLink href="/ink/assets">こちら</DynamicLink>をご覧ください。
 
 :::
 
-To group the loadings from one `step` to another of a `label` into a single loading, it is possible to load all or part of the assets used by the `label` before it starts. Since this does not reduce the waiting times for the player, but adds them to a single loading, it is recommended to [load them in the background](#load-assets-in-the-background-at-label-start).
+ナラティブノード（`label`）内のナラティブステップ（`step`）間の読み込みを 1 回の読み込みにまとめるために、ナラティブノード（`label`）が開始される前に、その中で使用されるアセットの全部または一部を読み込むことができます。 これはプレイヤーの待機時間を短縮するのではなく、1 回の読み込みに集約するため、[バックグラウンドで読み込む](#load-assets-in-the-background-at-label-start)ことが推奨されます。
 
-To do this, you must use the `Assets.load` function and wait for it to finish (with `await`) when the `label` starts. You will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function.
+これを行うには、ナラティブノード（`label`）の開始時に `Assets.load` 関数を使用し、それが完了するまで（`await` を使って）待機する必要があります。 <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> 関数を使用します。
 
-For cleaner code, it is recommended to define a bundle in your manifest with the id corresponding to the `label` id and define within it the assets that will be used in that `label`.
+コードをより整理するために、マニフェスト内に、対応するナラティブノード（`label`）の id と一致する id を持つバンドルを定義し、そのナラティブノード（`label`）で使用されるアセットをその中に定義することが推奨されます。
 
 ```ts tab="content/labels/start.label.ts"
 import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
@@ -249,19 +249,19 @@ export const manifest: AssetsManifest = {
 
 </Accordion>
 
-<Accordion title="Load assets in the background at label start" id="load-assets-in-the-background-at-label-start">
+<Accordion title="ナラティブノード（label）開始時にバックグラウンドでアセットを読み込む" id="load-assets-in-the-background-at-label-start">
 
 :::tip[テンプレート]
 
-In all templates, when a `label` is started, the background loading of the bundle (if it exists) with the id corresponding to the `label` will be started. So, it is enough to **create a manifest with a bundle for each `label`**.
+すべてのテンプレートでは、ナラティブノード（`label`）が開始されると、そのナラティブノード（`label`）の id に対応するバンドル（存在する場合）のバックグラウンド読み込みが開始されます。 そのため、**各ナラティブノード（`label`）にバンドルを持つマニフェストを作成する**だけで十分です。
 
 :::
 
-To make the game smoother by trying to remove asset loading times from one `step` to another, it is possible to start a "loading group" at the beginning of a `label`. This means that you may potentially not feel any loading, especially in the later `steps` of the `label`.
+ナラティブステップ（`step`）間のアセット読み込み時間をなくすことでゲームをよりスムーズにするために、ナラティブノード（`label`）の開始時に「読み込みグループ」を開始することができます。 これにより、特にナラティブノード（`label`）の後半のナラティブステップ（`step`）では、読み込みをほとんど感じないかもしれません。
 
-To do this, you can use the `Assets.backgroundLoad` function when the `label` starts. You can learn more about the `Assets.backgroundLoad` function [here](https://pixijs.com/8.x/guides/components/assets). And, you will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function.
+これを行うには、ナラティブノード（`label`）の開始時に `Assets.backgroundLoad` 関数を使用します。 `Assets.backgroundLoad` 関数の詳細については、[こちら](https://pixijs.com/8.x/guides/components/assets)をご覧ください。 また、<DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> 関数を使用します。
 
-For cleaner code, it is recommended to define a bundle in your manifest with the id corresponding to the `label` id and define within it the assets that will be used in that `label`.
+コードをより整理するために、マニフェスト内に、対応するナラティブノード（`label`）の id と一致する id を持つバンドルを定義し、そのナラティブノード（`label`）で使用されるアセットをその中に定義することが推奨されます。
 
 ```ts tab="content/labels/start.label.ts"
 import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
@@ -311,15 +311,15 @@ export const manifest: AssetsManifest = {
 
 </Accordion>
 
-<Accordion title="Load assets before a screen is shown" id="load-assets-before-screen">
+<Accordion title="スクリーン表示前にアセットを読み込む" id="load-assets-before-screen">
 
-It is possible to load assets before a screen is shown. This is useful when a screen uses images or other resources that must be ready before the component renders.
+スクリーンが表示される前にアセットを読み込むことができます。 これは、コンポーネントがレンダリングされる前に画像やその他のリソースが準備できていなければならないスクリーンで便利です。
 
-In this example, TanStack Router is used, which is already included in all templates. You can find more information about it <DynamicLink href="/start/interface-navigate">here</DynamicLink>.
+この例では、すべてのテンプレートに既に含まれている TanStack Router を使用しています。 詳細については<DynamicLink href="/start/interface-navigate">こちら</DynamicLink>をご覧ください。
 
-The `loader` function runs before the route component mounts. You can call `Assets.loadBundle` inside `loader` to preload the bundle associated with that route.
+`loader` 関数はルートコンポーネントがマウントされる前に実行されます。 `loader` 内で `Assets.loadBundle` を呼び出すことで、そのルートに関連するバンドルをプリロードできます。
 
-Additionally, you can use `pendingComponent` to display a loading indicator while the assets are being fetched, so the user sees a meaningful transition instead of a blank screen.
+さらに、`pendingComponent` を使用して、アセットのフェッチ中に読み込みインジケーターを表示することができます。これにより、ユーザーは空白の画面ではなく意味のある遷移を見ることができます。
 
 ```tsx tab="routes/game/narration.tsx"
 import { NarrationPendingComponent } from "@/components/loading";
