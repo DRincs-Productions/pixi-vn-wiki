@@ -9,7 +9,7 @@ Pour charger et manipuler des ressources (images, gifs, vidéos, etc.) vous devr
 
 ## Utiliser des alias pour charger des ressources
 
-To load an asset, always use its **alias** — the unique identifier defined in the manifest or when registering the asset. Using the `src` path directly is strongly discouraged: it couples your code to the file location, making it fragile when paths or hosting change.
+Pour charger une ressource, utilisez toujours son **alias** — l'identifiant unique défini dans le manifeste ou lors de l'enregistrement de la ressource. L'utilisation directe du chemin `src` est fortement déconseillée : elle lie votre code à l'emplacement du fichier, ce qui le rend fragile lorsque les chemins ou l'hébergement changent.
 
 ```ts title="main.ts"
 import { Assets } from "@drincs/pixi-vn";
@@ -33,22 +33,22 @@ const texture = await Assets.load("eggHead");
 }
 ```
 
-## Organize assets into bundles
+## Organiser les ressources en bundles
 
-A best practice is to group assets into **bundles** rather than registering them individually. Bundles allow you to load a whole set of assets with a single call, and to defer loading until the assets are actually needed.
+Une bonne pratique consiste à regrouper les ressources en **bundles** plutôt que de les enregistrer individuellement. Les bundles vous permettent de charger un ensemble complet de ressources en un seul appel, et de différer le chargement jusqu'à ce que les ressources soient réellement nécessaires.
 
 :::tip
 
-For local assets, naming bundles based on where they are used is less critical — since local files load instantly, there is no real benefit in splitting them by screen or label. This convention is most valuable for online assets, where targeted loading directly reduces wait times.
+Pour les ressources locales, nommer les bundles en fonction de leur utilisation est moins critique — puisque les fichiers locaux se chargent instantanément, il n'y a aucun avantage réel à les séparer par écran ou `label`. Cette convention est surtout utile pour les ressources en ligne, où un chargement ciblé réduit directement les temps d'attente.
 
 :::
 
-It is recommended to name each bundle based on **where it will be used**. Par exemple :
+Il est recommandé de nommer chaque bundle en fonction de **l'endroit où il sera utilisé**. Par exemple :
 
-* use the label's id (e.g. `startLabel.id`) as the bundle name for assets used in that specific label
-* use the route path (e.g. `"/"`) as the bundle name for assets used in the corresponding screen, such as the main menu
+* utilisez l'identifiant du `label` (p. ex. `startLabel.id`) comme nom de bundle pour les ressources utilisées dans ce `label` spécifique
+* utilisez le chemin de la route (p. ex. `"/"`) comme nom de bundle pour les ressources utilisées dans l'écran correspondant, tel que le menu principal
 
-This way, you can load exactly the right assets at the right moment, without loading more than necessary.
+De cette façon, vous pouvez charger exactement les bonnes ressources au bon moment, sans charger plus que nécessaire.
 
 ```ts title="assets/index.ts"
 import { startLabel } from "@/content/labels/start.label";
@@ -82,19 +82,19 @@ export const manifest: AssetsManifest = {
 };
 ```
 
-## When to load assets
+## Quand charger les ressources
 
-By default, assets are loaded on demand — only when they are actually needed. However, loading at the last moment can cause noticeable pauses during gameplay.
+Par défaut, les ressources sont chargées à la demande — uniquement lorsqu'elles sont réellement nécessaires. Cependant, charger au dernier moment peut provoquer des pauses perceptibles pendant le jeu.
 
-Here are the most common and recommended moments to load assets in advance:
+Voici les moments les plus courants et recommandés pour charger les ressources à l'avance :
 
 <Accordions>
 
-<Accordion title="Load assets at project start" id="load-assets-at-project-start">
+<Accordion title="Charger les ressources au démarrage du projet" id="load-assets-at-project-start">
 
-It is possible to load assets at project startup before the player can interact with the project, for example during the startup loading screen. It is suggested to use this procedure only for assets used in the main page or for assets used frequently, and not to exceed 100MB.
+Il est possible de charger des ressources au démarrage du projet avant que le joueur puisse interagir avec celui-ci, par exemple pendant l'écran de chargement initial. Il est conseillé de n'utiliser cette procédure que pour les ressources utilisées sur la page principale ou pour les ressources fréquemment utilisées, et de ne pas dépasser 100 Mo.
 
-To do this, you must use the `Assets.load` function and wait for it to finish (with `await`) when the project starts.
+Pour ce faire, vous devez utiliser la fonction `Assets.load` et attendre qu'elle se termine (avec `await`) au démarrage du projet.
 
 ```ts tab="lib/utils/assets-utility.ts"
 import { manifest } from "@/assets";
@@ -141,11 +141,11 @@ export const manifest: AssetsManifest = {
 
 </Accordion>
 
-<Accordion title="Load assets in the background at project start" id="load-assets-in-the-background-at-project-start">
+<Accordion title="Charger les ressources en arrière-plan au démarrage du projet" id="load-assets-in-the-background-at-project-start">
 
-It is possible to load assets in the background when the project starts, reducing loading times when your project starts. It is recommended not to exceed 2GB.
+Il est possible de charger des ressources en arrière-plan au démarrage du projet, réduisant ainsi les temps de chargement au lancement. Il est recommandé de ne pas dépasser 2 Go.
 
-To do this, you can use the `Assets.backgroundLoad` function when the project starts. You can learn more about the `Assets.backgroundLoad` function [here](https://pixijs.com/8.x/guides/components/assets).
+Pour ce faire, vous pouvez utiliser la fonction `Assets.backgroundLoad` au démarrage du projet. Vous pouvez en savoir plus sur la fonction `Assets.backgroundLoad` [ici](https://pixijs.com/8.x/guides/components/assets).
 
 ```ts tab="lib/utils/assets-utility.ts"
 import { manifest } from "@/assets";
@@ -188,19 +188,19 @@ export const manifest: AssetsManifest = {
 
 </Accordion>
 
-<Accordion title="Load assets at label start" id="load-assets-at-label-start">
+<Accordion title="Charger les ressources au démarrage d'un label" id="load-assets-at-label-start">
 
 :::tip[*ink*]
 
-Vous pouvez utiliser cette méthode avec la syntaxe *ink*. See more <DynamicLink href="/ink/assets">here</DynamicLink>.
+Vous pouvez utiliser cette méthode avec la syntaxe *ink*. Voir plus <DynamicLink href="/ink/assets">ici</DynamicLink>.
 
 :::
 
-To group the loadings from one `step` to another of a `label` into a single loading, it is possible to load all or part of the assets used by the `label` before it starts. Since this does not reduce the waiting times for the player, but adds them to a single loading, it is recommended to [load them in the background](#load-assets-in-the-background-at-label-start).
+Pour regrouper les chargements d'un `step` à l'autre d'un `label` en un seul chargement, il est possible de charger tout ou partie des ressources utilisées par le `label` avant qu'il ne démarre. Étant donné que cela ne réduit pas les temps d'attente pour le joueur, mais les regroupe en un seul chargement, il est recommandé de [les charger en arrière-plan](#load-assets-in-the-background-at-label-start).
 
-To do this, you must use the `Assets.load` function and wait for it to finish (with `await`) when the `label` starts. You will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function.
+Pour ce faire, vous devez utiliser la fonction `Assets.load` et attendre qu'elle se termine (avec `await`) au démarrage du `label`. Vous utiliserez la fonction <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink>.
 
-For cleaner code, it is recommended to define a bundle in your manifest with the id corresponding to the `label` id and define within it the assets that will be used in that `label`.
+Pour un code plus propre, il est recommandé de définir un bundle dans votre manifeste avec l'identifiant correspondant à l'identifiant du `label` et d'y définir les ressources qui seront utilisées dans ce `label`.
 
 ```ts tab="content/labels/start.label.ts"
 import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
@@ -249,19 +249,19 @@ export const manifest: AssetsManifest = {
 
 </Accordion>
 
-<Accordion title="Load assets in the background at label start" id="load-assets-in-the-background-at-label-start">
+<Accordion title="Charger les ressources en arrière-plan au démarrage d'un label" id="load-assets-in-the-background-at-label-start">
 
 :::tip[Modèles]
 
-In all templates, when a `label` is started, the background loading of the bundle (if it exists) with the id corresponding to the `label` will be started. So, it is enough to **create a manifest with a bundle for each `label`**.
+Dans tous les templates, lorsqu'un `label` est démarré, le chargement en arrière-plan du bundle (s'il existe) avec l'identifiant correspondant au `label` est lancé. Il suffit donc de **créer un manifeste avec un bundle pour chaque `label`**.
 
 :::
 
-To make the game smoother by trying to remove asset loading times from one `step` to another, it is possible to start a "loading group" at the beginning of a `label`. This means that you may potentially not feel any loading, especially in the later `steps` of the `label`.
+Pour rendre le jeu plus fluide en essayant de supprimer les temps de chargement des ressources d'un `step` à l'autre, il est possible de démarrer un "groupe de chargement" au début d'un `label`. Cela signifie que vous ne ressentirez potentiellement aucun chargement, notamment dans les `steps` ultérieurs du `label`.
 
-To do this, you can use the `Assets.backgroundLoad` function when the `label` starts. You can learn more about the `Assets.backgroundLoad` function [here](https://pixijs.com/8.x/guides/components/assets). And, you will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function.
+Pour ce faire, vous pouvez utiliser la fonction `Assets.backgroundLoad` au démarrage du `label`. Vous pouvez en savoir plus sur la fonction `Assets.backgroundLoad` [ici](https://pixijs.com/8.x/guides/components/assets). Et vous utiliserez la fonction <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink>.
 
-For cleaner code, it is recommended to define a bundle in your manifest with the id corresponding to the `label` id and define within it the assets that will be used in that `label`.
+Pour un code plus propre, il est recommandé de définir un bundle dans votre manifeste avec l'identifiant correspondant à l'identifiant du `label` et d'y définir les ressources qui seront utilisées dans ce `label`.
 
 ```ts tab="content/labels/start.label.ts"
 import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
@@ -311,15 +311,15 @@ export const manifest: AssetsManifest = {
 
 </Accordion>
 
-<Accordion title="Load assets before a screen is shown" id="load-assets-before-screen">
+<Accordion title="Charger les ressources avant l'affichage d'un écran" id="load-assets-before-screen">
 
-It is possible to load assets before a screen is shown. This is useful when a screen uses images or other resources that must be ready before the component renders.
+Il est possible de charger des ressources avant qu'un écran ne soit affiché. Cela est utile lorsqu'un écran utilise des images ou d'autres ressources qui doivent être prêtes avant le rendu du composant.
 
-In this example, TanStack Router is used, which is already included in all templates. You can find more information about it <DynamicLink href="/start/interface-navigate">here</DynamicLink>.
+Dans cet exemple, TanStack Router est utilisé, qui est déjà inclus dans tous les templates. Vous pouvez trouver plus d'informations à ce sujet <DynamicLink href="/start/interface-navigate">ici</DynamicLink>.
 
-The `loader` function runs before the route component mounts. You can call `Assets.loadBundle` inside `loader` to preload the bundle associated with that route.
+La fonction `loader` s'exécute avant le montage du composant de route. Vous pouvez appeler `Assets.loadBundle` dans `loader` pour précharger le bundle associé à cette route.
 
-Additionally, you can use `pendingComponent` to display a loading indicator while the assets are being fetched, so the user sees a meaningful transition instead of a blank screen.
+De plus, vous pouvez utiliser `pendingComponent` pour afficher un indicateur de chargement pendant que les ressources sont récupérées, afin que l'utilisateur voie une transition significative plutôt qu'un écran vide.
 
 ```tsx tab="routes/game/narration.tsx"
 import { NarrationPendingComponent } from "@/components/loading";
