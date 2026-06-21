@@ -1,15 +1,15 @@
 ---
-title: Loading assets
-description: Learn how to load and manage assets in Pixi’VN using aliases, bundles, and different loading strategies to keep your game smooth.
+title: Загрузка ресурсов
+description: Узнайте, как загружать ресурсы и управлять ими в Pixi’VN с помощью псевдонимов, бандлов и различных стратегий загрузки, чтобы игра работала плавно.
 ---
 
-Especially for games with online assets, following good loading practices is essential to avoid long wait times and keep the experience smooth for the player.
+Особенно для игр с онлайн-ресурсами соблюдение правил загрузки крайне важно, чтобы избежать долгого ожидания и обеспечить плавный игровой процесс.
 
-To load and manipulate assets (images, gifs, videos, etc.) you will need to use `Assets`. `Assets` is a class with many features and comes from the PixiJS library. For more information, read [here](https://pixijs.com/8.x/guides/components/assets).
+Для загрузки и работы с ресурсами (изображениями, gif-файлами, видео и т. д.) необходимо использовать `Assets`. `Assets` — это класс со множеством возможностей, входящий в состав библиотеки PixiJS. Подробнее читайте [здесь](https://pixijs.com/8.x/guides/components/assets).
 
-## Use aliases to load assets
+## Использование псевдонимов для загрузки ресурсов
 
-To load an asset, always use its **alias** — the unique identifier defined in the manifest or when registering the asset. Using the `src` path directly is strongly discouraged: it couples your code to the file location, making it fragile when paths or hosting change.
+Для загрузки ресурса всегда используйте его **псевдоним** — уникальный идентификатор, заданный в манифесте или при регистрации ресурса. Использование пути `src` напрямую настоятельно не рекомендуется: это привязывает код к расположению файла, делая его уязвимым при изменении путей или хостинга.
 
 ```ts title="main.ts"
 import { Assets } from "@drincs/pixi-vn";
@@ -33,22 +33,22 @@ const texture = await Assets.load("eggHead");
 }
 ```
 
-## Organize assets into bundles
+## Организация ресурсов в бандлы
 
-A best practice is to group assets into **bundles** rather than registering them individually. Bundles allow you to load a whole set of assets with a single call, and to defer loading until the assets are actually needed.
+Рекомендуемая практика — группировать ресурсы в **бандлы**, а не регистрировать их по отдельности. Бандлы позволяют загружать целый набор ресурсов одним вызовом и откладывать загрузку до того момента, когда ресурсы действительно потребуются.
 
 :::tip
 
-For local assets, naming bundles based on where they are used is less critical — since local files load instantly, there is no real benefit in splitting them by screen or label. This convention is most valuable for online assets, where targeted loading directly reduces wait times.
+Для локальных ресурсов называть бандлы по месту их использования менее критично — поскольку локальные файлы загружаются мгновенно, разделение по экранам или нарративным узлам (`label`) не даёт реального преимущества. Это соглашение наиболее полезно для онлайн-ресурсов, где адресная загрузка напрямую сокращает время ожидания.
 
 :::
 
-It is recommended to name each bundle based on **where it will be used**. Например:
+Рекомендуется называть каждый бандл по **месту его использования**. Например:
 
-* use the label's id (e.g. `startLabel.id`) as the bundle name for assets used in that specific label
-* use the route path (e.g. `"/"`) as the bundle name for assets used in the corresponding screen, such as the main menu
+* используйте id нарративного узла (`label`) (например, `startLabel.id`) как имя бандла для ресурсов, используемых в конкретном нарративном узле (`label`)
+* используйте путь маршрута (например, `"/"`) как имя бандла для ресурсов, используемых на соответствующем экране, например главном меню
 
-This way, you can load exactly the right assets at the right moment, without loading more than necessary.
+Таким образом можно загружать именно те ресурсы, которые нужны в нужный момент, не загружая лишнего.
 
 ```ts title="assets/index.ts"
 import { startLabel } from "@/content/labels/start.label";
@@ -82,19 +82,19 @@ export const manifest: AssetsManifest = {
 };
 ```
 
-## When to load assets
+## Когда загружать ресурсы
 
-By default, assets are loaded on demand — only when they are actually needed. However, loading at the last moment can cause noticeable pauses during gameplay.
+По умолчанию ресурсы загружаются по требованию — только тогда, когда они действительно нужны. Однако загрузка в последний момент может вызывать заметные паузы во время игры.
 
-Here are the most common and recommended moments to load assets in advance:
+Ниже перечислены наиболее распространённые и рекомендуемые моменты для предварительной загрузки ресурсов:
 
 <Accordions>
 
-<Accordion title="Load assets at project start" id="load-assets-at-project-start">
+<Accordion title="Загрузка ресурсов при запуске проекта" id="load-assets-at-project-start">
 
-It is possible to load assets at project startup before the player can interact with the project, for example during the startup loading screen. It is suggested to use this procedure only for assets used in the main page or for assets used frequently, and not to exceed 100MB.
+Можно загружать ресурсы при запуске проекта до того, как игрок сможет с ним взаимодействовать, например во время экрана загрузки при старте. Рекомендуется применять этот подход только для ресурсов, используемых на главной странице или часто используемых ресурсов, не превышая 100 МБ.
 
-To do this, you must use the `Assets.load` function and wait for it to finish (with `await`) when the project starts.
+Для этого необходимо использовать функцию `Assets.load` и дождаться её завершения (с `await`) при запуске проекта.
 
 ```ts tab="lib/utils/assets-utility.ts"
 import { manifest } from "@/assets";
@@ -141,11 +141,11 @@ export const manifest: AssetsManifest = {
 
 </Accordion>
 
-<Accordion title="Load assets in the background at project start" id="load-assets-in-the-background-at-project-start">
+<Accordion title="Фоновая загрузка ресурсов при запуске проекта" id="load-assets-in-the-background-at-project-start">
 
-It is possible to load assets in the background when the project starts, reducing loading times when your project starts. It is recommended not to exceed 2GB.
+Можно загружать ресурсы в фоновом режиме при запуске проекта, сокращая время ожидания при его старте. Рекомендуется не превышать 2 ГБ.
 
-To do this, you can use the `Assets.backgroundLoad` function when the project starts. You can learn more about the `Assets.backgroundLoad` function [here](https://pixijs.com/8.x/guides/components/assets).
+Для этого можно использовать функцию `Assets.backgroundLoad` при запуске проекта. Подробнее о функции `Assets.backgroundLoad` читайте [здесь](https://pixijs.com/8.x/guides/components/assets).
 
 ```ts tab="lib/utils/assets-utility.ts"
 import { manifest } from "@/assets";
@@ -188,19 +188,19 @@ export const manifest: AssetsManifest = {
 
 </Accordion>
 
-<Accordion title="Load assets at label start" id="load-assets-at-label-start">
+<Accordion title="Загрузка ресурсов при запуске нарративного узла" id="load-assets-at-label-start">
 
 :::tip[*ink*]
 
-Этот метод можно использовать с синтаксисом *ink*. See more <DynamicLink href="/ink/assets">here</DynamicLink>.
+Этот метод можно использовать с синтаксисом *ink*. Подробнее <DynamicLink href="/ink/assets">здесь</DynamicLink>.
 
 :::
 
-To group the loadings from one `step` to another of a `label` into a single loading, it is possible to load all or part of the assets used by the `label` before it starts. Since this does not reduce the waiting times for the player, but adds them to a single loading, it is recommended to [load them in the background](#load-assets-in-the-background-at-label-start).
+Чтобы объединить загрузки между нарративными шагами (`step`) нарративного узла (`label`) в одну, можно загрузить все или часть ресурсов, используемых нарративным узлом (`label`), до его запуска. Поскольку это не сокращает время ожидания для игрока, а лишь объединяет его в одну загрузку, рекомендуется [загружать их в фоновом режиме](#load-assets-in-the-background-at-label-start).
 
-To do this, you must use the `Assets.load` function and wait for it to finish (with `await`) when the `label` starts. You will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function.
+Для этого необходимо использовать функцию `Assets.load` и дождаться её завершения (с `await`) при запуске нарративного узла (`label`). Используйте функцию <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink>.
 
-For cleaner code, it is recommended to define a bundle in your manifest with the id corresponding to the `label` id and define within it the assets that will be used in that `label`.
+Для более чистого кода рекомендуется определить бандл в манифесте с id, соответствующим id нарративного узла (`label`), и определить внутри него ресурсы, которые будут использоваться в этом нарративном узле (`label`).
 
 ```ts tab="content/labels/start.label.ts"
 import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
@@ -249,7 +249,7 @@ export const manifest: AssetsManifest = {
 
 </Accordion>
 
-<Accordion title="Load assets in the background at label start" id="load-assets-in-the-background-at-label-start">
+<Accordion title="Фоновая загрузка ресурсов при запуске нарративного узла" id="load-assets-in-the-background-at-label-start">
 
 :::tip[Шаблоны]
 
@@ -259,9 +259,9 @@ In all templates, when a `label` is started, the background loading of the bundl
 
 To make the game smoother by trying to remove asset loading times from one `step` to another, it is possible to start a "loading group" at the beginning of a `label`. This means that you may potentially not feel any loading, especially in the later `steps` of the `label`.
 
-To do this, you can use the `Assets.backgroundLoad` function when the `label` starts. You can learn more about the `Assets.backgroundLoad` function [here](https://pixijs.com/8.x/guides/components/assets). And, you will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function.
+To do this, you can use the `Assets.backgroundLoad` function when the `label` starts. Подробнее о функции `Assets.backgroundLoad` читайте [здесь](https://pixijs.com/8.x/guides/components/assets). And, you will use the <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> function.
 
-For cleaner code, it is recommended to define a bundle in your manifest with the id corresponding to the `label` id and define within it the assets that will be used in that `label`.
+Для более чистого кода рекомендуется определить бандл в манифесте с id, соответствующим id нарративного узла (`label`), и определить внутри него ресурсы, которые будут использоваться в этом нарративном узле (`label`).
 
 ```ts tab="content/labels/start.label.ts"
 import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
