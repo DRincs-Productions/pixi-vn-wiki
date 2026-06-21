@@ -6,10 +6,10 @@ export function createMetadata(
     params: { lang?: string; slug?: string[] },
 ): Metadata {
     const slug = params.slug;
-    const slugString = slug ? "/" + slug.join("/") : "";
-    const lang = params.lang ? "/" + params.lang : "";
+    const slugString = slug ? `/${slug.join("/")}` : "";
+    const lang = params.lang ? `/${params.lang}` : "";
     const page = source.getPage(slug);
-    const images = page ? getPageImage(page).url : "/og_image.png";
+    const images = page ? `${baseUrl}${getPageImage(page).url}` : `${baseUrl}/og_image.png`;
     const title = page ? `Pixi'VN - ${page.data.title}` : "Pixi'VN - Visual Novel/2D game engine";
     const description = page
         ? page.data.description
