@@ -275,52 +275,66 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                         },
                         children: [
                             {
-                                type: "page",
-                                name: t("canvas-image"),
-                                url: `${preUrl}/start/canvas-image`,
+                                defaultOpen: true,
+                                type: "folder",
+                                name: t("base-components"),
+                                children: [
+                                    {
+                                        type: "page",
+                                        name: t("canvas-image"),
+                                        url: `${preUrl}/start/canvas-image`,
+                                    },
+                                    {
+                                        type: "page",
+                                        name: t("canvas-image-container"),
+                                        url: `${preUrl}/start/canvas-image-container`,
+                                    },
+                                    {
+                                        type: "page",
+                                        name: t("canvas-video"),
+                                        url: `${preUrl}/start/canvas-video`,
+                                    },
+                                    {
+                                        type: "page",
+                                        name: t("canvas-text"),
+                                        url: `${preUrl}/start/canvas-text`,
+                                    },
+                                ],
                             },
                             {
-                                type: "page",
-                                name: t("canvas-image-container"),
-                                url: `${preUrl}/start/canvas-image-container`,
-                            },
-                            {
-                                type: "page",
-                                name: t("canvas-video"),
-                                url: `${preUrl}/start/canvas-video`,
-                            },
-                            {
-                                type: "page",
-                                name: t("canvas-text"),
-                                url: `${preUrl}/start/canvas-text`,
-                            },
-                            {
-                                type: "page",
-                                name: t("canvas-filters"),
-                                url: `${preUrl}/start/canvas-filters`,
-                            },
-                            {
-                                type: "page",
-                                name: t("canvas-lights"),
-                                url: `${preUrl}/start/canvas-lights`,
-                            },
-                            {
-                                type: "page",
-                                name: t("canvas-spine2d"),
-                                url: `${preUrl}/start/canvas-spine2d`,
-                            },
-                            {
-                                type: "page",
-                                name: t("canvas-threejs"),
-                                url: `${preUrl}/start/canvas-threejs`,
-                                icon: (
-                                    <Image
-                                        width={16}
-                                        height={16}
-                                        src="/threejs.svg"
-                                        alt="Three.js"
-                                    />
-                                ),
+                                defaultOpen: true,
+                                type: "folder",
+                                name: t("additional-components"),
+                                children: [
+                                    {
+                                        type: "page",
+                                        name: t("canvas-spine2d"),
+                                        url: `${preUrl}/start/canvas-spine2d`,
+                                    },
+                                    // {
+                                    //     type: "page",
+                                    //     name: t("canvas-filters"),
+                                    //     url: `${preUrl}/start/canvas-filters`,
+                                    // },
+                                    // {
+                                    //     type: "page",
+                                    //     name: t("canvas-lights"),
+                                    //     url: `${preUrl}/start/canvas-lights`,
+                                    // },
+                                    // {
+                                    //     type: "page",
+                                    //     name: t("canvas-threejs"),
+                                    //     url: `${preUrl}/start/canvas-threejs`,
+                                    //     icon: (
+                                    //         <Image
+                                    //             width={16}
+                                    //             height={16}
+                                    //             src="/threejs.svg"
+                                    //             alt="Three.js"
+                                    //         />
+                                    //     ),
+                                    // },
+                                ],
                             },
                         ],
                     },
