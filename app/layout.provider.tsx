@@ -2,11 +2,12 @@ import { Provider } from "@/components/provider";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
-import { Inter } from "next/font/google";
+import { Oxanium } from "next/font/google";
 import type { ReactNode } from "react";
 
-const inter = Inter({
+const oxanium = Oxanium({
     subsets: ["latin"],
+    variable: "--font-oxanium",
 });
 
 export default function LayoutProvider({
@@ -18,7 +19,7 @@ export default function LayoutProvider({
 }) {
     setRequestLocale(lang);
     return (
-        <html lang={lang} className={inter.className} suppressHydrationWarning>
+        <html lang={lang} className={oxanium.variable} suppressHydrationWarning>
             <body className="flex flex-col min-h-screen">
                 <NextIntlClientProvider locale={lang}>
                     <Provider locale={lang}>{children}</Provider>
