@@ -6,6 +6,7 @@ const withNextIntl = createNextIntlPlugin();
 
 /** @type {import('next').NextConfig} */
 const config = {
+    serverExternalPackages: ['@takumi-rs/image-response'],
     output: "export",
     reactStrictMode: true,
     images: {
