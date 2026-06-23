@@ -47,6 +47,7 @@ When a glossary term appears **as inline code** in the source (e.g. `` `label` `
 | `` `knot` ``       | 叙事节点（`knot`）  | ナラティブノード（`knot`）   | `knot`        | `knot`        | `knot`         | нарративный узел (`knot`)  | `knot`         | 내러티브 노드 (`knot`)  |
 | `"glue"`           | "グルー"（glue）    | "グルー"（glue）             | "glue"        | "glue"        | "glue"）       | "клей"（glue）             | "glue"         | "글루"（glue）          |
 | `` `step` ``       | 叙事步骤（`step`）  | ナラティブステップ（`step`） | `step`        | `step`        | `step`         | нарративный шаг (`step`)   | `step`         | 내러티브 단계 (`step`)  |
+| `` `alias` ``      | 别名（`alias`）     | エイリアス（`alias`）        | `alias`       | `alias`       | `alias`        | псевдоним (`alias`)        | `alias`        | 별칭 (`alias`)          |
 
 > This glossary grows over time. Before starting a translation session, re-read this file to pick up any new entries added since your last session.
 
@@ -54,7 +55,7 @@ When a glossary term appears **as inline code** in the source (e.g. `` `label` `
 
 ### Italian (`it`)
 
-- **`label` is grammatically feminine** — use feminine articles, adjectives, and pronouns throughout. Examples: *la `label`*, *una `label`*, *della `label`*, *nella `label`*, *questa `label`*; plurals: *le `labels`*, *delle `labels`*, *tutte le `labels`*.
+- **`label` is grammatically feminine** — use feminine articles, adjectives, and pronouns throughout. Examples: _la `label`_, _una `label`_, _della `label`_, _nella `label`_, _questa `label`_; plurals: _le `labels`_, _delle `labels`_, _tutte le `labels`_.
 
 ## Workflow
 
