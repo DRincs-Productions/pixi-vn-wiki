@@ -1,8 +1,8 @@
 import { getPageImage, source } from "@/lib/source";
 import { ImageResponse } from "@takumi-rs/image-response";
+import { notFound } from "next/navigation";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { notFound } from "next/navigation";
 
 export const revalidate = false;
 
@@ -13,6 +13,7 @@ const fontRegular = readFileSync(
     join(process.cwd(), "node_modules/@fontsource/outfit/files/outfit-latin-400-normal.woff2"),
 );
 const logoBase64 = `data:image/png;base64,${readFileSync(join(process.cwd(), "public/logo.png")).toString("base64")}`;
+const iconBase64 = `data:image/png;base64,${readFileSync(join(process.cwd(), "public/icon.png")).toString("base64")}`;
 
 export async function GET(_req: Request, { params }: RouteContext<"/og/docs/[...slug]">) {
     const { slug } = await params;
@@ -32,33 +33,61 @@ export async function GET(_req: Request, { params }: RouteContext<"/og/docs/[...
                     "linear-gradient(to top right, rgba(56, 152, 220, 0.18), rgba(175, 48, 180, 0.12), transparent)",
                 position: "relative",
                 fontFamily: "Outfit",
+                justifyContent: "center",
+                alignItems: "center",
             }}
         >
-            <p
+            <div
                 style={{
-                    fontWeight: 800,
-                    fontSize: "82px",
-                    margin: 0,
-                    color: "#0f0f0f",
-                    lineHeight: 1.1,
-                    maxWidth: "900px",
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: "48px",
+                    maxWidth: "980px",
+                    width: "100%",
                 }}
             >
-                {page.data.title}
-            </p>
-            {page.data.description && (
-                <p
+                <div
                     style={{
-                        fontSize: "42px",
-                        color: "rgba(15, 15, 15, 0.6)",
-                        margin: "20px 0 0 0",
-                        fontWeight: 400,
-                        maxWidth: "820px",
+                        display: "flex",
+                        flexDirection: "column",
+                        flex: 1,
                     }}
                 >
-                    {page.data.description}
-                </p>
-            )}
+                    <p
+                        style={{
+                            fontWeight: 800,
+                            fontSize: "82px",
+                            margin: 0,
+                            color: "#0f0f0f",
+                            lineHeight: 1.1,
+                        }}
+                    >
+                        {page.data.title}
+                    </p>
+                    {page.data.description && (
+                        <p
+                            style={{
+                                fontSize: "52px",
+                                color: "rgba(15, 15, 15, 0.6)",
+                                margin: "20px 0 0 0",
+                                fontWeight: 400,
+                            }}
+                        >
+                            {page.data.description}
+                        </p>
+                    )}
+                </div>
+                <img
+                    src={iconBase64}
+                    style={{
+                        height: "140px",
+                        width: "auto",
+                        flexShrink: 0,
+                    }}
+                    alt=""
+                />
+            </div>
             <img
                 src={logoBase64}
                 style={{
