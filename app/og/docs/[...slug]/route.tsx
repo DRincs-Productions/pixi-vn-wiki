@@ -40,9 +40,7 @@ export async function GET(_req: Request, { params }: RouteContext<"/og/docs/[...
             <div
                 style={{
                     display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: "48px",
+                    flexDirection: "column",
                     maxWidth: "980px",
                     width: "100%",
                 }}
@@ -50,10 +48,20 @@ export async function GET(_req: Request, { params }: RouteContext<"/og/docs/[...
                 <div
                     style={{
                         display: "flex",
-                        flexDirection: "column",
-                        flex: 1,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: "32px",
                     }}
                 >
+                    <img
+                        src={iconBase64}
+                        style={{
+                            height: "100px",
+                            width: "auto",
+                            flexShrink: 0,
+                        }}
+                        alt=""
+                    />
                     <p
                         style={{
                             fontWeight: 800,
@@ -65,28 +73,19 @@ export async function GET(_req: Request, { params }: RouteContext<"/og/docs/[...
                     >
                         {page.data.title}
                     </p>
-                    {page.data.description && (
-                        <p
-                            style={{
-                                fontSize: "52px",
-                                color: "rgba(15, 15, 15, 0.6)",
-                                margin: "20px 0 0 0",
-                                fontWeight: 400,
-                            }}
-                        >
-                            {page.data.description}
-                        </p>
-                    )}
                 </div>
-                <img
-                    src={iconBase64}
-                    style={{
-                        height: "140px",
-                        width: "auto",
-                        flexShrink: 0,
-                    }}
-                    alt=""
-                />
+                {page.data.description && (
+                    <p
+                        style={{
+                            fontSize: "52px",
+                            color: "rgba(15, 15, 15, 0.6)",
+                            margin: "28px 0 0 0",
+                            fontWeight: 400,
+                        }}
+                    >
+                        {page.data.description}
+                    </p>
+                )}
             </div>
             <img
                 src={logoBase64}
