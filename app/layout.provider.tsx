@@ -1,13 +1,14 @@
 import { Provider } from "@/components/provider";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { GeistSans } from "geist/font/sans";
 import { NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
-import { Oxanium } from "next/font/google";
+import { Sora } from "next/font/google";
 import type { ReactNode } from "react";
 
-const oxanium = Oxanium({
+const sora = Sora({
     subsets: ["latin"],
-    variable: "--font-oxanium",
+    variable: "--font-sora",
 });
 
 export default function LayoutProvider({
@@ -19,7 +20,7 @@ export default function LayoutProvider({
 }) {
     setRequestLocale(lang);
     return (
-        <html lang={lang} className={oxanium.variable} suppressHydrationWarning>
+        <html lang={lang} className={`${GeistSans.variable} ${sora.variable}`} suppressHydrationWarning>
             <body className="flex flex-col min-h-screen">
                 <NextIntlClientProvider locale={lang}>
                     <Provider locale={lang}>{children}</Provider>
