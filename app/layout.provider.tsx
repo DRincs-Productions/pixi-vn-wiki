@@ -1,10 +1,14 @@
 import { Provider } from "@/components/provider";
 import { GoogleAnalytics } from "@next/third-parties/google";
-import { GeistSans } from "geist/font/sans";
 import { NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
-import { Sora } from "next/font/google";
+import { Manrope, Sora } from "next/font/google";
 import type { ReactNode } from "react";
+
+const manrope = Manrope({
+    subsets: ["latin"],
+    variable: "--font-manrope",
+});
 
 const sora = Sora({
     subsets: ["latin"],
@@ -20,7 +24,7 @@ export default function LayoutProvider({
 }) {
     setRequestLocale(lang);
     return (
-        <html lang={lang} className={`${GeistSans.variable} ${sora.variable}`} suppressHydrationWarning>
+        <html lang={lang} className={`${manrope.variable} ${sora.variable}`} suppressHydrationWarning>
             <body className="flex flex-col min-h-screen">
                 <NextIntlClientProvider locale={lang}>
                     <Provider locale={lang}>{children}</Provider>
