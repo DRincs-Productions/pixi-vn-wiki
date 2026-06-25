@@ -4,20 +4,15 @@ description: Usage and features of the ImageContainer component in Pixi’VN for
 ---
 
 import {
-    ShowImageContainerExample,
     AddImageContainerExample,
+    ShowImageContainerExample,
 } from "@/components/examples";
 
-The `ImageContainer` component extends the [`PixiJS.Container`](https://pixijs.com/8.x/guides/components/containers) component, so you can use all the methods and properties of `PixiJS.Container`. It allows you to group multiple images into a single component and manipulate them as one.
+The [`ImageContainer`](/jsdoc/pixi-vn/index/classes/ImageContainer) component extends the [`Container`](/jsdoc/pixi-vn/index/classes/Container) component, so you can use all the methods and properties of [`Container`](/jsdoc/pixi-vn/index/classes/Container). It allows you to group multiple images into a single component and manipulate them as one.
 
-The children of the `ImageContainer` are <DynamicLink href="/start/canvas-image">`ImageSprite`</DynamicLink> components.
+The children of the [`ImageContainer`](/jsdoc/pixi-vn/index/classes/ImageContainer) are [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite) components.
 
-To initialize this component, you must pass the following parameters:
-
-* `options` (Optional): The options for the component.
-* `imageUrls` (Optional): An array of image URLs or paths. If you have initialized the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink>, you can use the alias of the texture.
-
-```ts
+```ts tab="main.ts"
 import { canvas, ImageContainer } from "@drincs/pixi-vn";
 
 let james = new ImageContainer(
@@ -26,31 +21,45 @@ let james = new ImageContainer(
         x: 100,
         y: 100,
     },
-    [
-        "https://image.com/body.webp",
-        "https://image.com/head.webp",
-        "https://image.com/eyes.webp",
-    ],
+    ["m01-body", "m01-eyes", "m01-mouth"],
 );
 
 await james.load();
 canvas.add("james", james);
 ```
 
-Compared to the `Container` component, `ImageContainer` adds the following features:
+```json tab="src/assets/manifest.gen.json"
+{
+    "bundles": [
+        {
+            "name": "m01",
+            "assets": [
+                {
+                    "alias": "m01-body",
+                    "src": "./assets/m01/m01-body.png"
+                },
+                {
+                    "alias": "m01-head",
+                    "src": "./assets/m01/m01-head.png"
+                },
+                {
+                    "alias": "m01-eyes",
+                    "src": "./assets/m01/m01-eyes.png"
+                }
+            ]
+        }
+    ]
+}
+```
 
-* `load()`: Loads all image URLs and sets the resulting textures in the children.
+Compared to the [`Container`](/jsdoc/pixi-vn/index/classes/Container) component, [`ImageContainer`](/jsdoc/pixi-vn/index/classes/ImageContainer) adds the following features:
+
+* [`load`](/jsdoc/pixi-vn/index/classes/ImageContainer#load): Loads all image URLs and sets the resulting textures in the children.
 * Additional positioning: <DynamicLink href="/start/canvas-position">align and position with percentage</DynamicLink>.
 
 ## Show
 
-The simplest way to show a group of images on the canvas is to use the `showImageContainer` function. This function combines `load` and <DynamicLink href="/start/canvas-functions#add-a-canvas-component">`canvas.add`</DynamicLink>.
-
-This function returns an `ImageContainer` that you can use to manipulate the component. This function has the following parameters:
-
-* `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> to identify the component.
-* `imageUrls` (Optional): An array of image URLs or paths. If you have initialized the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink>, you can use the alias of the texture.
-* `options` (Optional): The options for the component.
+The simplest way to show a group of images on the canvas is to use the [`showImageContainer`](/jsdoc/pixi-vn/index/functions/showImageContainer) function. This function combines [`load`](/jsdoc/pixi-vn/index/classes/ImageContainer#load) and [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add).
 
 ```ts tab="content/labels/start.label.ts"
 import {
@@ -66,11 +75,10 @@ export const startLabel = newLabel("start", [
             "james",
             ["m01-body", "m01-eyes", "m01-mouth"],
             {
-                // [!code focus]
-                xAlign: 0.5, // [!code focus]
-                yAlign: 1, // [!code focus]
+                xAlign: 0.5,
+                yAlign: 1,
             },
-        ); // [!code focus]
+        );
     },
     () => {
         canvas.removeAllTickers();
@@ -82,14 +90,14 @@ export const startLabel = newLabel("start", [
 ]);
 ```
 
-```ts tab="assets/manifest.ts"
+```ts tab="assets/index.ts"
 import { AssetsManifest } from "@drincs/pixi-vn";
 
 /**
  * Manifest for the assets used in the game.
  * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
  */
-const manifest: AssetsManifest = {
+export const manifest: AssetsManifest = {
     bundles: [
         {
             name: "start",
@@ -110,20 +118,13 @@ const manifest: AssetsManifest = {
         },
     ],
 };
-export default manifest;
 ```
 
 <ShowImageContainerExample />
 
 ## Hinzufügen
 
-To add a group of images to the canvas, use the `addImageCointainer` function. This function only adds the component to the canvas; it does **not** show it or load its texture. It uses <DynamicLink href="/start/canvas-functions#add-a-canvas-component">`canvas.add`</DynamicLink> to add the component to the canvas.
-
-This function returns an `ImageContainer` that you can use to manipulate the component. This function has the following parameters:
-
-* `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> to identify the component.
-* `imageUrls` (Optional): An array of image URLs or paths. If you have initialized the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink>, you can use the alias of the texture.
-* `options` (Optional): The options for the component.
+To add a group of images to the canvas, use the [`addImageCointainer`](/jsdoc/pixi-vn/index/functions/addImageCointainer) function. This function only adds the component to the canvas; it does **not** show it or load its texture. It uses [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add) to add the component to the canvas.
 
 ```ts tab="content/labels/start.label.ts"
 import {
@@ -139,11 +140,10 @@ export const startLabel = newLabel("start", [
             "james",
             ["m01-body", "m01-eyes", "m01-mouth"],
             {
-                // [!code focus]
-                xAlign: 0.5, // [!code focus]
-                yAlign: 1, // [!code focus]
+                xAlign: 0.5,
+                yAlign: 1,
             },
-        ); // [!code focus]
+        );
     },
     async () => {
         let james = canvas.find<ImageContainer>("james");
@@ -152,14 +152,14 @@ export const startLabel = newLabel("start", [
 ]);
 ```
 
-```ts tab="assets/manifest.ts"
+```ts tab="assets/index.ts"
 import { AssetsManifest } from "@drincs/pixi-vn";
 
 /**
  * Manifest for the assets used in the game.
  * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
  */
-const manifest: AssetsManifest = {
+export const manifest: AssetsManifest = {
     bundles: [
         {
             name: "start",
@@ -180,11 +180,10 @@ const manifest: AssetsManifest = {
         },
     ],
 };
-export default manifest;
 ```
 
 <AddImageContainerExample />
 
 ## Entfernen
 
-As with other canvas components, you can remove this component using the <DynamicLink href="/start/canvas-functions#remove-a-canvas-component">`canvas.remove`</DynamicLink> function.
+As with other canvas components, you can remove this component using the [`canvas.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#remove) function.
