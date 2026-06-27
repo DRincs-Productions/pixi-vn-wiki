@@ -93,7 +93,7 @@ export async function GET(_req: Request, { params }: RouteContext<"/og/docs/[...
                     position: "absolute",
                     bottom: "3.5rem",
                     right: "4rem",
-                    height: "80px",
+                    height: "50px",
                     width: "auto",
                 }}
                 alt=""
