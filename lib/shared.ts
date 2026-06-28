@@ -60,6 +60,10 @@ export const locales = [
         name: "한국어",
         locale: "ko",
     },
+    {
+        name: "Deutsch",
+        locale: "de",
+    },
 ];
 
 export const fullRehypeCodeOptions: RehypeCodeOptions = {
