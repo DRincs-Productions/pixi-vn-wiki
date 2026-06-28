@@ -311,6 +311,11 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                                         name: t("canvas-spine2d"),
                                         url: `${preUrl}/start/canvas-spine2d`,
                                     },
+                                    {
+                                        type: "page",
+                                        name: t("canvas-live2d"),
+                                        url: `${preUrl}/start/canvas-live2d`,
+                                    },
                                     // {
                                     //     type: "page",
                                     //     name: t("canvas-filters"),
