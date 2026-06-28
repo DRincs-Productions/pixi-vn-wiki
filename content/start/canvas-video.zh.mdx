@@ -1,7 +1,7 @@
 ---
-title: Video (`VideoSprite`)
+title: 视频 (`VideoSprite`)
 description: |
-  How to show, add, control and manage video assets on the canvas using the `VideoSprite` component (`play`, `pause`, `loop`, `restart`, and lifecycle helpers like `showVideo` / `addVideo`).
+  如何使用 `VideoSprite` 组件在画布上显示、添加、控制和管理视频资源（`play`、`pause`、`loop`、`restart`，以及生命周期辅助函数 `showVideo` / `addVideo`）。
 ---
 
 import {
@@ -12,7 +12,7 @@ import {
     VideoSpriteShow,
 } from "@/components/examples";
 
-The [`VideoSprite`](/jsdoc/pixi-vn/index/classes/VideoSprite) component extends the [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite) component, so you can use all the methods and properties of [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite). It is used to display a single video on the canvas.
+[`VideoSprite`](/jsdoc/pixi-vn/index/classes/VideoSprite) 组件继承自 [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite) 组件，因此您可以使用 [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite) 的所有方法和属性。 它用于在画布上显示单个视频。
 
 ```ts tab="main.ts"
 import { canvas, VideoSprite } from "@drincs/pixi-vn";
@@ -46,35 +46,30 @@ canvas.add("my_video", video);
 }
 ```
 
-Compared to the [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite) component, [`VideoSprite`](/jsdoc/pixi-vn/index/classes/VideoSprite) adds the following features:
+与 [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite) 组件相比，[`VideoSprite`](/jsdoc/pixi-vn/index/classes/VideoSprite) 新增了以下功能：
 
-* [`loop`](/jsdoc/pixi-vn/index/classes/VideoSprite#loop): Indicates if the video should loop after it finishes.
-* [`paused`](/jsdoc/pixi-vn/index/classes/VideoSprite#paused): Indicates if the video is paused.
-* [`pause`](/jsdoc/pixi-vn/index/classes/VideoSprite#pause): Method to pause the video.
-* [`play`](/jsdoc/pixi-vn/index/classes/VideoSprite#play): Method to play the video.
-* [`currentTime`](/jsdoc/pixi-vn/index/classes/VideoSprite#currenttime): The current time of the video.
-* [`restart`](/jsdoc/pixi-vn/index/classes/VideoSprite#restart): Method to restart the video from the beginning.
+* [`loop`](/jsdoc/pixi-vn/index/classes/VideoSprite#loop)：指示视频是否在播放结束后循环。
+* [`paused`](/jsdoc/pixi-vn/index/classes/VideoSprite#paused)：指示视频是否已暂停。
+* [`pause`](/jsdoc/pixi-vn/index/classes/VideoSprite#pause)：暂停视频的方法。
+* [`play`](/jsdoc/pixi-vn/index/classes/VideoSprite#play)：播放视频的方法。
+* [`currentTime`](/jsdoc/pixi-vn/index/classes/VideoSprite#currenttime)：视频的当前播放时间。
+* [`restart`](/jsdoc/pixi-vn/index/classes/VideoSprite#restart)：从头重新播放视频的方法。
 
 ## 显示
 
-The simplest way to show a video on the canvas is to use the [`showVideo`](/jsdoc/pixi-vn/index/functions/showVideo) function. 该函数将 [`load`](/jsdoc/pixi-vn/index/classes/ImageSprite#load) 和 [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add) 合并为一步。
+在画布上显示视频最简单的方式是使用 [`showVideo`](/jsdoc/pixi-vn/index/functions/showVideo) 函数。 该函数将 [`load`](/jsdoc/pixi-vn/index/classes/ImageSprite#load) 和 [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add) 合并为一步。
 
 ```ts tab="content/labels/start.label.ts"
 import { newLabel, showVideo } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start", [
     async () => {
+        // Show the videos on the canvas
         let video1 = await showVideo("video");
+        // Show the video with a different alias and position
         let video2 = await showVideo("video2", "video", {
             xAlign: 0.5,
         });
-        let video3 = await showVideo(
-            "video3",
-            "https://pixijs.com/assets/video.mp4",
-            {
-                xAlign: 1,
-            },
-        );
     },
 ]);
 ```
@@ -105,29 +100,26 @@ export const manifest: AssetsManifest = {
 
 ## 添加
 
-To add an video to the canvas, use the [`addVideo`](/jsdoc/pixi-vn/index/functions/addVideo) function. 该函数仅将组件添加到画布，**不会**显示它或加载其纹理。 它通过 [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add) 将组件添加到画布。
+要将视频添加到画布，请使用 [`addVideo`](/jsdoc/pixi-vn/index/functions/addVideo) 函数。 该函数仅将组件添加到画布，**不会**显示它或加载其纹理。 它通过 [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add) 将组件添加到画布。
 
 ```ts tab="content/labels/start.label.ts"
 import { addVideo, canvas, VideoSprite, newLabel } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start", [
     () => {
+        // Add the videos to the canvas
         let video1 = addVideo("video");
+        // Add the video with a different alias and position
         let video2 = addVideo("video2", "video", {
             xAlign: 0.5,
-        });
-        let video3 = addVideo("video3", "https://pixijs.com/assets/video.mp4", {
-            xAlign: 1,
         });
     },
     async () => {
         let video1 = canvas.find<VideoSprite>("video");
         let video2 = canvas.find<VideoSprite>("video2");
-        let video3 = canvas.find<VideoSprite>("video3");
         // Load the textures
         video1 && (await video1.load());
         video2 && (await video2.load());
-        video3 && (await video3.load());
     },
 ]);
 ```
@@ -160,9 +152,9 @@ export const manifest: AssetsManifest = {
 
 与其他画布组件一样，你可以使用 [`canvas.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#remove) 函数移除该组件。
 
-## Play and pause
+## 播放与暂停
 
-Use [`play`](/jsdoc/pixi-vn/index/classes/VideoSprite#play) and [`pause`](/jsdoc/pixi-vn/index/classes/VideoSprite#pause) methods, or set the [`paused`](/jsdoc/pixi-vn/index/classes/VideoSprite#paused) property.
+使用 [`play`](/jsdoc/pixi-vn/index/classes/VideoSprite#play) 和 [`pause`](/jsdoc/pixi-vn/index/classes/VideoSprite#pause) 方法，或设置 [`paused`](/jsdoc/pixi-vn/index/classes/VideoSprite#paused) 属性。
 
 ```ts tab="content/labels/start.label.ts"
 import {
@@ -221,9 +213,9 @@ export const manifest: AssetsManifest = {
 
 <VideoSpritePlayPause />
 
-## Looping
+## 循环
 
-Set the [`loop`](/jsdoc/pixi-vn/index/classes/VideoSprite#loop) property to make the video repeat.
+设置 [`loop`](/jsdoc/pixi-vn/index/classes/VideoSprite#loop) 属性以使视频重复播放。
 
 ```ts tab="content/labels/start.label.ts"
 import { newLabel, showVideo } from "@drincs/pixi-vn";
@@ -260,9 +252,9 @@ export const manifest: AssetsManifest = {
 
 <VideoSpriteLooping />
 
-## Restart
+## 重新开始
 
-Use the [`restart`](/jsdoc/pixi-vn/index/classes/VideoSprite#restart) method to restart playback.
+使用 [`restart`](/jsdoc/pixi-vn/index/classes/VideoSprite#restart) 方法从头重新播放。
 
 ```ts tab="content/labels/start.label.ts"
 import {
