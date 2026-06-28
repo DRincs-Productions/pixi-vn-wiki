@@ -1,7 +1,7 @@
 ---
 title: Video (`VideoSprite`)
 description: |
-  Come mostrare, aggiungere, controllare e gestire risorse video sul canvas utilizzando il componente `VideoSprite` (`play`, `pause`, `loop`, `restart` e helper del ciclo di vita come `showVideo` / `addVideo`).
+  Come mostrare, aggiungere, controllare e gestire risorse video sul canvas usando il componente `VideoSprite` (`play`, `pause`, `loop`, `restart` e i helper del ciclo di vita `showVideo` / `addVideo`).
 ---
 
 import {
@@ -12,7 +12,7 @@ import {
     VideoSpriteShow,
 } from "@/components/examples";
 
-The [`VideoSprite`](/jsdoc/pixi-vn/index/classes/VideoSprite) component extends the [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite) component, so you can use all the methods and properties of [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite). Viene utilizzato per visualizzare un singolo video sul canvas.
+Il componente [`VideoSprite`](/jsdoc/pixi-vn/index/classes/VideoSprite) estende il componente [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite), quindi è possibile utilizzare tutti i metodi e le proprietà di [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite). Viene utilizzato per visualizzare un singolo video sul canvas.
 
 ```ts tab="main.ts"
 import { canvas, VideoSprite } from "@drincs/pixi-vn";
@@ -46,35 +46,30 @@ canvas.add("my_video", video);
 }
 ```
 
-Compared to the [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite) component, [`VideoSprite`](/jsdoc/pixi-vn/index/classes/VideoSprite) adds the following features:
+Rispetto al componente [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite), [`VideoSprite`](/jsdoc/pixi-vn/index/classes/VideoSprite) aggiunge le seguenti funzionalità:
 
-* [`loop`](/jsdoc/pixi-vn/index/classes/VideoSprite#loop): Indicates if the video should loop after it finishes.
-* [`paused`](/jsdoc/pixi-vn/index/classes/VideoSprite#paused): Indicates if the video is paused.
-* [`pause`](/jsdoc/pixi-vn/index/classes/VideoSprite#pause): Method to pause the video.
-* [`play`](/jsdoc/pixi-vn/index/classes/VideoSprite#play): Method to play the video.
-* [`currentTime`](/jsdoc/pixi-vn/index/classes/VideoSprite#currenttime): The current time of the video.
-* [`restart`](/jsdoc/pixi-vn/index/classes/VideoSprite#restart): Method to restart the video from the beginning.
+* [`loop`](/jsdoc/pixi-vn/index/classes/VideoSprite#loop): Indica se il video deve ripetersi al termine.
+* [`paused`](/jsdoc/pixi-vn/index/classes/VideoSprite#paused): Indica se il video è in pausa.
+* [`pause`](/jsdoc/pixi-vn/index/classes/VideoSprite#pause): Metodo per mettere in pausa il video.
+* [`play`](/jsdoc/pixi-vn/index/classes/VideoSprite#play): Metodo per riprodurre il video.
+* [`currentTime`](/jsdoc/pixi-vn/index/classes/VideoSprite#currenttime): La posizione di riproduzione corrente del video.
+* [`restart`](/jsdoc/pixi-vn/index/classes/VideoSprite#restart): Metodo per riavviare il video dall'inizio.
 
 ## Mostrare
 
-The simplest way to show a video on the canvas is to use the [`showVideo`](/jsdoc/pixi-vn/index/functions/showVideo) function. Questa funzione combina [`load`](/jsdoc/pixi-vn/index/classes/ImageSprite#load) e [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add).
+Il modo più semplice per mostrare un video sul canvas è usare la funzione [`showVideo`](/jsdoc/pixi-vn/index/functions/showVideo). Questa funzione combina [`load`](/jsdoc/pixi-vn/index/classes/ImageSprite#load) e [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add).
 
 ```ts tab="content/labels/start.label.ts"
 import { newLabel, showVideo } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start", [
     async () => {
+        // Show the videos on the canvas
         let video1 = await showVideo("video");
+        // Show the video with a different alias and position
         let video2 = await showVideo("video2", "video", {
             xAlign: 0.5,
         });
-        let video3 = await showVideo(
-            "video3",
-            "https://pixijs.com/assets/video.mp4",
-            {
-                xAlign: 1,
-            },
-        );
     },
 ]);
 ```
@@ -105,29 +100,26 @@ export const manifest: AssetsManifest = {
 
 ## Aggiungere
 
-To add an video to the canvas, use the [`addVideo`](/jsdoc/pixi-vn/index/functions/addVideo) function. Questa funzione aggiunge soltanto il componente al canvas; **non** lo visualizza né carica la sua texture. Utilizza [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add) per aggiungere il componente al canvas.
+Per aggiungere un video al canvas, usare la funzione [`addVideo`](/jsdoc/pixi-vn/index/functions/addVideo). Questa funzione aggiunge soltanto il componente al canvas; **non** lo visualizza né carica la sua texture. Utilizza [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add) per aggiungere il componente al canvas.
 
 ```ts tab="content/labels/start.label.ts"
 import { addVideo, canvas, VideoSprite, newLabel } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start", [
     () => {
+        // Add the videos to the canvas
         let video1 = addVideo("video");
+        // Add the video with a different alias and position
         let video2 = addVideo("video2", "video", {
             xAlign: 0.5,
-        });
-        let video3 = addVideo("video3", "https://pixijs.com/assets/video.mp4", {
-            xAlign: 1,
         });
     },
     async () => {
         let video1 = canvas.find<VideoSprite>("video");
         let video2 = canvas.find<VideoSprite>("video2");
-        let video3 = canvas.find<VideoSprite>("video3");
         // Load the textures
         video1 && (await video1.load());
         video2 && (await video2.load());
-        video3 && (await video3.load());
     },
 ]);
 ```
@@ -160,9 +152,9 @@ export const manifest: AssetsManifest = {
 
 Come per gli altri componenti del canvas, puoi rimuovere questo componente usando la funzione [`canvas.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#remove).
 
-## Play and pause
+## Riproduzione e pausa
 
-Use [`play`](/jsdoc/pixi-vn/index/classes/VideoSprite#play) and [`pause`](/jsdoc/pixi-vn/index/classes/VideoSprite#pause) methods, or set the [`paused`](/jsdoc/pixi-vn/index/classes/VideoSprite#paused) property.
+Usare i metodi [`play`](/jsdoc/pixi-vn/index/classes/VideoSprite#play) e [`pause`](/jsdoc/pixi-vn/index/classes/VideoSprite#pause), oppure impostare la proprietà [`paused`](/jsdoc/pixi-vn/index/classes/VideoSprite#paused).
 
 ```ts tab="content/labels/start.label.ts"
 import {
@@ -221,9 +213,9 @@ export const manifest: AssetsManifest = {
 
 <VideoSpritePlayPause />
 
-## Looping
+## Loop
 
-Set the [`loop`](/jsdoc/pixi-vn/index/classes/VideoSprite#loop) property to make the video repeat.
+Impostare la proprietà [`loop`](/jsdoc/pixi-vn/index/classes/VideoSprite#loop) per far ripetere il video.
 
 ```ts tab="content/labels/start.label.ts"
 import { newLabel, showVideo } from "@drincs/pixi-vn";
@@ -260,9 +252,9 @@ export const manifest: AssetsManifest = {
 
 <VideoSpriteLooping />
 
-## Restart
+## Riavviare
 
-Use the [`restart`](/jsdoc/pixi-vn/index/classes/VideoSprite#restart) method to restart playback.
+Usare il metodo [`restart`](/jsdoc/pixi-vn/index/classes/VideoSprite#restart) per riavviare la riproduzione dall'inizio.
 
 ```ts tab="content/labels/start.label.ts"
 import {
