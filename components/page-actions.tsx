@@ -248,7 +248,7 @@ export function ViewOptions({
 export function TranslateButton({ lang, folther }: { lang?: string; folther: string }) {
     const t = useTranslations("common");
 
-    if (lang == "zh") {
+    if (lang === "zh") {
         lang = "zh-cn";
     }
 

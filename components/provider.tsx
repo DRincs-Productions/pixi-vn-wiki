@@ -2,14 +2,10 @@
 import SearchDialog from "@/components/search";
 import { useBrowserLanguage } from "@/hooks/useBrowserLanguage";
 import { locales } from "@/lib/shared";
-import type { Translations } from "fumadocs-ui/i18n";
+import { translations } from "@/messages/translations";
 import { RootProvider } from "fumadocs-ui/provider/next";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
-
-const cn: Partial<Translations> = {
-    search: "Translated Content",
-};
 
 export function Provider({ children, locale }: { children: ReactNode; locale?: string }) {
     const changeLanguage = useBrowserLanguage();
@@ -25,7 +21,7 @@ export function Provider({ children, locale }: { children: ReactNode; locale?: s
                 locale: isJsdocRoute ? "en" : locale || "en",
                 onLocaleChange: changeLanguage,
                 locales: isJsdocRoute ? jsdocLocales : locales,
-                translations: { cn }[locale as string],
+                translations: translations[locale as string],
             }}
         >
             {children}
