@@ -1,11 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/cn";
-import PCImg from "@/public/pointclick.png";
-import VNImg from "@/public/visualnovel.png";
-import { cva } from "class-variance-authority";
 import { TerminalIcon } from "lucide-react";
-import Image from "next/image";
 import { Fragment, type HTMLAttributes, type ReactElement, useEffect, useState } from "react";
 
 export function CreateAppAnimation() {
@@ -64,7 +60,7 @@ export function CreateAppAnimation() {
                 {tick > timeCommandRun + 3 && (
                     <>
                         <span>│ ● Visual Novel</span>
-                        <span>│ ○ Game Engine</span>
+                        <span>│ ○ Point & Click</span>
                     </>
                 )}
             </Fragment>,
@@ -121,67 +117,9 @@ function LaunchAppWindow(props: HTMLAttributes<HTMLDivElement>): React.ReactElem
                         "linear-gradient(90deg, color-mix(in oklab, var(--color-brand-primary) 75%, black), color-mix(in oklab, var(--color-brand-secondary) 75%, black))",
                 }}
             >
-                <p className="absolute inset-x-0 text-center">localhost:1420</p>
+                <p className="absolute inset-x-0 text-center">Visual Studio Code</p>
             </div>
-            <div className="p-4 text-sm">New App launched!</div>
-        </div>
-    );
-}
-
-const previewButtonVariants = cva("w-20 h-9 text-sm font-medium transition-colors rounded-full", {
-    variants: {
-        active: {
-            true: "text-fd-primary-foreground",
-            false: "text-fd-muted-foreground",
-        },
-    },
-});
-export function PreviewImages() {
-    const [active, setActive] = useState(0);
-
-    return (
-        <div className="mt-12 min-w-[800px] overflow-hidden xl:-mx-12 dark:[mask-image:linear-gradient(to_top,transparent,white_40px)]">
-            <div className="absolute flex flex-row left-1/2 -translate-1/2 bottom-4 z-2 p-1 rounded-full bg-fd-card border shadow-xl dark:shadow-fd-background">
-                <div
-                    role="none"
-                    className="absolute bg-fd-primary rounded-full w-20 h-9 transition-transform z-[-1]"
-                    style={{
-                        transform: `translateX(calc(var(--spacing) * 20 * ${active}))`,
-                    }}
-                />
-                <button
-                    className={cn(previewButtonVariants({ active: active === 0 }))}
-                    onClick={() => setActive(0)}
-                >
-                    Visual Novel
-                </button>
-                <button
-                    className={cn(previewButtonVariants({ active: active === 1 }))}
-                    onClick={() => setActive(1)}
-                >
-                    Point & Click
-                </button>
-            </div>
-            <Image
-                src={VNImg}
-                alt="preview"
-                priority
-                className={cn(
-                    "w-full select-none duration-1000 animate-in fade-in -mb-60 slide-in-from-bottom-12 lg:-mb-40",
-                    active !== 0 && "hidden",
-                )}
-            />
-            {active === 1 && (
-                <Image
-                    src={PCImg}
-                    alt="preview"
-                    priority
-                    className={cn(
-                        "w-full select-none duration-1000 animate-in fade-in -mb-60 slide-in-from-bottom-12 lg:-mb-40",
-                        active !== 1 && "hidden",
-                    )}
-                />
-            )}
+            <div className="p-4 text-sm">New Game launched!</div>
         </div>
     );
 }

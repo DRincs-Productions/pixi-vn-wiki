@@ -121,12 +121,12 @@ export function Hero() {
                         strings={[t("hero_title"), t("hero_title_2"), t("hero_title_3")]}
                     />
                 </div>
-                <div className="hidden md:block w-56 h-56 shrink-0" />
+                <div className="hidden md:block w-64 h-64 shrink-0" />
                 <Image
                     src={LogoImg}
                     alt="preview"
                     priority
-                    className="w-56 h-56 object-contain pointer-events-auto max-md:order-first max-md:mb-2 md:absolute md:top-12 md:right-12 md:w-56 md:h-56"
+                    className="w-64 h-64 object-contain pointer-events-auto max-md:order-first max-md:mb-2 md:absolute md:top-10 md:right-10 md:w-64 md:h-64"
                 />
             </div>
             <div className="hidden md:block absolute bottom-14 left-1/2 -translate-x-1/2 z-1 w-[40%] max-w-[540px]">

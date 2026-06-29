@@ -1,5 +1,6 @@
 import { Hero } from "@/app/(home)/hero.client";
-import { CodeBlockPre } from "@/components/code-block";
+import { Terminal } from "@/app/(home)/terminal";
+import { AnybodyCanWrite } from "@/app/(home)/writing";
 import { buttonVariants } from "@/components/ui/button";
 import { ItchLogo } from "@/components/ui/icons";
 import { cn } from "@/lib/cn";
@@ -8,8 +9,6 @@ import { patreonUrl } from "@/lib/shared";
 import { source } from "@/lib/source";
 import ArchImg from "@/public/arch.png";
 import { cva } from "class-variance-authority";
-import { File, Files, Folder } from "fumadocs-ui/components/files";
-import { Tab, Tabs } from "fumadocs-ui/components/tabs";
 import {
     Heart,
     LayoutIcon,
@@ -22,7 +21,6 @@ import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { CreateAppAnimation } from "./home.client";
 
 const badgeVariants = cva(
     "inline-flex size-7 items-center justify-center rounded-full bg-fd-primary font-medium text-fd-primary-foreground ring-4 ring-fd-primary/20",
@@ -31,11 +29,17 @@ export async function generateStaticParams() {
     return source.generateParams();
 }
 
-export default function Home() {
+export default async function Home() {
+    const t = await getTranslations("HomePage");
     return (
         <main className="text-landing-foreground pt-4 pb-6 dark:text-landing-foreground-dark md:pb-12">
             <div className="relative flex min-h-[600px] h-[70vh] max-h-[900px] border rounded-2xl overflow-hidden mx-auto w-full max-w-[1400px] bg-origin-border">
                 <Hero />
+            </div>
+            <div className="grid grid-cols-1 gap-10 mt-12 px-6 mx-auto w-full max-w-[1400px] md:px-12 lg:grid-cols-2 lg:mt-20">
+                <p className="text-2xl tracking-tight leading-snug font-light col-span-full md:text-3xl xl:text-4xl">
+                    {t("description")}
+                </p>
             </div>
             <div className="grid grid-cols-1 gap-10 mt-12 px-6 mx-auto w-full max-w-[1400px] md:px-12 lg:grid-cols-2 lg:mt-20">
                 <div className="relative p-4 rounded-2xl col-span-full z-2 overflow-hidden md:p-8">
@@ -135,68 +139,13 @@ async function Introduction() {
                 <div className={cn(badgeVariants())}>1</div>
                 <h3 className="text-xl font-semibold">{t("create_it")}</h3>
                 <p className="mb-8 text-fd-muted-foreground">{t("create_it_description")}</p>
-                <CreateAppAnimation />
+                <Terminal />
             </div>
             <div className="flex flex-col gap-2 border-l border-t px-6 py-12 md:py-16">
                 <div className={cn(badgeVariants())}>2</div>
                 <h3 className="text-xl font-semibold">{t("write")}</h3>
                 <p className="text-fd-muted-foreground">{t("write_description")}</p>
-                <div className="relative flex flex-col">
-                    <Tabs
-                        items={["ink", "TypeScript", "Json"]}
-                        className="absolute inset-x-2 top-0 shadow-lg"
-                    >
-                        <Tab>
-                            <CodeBlockPre
-                                lang="bash"
-                                code={`=== start ===
-# show image bg bg01-hallway
-# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-neutral01] xAlign 0.5 yAlign 1 with movein direction right speed 300
-james: You're my roommate's replacement, huh?
-What is your name?
-# rename mc { _input_value_ }
-`}
-                            />
-                        </Tab>
-                        <Tab>
-                            <CodeBlockPre
-                                lang="ts"
-                                code={`const startLabel = newLabel("start", [
-  async () => {
-    await showImage("bg", "bg01-hallway");
-    await showImageContainer("james", ["m01-body", "m01-eyes-smile", "m01-mouth-neutral01"], { xAlign: 0.5, yAlign: 1, });
-    narration.dialogue = { character: james, text: \`You're my roommate's replacement, huh?\` };
-  },
-  () => narration.dialogue = "What is your name?",
-`}
-                            />
-                        </Tab>
-                        <Tab>
-                            <CodeBlockPre
-                                lang="json"
-                                code={`{ labels: { start: [
-    { operations: [
-        { type: "image", alias: "bg", operationType: "show", url: "bg01-hallway" },
-        { type: "imagecontainer", alias: "james", operationType: "show", urls: ["m01-body", "m01-eyes-smile", "m01-mouth-neutral01"], props: { xAlign: 0.5, yAlign: 1 }, transition: { type: "movein", props: { direction: "right", speed: 300 }}} 
-    ], goNextStep: true },
-    { dialogue: "james: You're my roommate's replacement, huh?" },
-    { dialogue: "What is your name?" },
-    { operations: [{ type: "operationtoconvert", values: ["rename mc ", { type: "value", storageOperationType: "get", storageType: "storage", key: "_input_value_" } ] }], goNextStep: true }
-]}};
-`}
-                            />
-                        </Tab>
-                    </Tabs>
-                    <Files className="z-[2] mt-55 shadow-xl">
-                        <Folder name="ink" defaultOpen>
-                            <File name="start.ink" />
-                        </Folder>
-                        <Folder name="labels" defaultOpen>
-                            <File name="animations-labels.ts" />
-                            {/* <File name='startLabel.ts' /> */}
-                        </Folder>
-                    </Files>
-                </div>
+                <AnybodyCanWrite />
             </div>
             <div className="col-span-full flex flex-col items-center gap-2 border-l border-t px-6 py-16 text-center">
                 <div className={cn(badgeVariants())}>3</div>
