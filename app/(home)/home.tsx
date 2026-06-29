@@ -31,7 +31,8 @@ export async function generateStaticParams() {
     return source.generateParams();
 }
 
-export default function Home() {
+export default async function Home() {
+    const t = await getTranslations("HomePage");
     return (
         <main className="text-landing-foreground pt-4 pb-6 dark:text-landing-foreground-dark md:pb-12">
             <div className="relative flex min-h-[600px] h-[70vh] max-h-[900px] border rounded-2xl overflow-hidden mx-auto w-full max-w-[1400px] bg-origin-border">
@@ -39,10 +40,7 @@ export default function Home() {
             </div>
             <div className="grid grid-cols-1 gap-10 mt-12 px-6 mx-auto w-full max-w-[1400px] md:px-12 lg:grid-cols-2 lg:mt-20">
                 <p className="text-2xl tracking-tight leading-snug font-light col-span-full md:text-3xl xl:text-4xl">
-                    Many game engines are built on slow, aging systems — forcing developers through
-                    complex toolchains just to ship a simple visual novel. Pixi’VN changes that by
-                    bringing video games into the web application ecosystem: write your game with a
-                    plain text editor, deploy anywhere, and let AI do the heavy lifting.
+                    {t("description")}
                 </p>
             </div>
             <div className="grid grid-cols-1 gap-10 mt-12 px-6 mx-auto w-full max-w-[1400px] md:px-12 lg:grid-cols-2 lg:mt-20">
