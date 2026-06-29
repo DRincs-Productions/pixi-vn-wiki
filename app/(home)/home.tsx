@@ -1,6 +1,6 @@
 import { Hero } from "@/app/(home)/hero.client";
 import { Terminal } from "@/app/(home)/terminal";
-import { CodeBlockPre } from "@/components/code-block";
+import { AnybodyCanWrite } from "@/app/(home)/writing";
 import { buttonVariants } from "@/components/ui/button";
 import { ItchLogo } from "@/components/ui/icons";
 import { cn } from "@/lib/cn";
@@ -9,8 +9,6 @@ import { patreonUrl } from "@/lib/shared";
 import { source } from "@/lib/source";
 import ArchImg from "@/public/arch.png";
 import { cva } from "class-variance-authority";
-import { File, Files, Folder } from "fumadocs-ui/components/files";
-import { Tab, Tabs } from "fumadocs-ui/components/tabs";
 import {
     Heart,
     LayoutIcon,
@@ -147,62 +145,7 @@ async function Introduction() {
                 <div className={cn(badgeVariants())}>2</div>
                 <h3 className="text-xl font-semibold">{t("write")}</h3>
                 <p className="text-fd-muted-foreground">{t("write_description")}</p>
-                <div className="relative flex flex-col">
-                    <Tabs
-                        items={["ink", "TypeScript", "Json"]}
-                        className="absolute inset-x-2 top-0 shadow-lg"
-                    >
-                        <Tab>
-                            <CodeBlockPre
-                                lang="bash"
-                                code={`=== start ===
-# show image bg bg01-hallway
-# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-neutral01] xAlign 0.5 yAlign 1 with movein direction right speed 300
-james: You're my roommate's replacement, huh?
-What is your name?
-# rename mc { _input_value_ }
-`}
-                            />
-                        </Tab>
-                        <Tab>
-                            <CodeBlockPre
-                                lang="ts"
-                                code={`const startLabel = newLabel("start", [
-  async () => {
-    await showImage("bg", "bg01-hallway");
-    await showImageContainer("james", ["m01-body", "m01-eyes-smile", "m01-mouth-neutral01"], { xAlign: 0.5, yAlign: 1, });
-    narration.dialogue = { character: james, text: \`You're my roommate's replacement, huh?\` };
-  },
-  () => narration.dialogue = "What is your name?",
-`}
-                            />
-                        </Tab>
-                        <Tab>
-                            <CodeBlockPre
-                                lang="json"
-                                code={`{ labels: { start: [
-    { operations: [
-        { type: "image", alias: "bg", operationType: "show", url: "bg01-hallway" },
-        { type: "imagecontainer", alias: "james", operationType: "show", urls: ["m01-body", "m01-eyes-smile", "m01-mouth-neutral01"], props: { xAlign: 0.5, yAlign: 1 }, transition: { type: "movein", props: { direction: "right", speed: 300 }}} 
-    ], goNextStep: true },
-    { dialogue: "james: You're my roommate's replacement, huh?" },
-    { dialogue: "What is your name?" },
-    { operations: [{ type: "operationtoconvert", values: ["rename mc ", { type: "value", storageOperationType: "get", storageType: "storage", key: "_input_value_" } ] }], goNextStep: true }
-]}};
-`}
-                            />
-                        </Tab>
-                    </Tabs>
-                    <Files className="z-[2] mt-55 shadow-xl">
-                        <Folder name="ink" defaultOpen>
-                            <File name="start.ink" />
-                        </Folder>
-                        <Folder name="labels" defaultOpen>
-                            <File name="animations-labels.ts" />
-                            {/* <File name='startLabel.ts' /> */}
-                        </Folder>
-                    </Files>
-                </div>
+                <AnybodyCanWrite />
             </div>
             <div className="col-span-full flex flex-col items-center gap-2 border-l border-t px-6 py-16 text-center">
                 <div className={cn(badgeVariants())}>3</div>
