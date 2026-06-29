@@ -10,7 +10,7 @@ import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { type RefObject, useEffect, useRef, useState } from "react";
+import { type RefObject, useEffect, useState } from "react";
 
 const GrainGradient = dynamic(
     () => import("@paper-design/shaders-react").then((mod) => mod.GrainGradient),
@@ -45,8 +45,6 @@ const demoUrls = [
 
 export function Hero() {
     const { resolvedTheme } = useTheme();
-    const ref = useRef<HTMLImageElement | null>(null);
-    const visible = useIsVisible(ref);
     const t = useTranslations("HomePage");
 
     return (
@@ -55,23 +53,25 @@ export function Hero() {
                 className="absolute inset-0 animate-fd-fade-in duration-800"
                 colors={
                     resolvedTheme === "dark"
-                        ? ["#39BE1C", "#9c2f05", "#7A2A0000"]
-                        : ["#fcfc51", "#ffa057", "#7A2A0020"]
+                        ? ["#C832BB", "#1A2A8A", "#C832BB00"]
+                        : ["#E080D8", "#6090D0", "#C832BB20"]
                 }
                 colorBack="#00000000"
                 softness={1}
                 intensity={0.9}
                 noise={0.5}
-                speed={visible ? 1 : 0}
                 shape="corners"
                 minPixelRatio={1}
                 maxPixelCount={1920 * 1080}
+                rotation={150}
+                scale={2}
+                speed={0.3}
             />
             <Dithering
                 width={720}
                 height={720}
                 colorBack="#00000000"
-                colorFront={resolvedTheme === "dark" ? "#DF3F00" : "#fa8023"}
+                colorFront={resolvedTheme === "dark" ? "#C832BB" : "#8A1F84"}
                 shape="sphere"
                 type="4x4"
                 scale={0.5}
