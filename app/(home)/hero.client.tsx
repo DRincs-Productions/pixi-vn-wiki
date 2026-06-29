@@ -71,7 +71,7 @@ export function Hero() {
                 width={720}
                 height={720}
                 colorBack="#00000000"
-                colorFront={resolvedTheme === "dark" ? "#C832BB" : "#8A1F84"}
+                colorFront={resolvedTheme === "dark" ? "#C832BB" : "#AA28A4"}
                 shape="sphere"
                 type="4x4"
                 scale={0.5}
@@ -86,16 +86,22 @@ export function Hero() {
                     <p className="mt-2 md:mt-0 text-xs text-brand font-medium rounded-full p-2 border border-brand/50 w-fit">
                         {t("tagline")}
                     </p>
-                    <TypewriterTitle
-                        strings={[t("hero_title"), t("hero_title_2"), t("hero_title_3")]}
-                    />
-                    <div className="flex flex-row items-center justify-center gap-4 flex-wrap w-fit">
-                        <Link href="/start" className={cn(buttonVariants(), "max-sm:text-sm")}>
+                    <div className="flex flex-row items-center justify-center gap-4 flex-wrap w-fit mt-6 md:mt-6">
+                        <Link
+                            href="/start"
+                            className={cn(
+                                buttonVariants({ variant: "secondary" }),
+                                "max-sm:text-sm",
+                            )}
+                        >
                             {t("getting_started")}
                         </Link>
                         <Link
                             href="/start/templates#visual-novel"
-                            className={cn(buttonVariants(), "max-sm:text-sm md:hidden")}
+                            className={cn(
+                                buttonVariants({ variant: "secondary" }),
+                                "max-sm:text-sm",
+                            )}
                         >
                             {t("open_demo")}
                         </Link>
@@ -111,15 +117,19 @@ export function Hero() {
                             {t("discord")}
                         </a>
                     </div>
+                    <TypewriterTitle
+                        strings={[t("hero_title"), t("hero_title_2"), t("hero_title_3")]}
+                    />
                 </div>
+                <div className="hidden md:block w-56 h-56 shrink-0" />
                 <Image
                     src={LogoImg}
                     alt="preview"
                     priority
-                    className="w-56 h-56 object-contain shrink-0 max-md:order-first max-md:mb-2 pointer-events-auto"
+                    className="w-56 h-56 object-contain pointer-events-auto max-md:order-first max-md:mb-2 md:absolute md:top-12 md:right-12 md:w-56 md:h-56"
                 />
             </div>
-            <div className="hidden md:block absolute bottom-24 left-1/2 -translate-x-1/2 z-1 w-[40%] max-w-[540px]">
+            <div className="hidden md:block absolute bottom-14 left-1/2 -translate-x-1/2 z-1 w-[40%] max-w-[540px]">
                 <Preview />
             </div>
         </>
@@ -155,7 +165,7 @@ function TypewriterTitle({ strings }: { strings: string[] }) {
     }, [displayed, index, deleting, strings]);
 
     return (
-        <h1 className="text-4xl my-8 leading-tighter font-medium xl:text-5xl xl:mb-12">
+        <h1 className="text-4xl mt-6 mb-0 leading-tighter font-medium xl:text-5xl min-h-[5.5rem] xl:min-h-[7rem]">
             {displayed}
             <span className="animate-pulse">|</span>
         </h1>
