@@ -27,7 +27,7 @@ james: Nice to meet you, { mc_name }!
 james: ...Suit yourself.
 -> END`}
                         lang="ink"
-                        {...inkLanguage}
+                        langs={[inkLanguage]}
                     />
                 ),
                 developer: (
