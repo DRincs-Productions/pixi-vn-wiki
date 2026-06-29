@@ -39,7 +39,7 @@ const previewButtonVariants = cva(
 );
 
 const demoUrls = [
-    "https://pixi-vn-react-template.web.app/demo",
+    "https://pixi-vn-visual-novel-example.pages.dev/demo",
     "https://nqtr-react-template.firebaseapp.com/",
 ];
 
