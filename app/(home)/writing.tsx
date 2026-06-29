@@ -6,7 +6,7 @@ export function AnybodyCanWrite() {
     return (
         <Writing
             tabs={{
-                writer: (
+                ink: (
                     <ServerCodeBlock
                         code={`=== start ===
 # show image bg bg01-hallway
@@ -31,7 +31,7 @@ james: ...Suit yourself.
                         langs={[inkLanguage]}
                     />
                 ),
-                developer: (
+                ts: (
                     <ServerCodeBlock
                         code={`import { mc } from "@/content/characters";
 import { moveIn, narration, newChoiceOption, newLabel, showImage } from "@drincs/pixi-vn";
@@ -70,7 +70,7 @@ newLabel("silent_response", [
                         lang="ts"
                     />
                 ),
-                automation: (
+                json: (
                     <ServerCodeBlock
                         code={`{
   "$schema": "https://pixi-vn.com/schemas/latest/schema.json",

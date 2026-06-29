@@ -1,21 +1,21 @@
 "use client";
 
 import { cn } from "@/lib/cn";
-import { ArrowRight } from "lucide-react";
+import { Dot } from "lucide-react";
 import { Fragment, useState, type ReactNode } from "react";
 
 const WritingTabs = [
     {
-        name: "Writer",
-        value: "writer",
+        name: "ink",
+        value: "ink",
     },
     {
-        name: "Developer",
-        value: "developer",
+        name: "TypeScript",
+        value: "ts",
     },
     {
-        name: "Automation",
-        value: "automation",
+        name: "JSON",
+        value: "json",
     },
 ] as const;
 export function Writing({
@@ -23,14 +23,14 @@ export function Writing({
 }: {
     tabs: Record<(typeof WritingTabs)[number]["value"], ReactNode>;
 }) {
-    const [tab, setTab] = useState<(typeof WritingTabs)[number]["value"]>("writer");
+    const [tab, setTab] = useState<(typeof WritingTabs)[number]["value"]>("ink");
 
     return (
         <div className="col-span-full">
             <div className="flex justify-center items-center gap-4 text-fd-muted-foreground mb-6">
                 {WritingTabs.map((item) => (
                     <Fragment key={item.value}>
-                        <ArrowRight className="size-4 first:hidden" />
+                        <Dot className="size-4 first:hidden" />
                         <button
                             className={cn(
                                 "text-lg font-medium transition-colors",
