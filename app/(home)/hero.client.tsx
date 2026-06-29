@@ -38,61 +38,49 @@ const previewButtonVariants = cva(
     },
 );
 
-const demos = [
-    { label: "Visual Novel", url: "https://pixi-vn-react-template.web.app/demo" },
-    { label: "NQTR", url: "https://nqtr-react-template.firebaseapp.com/" },
+const demoUrls = [
+    "https://pixi-vn-react-template.web.app/demo",
+    "https://nqtr-react-template.firebaseapp.com/",
 ];
 
 export function Hero() {
     const { resolvedTheme } = useTheme();
     const ref = useRef<HTMLImageElement | null>(null);
     const visible = useIsVisible(ref);
-    const [showShaders, setShowShaders] = useState(false);
     const t = useTranslations("HomePage");
-
-    useEffect(() => {
-        // apply some delay, otherwise on slower devices, it errors with uniform images not being fully loaded.
-        setTimeout(() => {
-            setShowShaders(true);
-        }, 400);
-    }, []);
 
     return (
         <>
-            {showShaders && (
-                <GrainGradient
-                    className="absolute inset-0 animate-fd-fade-in duration-800"
-                    colors={
-                        resolvedTheme === "dark"
-                            ? ["#39BE1C", "#9c2f05", "#7A2A0000"]
-                            : ["#fcfc51", "#ffa057", "#7A2A0020"]
-                    }
-                    colorBack="#00000000"
-                    softness={1}
-                    intensity={0.9}
-                    noise={0.5}
-                    speed={visible ? 1 : 0}
-                    shape="corners"
-                    minPixelRatio={1}
-                    maxPixelCount={1920 * 1080}
-                />
-            )}
-            {showShaders && (
-                <Dithering
-                    width={720}
-                    height={720}
-                    colorBack="#00000000"
-                    colorFront={resolvedTheme === "dark" ? "#DF3F00" : "#fa8023"}
-                    shape="sphere"
-                    type="4x4"
-                    scale={0.5}
-                    size={3}
-                    speed={0}
-                    frame={5000 * 120}
-                    className="absolute animate-fd-fade-in duration-400 max-lg:bottom-[-50%] max-lg:left-[-200px] lg:top-[-5%] lg:right-0"
-                    minPixelRatio={1}
-                />
-            )}
+            <GrainGradient
+                className="absolute inset-0 animate-fd-fade-in duration-800"
+                colors={
+                    resolvedTheme === "dark"
+                        ? ["#39BE1C", "#9c2f05", "#7A2A0000"]
+                        : ["#fcfc51", "#ffa057", "#7A2A0020"]
+                }
+                colorBack="#00000000"
+                softness={1}
+                intensity={0.9}
+                noise={0.5}
+                speed={visible ? 1 : 0}
+                shape="corners"
+                minPixelRatio={1}
+                maxPixelCount={1920 * 1080}
+            />
+            <Dithering
+                width={720}
+                height={720}
+                colorBack="#00000000"
+                colorFront={resolvedTheme === "dark" ? "#DF3F00" : "#fa8023"}
+                shape="sphere"
+                type="4x4"
+                scale={0.5}
+                size={3}
+                speed={0}
+                frame={5000 * 120}
+                className="absolute animate-fd-fade-in duration-400 max-lg:bottom-[-50%] max-lg:left-[-200px] lg:top-[-5%] lg:right-0"
+                minPixelRatio={1}
+            />
             <div className="flex flex-col md:flex-row max-md:items-center md:items-start z-2 px-4 size-full md:p-12 max-md:text-center max-md:justify-center md:gap-8 pointer-events-none">
                 <div className="flex flex-col max-md:items-center pointer-events-auto">
                     <p className="mt-2 md:mt-0 text-xs text-brand font-medium rounded-full p-2 border border-brand/50 w-fit">
@@ -140,6 +128,11 @@ export function Hero() {
 
 function Preview() {
     const [active, setActive] = useState(0);
+    const t = useTranslations("HomePage");
+    const demos = [
+        { label: t("demo_visual_novel"), url: demoUrls[0] },
+        { label: t("demo_point_and_click"), url: demoUrls[1] },
+    ];
 
     return (
         <div className="relative w-full">
@@ -147,7 +140,10 @@ function Preview() {
                 <iframe
                     key={demo.url}
                     src={demo.url}
-                    className={cn("w-full aspect-video rounded-xl border-0 shadow-xl", active !== i && "hidden")}
+                    className={cn(
+                        "w-full aspect-video rounded-xl border-0 shadow-xl",
+                        active !== i && "hidden",
+                    )}
                     title={demo.label}
                 />
             ))}
