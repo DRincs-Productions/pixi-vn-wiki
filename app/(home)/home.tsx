@@ -1,4 +1,5 @@
 import { Hero } from "@/app/(home)/hero.client";
+import { Terminal } from "@/app/(home)/terminal";
 import { CodeBlockPre } from "@/components/code-block";
 import { buttonVariants } from "@/components/ui/button";
 import { ItchLogo } from "@/components/ui/icons";
@@ -22,7 +23,6 @@ import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { CreateAppAnimation } from "./home.client";
 
 const badgeVariants = cva(
     "inline-flex size-7 items-center justify-center rounded-full bg-fd-primary font-medium text-fd-primary-foreground ring-4 ring-fd-primary/20",
@@ -36,6 +36,14 @@ export default function Home() {
         <main className="text-landing-foreground pt-4 pb-6 dark:text-landing-foreground-dark md:pb-12">
             <div className="relative flex min-h-[600px] h-[70vh] max-h-[900px] border rounded-2xl overflow-hidden mx-auto w-full max-w-[1400px] bg-origin-border">
                 <Hero />
+            </div>
+            <div className="grid grid-cols-1 gap-10 mt-12 px-6 mx-auto w-full max-w-[1400px] md:px-12 lg:grid-cols-2 lg:mt-20">
+                <p className="text-2xl tracking-tight leading-snug font-light col-span-full md:text-3xl xl:text-4xl">
+                    Many game engines are built on slow, aging systems — forcing developers through
+                    complex toolchains just to ship a simple visual novel. Pixi’VN changes that by
+                    bringing video games into the web application ecosystem: write your game with a
+                    plain text editor, deploy anywhere, and let AI do the heavy lifting.
+                </p>
             </div>
             <div className="grid grid-cols-1 gap-10 mt-12 px-6 mx-auto w-full max-w-[1400px] md:px-12 lg:grid-cols-2 lg:mt-20">
                 <div className="relative p-4 rounded-2xl col-span-full z-2 overflow-hidden md:p-8">
@@ -135,7 +143,7 @@ async function Introduction() {
                 <div className={cn(badgeVariants())}>1</div>
                 <h3 className="text-xl font-semibold">{t("create_it")}</h3>
                 <p className="mb-8 text-fd-muted-foreground">{t("create_it_description")}</p>
-                <CreateAppAnimation />
+                <Terminal />
             </div>
             <div className="flex flex-col gap-2 border-l border-t px-6 py-12 md:py-16">
                 <div className={cn(badgeVariants())}>2</div>
