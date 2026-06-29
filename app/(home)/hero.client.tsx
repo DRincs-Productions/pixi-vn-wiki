@@ -10,7 +10,7 @@ import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { type RefObject, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const GrainGradient = dynamic(
     () => import("@paper-design/shaders-react").then((mod) => mod.GrainGradient),
@@ -86,9 +86,9 @@ export function Hero() {
                     <p className="mt-2 md:mt-0 text-xs text-brand font-medium rounded-full p-2 border border-brand/50 w-fit">
                         {t("tagline")}
                     </p>
-                    <h1 className="text-4xl my-8 leading-tighter font-medium xl:text-5xl xl:mb-12">
-                        {t("hero_title")}
-                    </h1>
+                    <TypewriterTitle
+                        strings={[t("hero_title"), t("hero_title_2"), t("hero_title_3")]}
+                    />
                     <div className="flex flex-row items-center justify-center gap-4 flex-wrap w-fit">
                         <Link href="/start" className={cn(buttonVariants(), "max-sm:text-sm")}>
                             {t("getting_started")}
@@ -123,6 +123,42 @@ export function Hero() {
                 <Preview />
             </div>
         </>
+    );
+}
+
+function TypewriterTitle({ strings }: { strings: string[] }) {
+    const [displayed, setDisplayed] = useState("");
+    const [index, setIndex] = useState(0);
+    const [deleting, setDeleting] = useState(false);
+
+    useEffect(() => {
+        const current = strings[index];
+
+        if (!deleting && displayed === current) {
+            const id = setTimeout(() => setDeleting(true), 5000);
+            return () => clearTimeout(id);
+        }
+        if (deleting && displayed === "") {
+            setDeleting(false);
+            setIndex((i) => (i + 1) % strings.length);
+            return;
+        }
+
+        const id = setTimeout(
+            () =>
+                setDisplayed(
+                    deleting ? displayed.slice(0, -1) : current.slice(0, displayed.length + 1),
+                ),
+            deleting ? 25 : 55,
+        );
+        return () => clearTimeout(id);
+    }, [displayed, index, deleting, strings]);
+
+    return (
+        <h1 className="text-4xl my-8 leading-tighter font-medium xl:text-5xl xl:mb-12">
+            {displayed}
+            <span className="animate-pulse">|</span>
+        </h1>
     );
 }
 
@@ -168,33 +204,4 @@ function Preview() {
             </div>
         </div>
     );
-}
-
-let observer: IntersectionObserver;
-const observerTargets = new WeakMap<Element, (entry: IntersectionObserverEntry) => void>();
-
-function useIsVisible(ref: RefObject<HTMLElement | null>) {
-    const [visible, setVisible] = useState(false);
-
-    useEffect(() => {
-        observer ??= new IntersectionObserver((entries) => {
-            for (const entry of entries) {
-                observerTargets.get(entry.target)?.(entry);
-            }
-        });
-
-        const element = ref.current;
-        if (!element) return;
-        observerTargets.set(element, (entry) => {
-            setVisible(entry.isIntersecting);
-        });
-        observer.observe(element);
-
-        return () => {
-            observer.unobserve(element);
-            observerTargets.delete(element);
-        };
-    }, [ref]);
-
-    return visible;
 }
