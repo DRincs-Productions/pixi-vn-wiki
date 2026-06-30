@@ -4,42 +4,34 @@ description: Learn how to animate Pixi’VN canvas components using the canvas.a
 ---
 
 import {
+    FadeExample,
+    MirrorExample,
+    MotionSequenceExample,
     MoveExample,
     RotateExample,
-    FadeExample,
-    ZoomExample,
-    MirrorExample,
     SequenceExample,
-    MotionSequenceExample,
+    ZoomExample,
 } from "@/components/examples";
 
-Pixi’VN allows developers to animate canvas components using a function called `animate`. This function is a re-implementation of the [`animate` function from the `motion` library](https://motion.dev/docs/animate), adapted to use PixiJS tickers for triggering animation events.
+Pixi’VN allows developers to animate canvas components using a function called [`canvas.animate`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#animate). This function is a re-implementation of the [`animate` function from the `motion` library](https://motion.dev/docs/animate), adapted to use PixiJS tickers for triggering animation events.
 
-**What is `motion`?**  
+<Accordions>
+
+<Accordion title="What is motion?" id="what-is-motion">
+
 `motion` is a popular JavaScript library that provides a simple and powerful way to create animations. You can read more about it [here](https://motion.dev/).
 
-There are two variants of this function:
+</Accordion>
 
-- `animate`: Intended for animating PixiJS or Pixi’VN elements used for <DynamicLink href="/start/interface-pixijs">UI</DynamicLink>. Pixi’VN does not save the current state of animations created with this function. Since it is identical to [motion’s animate function](https://motion.dev/docs/animate), it will not be explained further here.
-- `canvas.animate`: Designed for animating Pixi’VN canvas components. It saves the current state of animations, allowing you to restore the state of an animation from a save. This function has some differences from the original `animate` function, which will be explained in detail below.
+</Accordions>
+
+{/* - `animate`: Intended for animating PixiJS or Pixi’VN elements used for <DynamicLink href="/start/interface-pixijs">UI</DynamicLink>. Pixi’VN does not save the current state of animations created with this function. Since it is identical to [motion’s animate function](https://motion.dev/docs/animate), it will not be explained further here. */}
 
 ## Use
 
-The `canvas.animate` function works as follows:
-The developer defines a component state to be reached (for example, its x-y position). Once the animation starts, an event is continuously triggered to update the component until it reaches the desired state. You can further customize the animation with various options.
+`canvas.animate` is one of the most commonly used functions in Pixi’VN and is designed to be straightforward — though the underlying concept may not be immediately obvious at first. The idea is simple: you define a **target state** for a canvas component (e.g. a position, scale, or opacity) and a **duration**, and Pixi’VN will smoothly transition the component to that state frame by frame. Once the target is reached, the animation ends automatically.
 
-This function has the following parameters:
-
-- `components`: The PixiJS component(s) to animate. This can be a single component, an array of components, or a string representing the <DynamicLink href="/start/canvas-alias">component's alias</DynamicLink>.
-- `keyframes`: This is an object containing the properties to animate and the values to reach.
-- `options` (Optional): [`motion` options](https://motion.dev/docs/animate#options) for the animation, including duration, `easing`, and ticker. The following options extend those from `motion`:
-    - `aliasToRemoveAfter` (Optional): An array of strings containing the aliases of the <DynamicLink href="/start/canvas-components">canvas components</DynamicLink> to remove after the animation completes.
-    - `tickerIdToResume` (Optional): A string containing the ticker ID to resume after the animation completes.
-    - `tickerAliasToResume` (Optional): If you want to resume tickers that were previously paused, provide the aliases of the canvas components whose tickers should be resumed.
-    - `completeOnContinue` (Optional): A boolean indicating whether the animation must complete before the next `step` of the game. If `true`, the game will force the animation to finish before proceeding.
-- `priority` (Optional): The priority of the PixiJS ticker. This parameter sets the ticker's priority. The default is `UPDATE_PRIORITY.NORMAL`.
-
-The function returns the ID of the ticker created to animate the component(s).
+For example, to move a component to position `{ x: 100, y: 50 }` over one second, you pass `{ x: 100, y: 50 }` as the `keyframes` and `{ duration: 1 }` as the `options`. The `keyframes` parameter defines _what_ to reach; `options` defines _how_ to get there.
 
 Here are some examples:
 
@@ -83,7 +75,7 @@ import { AssetsManifest } from "@drincs/pixi-vn";
  * Manifest for the assets used in the game.
  * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
  */
-const manifest: AssetsManifest = {
+export const manifest: AssetsManifest = {
     bundles: [
         {
             name: "start",
@@ -96,7 +88,6 @@ const manifest: AssetsManifest = {
         },
     ],
 };
-export default manifest;
 ```
 
 <MoveExample />
@@ -130,7 +121,7 @@ import { AssetsManifest } from "@drincs/pixi-vn";
  * Manifest for the assets used in the game.
  * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
  */
-const manifest: AssetsManifest = {
+export const manifest: AssetsManifest = {
     bundles: [
         {
             name: "start",
@@ -143,7 +134,6 @@ const manifest: AssetsManifest = {
         },
     ],
 };
-export default manifest;
 ```
 
 <RotateExample />
@@ -174,7 +164,7 @@ import { AssetsManifest } from "@drincs/pixi-vn";
  * Manifest for the assets used in the game.
  * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
  */
-const manifest: AssetsManifest = {
+export const manifest: AssetsManifest = {
     bundles: [
         {
             name: "start",
@@ -187,7 +177,6 @@ const manifest: AssetsManifest = {
         },
     ],
 };
-export default manifest;
 ```
 
 <FadeExample />
@@ -222,7 +211,7 @@ import { AssetsManifest } from "@drincs/pixi-vn";
  * Manifest for the assets used in the game.
  * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
  */
-const manifest: AssetsManifest = {
+export const manifest: AssetsManifest = {
     bundles: [
         {
             name: "start",
@@ -235,7 +224,6 @@ const manifest: AssetsManifest = {
         },
     ],
 };
-export default manifest;
 ```
 
 <ZoomExample />
@@ -266,7 +254,7 @@ import { AssetsManifest } from "@drincs/pixi-vn";
  * Manifest for the assets used in the game.
  * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
  */
-const manifest: AssetsManifest = {
+export const manifest: AssetsManifest = {
     bundles: [
         {
             name: "start",
@@ -279,7 +267,6 @@ const manifest: AssetsManifest = {
         },
     ],
 };
-export default manifest;
 ```
 
 <MirrorExample />
@@ -323,7 +310,7 @@ import { AssetsManifest } from "@drincs/pixi-vn";
  * Manifest for the assets used in the game.
  * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
  */
-const manifest: AssetsManifest = {
+export const manifest: AssetsManifest = {
     bundles: [
         {
             name: "start",
@@ -336,7 +323,6 @@ const manifest: AssetsManifest = {
         },
     ],
 };
-export default manifest;
 ```
 
 <SequenceExample />
@@ -383,7 +369,7 @@ import { AssetsManifest } from "@drincs/pixi-vn";
  * Manifest for the assets used in the game.
  * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
  */
-const manifest: AssetsManifest = {
+export const manifest: AssetsManifest = {
     bundles: [
         {
             name: "start",
@@ -396,7 +382,6 @@ const manifest: AssetsManifest = {
         },
     ],
 };
-export default manifest;
 ```
 
 <MotionSequenceExample />
