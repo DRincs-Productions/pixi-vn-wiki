@@ -1,43 +1,25 @@
+import { StepsGrid } from "@/app/(home)/steps.client";
 import { Terminal } from "@/app/(home)/terminal";
 import { AnybodyCanWrite } from "@/app/(home)/writing";
 import { ItchLogo } from "@/components/ui/icons";
-import { cn } from "@/lib/cn";
-import { cva } from "class-variance-authority";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
-
-const badgeVariants = cva(
-    "inline-flex size-7 items-center justify-center rounded-full bg-fd-primary font-medium text-fd-primary-foreground ring-4 ring-fd-primary/20",
-);
 
 export async function Introduction() {
     const t = await getTranslations("Introduction");
 
     return (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="flex flex-col gap-2 rounded-2xl border bg-fd-card p-6 shadow-lg md:p-8">
-                <div className={cn(badgeVariants())}>1</div>
-                <h3 className="text-xl font-semibold">{t("create_it")}</h3>
-                <p className="mb-8 text-fd-muted-foreground">{t("create_it_description")}</p>
-                <Terminal />
-            </div>
-            <div className="flex flex-col gap-2 rounded-2xl border bg-fd-card p-6 shadow-lg md:p-8">
-                <div className={cn(badgeVariants())}>2</div>
-                <h3 className="text-xl font-semibold">{t("write")}</h3>
-                <p className="text-fd-muted-foreground">{t("write_description")}</p>
-                <AnybodyCanWrite />
-            </div>
-            <div className="col-span-full flex flex-col items-center gap-2 rounded-2xl border bg-fd-card p-6 py-16 text-center shadow-lg md:p-8">
-                <div className={cn(badgeVariants())}>3</div>
-                <h3 className="text-2xl font-semibold">{t("ship")}</h3>
-                <p className="text-fd-muted-foreground">{t("ship_description")}</p>
-
-                <div className="mt-4 flex flex-row flex-wrap items-center gap-8">
-                    <Link href="/start/distribution-itchio" rel="noreferrer noopener">
-                        <ItchLogo className="h-auto w-32" />
-                    </Link>
-                </div>
-            </div>
-        </div>
+        <StepsGrid
+            step1={{ title: t("create_it"), description: t("create_it_description") }}
+            step2={{ title: t("write"), description: t("write_description") }}
+            step3={{ title: t("ship"), description: t("ship_description") }}
+            terminal={<Terminal />}
+            writing={<AnybodyCanWrite />}
+            shipAction={
+                <Link href="/start/distribution-itchio" rel="noreferrer noopener">
+                    <ItchLogo className="h-auto w-32" />
+                </Link>
+            }
+        />
     );
 }

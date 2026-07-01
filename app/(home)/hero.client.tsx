@@ -40,7 +40,7 @@ const previewButtonVariants = cva(
 
 const demoUrls = [
     "https://pixi-vn-visual-novel-example.pages.dev/demo",
-    "https://nqtr-react-template.firebaseapp.com/",
+    "https://pixi-vn-point-and-click-example.pages.dev/demo",
 ];
 
 export function Hero() {
