@@ -1,6 +1,7 @@
 "use client";
 
 import { ItchLogo } from "@/components/ui/icons";
+import { Markdown } from "@/components/ui/markdown";
 import { cn } from "@/lib/cn";
 import { cva } from "class-variance-authority";
 import { motion } from "motion/react";
@@ -196,9 +197,9 @@ export function StepsGrid({ terminal, writing }: { terminal: ReactNode; writing:
                     1
                 </div>
                 <h3 className="text-center text-xl font-semibold">{t("create_it")}</h3>
-                <p className="mb-8 text-center text-fd-muted-foreground">
+                <Markdown className="mb-8 text-center text-fd-muted-foreground">
                     {t("create_it_description")}
-                </p>
+                </Markdown>
                 {terminal}
             </div>
             <div className="relative z-10 flex flex-col gap-2 rounded-2xl border bg-fd-card p-6 pt-8 shadow-lg md:p-8 md:pt-8">
@@ -212,7 +213,9 @@ export function StepsGrid({ terminal, writing }: { terminal: ReactNode; writing:
                     2
                 </div>
                 <h3 className="text-center text-xl font-semibold">{t("write")}</h3>
-                <p className="text-center text-fd-muted-foreground">{t("write_description")}</p>
+                <Markdown className="text-center text-fd-muted-foreground">
+                    {t("write_description")}
+                </Markdown>
                 {writing}
             </div>
             <div className="relative z-10 col-span-full flex flex-col items-center gap-2 rounded-2xl border bg-fd-card p-6 py-16 text-center shadow-lg md:p-8">
@@ -226,7 +229,7 @@ export function StepsGrid({ terminal, writing }: { terminal: ReactNode; writing:
                     3
                 </div>
                 <h3 className="text-2xl font-semibold">{t("ship")}</h3>
-                <p className="text-fd-muted-foreground">{t("ship_description")}</p>
+                <Markdown className="text-fd-muted-foreground">{t("ship_description")}</Markdown>
                 <div className="mt-4 flex flex-row flex-wrap items-center gap-8">
                     <Link href="/start/distribution-itchio" rel="noreferrer noopener">
                         <ItchLogo className="h-auto w-32" />

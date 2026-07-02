@@ -3,6 +3,7 @@ import { StepsGrid } from "@/app/(home)/steps.client";
 import { Terminal } from "@/app/(home)/terminal";
 import { AnybodyCanWrite } from "@/app/(home)/writing";
 import { buttonVariants } from "@/components/ui/button";
+import { Markdown } from "@/components/ui/markdown";
 import { cn } from "@/lib/cn";
 import { createMetadata } from "@/lib/metadata";
 import { patreonUrl } from "@/lib/shared";
@@ -32,9 +33,9 @@ export default async function Home() {
                 <Hero />
             </div>
             <div className="grid grid-cols-1 gap-10 mt-12 px-6 mx-auto w-full max-w-[1400px] md:px-12 lg:grid-cols-2 lg:mt-20">
-                <p className="text-2xl tracking-tight leading-snug font-light col-span-full md:text-3xl xl:text-4xl">
+                <Markdown className="text-2xl tracking-tight leading-snug font-light col-span-full md:text-3xl xl:text-4xl">
                     {t("description")}
-                </p>
+                </Markdown>
             </div>
             <div className="mx-auto mt-12 w-full max-w-[1400px] lg:mt-20">
                 <StepsGrid terminal={<Terminal />} writing={<AnybodyCanWrite />} />
