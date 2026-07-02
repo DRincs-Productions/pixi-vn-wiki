@@ -1,21 +1,26 @@
 "use client";
 
+import { Markdown } from "@/components/ui/markdown";
 import { cn } from "@/lib/cn";
 import { Dot } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Fragment, useState, type ReactNode } from "react";
 
 const WritingTabs = [
     {
         name: "ink",
         value: "ink",
+        descriptionKey: "write_description_ink",
     },
     {
         name: "TypeScript",
         value: "ts",
+        descriptionKey: "write_description_ts",
     },
     {
         name: "JSON",
         value: "json",
+        descriptionKey: "write_description_json",
     },
 ] as const;
 export function Writing({
@@ -23,7 +28,9 @@ export function Writing({
 }: {
     tabs: Record<(typeof WritingTabs)[number]["value"], ReactNode>;
 }) {
+    const t = useTranslations("Introduction");
     const [tab, setTab] = useState<(typeof WritingTabs)[number]["value"]>("ink");
+    const activeTab = WritingTabs.find((item) => item.value === tab);
 
     return (
         <div className="col-span-full">
@@ -32,9 +39,12 @@ export function Writing({
                     <Fragment key={item.value}>
                         <Dot className="size-4 first:hidden" />
                         <button
+                            type="button"
                             className={cn(
-                                "text-lg font-medium transition-colors",
-                                item.value === tab && "text-brand",
+                                "cursor-pointer rounded-full border border-transparent px-3 py-1 text-lg font-medium transition-colors hover:border-brand-secondary/40 hover:text-brand-secondary",
+                                item.value === tab
+                                    ? "border-brand-secondary/50 text-brand-secondary"
+                                    : "text-fd-muted-foreground",
                             )}
                             onClick={() => setTab(item.value)}
                         >
@@ -43,6 +53,11 @@ export function Writing({
                     </Fragment>
                 ))}
             </div>
+            {activeTab && (
+                <Markdown className="text-center text-fd-muted-foreground mb-6">
+                    {t(activeTab.descriptionKey)}
+                </Markdown>
+            )}
             {Object.entries(tabContents).map(([key, value]) => (
                 <div
                     key={key}
