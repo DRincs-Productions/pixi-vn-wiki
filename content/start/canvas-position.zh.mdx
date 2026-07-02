@@ -1,6 +1,6 @@
 ---
-title: Properties for positioning
-description: Overview of positioning properties in Pixi’VN, including pixel, percentage, anchor, pivot, and align.
+title: 定位属性
+description: 概述 Pixi’VN 中的定位属性，包括像素、百分比、锚点（anchor）、支点（pivot）和对齐（align）。
 ---
 
 import {
@@ -8,63 +8,63 @@ import {
     PositionwithpercentageExample,
 } from "@/components/examples";
 
-:::tip[References and citations]
+:::tip[参考与引用]
 
-Most of the texts and images on this page were copied from Position Properties – [Pos and Anchor](https://feniksdev.com/renpy-position-properties-pos-and-anchor/) and [align, xycenter, and offset](https://feniksdev.com/renpy-position-properties-align-xycenter-and-offset/). Feniks in these two pages explained very well the properties of Ren'Py positioning, common to many other canvases including Pixi’VN.
+本页的大部分文字和图片均摘自 Position Properties – [Pos and Anchor](https://feniksdev.com/renpy-position-properties-pos-and-anchor/) 和 [align, xycenter, and offset](https://feniksdev.com/renpy-position-properties-align-xycenter-and-offset/)。 Feniks 在这两篇文章中很好地解释了 Ren'Py 的定位属性，这些属性也是包括 Pixi’VN 在内的许多其他画布所共有的。
 
 :::
 
-Before we get into the different positioning properties, note that Pixi’VN considers the default for all position properties to be `{ x: 0, y: 0 }`, which corresponds to the top-left of the element you’re positioning.
+在介绍不同的定位属性之前，请注意 Pixi’VN 认为所有定位属性的默认值都是 `{ x: 0, y: 0 }`，它对应于你要定位的元素的左上角。
 
-Positive numbers move the element to the right and down. So, something at a position of `{ x: 200, y: 300 }` in the game will be 200 pixels from the left edge of the screen and 300 pixels from the top edge of the screen. Negative numbers move the element left and up relative to their starting position.
+正数会使元素向右和向下移动。 因此，游戏中位于 `{ x: 200, y: 300 }` 位置的元素，将距离屏幕左边缘 200 像素，距离屏幕上边缘 300 像素。 负数会使元素相对于其起始位置向左和向上移动。
 
-[Position](#position-pixel) and [anchor](#anchor-and-pivot) are the main properties you use to move elements around on the screen. It’s important to understand how they work, because most other positioning properties act as some combination of these two.
+[位置](#position-pixel) 和 [锚点（anchor）](#anchor-and-pivot) 是你用来在屏幕上移动元素的主要属性。 理解它们的工作原理很重要，因为大多数其他定位属性都是这两者的某种组合。
 
-## Position (pixel)
+## 位置（像素）
 
-Position is used to position the component using pixel units.
+位置用于以像素单位定位组件。
 
-You can modify it with these properties:
+你可以通过以下属性修改它：
 
-* `x`: moves the component left-to-right (along the x-axis)
-* `y`: moves the component top-to-bottom (along the y-axis)
-* `position`: an object `{ x: number, y: number }`. You can also set both x and y to the same value, e.g. `component.position = 200`.
+* `x`：从左到右移动组件（沿 x 轴）
+* `y`：从上到下移动组件（沿 y 轴）
+* `position`：一个对象 `{ x: number, y: number }`。 你也可以将 x 和 y 设置为相同的值，例如 `component.position = 200`。
 
-## Anchor and pivot
+## 锚点（anchor）与轴心点（pivot）
 
-The pivot is an offset, expressed in pixels, from the top-left corner of the component. If you have a component whose texture is 100px x 50px, and want to set the pivot point to the center of the image, you'd set your pivot to (50, 25) - half the width, and half the height.
+轴心点（`pivot`）是一个偏移量，以像素为单位，从组件的左上角开始计算。 如果你有一个纹理为 100px x 50px 的组件，并想将轴心点设置在图像的中心，你需要将轴心点设置为 (50, 25) —— 即宽度和高度的一半。
 
-Anchors are specified in percentages, from 0.0 to 1.0, in each dimension. It has the same utility as the pivot, but to deduce the point where it is located it calculates the percentage of the height and width of the texture. For example, to rotate around the center point of a texture using anchors, you'd set your component's anchor to (0.5, 0.5) - 50% in width and height. Anchors compared to Pivot are easier to use.
+锚点以百分比指定，取值范围为 0.0 到 1.0，分别对应每个维度。 它与轴心点的作用相同，但在推算其所在位置时，是根据纹理的高度和宽度的百分比来计算的。 例如，要围绕纹理的中心点旋转，使用锚点时，你需要将组件的锚点设置为 (0.5, 0.5) —— 即宽度和高度的 50%。 相比轴心点，锚点更易于使用。
 
-You can modify it with these properties:
+你可以通过以下属性修改它：
 
-* `anchor`: an object `{ x: number, y: number }`. You can also set both x and y to the same value, e.g. `conponent.anchor = 0.5`.
-* `pivot`: is an object that corresponds to `{ x: number, y: number }`.
+* 锚点（`anchor`）：一个对象 `{ x: number, y: number }`。 你也可以将 x 和 y 设置为相同的值，例如 `conponent.anchor = 0.5`。
+* 轴心点（`pivot`）：是一个对应于 `{ x: number, y: number }` 的对象。
 
 <Accordions>
 
-<Accordion title="What, exactly, is anchor/pivot?" id="what-exactly-is-anchor-pivot">
+<Accordion title="锚点/轴心点到底是什么？" id="what-exactly-is-anchor-pivot">
 
-Let’s think of it in terms of something you may be more familiar with. Instead of positioning an element on a screen, you are trying to pin a photo onto a cork board. You have three things:
+让我们用你可能更熟悉的方式来思考这个问题。 假设你不是在屏幕上定位一个元素，而是试图把一张照片钉在一块软木板上。 你有三样东西：
 
-* a cork board
-* a push pin
-* a photograph
+* 一块软木板
+* 一根图钉
+* 一张照片
 
-Let’s pretend that 1mm is equal to 1 pixel on a computer screen.
+我们假设 1 毫米等于电脑屏幕上的 1 像素。
 
 ![17351596389764883495402859713640](https://github.com/user-attachments/assets/becfa6ac-1156-49ad-8ceb-17b06627be7c)
 
-* The cork board is the screen, or the container you’re trying to position the element inside.
-* The photograph is the element.
-* Where you put the pin on the photo is the anchor/pivot of the photograph.
-* Where you push the pin into on the cork board is the position of the photograph.
+* 软木板就是屏幕，或者说是你要在其中定位元素的容器。
+* 照片就是元素。
+* 你把图钉插在照片上的位置，就是照片的锚点/轴心点。
+* 你把图钉推进软木板的位置，就是照片的位置。
 
-By default in Pixi’VN, the push pin always starts in the top left corner of the photo, so to speak. If you want the top-left corner of the photo 200mm from the left side of the cork board, you will put it at x 200. If you also want the top-left corner 300mm down from the top of the board, you will put it at y 300.
+在 Pixi’VN 中，默认情况下，图钉总是从照片的左上角开始，可以这么说。 如果你想让照片的左上角距离软木板左边 200 毫米，你就把它设置在 x 200 处。 如果你还想让左上角距离软木板顶部 300 毫米，你就把它设置在 y 300 处。
 
 ![17351597056618553068745888144175](https://github.com/user-attachments/assets/c6955336-1c30-4518-8f05-edd950a1227e)
 
-What if you want the center of the photo at 200mm x 300mm?
+如果你想让照片的中心位于 200 毫米 x 300 毫米处呢？
 
 This means you need to move where the pin is relative to the photo. The pin will stay at the point (200, 300) on the cork board – you just need to center the photo around that point as well. This means you need to change the anchor/pivot of the photo.
 
@@ -80,7 +80,7 @@ Pixi’VN introduces the ability to position a component by percentage. Its oper
 
 In practice, the percentage will be multiplied by the height or width of the parent component to calculate the position in pixels.
 
-You can modify it with these properties:
+你可以通过以下属性修改它：
 
 * `percentageX`: for moving things left-to-right (along the x-axis)
 * `percentageY`: for moving things top-to-bottom (along the y-axis).
@@ -167,7 +167,7 @@ Align is a feature originally created for ***Ren'Py***, which was also introduce
 
 Align are specified in percentages, from 0.0 to 1.0, in each dimension. For example if you use 0.25 as a percentage, your component will be positioned at 25% of the screen with anchor at 0.25.
 
-You can modify it with these properties:
+你可以通过以下属性修改它：
 
 * `xAlign`: for moving things left-to-right (along the x-axis)
 * `yAlign`: for moving things top-to-bottom (along the y-axis).
