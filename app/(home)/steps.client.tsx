@@ -213,9 +213,6 @@ export function StepsGrid({ terminal, writing }: { terminal: ReactNode; writing:
                     2
                 </div>
                 <h3 className="text-center text-xl font-semibold">{t("write")}</h3>
-                <Markdown className="text-center text-fd-muted-foreground">
-                    {t("write_description")}
-                </Markdown>
                 {writing}
             </div>
             <div className="relative z-10 col-span-full flex flex-col items-center gap-2 rounded-2xl border bg-fd-card p-6 py-16 text-center shadow-lg md:p-8">
