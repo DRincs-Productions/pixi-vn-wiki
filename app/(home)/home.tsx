@@ -1,5 +1,7 @@
 import { Hero } from "@/app/(home)/hero.client";
-import { Introduction } from "@/app/(home)/introduction";
+import { StepsGrid } from "@/app/(home)/steps.client";
+import { Terminal } from "@/app/(home)/terminal";
+import { AnybodyCanWrite } from "@/app/(home)/writing";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
 import { createMetadata } from "@/lib/metadata";
@@ -34,9 +36,11 @@ export default async function Home() {
                     {t("description")}
                 </p>
             </div>
+            <div className="mx-auto mt-12 w-full max-w-[1400px] lg:mt-20">
+                <StepsGrid terminal={<Terminal />} writing={<AnybodyCanWrite />} />
+            </div>
             <div className="grid grid-cols-1 gap-10 mt-12 px-6 mx-auto w-full max-w-[1400px] md:px-12 lg:grid-cols-2 lg:mt-20">
                 <div className="relative p-4 rounded-2xl col-span-full z-2 overflow-hidden md:p-8">
-                    <Introduction />
                     <Architecture />
                     <Highlights />
                     <Why />

@@ -32,9 +32,12 @@ export function Writing({
                     <Fragment key={item.value}>
                         <Dot className="size-4 first:hidden" />
                         <button
+                            type="button"
                             className={cn(
-                                "text-lg font-medium transition-colors",
-                                item.value === tab && "text-brand",
+                                "cursor-pointer rounded-full border border-transparent px-3 py-1 text-lg font-medium transition-colors hover:border-brand-secondary/40 hover:text-brand-secondary",
+                                item.value === tab
+                                    ? "border-brand-secondary/50 text-brand-secondary"
+                                    : "text-fd-muted-foreground",
                             )}
                             onClick={() => setTab(item.value)}
                         >

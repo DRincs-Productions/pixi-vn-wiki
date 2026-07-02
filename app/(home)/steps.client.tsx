@@ -1,8 +1,11 @@
 "use client";
 
+import { ItchLogo } from "@/components/ui/icons";
 import { cn } from "@/lib/cn";
 import { cva } from "class-variance-authority";
 import { motion } from "motion/react";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 
 const badgeVariants = cva(
@@ -23,26 +26,15 @@ function centerOf(el: HTMLElement, containerRect: DOMRect) {
     };
 }
 
-export function StepsGrid({
-    step1,
-    step2,
-    step3,
-    terminal,
-    writing,
-    shipAction,
-}: {
-    step1: { title: string; description: string };
-    step2: { title: string; description: string };
-    step3: { title: string; description: string };
-    terminal: ReactNode;
-    writing: ReactNode;
-    shipAction: ReactNode;
-}) {
+export function StepsGrid({ terminal, writing }: { terminal: ReactNode; writing: ReactNode }) {
+    const t = useTranslations("Introduction");
+
     const containerRef = useRef<HTMLDivElement>(null);
     const badge1Ref = useRef<HTMLDivElement>(null);
     const badge2Ref = useRef<HTMLDivElement>(null);
     const badge3Ref = useRef<HTMLDivElement>(null);
     const [path, setPath] = useState<string | null>(null);
+    const [mobilePath, setMobilePath] = useState<string | null>(null);
     const [positions, setPositions] = useState<{
         p1: { x: number; y: number };
         p2: { x: number; y: number };
@@ -57,13 +49,36 @@ export function StepsGrid({
             const badge1 = badge1Ref.current;
             const badge2 = badge2Ref.current;
             const badge3 = badge3Ref.current;
-            if (!container || !badge1 || !badge2 || !badge3 || window.innerWidth < 768) {
+            if (!container || !badge1 || !badge2 || !badge3) {
                 setPath(null);
                 setPositions(null);
+                setMobilePath(null);
                 return;
             }
 
             const containerRect = container.getBoundingClientRect();
+            const curlR = 8;
+            const startCurl = `a ${curlR} ${curlR} 0 1 1 ${-0.1} 0`;
+            const endCurl = `a ${curlR} ${curlR} 0 1 1 ${0.1} 0`;
+
+            if (window.innerWidth < 768) {
+                setPath(null);
+                setPositions(null);
+                // mobile: a simple straight rail, hugging the right edge, from just before 1 to just after 3
+                const m1 = centerOf(badge1, containerRect);
+                const m3 = centerOf(badge3, containerRect);
+                const railX = containerRect.width - 16;
+                const railStart = { x: railX, y: m1.y };
+                const railEnd = { x: railX, y: m3.y + 30 };
+                setMobilePath(
+                    `M ${railStart.x} ${railStart.y} ${startCurl}` +
+                        ` L ${railX} ${m3.y}` +
+                        ` L ${railEnd.x} ${railEnd.y} ${endCurl}`,
+                );
+                return;
+            }
+            setMobilePath(null);
+
             const p1 = centerOf(badge1, containerRect);
             const p2 = centerOf(badge2, containerRect);
             const p3 = centerOf(badge3, containerRect);
@@ -72,16 +87,12 @@ export function StepsGrid({
             // start a bit before 1, and end a bit after 3
             const start = { x: p1.x - 56, y: p1.y };
             const end = { x: p3.x, y: p3.y + 56 };
-            // a small curl at the very start and the very end
-            const curlR = 8;
-            const startCurl = `a ${curlR} ${curlR} 0 1 1 ${-0.1} 0`;
-            const endCurl = `a ${curlR} ${curlR} 0 1 1 ${0.1} 0`;
             // a gentle S: dips out of 1, then eases back up into 2 (double curve, not a single hump)
             const mid1 = { x: p1.x + (p2.x - p1.x) / 3, y: p1.y + 72 };
             const midPoint = { x: (p1.x + p2.x) / 2, y: p1.y + 20 };
             const mid2 = { x: p1.x + (2 * (p2.x - p1.x)) / 3, y: p2.y - 32 };
-            // curve to the right on the way down from 2 to 3
-            const bulge = 110;
+            // curve to the right on the way down from 2 to 3, clamped so it never runs past the viewport
+            const bulge = Math.min(110, window.innerWidth - containerRect.left - p2.x - 6);
             const drop = (p3.y - p2.y) / 3;
             const ride1 = { x: p2.x + bulge, y: p2.y + drop };
             const ride2 = { x: p3.x + bulge, y: p3.y - drop };
@@ -130,6 +141,28 @@ export function StepsGrid({
                     />
                 </svg>
             )}
+            {mobilePath && (
+                <svg
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 z-20 block size-full overflow-visible md:hidden"
+                >
+                    <motion.path
+                        d={mobilePath}
+                        fill="none"
+                        stroke="var(--color-brand-secondary)"
+                        strokeOpacity={0.9}
+                        strokeWidth={2.5}
+                        strokeLinecap="round"
+                        strokeDasharray="6 6"
+                        animate={{ strokeDashoffset: [0, -24] }}
+                        transition={{
+                            duration: 2,
+                            repeat: Number.POSITIVE_INFINITY,
+                            ease: "linear",
+                        }}
+                    />
+                </svg>
+            )}
             {positions && (
                 <>
                     <div
@@ -162,8 +195,10 @@ export function StepsGrid({
                 >
                     1
                 </div>
-                <h3 className="text-center text-xl font-semibold">{step1.title}</h3>
-                <p className="mb-8 text-center text-fd-muted-foreground">{step1.description}</p>
+                <h3 className="text-center text-xl font-semibold">{t("create_it")}</h3>
+                <p className="mb-8 text-center text-fd-muted-foreground">
+                    {t("create_it_description")}
+                </p>
                 {terminal}
             </div>
             <div className="relative z-10 flex flex-col gap-2 rounded-2xl border bg-fd-card p-6 pt-8 shadow-lg md:p-8 md:pt-8">
@@ -176,8 +211,8 @@ export function StepsGrid({
                 >
                     2
                 </div>
-                <h3 className="text-center text-xl font-semibold">{step2.title}</h3>
-                <p className="text-center text-fd-muted-foreground">{step2.description}</p>
+                <h3 className="text-center text-xl font-semibold">{t("write")}</h3>
+                <p className="text-center text-fd-muted-foreground">{t("write_description")}</p>
                 {writing}
             </div>
             <div className="relative z-10 col-span-full flex flex-col items-center gap-2 rounded-2xl border bg-fd-card p-6 py-16 text-center shadow-lg md:p-8">
@@ -190,9 +225,13 @@ export function StepsGrid({
                 >
                     3
                 </div>
-                <h3 className="text-2xl font-semibold">{step3.title}</h3>
-                <p className="text-fd-muted-foreground">{step3.description}</p>
-                <div className="mt-4 flex flex-row flex-wrap items-center gap-8">{shipAction}</div>
+                <h3 className="text-2xl font-semibold">{t("ship")}</h3>
+                <p className="text-fd-muted-foreground">{t("ship_description")}</p>
+                <div className="mt-4 flex flex-row flex-wrap items-center gap-8">
+                    <Link href="/start/distribution-itchio" rel="noreferrer noopener">
+                        <ItchLogo className="h-auto w-32" />
+                    </Link>
+                </div>
             </div>
         </div>
     );
