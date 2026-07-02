@@ -1,0 +1,371 @@
+---
+title: 资源文件
+description: Pixi’VN 中资源类型和存储选项（本地或在线）概览及使用示例。
+---
+
+<Accordions>
+
+<Accordion title="什么是资源文件？" id="what-is-assets">
+
+资源文件是所有非代码文件，例如图像、音频和视频。
+
+</Accordion>
+
+</Accordions>
+
+资源可以**本地**存储在项目中，也可以**在线**托管。 频繁使用的资源——例如角色立绘、背景图和背景音乐——最好保存在本地。 仅使用一次或体积较大的可选文件更适合在线托管。 两种方式各有取舍：
+
+## 本地资源
+
+要在本地保存和使用资源，你可以使用任何文件夹——没有限制。 但建议使用 `public/assets` 文件夹。 在此文件夹中，您可以创建子文件夹以更好地组织资源。
+
+<Accordions>
+
+<Accordion title="什么是 PixiJS AssetPack？" id="what-is-pixijsassetpack">
+
+PixiJS AssetPack 是一个用于优化本地 Web 资源的工具， 可用于转换、合并和压缩资源。
+
+您可以在 [PixiJS 官网](https://pixijs.io/assetpack) 了解更多关于 PixiJS AssetPack 的信息。
+
+</Accordion>
+
+</Accordions>
+
+PixiJS AssetPack 已通过 Vite.js 集成预配置在 Pixi’VN 项目模板中——自动处理和优化您的资源，让您专注于构建项目。
+
+在开发阶段（`vite dev`），它会监视 `public/assets` 文件夹的变化并即时处理。 在生产构建阶段（`vite build`），它会在打包前执行完整的优化流程。
+
+它应用的优化包括：
+
+* **压缩** — 减小文件大小以加快加载速度。
+* **格式转换** — 在支持的情况下将图像转换为现代格式（如 WebP、AVIF）。
+* **纹理图集** — 将多张小图像合并为一张精灵表，以减少绘制调用。
+
+处理完成后，它会生成 `src/assets/manifest.gen.json` 文件，其中包含所有资源包及其路径的列表。 PixiJS 随后使用该文件高效加载资源。
+
+<Files>
+    <Folder name="project" defaultOpen>
+        <Folder name="public" defaultOpen>
+            <Folder name="assets" defaultOpen>
+                <Folder name="audio" defaultOpen>
+                    <File name="bgm_cheerful.wav" />
+                    <File name="sfx_whoosh.wav" />
+                </Folder>
+                <Folder name="mainmenu" defaultOpen>
+                    <File name="background_main_menu.png" />
+                </Folder>
+                <Folder name="start" defaultOpen>
+                    <File name="bg01-hallway.webp" />
+                </Folder>
+                <Folder name="mc" defaultOpen>
+                    <File name="mc-neutral.png" />
+                </Folder>
+            </Folder>
+        </Folder>
+        <Folder name="src" defaultOpen>
+            <Folder name="assets">
+                <File name="manifest.gen.json" />
+                <File name="index.ts" />
+            </Folder>
+        </Folder>
+        <File name=".assetpack.ts" />
+        <File name="vite.config.ts" />
+    </Folder>
+</Files>
+
+```json tab="src/assets/manifest.gen.json"
+{
+    "bundles": [
+        {
+            "name": "audio",
+            "assets": [
+                {
+                    "alias": "bgm_cheerful",
+                    "src": "./assets/audio/bgm_cheerful.wav"
+                },
+                {
+                    "alias": "sfx_whoosh",
+                    "src": "./assets/audio/sfx_whoosh.wav"
+                }
+            ]
+        },
+        {
+            "name": "mainmenu",
+            "assets": [
+                {
+                    "alias": "background_main_menu",
+                    "src": "./assets/mainmenu/background_main_menu.png"
+                }
+            ]
+        },
+        {
+            "name": "start",
+            "assets": [
+                {
+                    "alias": "bg01-hallway",
+                    "src": "./assets/start/bg01-hallway.webp"
+                }
+            ]
+        },
+        {
+            "name": "mc",
+            "assets": [
+                {
+                    "alias": "mc-neutral",
+                    "src": "./assets/mc/mc-neutral.png"
+                }
+            ]
+        }
+    ]
+}
+```
+
+```ts tab=".assetpack.ts"
+import type { AssetPackConfig } from "@assetpack/core";
+import { pixiPipes } from "@assetpack/core/pixi";
+
+const config: AssetPackConfig = {
+    entry: "./src/assets",
+    output: "./public/assets",
+    ignore: ["**/*.ts", "**/*.js", "**/*.gen.*"],
+    pipes: [
+        ...pixiPipes({
+            manifest: {
+                output: "src/assets/manifest.gen.json",
+                createShortcuts: true,
+            },
+        }),
+    ],
+};
+
+export default config;
+```
+
+```ts tab="vite.config.ts"
+import { AssetPack } from "@assetpack/core";
+import { defineConfig, type Plugin, type ResolvedConfig } from "vite";
+import assetPackConfig from "./.assetpack.ts";
+
+export default defineConfig(() => ({
+    plugins: [
+        assetpackPlugin(),
+        // ...
+    ],
+}));
+
+function assetpackPlugin(): Plugin {
+    let mode: ResolvedConfig["command"];
+    let ap: AssetPack | undefined;
+
+    return {
+        name: "vite-plugin-assetpack",
+        configResolved(resolvedConfig) {
+            mode = resolvedConfig.command;
+            if (!resolvedConfig.publicDir) return;
+            if (assetPackConfig.output) return;
+            const publicDir = resolvedConfig.publicDir.replace(
+                process.cwd(),
+                "",
+            );
+            assetPackConfig.output = `.${publicDir}/assets/`;
+        },
+        buildStart: async () => {
+            if (mode === "serve") {
+                if (ap) return;
+                ap = new AssetPack(assetPackConfig);
+                void ap.watch();
+            } else {
+                await new AssetPack(assetPackConfig).run();
+            }
+        },
+        buildEnd: async () => {
+            if (ap) {
+                await ap.stop();
+                ap = undefined;
+            }
+        },
+    };
+}
+```
+
+## 资源托管
+
+您可以将资源保存到线上。 如果您想节省项目空间，或者想创建一款无需提前下载即可在线游玩的游戏，这是一个不错的选择。 您可以使用任何允许上传文件并生成公开 URL 的云服务（需确保所使用的云服务允许 *CORS 请求*）。
+
+以下是一些流行的在线资源托管选项：
+
+<Accordions>
+
+<Accordion title="Github" id="GitHub">
+
+您可以使用 Github 托管资源。 您可以在项目中使用文件的原始链接。 链接格式如下：
+
+```text
+https://raw.githubusercontent.com/[repository]/raw/refs/heads/main/[file path]
+```
+
+* **价格**：完全免费。
+* **空间限制**：无空间限制，但每个单文件不得超过 100 MB。
+* **文件类型**：你可以上传任何类型的文件。
+* **流量**：速度不是最佳。
+* **编辑资源**：你可以在保持相同 URL 的同时编辑文件。
+
+</Accordion>
+
+<Accordion title="图像托管" id="image-hosting">
+
+图像托管是一种允许您上传图像的服务。 有许多网站可以免费上传图像，例如 [imgbb](https://imgbb.com/)、[imgix](https://www.imgix.com/)、[imgur](https://imgur.com/)。 您可以在项目中使用图像链接。
+
+* **价格**：完全免费，但您可以付费获得更多功能。
+* **空间限制**：无空间限制，但每个单文件有最大大小限制。
+* **文件类型**：您只能上传图像。
+* **流量**：速度良好。
+* **编辑资源**：您无法在保持相同 URL 的同时编辑文件。
+
+</Accordion>
+
+<Accordion title="云存储" id="Cloud-storage">
+
+云存储是一种允许您在线上传任何类型文件的服务。 有许多流行的选项，例如 [Cloudflare R2](https://www.cloudflare.com/developer-platform/r2/)、[Firebase Storage](https://firebase.google.com/pricing)、[Amazon S3](https://aws.amazon.com/s3/pricing/)、[Supabase](https://supabase.io/pricing)、[Convex](https://www.convex.dev/pricing)。
+
+* **价格**：通常付费或提供有限制的免费版本。
+* **空间限制**：按使用空间按月计费（通常在不超过一定阈值时免费）。
+* **文件类型**：你可以上传任何类型的文件。
+* **流量**：速度良好。
+* **编辑资源**：你可以在保持相同 URL 的同时编辑文件。
+
+</Accordion>
+
+</Accordions>
+
+准备好资源后，您需要手动定义游戏可以使用哪些资源，以及它们如何分组到包中。
+
+:::tip
+
+强烈建议遵循 <DynamicLink href="/start/assets-management">资源加载最佳实践</DynamicLink>，以最大程度减少加载时间并避免不必要地阻塞游戏。
+
+:::
+
+所有 Pixi’VN 模板都包含一个 `src/assets/index.ts` 文件，您可以编辑该文件来注册您的资源：
+
+```ts title="src/assets/index.ts"
+import generatedManifestJson from "@/assets/manifest.gen.json";
+import { AUDIO_BUNDLE_NAME } from "@/constants";
+import { startLabel } from "@/content/labels/start.label";
+import type { FileRouteTypes } from "@/routeTree.gen";
+import type { AssetsManifest } from "@drincs/pixi-vn";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        ...generatedManifestJson.bundles,
+        {
+            name: AUDIO_BUNDLE_NAME,
+            assets: [
+                {
+                    alias: "bgm_cheerful",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/audio/bgm_cheerful.wav",
+                },
+                {
+                    alias: "sfx_whoosh",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/audio/sfx_whoosh.wav",
+                },
+            ],
+        },
+        // screens
+        {
+            // main menu
+            name: "/" as FileRouteTypes["fullPaths"],
+            assets: [
+                {
+                    alias: "background_main_menu",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/main-menu.png",
+                },
+            ],
+        },
+        // labels
+        {
+            name: startLabel.id,
+            assets: [
+                {
+                    alias: "bg01-hallway",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/breakdown/bg01-hallway.webp",
+                },
+            ],
+        },
+        // characters
+        {
+            name: "mc",
+            assets: [
+                {
+                    alias: "mc-neutral",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/characters/mc-neutral.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+## 其他功能
+
+<Accordions>
+
+<Accordion title="缓存资源" id="caching-assets">
+
+:::tip[模板]
+
+在所有模板中，从外部 URL 加载的资源会由 Service Worker 自动缓存以供离线使用。 这在 `vite.config.ts` 文件中通过 `vite-plugin-pwa` 插件进行配置。
+
+:::
+
+对于在线游戏，缓存外部资源至关重要：它避免了每次会话都重新下载相同文件，减少了延迟，并使游戏即使在连接暂时不可用时也能正常运行。
+
+这由 [VitePWA](https://vite-pwa-org.netlify.app/) 处理，它已在模板中预先配置。 您可以直接在 `vite.config.ts` 中自定义缓存行为：
+
+* **`CACHED_EXTERNAL_HOSTNAMES`** — 需要缓存资源的外部主机名列表。 添加您使用的任何 CDN 或远程主机。
+* **`cacheableResponse`** — 定义哪些 HTTP 响应符合缓存条件（例如，不透明响应的状态码 `0` 和成功响应的 `200`）。
+* **`expiration`** — 控制缓存资源的保留时长。 默认情况下，资源缓存 7 天（`maxAgeSeconds: 7 * 24 * 60 * 60`）。
+
+```ts title="vite.config.ts"
+import { defineConfig } from "vite";
+import { VitePWA } from "vite-plugin-pwa";
+
+/**
+ * List of external hostnames whose responses should be cached by the service worker.
+ * Add any CDN or remote asset host here to enable offline caching for it.
+ * Examples:
+ *   "cdn.jsdelivr.net"
+ *   "your.cdn.domain.com"
+ */
+const CACHED_EXTERNAL_HOSTNAMES: string[] = ["raw.githubusercontent.com"];
+
+export default defineConfig(() => ({
+    plugins: [
+        VitePWA({
+            // ...
+            workbox: {
+                runtimeCaching: [
+                    {
+                        urlPattern: ({ url }) =>
+                            CACHED_EXTERNAL_HOSTNAMES.includes(url.hostname),
+                        handler: "CacheFirst",
+                        options: {
+                            cacheName: "external-assets-v1",
+                            cacheableResponse: {
+                                statuses: [0, 200],
+                            },
+                            expiration: {
+                                maxAgeSeconds: 7 * 24 * 60 * 60,
+                            },
+                        },
+                    },
+                ],
+            },
+        }),
+    ],
+}));
+```
+
+</Accordion>
+
+</Accordions>

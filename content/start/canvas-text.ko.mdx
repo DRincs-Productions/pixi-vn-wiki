@@ -1,0 +1,83 @@
+---
+title: 텍스트 (`Text`)
+description: |
+  `Text` 컴포넌트를 사용하여 캔버스에 텍스트를 표시하고 스타일을 지정하는 방법. `showText`, `TextStyle`, 제거 및 위치 지정 기능을 다룹니다.
+---
+
+import { TextCanvas, TextCanvasStyle } from "@/components/examples";
+
+[`Text`](/jsdoc/pixi-vn/index/classes/Text) 컴포넌트는 [`PixiJS.Text`](https://pixijs.com/8.x/guides/components/scene-objects/text) 컴포넌트를 확장하므로 [`PixiJS.Text`](https://pixijs.com/8.x/guides/components/scene-objects/text)의 모든 메서드와 속성을 사용할 수 있습니다. 캔버스에 텍스트를 표시하는 데 사용됩니다.
+
+```ts title="main.ts"
+import { canvas, Text } from "@drincs/pixi-vn";
+
+const basicText = new Text({ text: "Basic text in pixi", align: 0.5 });
+
+canvas.add("text", basicText);
+```
+
+[`PixiJS.Text`](https://pixijs.com/8.x/guides/components/scene-objects/text) 컴포넌트와 비교하여 [`Text`](/jsdoc/pixi-vn/index/classes/Text)는 다음 기능을 추가합니다:
+
+* 추가 위치 지정: <DynamicLink href="/start/canvas-position">퍼센트로 정렬 및 위치 지정</DynamicLink>.
+
+## 표시
+
+캔버스에 텍스트를 표시하는 가장 간단한 방법은 [`showText`](/jsdoc/pixi-vn/index/functions/showText) 함수를 사용하는 것입니다.
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showText } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        let text = await showText("text", "Hello World!", {
+            xAlign: 0.5,
+            yAlign: 0.5,
+        });
+        text.style.fontSize = 30;
+    },
+]);
+```
+
+<TextCanvas />
+
+## 제거
+
+다른 캔버스 컴포넌트와 마찬가지로, [`canvas.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#remove) 함수를 사용하여 이 컴포넌트를 제거할 수 있습니다.
+
+## 스타일
+
+텍스트에 스타일을 지정하려면 [`TextStyle`](/jsdoc/pixi-vn/index/variables/TextStyle)을 사용하세요. 이 클래스를 사용하면 폰트 패밀리, 크기, 색상, 획, 그림자 등을 사용자 지정할 수 있습니다.
+
+```ts tab="content/labels/start.label.ts"
+import { canvas, newLabel, Text, TextStyle } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        const skewStyle = new TextStyle({
+            fontFamily: "Arial",
+            dropShadow: {
+                alpha: 0.8,
+                angle: 2.1,
+                blur: 4,
+                color: "0x111111",
+                distance: 10,
+            },
+            fill: "#ffffff",
+            stroke: { color: "#004620", width: 12, join: "round" },
+            fontSize: 60,
+            fontWeight: "lighter",
+        });
+
+        const skewText = new Text({
+            text: "SKEW IS COOL",
+            style: skewStyle,
+            align: 0.5,
+            skew: { x: 0.65, y: -0.3 },
+        });
+
+        canvas.add("text", skewText);
+    },
+]);
+```
+
+<TextCanvasStyle />

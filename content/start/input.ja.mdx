@@ -1,0 +1,83 @@
+---
+title: Input prompt
+description: Explains how to prompt the player for input in Pixi’VN, including usage, retrieval, and removal of input requests.
+---
+
+import { InputPrompt } from "@/components/examples";
+
+:::tip[UI 画面]
+
+You can find an example of the input prompt dialog UI in the <DynamicLink href="/start/interface-examples#input-prompt">interface examples</DynamicLink> section.
+
+:::
+
+:::tip[*ink*]
+
+このメソッドは *ink* 構文で使用できます。 See more <DynamicLink href="/ink/input">here</DynamicLink>.
+
+:::
+
+In visual novels, you may need to ask the player to enter text, numbers, dates, or other values.
+
+Pixi’VN provides functions to handle input prompts. The developer can require the player to enter a value (the game will not continue until a value is provided), while the <DynamicLink href="/start/interface">UI</DynamicLink> is responsible for displaying the prompt.
+
+## 選択の実行
+
+To prompt the player for input, use the [`narration.requestInput`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#requestinput) function.
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        narration.dialogue = "Hello";
+    },
+    () => {
+        narration.dialogue = "What is your name?";
+        narration.requestInput({ type: "string" });
+    },
+    () => {
+        narration.dialogue = `My name is ${narration.inputValue}`;
+    },
+    () => {
+        narration.dialogue = "How old are you?";
+        narration.requestInput({ type: "number" }, 18);
+    },
+    () => {
+        narration.dialogue = `I am ${narration.inputValue} years old`;
+    },
+    () => {
+        narration.dialogue = "Describe who you are:";
+        narration.requestInput({ type: "html textarea" });
+    },
+    () => {
+        narration.dialogue = `${narration.inputValue}`;
+    },
+    () => {
+        narration.dialogue = "Restart";
+    },
+]);
+```
+
+<InputPrompt />
+
+## 取得
+
+To get input prompt information, use:
+
+* [`narration.isRequiredInput`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#isrequiredinput)
+* [`narration.inputType`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#inputtype)
+
+```ts
+if (narration.isRequiredInput) {
+    openInputModal(narration.inputType);
+}
+```
+
+## 削除
+
+To remove the input prompt request, use [`narration.removeInputRequest`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#removeinputrequest).
+
+```ts
+narration.removeInputRequest();
+```

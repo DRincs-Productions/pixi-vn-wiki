@@ -1,0 +1,81 @@
+---
+title: 组件
+description: Pixi’VN 内置和自定义画布组件概览，包括扩展与记忆功能。
+---
+
+Pixi’VN 提供了一套画布组件。 这些组件扩展了 [Pixi.js](https://pixijs.com/) 的组件，并添加了多种功能，例如保存当前状态的能力。
+
+<Accordions>
+
+<Accordion title="内置组件" id="base-components">
+
+* [`Sprite`](/jsdoc/pixi-vn/index/classes/Sprite) 对应组件 [`PixiJS.Sprite`](https://pixijs.com/8.x/guides/components/sprites)。
+* [`Container`](/jsdoc/pixi-vn/index/classes/Container) 对应组件 [`PixiJS.Container`](https://pixijs.com/8.x/guides/components/containers)。
+* <DynamicLink href="/start/canvas-image">`ImageSprite`</DynamicLink> 是 Pixi’VN引入的组件。
+* <DynamicLink href="/start/canvas-image-container">`ImageContainer`</DynamicLink>是 Pixi’VN 引入的组件。
+* <DynamicLink href="/start/canvas-video">`VideoSprite`</DynamicLink> 是 Pixi’VN引入的组件。
+* <DynamicLink href="/start/canvas-text">`Text`</DynamicLink> 是 Pixi’VN引入的组件。
+
+</Accordion>
+
+<Accordion title="插件组件" id="additional-components">
+
+* <DynamicLink href="/start/canvas-spine2D">Spine 2D</DynamicLink> 是一个 可通过Pixi’VN 插件系统安装的组件， 用于渲染 Spine 2D 动画。
+
+</Accordion>
+
+</Accordions>
+
+## 其他功能
+
+<Accordions>
+
+<Accordion title="自定义组件" id="custom-components">
+
+您可以通过扩展基础组件来创建自定义组件。 为此，需要使用装饰器 [`@canvasComponentDecorator`](/jsdoc/pixi-vn/index/functions/canvasComponentDecorator)。
+
+必须重写 [`memory`](/jsdoc/pixi-vn/index/classes/CanvasBaseItem#memory) getter 和 [`setMemory`](/jsdoc/pixi-vn/index/classes/CanvasBaseItem#setmemory) 方法，以存储自定义组件的属性。
+在 `get memory()` 中，返回 `className` 属性非常重要；该属性必须与装饰器中使用的 id 相同。
+
+例如，您可以创建一个扩展 `Sprite` 类的 `AlienTinting` 类，用于管理动画中每个外星人的方向和速度。
+
+```ts title="canvas/components/AlienTinting.ts"
+const ALIEN_TINTING_TEST_ID = "AlienTintingTest";
+@canvasComponentDecorator({
+    name: ALIEN_TINTING_TEST_ID,
+})
+class AlienTintingTest extends Sprite<IAlienTintingMemory> {
+    readonly pixivnId: string = CANVAS_SPINE_ID;
+    override get memory() {
+        return {
+            ...super.memory,
+            pixivnId: CANVAS_SPINE_ID,
+            direction: this.direction,
+            turningSpeed: this.turningSpeed,
+            speed: this.speed,
+        };
+    }
+    override async setMemory(memory: IAlienTintingMemory) {
+        await super.setMemory(memory);
+        this.direction = memory.direction;
+        this.turningSpeed = memory.turningSpeed;
+        this.speed = memory.speed;
+    }
+    direction: number = 0;
+    turningSpeed: number = 0;
+    speed: number = 0;
+    static override from(
+        source: Texture | TextureSourceLike,
+        skipCache?: boolean,
+    ) {
+        let sprite = Sprite.from(source, skipCache);
+        let mySprite = new AlienTintingTest();
+        mySprite.texture = sprite.texture;
+        return mySprite;
+    }
+}
+```
+
+</Accordion>
+
+</Accordions>

@@ -1,0 +1,338 @@
+---
+title: Personajes
+description: Cómo definir, usar y personalizar personajes en Pixi’VN, incluyendo almacenamiento, emociones y propiedades personalizadas.
+---
+
+*¿Qué son los `characters`?*\* Los personajes (characters) son los actores que aparecen en una novela visual. En Pixi’VN, los personajes se crean usando la clase [`CharacterBaseModel`](/jsdoc/pixi-vn/index/classes/CharacterBaseModel) o una [clase personalizada](#custom-class).
+
+## Inicializar
+
+Para inicializar un personaje, crea una nueva instancia de la clase [`CharacterBaseModel`](/jsdoc/pixi-vn/index/classes/CharacterBaseModel) (o de tu [clase personalizada](#custom-class)) y agrégala al diccionario de personajes del juego cuando se inicialice el juego.
+
+:::tip
+
+Se recomienda importar las instancias al inicio del proyecto.
+
+:::
+
+:::warning
+
+[`RegisteredCharacters.add`](/jsdoc/pixi-vn/index/namespaces/RegisteredCharacters/functions/add) es **obligatorio** para guardar los personajes en el juego.
+
+:::
+
+```ts title="content/characters.ts"
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
+
+export const liam = new CharacterBaseModel("liam", {
+    name: "Liam",
+    surname: "Smith",
+    age: 25,
+    icon: "https://example.com/liam.png",
+    color: "#9e2e12",
+});
+
+export const emma = new CharacterBaseModel("emma", {
+    name: "Emma",
+    surname: "Johnson",
+    age: 23,
+    icon: "https://example.com/emma.png",
+    color: "#9e2e12",
+});
+
+RegisteredCharacters.add([liam, emma]);
+```
+
+## Obtener
+
+Para obtener un personaje por su `id`, usa la función [`RegisteredCharacters.get`](/jsdoc/pixi-vn/index/namespaces/RegisteredCharacters/functions/get).
+
+```typescript
+import { RegisteredCharacters } from "@drincs/pixi-vn";
+
+const liam = RegisteredCharacters.get("liam");
+```
+
+## Obtener todos
+
+Para obtener todos los personajes, usa la función [`RegisteredCharacters.values`](/jsdoc/pixi-vn/index/namespaces/RegisteredCharacters/functions/values).
+
+```typescript
+import { RegisteredCharacters } from "@drincs/pixi-vn";
+
+const characters = RegisteredCharacters.values();
+```
+
+## Usar
+
+:::tip[*ink*]
+
+Puedes usar este método con la sintaxis *ink*. Ver más <DynamicLink href="/ink/character#use">aquí</DynamicLink>.
+
+:::
+
+Puedes usar un personaje del juego, por ejemplo, para <DynamicLink href="/start/dialogue#set-the-current-dialogue">vincularlo al diálogo actual</DynamicLink>. Puedes usar el `id` del personaje o la instancia del personaje, pero se recomienda usar la instancia.
+
+```ts tab="main.ts"
+import { liam } from "@/content/characters";
+
+narration.dialogue = { character: liam, text: "Hello" };
+// or
+narration.dialogue = { character: "liam_id", text: "Hello" };
+```
+
+```ts tab="content/characters.ts"
+export const liam = new CharacterBaseModel("liam_id", {
+    name: "Liam",
+    surname: "Smith",
+    age: 25,
+    icon: "https://example.com/liam.png",
+    color: "#9e2e12",
+});
+RegisteredCharacters.add([liam]);
+```
+
+## Editar
+
+:::tip[*ink*]
+
+Puedes usar este método con la sintaxis *ink*. Ver más <DynamicLink href="/ink/character#edit">aquí</DynamicLink>.
+
+:::
+
+[`CharacterBaseModel`](/jsdoc/pixi-vn/index/classes/CharacterBaseModel) es una <DynamicLink href="/start/stored-classes">clase almacenada</DynamicLink>, lo que significa que sus propiedades se guardan en el <DynamicLink href="/start/storage">almacenamiento del juego</DynamicLink>. Por ejemplo, si cambias el nombre del personaje durante el juego, el nuevo nombre se guardará en el almacenamiento del juego y se vinculará a su `id`.
+
+:::warning
+
+Si el **`id` del personaje se cambia** de una versión a otra, el sistema **no** moverá los datos vinculados al `id` anterior hacia el nuevo `id`.
+
+:::
+
+Para obtener las propiedades usadas al instanciar la clase, puedes usar las propiedades `default`.
+
+```ts
+import { liam } from "@/content/characters";
+console.log(liam.name); // Liam
+liam.name = "Liam Smith";
+console.log(liam.name); // Liam Smith
+```
+
+<Accordions>
+
+<Accordion title="`CharacterBaseModel`" id="characterbasemodel">
+
+Aquí hay una implementación simplificada de la clase [`CharacterBaseModel`](/jsdoc/pixi-vn/index/classes/CharacterBaseModel) para una mejor comprensión de las propiedades almacenadas en el almacenamiento del juego:
+
+```typescript title="CharacterBaseModel.ts"
+export default class CharacterBaseModel
+    extends StoredClassModel
+    implements CharacterBaseModelProps
+{
+    constructor(id: string, props: CharacterBaseModelProps) {
+        super();
+        // ...
+        this.defaultName = props.name;
+        this.icon = props.icon;
+        // ...
+    }
+
+    // name property is stored in the game storage
+    private defaultName: string = "";
+    get name(): string {
+        return this.getStorageProperty<string>("name") || this.defaultName;
+    }
+    set name(value: string) {
+        this.setStorageProperty("name", value);
+    }
+
+    // icon property is not stored in the game storage
+    icon: string = "";
+
+    // ...
+}
+```
+
+</Accordion>
+
+</Accordions>
+
+## Otras funcionalidades
+
+<Accordions>
+
+<Accordion title="Emociones de los personajes" id="character-emotions">
+
+:::tip[*ink*]
+
+Puedes usar este método con la sintaxis *ink*. Ver más <DynamicLink href="/ink/character#character-emotions">aquí</DynamicLink>.
+
+:::
+
+A menudo es útil tener múltiples tipos del mismo personaje. Por ejemplo, un personaje "Alice" y un subtipo relacionado con su estado emocional, como "Alice enojada". El personaje y el subtipo tienen las mismas características, excepto en una o más propiedades, como el icono.
+
+Con Pixi’VN, puedes crear un "personaje con una emoción" pasando un [objeto](/jsdoc/pixi-vn/index/interfaces/CharacterEmotionId) en lugar del id:
+
+```ts title="content/characters.ts"
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
+
+export const alice = new CharacterBaseModel("alice", {
+    name: "Alice",
+    icon: "https://example.com/alice.png",
+    color: "#9e2e12",
+});
+
+export const angryAlice = new CharacterBaseModel(
+    { id: "alice", emotion: "angry" },
+    {
+        icon: "https://example.com/angryAlice.png",
+    },
+);
+
+RegisteredCharacters.add([alice, angryAlice]);
+```
+
+```ts title="main.ts"
+console.log(alice.name); // Alice
+
+alice.name = "Eleonora";
+console.log(alice.name); // Eleonora
+console.log(angryAlice.name); // Eleonora
+
+angryAlice.name = "Angry Eleonora";
+console.log(alice.name); // Eleonora
+console.log(angryAlice.name); // Angry Eleonora
+```
+
+</Accordion>
+
+<Accordion title="Clase personalizada" id="custom-class">
+
+:::tip[Plantillas]
+
+En todas las plantillas, la clase `Character` ya está definida en el archivo `models/Character.ts`. Puedes usarla directamente o modificarla según tus necesidades.
+
+:::
+
+Se recomienda crear tu propia clase `Character` que extienda [`CharacterStoredClass`](/jsdoc/pixi-vn/index/classes/CharacterStoredClass) y "sobrescriba" la interfaz [`CharacterInterface`](/jsdoc/pixi-vn/index/interfaces/CharacterInterface) para agregar, editar o eliminar propiedades o métodos.
+
+Por ejemplo, si deseas crear una clase `Character`, debes "sobrescribir" la interfaz [`CharacterInterface`](/jsdoc/pixi-vn/index/interfaces/CharacterInterface) para usar tus propiedades o métodos. (Ver el archivo `pixi-vn.d.ts`)
+
+Ahora puedes crear una clase `Character` que extienda [`CharacterStoredClass`](/jsdoc/pixi-vn/index/classes/CharacterStoredClass) e implemente [`CharacterInterface`](/jsdoc/pixi-vn/index/interfaces/CharacterInterface). (Para más información sobre cómo crear una clase en TypeScript, lee [la documentación oficial](https://www.typescriptlang.org/docs/handbook/2/classes.html))
+
+Para crear una propiedad que almacene su valor en el almacenamiento del juego, puedes crear [Getters/Setters](https://www.typescriptlang.org/docs/handbook/2/classes.html#getters--setters) y usar los métodos [`this.getStorageProperty()`](/jsdoc/pixi-vn/index/classes/StoredClassModel#getstorageproperty)/[`this.setStorageProperty()`](/jsdoc/pixi-vn/index/classes/StoredClassModel#setstorageproperty). (Ver el archivo `Character.ts`)
+
+```ts tab="models/Character.ts"
+import { CharacterInterface, CharacterStoredClass } from "@drincs/pixi-vn";
+
+export class Character
+    extends CharacterStoredClass
+    implements CharacterInterface
+{
+    constructor(
+        id: string | { id: string; emotion: string },
+        props: CharacterProps,
+    ) {
+        super(
+            typeof id === "string" ? id : id.id,
+            typeof id === "string" ? "" : id.emotion,
+        );
+        this._icon = props.icon;
+        this._color = props.color;
+        this.defaultName = props.name;
+        this.defaultSurname = props.surname;
+        this.defaultAge = props.age;
+    }
+
+    // Not stored properties
+
+    readonly icon?: string;
+    readonly color?: string | undefined;
+
+    // Stored properties
+
+    private defaultName?: string;
+    get name(): string {
+        return (
+            this.getStorageProperty<string>("name") ||
+            this.defaultName ||
+            this.id
+        );
+    }
+    set name(value: string | undefined) {
+        this.setStorageProperty("name", value);
+    }
+    private defaultSurname?: string;
+    get surname(): string | undefined {
+        return (
+            this.getStorageProperty<string>("surname") || this.defaultSurname
+        );
+    }
+    set surname(value: string | undefined) {
+        this.setStorageProperty("surname", value);
+    }
+    private defaultAge?: number | undefined;
+    get age(): number | undefined {
+        return this.getStorageProperty<number>("age") || this.defaultAge;
+    }
+    set age(value: number | undefined) {
+        this.setStorageProperty("age", value);
+    }
+}
+
+interface CharacterProps {
+    /**
+     * The name of the character.
+     */
+    name?: string;
+    /**
+     * The surname of the character.
+     */
+    surname?: string;
+    /**
+     * The age of the character.
+     */
+    age?: number;
+    /**
+     * The icon of the character.
+     */
+    icon?: string;
+    /**
+     * The color of the character.
+     */
+    color?: string;
+}
+```
+
+```ts tab="pixi-vn.d.ts"
+declare module "@drincs/pixi-vn" {
+    interface CharacterInterface {
+        /**
+         * The name of the character.
+         * If you set undefined, it will return the default name.
+         */
+        name: string;
+        /**
+         * The surname of the character.
+         * If you set undefined, it will return the default surname.
+         */
+        surname?: string;
+        /**
+         * The age of the character.
+         * If you set undefined, it will return the default age.
+         */
+        age?: number;
+        /**
+         * The icon of the character.
+         */
+        readonly icon?: string;
+        /**
+         * The color of the character.
+         */
+        readonly color?: string;
+    }
+}
+```
+
+</Accordion>
+
+</Accordions>

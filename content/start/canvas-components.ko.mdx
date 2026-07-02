@@ -1,0 +1,81 @@
+---
+title: 컴포넌트
+description: Pixi’VN의 내장 및 사용자 정의 캔버스 컴포넌트 개요 (확장 및 메모리 기능 포함).
+---
+
+Pixi’VN은 캔버스 컴포넌트 세트를 제공합니다. 이 컴포넌트들은 [Pixi.js](https://pixijs.com/) 컴포넌트를 확장하여 현재 상태를 저장하는 기능 등 다양한 기능을 추가합니다.
+
+<Accordions>
+
+<Accordion title="내장 컴포넌트" id="base-components">
+
+* [`Sprite`](/jsdoc/pixi-vn/index/classes/Sprite)는 컴포넌트 [`PixiJS.Sprite`](https://pixijs.com/8.x/guides/components/sprites)에 해당합니다.
+* [`Container`](/jsdoc/pixi-vn/index/classes/Container)는 컴포넌트 [`PixiJS.Container`](https://pixijs.com/8.x/guides/components/containers)에 해당합니다.
+* <DynamicLink href="/start/canvas-image">`ImageSprite`</DynamicLink>는 Pixi’VN이 도입한 컴포넌트입니다.
+* <DynamicLink href="/start/canvas-image-container">`ImageContainer`</DynamicLink> 는 Pixi’VN이 도입한 컴포넌트입니다.
+* <DynamicLink href="/start/canvas-video">`VideoSprite`</DynamicLink>는 Pixi’VN이 도입한 컴포넌트입니다.
+* <DynamicLink href="/start/canvas-text">`Text`</DynamicLink>는 Pixi’VN이 도입한 컴포넌트입니다.
+
+</Accordion>
+
+<Accordion title="플러그인 컴포넌트" id="additional-components">
+
+* <DynamicLink href="/start/canvas-spine2D">Spine 2D</DynamicLink>는 Pixi’VN 플러그인 시스템을 통해 설치할 수 있는 컴포넌트입니다. Spine 2D 애니메이션을 렌더링하는 데 사용됩니다.
+
+</Accordion>
+
+</Accordions>
+
+## 기타 기능
+
+<Accordions>
+
+<Accordion title="사용자 정의 컴포넌트" id="custom-components">
+
+기본 컴포넌트를 확장하여 사용자 정의 컴포넌트를 만들 수 있습니다. 이를 위해 데코레이터 [`@canvasComponentDecorator`](/jsdoc/pixi-vn/index/functions/canvasComponentDecorator)를 사용해야 합니다.
+
+사용자 정의 컴포넌트 속성을 저장하려면 [`memory`](/jsdoc/pixi-vn/index/classes/CanvasBaseItem#memory) 게터와 [`setMemory`](/jsdoc/pixi-vn/index/classes/CanvasBaseItem#setmemory) 메서드를 반드시 재정의해야 합니다.
+`get memory()`에서는 `className` 속성을 반환하는 것이 매우 중요합니다. 이 속성은 데코레이터에서 사용된 id와 동일해야 합니다.
+
+예를 들어, `Sprite` 클래스를 확장하는 `AlienTinting` 클래스를 만들어 애니메이션에서 각 외계인의 방향과 속도를 관리할 수 있습니다.
+
+```ts title="canvas/components/AlienTinting.ts"
+const ALIEN_TINTING_TEST_ID = "AlienTintingTest";
+@canvasComponentDecorator({
+    name: ALIEN_TINTING_TEST_ID,
+})
+class AlienTintingTest extends Sprite<IAlienTintingMemory> {
+    readonly pixivnId: string = CANVAS_SPINE_ID;
+    override get memory() {
+        return {
+            ...super.memory,
+            pixivnId: CANVAS_SPINE_ID,
+            direction: this.direction,
+            turningSpeed: this.turningSpeed,
+            speed: this.speed,
+        };
+    }
+    override async setMemory(memory: IAlienTintingMemory) {
+        await super.setMemory(memory);
+        this.direction = memory.direction;
+        this.turningSpeed = memory.turningSpeed;
+        this.speed = memory.speed;
+    }
+    direction: number = 0;
+    turningSpeed: number = 0;
+    speed: number = 0;
+    static override from(
+        source: Texture | TextureSourceLike,
+        skipCache?: boolean,
+    ) {
+        let sprite = Sprite.from(source, skipCache);
+        let mySprite = new AlienTintingTest();
+        mySprite.texture = sprite.texture;
+        return mySprite;
+    }
+}
+```
+
+</Accordion>
+
+</Accordions>

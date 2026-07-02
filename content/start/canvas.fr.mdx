@@ -1,0 +1,147 @@
+---
+title: Canvas (WebGL/WebGPU)
+description: Présentation de la façon dont Pixi’VN utilise PixiJS pour le rendu, les différences entre Pixi’VN et PixiJS, et comment interagir avec le canvas et les outils de débogage.
+---
+
+Pixi’VN utilise [PixiJS](https://pixijs.com/8.x/guides/basics/what-pixijs-is) — un moteur de rendu 2D WebGL/WebGPU — pour dessiner tout ce qui s'affiche à l'écran. L'API de Pixi’VN enveloppe PixiJS pour vous permettre d'ajouter, de mettre à jour et de supprimer des images, du texte et des animations, tout en assurant automatiquement le suivi de l'état du canvas afin qu'il puisse être sauvegardé et restauré correctement lors des sauvegardes et chargements du jeu.
+
+<Accordions>
+
+<Accordion title="Qu'est-ce que PixiJS ?" id="what-is-pixijs">
+
+PixiJS est la bibliothèque 2D la plus rapide et la plus légère disponible pour le web, fonctionnant sur tous les appareils et vous permettant de créer des graphiques riches et interactifs ainsi que des applications multiplateformes en utilisant WebGL et WebGPU. Elle est rapide, flexible et facile à utiliser. PixiJS est utilisé dans des jeux comme [Good Pizza, Great Pizza](https://www.goodpizzagreatpizza.com/) et [The Enchanted Cave 2](https://store.steampowered.com/app/368610/The_Enchanted_Cave_2/).
+
+Vous pouvez en apprendre davantage sur PixiJS sur le [site web de PixiJS](https://www.pixijs.com/).
+
+</Accordion>
+
+</Accordions>
+
+## Utiliser
+
+:::tip[*ink*]
+
+Vous pouvez utiliser cette méthode avec la syntaxe *ink*. En savoir plus <DynamicLink href="/ink/canvas">ici</DynamicLink>.
+
+:::
+
+Pour interagir avec l'application PixiJS, vous pouvez utiliser l'élément `canvas`, qui fait office d'enveloppe. Avec lui, vous pouvez ajouter l'ensemble des <DynamicLink href="/start/canvas-components">composants</DynamicLink> fournis par Pixi’VN et démarrer des <DynamicLink href="/start/canvas-animations-effects">animations</DynamicLink>.
+
+```ts tab="content/labels/start.label.ts"
+import { canvas, Sprite } from "@drincs/pixi-vn"; // [!code focus]
+
+export const startLabel = newLabel("start", [
+    () => {
+        let sprite = new Sprite({}); // [!code focus]
+        canvas.add("sprite", sprite); // [!code focus]
+    },
+]);
+```
+
+## Autres fonctionnalités
+
+<Accordions>
+
+<Accordion title="Utiliser PixiJS directement" id="use-pixijs-directly">
+
+:::tip[CDN]
+
+Dans les environnements basés sur CDN comme CodePen, vous ne pouvez pas installer pixi.js, mais vous devrez utiliser le sous-module `@drincs/pixi-vn/pixi.js`.
+
+:::
+
+Si vous utilisez des outils de build tels que Vite.js ou des systèmes similaires, vous pouvez installer et utiliser directement le package `pixi.js`.
+
+```npm
+npm install pixi.js
+```
+
+Cela est utile pour créer des <DynamicLink href="/start/interface#adding-pixijs-ui-layers">couches UI avec PixiJS</DynamicLink> ou pour <DynamicLink href="/start/minigames">créer des mini-jeux</DynamicLink>.
+
+```ts
+import { canvas } from "@drincs/pixi-vn";
+import { Graphics } from "pixi.js";
+
+const graphic = new Graphics().rect(0, 0, 200, 100).fill(0xff0000);
+
+const container = canvas.addLayer("ui");
+container.addChild(graphic);
+```
+
+Bien que cela ne soit pas recommandé, vous pouvez utiliser [`canvas.app`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#app) pour accéder directement à l'application PixiJS utilisée par Pixi’VN.
+
+```ts
+import { canvas } from "@drincs/pixi-vn";
+import { Graphics } from "pixi.js";
+
+const graphic = new Graphics().rect(0, 0, 200, 100).fill(0xff0000);
+
+canvas.app.stage.addChild(graphic);
+```
+
+</Accordion>
+
+<Accordion title="Différences entre Pixi’VN et PixiJS" id="pixijs-differences">
+
+L'utilisation du canvas dans Pixi’VN est très similaire à PixiJS, avec les différences suivantes :
+
+* Tous les composants ajoutés au canvas sont liés à un <DynamicLink href="/start/canvas-alias">alias</DynamicLink> de votre choix. Cet alias est utilisé pour identifier et manipuler le composant.
+* Pixi’VN sauvegarde l'état actuel du canvas à chaque `step`.
+  **Remarque :** Seuls les composants liés à un alias sont sauvegardés. Si vous ajoutez des composants directement à [`canvas.app`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#app), ils ne seront pas inclus dans l'état sauvegardé.
+* Pixi’VN fournit <DynamicLink href="/start/canvas-functions">diverses fonctions</DynamicLink> pour ajouter, supprimer, trouver et manipuler des composants dans le canvas.
+* Pixi’VN propose des <DynamicLink href="/start/canvas-components">composants personnalisés</DynamicLink>, dont certains correspondent à des composants PixiJS, tandis que d'autres ajoutent de nouvelles fonctionnalités.
+* Les tickers sont gérés par Pixi’VN. Si vous utilisez un ticker PixiJS, son état ne sera pas sauvegardé.
+* Pour ajouter des écouteurs d'événements et sauvegarder leur état dans les sauvegardes, il est recommandé de consulter <DynamicLink href="/start/canvas-functions#add-a-listener-for-a-given-event">ici</DynamicLink>.
+
+</Accordion>
+
+<Accordion title="PixiJS DevTools" id="pixijs-devtools">
+
+[**PixiJS DevTools**](https://pixijs.io/devtools/) est une [extension Chrome](https://chromewebstore.google.com/detail/pixijs-devtools/dlkffcaaoccbofklocbjcmppahjjboce) qui vous permet d'inspecter et de déboguer des applications PixiJS. Vous pouvez l'utiliser pour afficher la liste d'affichage, inspecter les textures et déboguer votre application PixiJS. PixiJS DevTools fonctionne avec Pixi’VN, vous permettant d'inspecter le canvas.
+
+![devtools](/devtool-properties.gif)
+
+Après avoir installé PixiJS DevTools, ouvrez Chrome DevTools (F12) et accédez à l'onglet `PixiJS`.
+
+![image](/devtool-info.png)
+
+</Accordion>
+
+<Accordion title="Moteur de rendu" id="renderer">
+
+PixiJS prend en charge divers backends de rendu, notamment WebGL et WebGPU. Pixi’VN détecte le meilleur moteur de rendu disponible pour l'appareil de l'utilisateur et l'utilise par défaut. Cependant, vous pouvez spécifier un moteur de rendu préféré dans la méthode [`Game.init`](/jsdoc/pixi-vn/index/namespaces/Game/functions/init).
+
+Par exemple :
+
+```ts
+Game.init({
+    // ...
+    preference: "webgpu",
+});
+```
+
+</Accordion>
+
+<Accordion title="Gestion des erreurs" id="error-handling">
+
+Pour gérer les erreurs liées au canvas, vous pouvez utiliser le gestionnaire [`drawCanvasErrorHandler`](/jsdoc/pixi-vn/index/functions/drawCanvasErrorHandler) fourni par Pixi’VN. Ce gestionnaire affichera un message d'erreur sur le canvas lorsqu'une erreur liée à un composant du canvas se produit. Vous pouvez l'utiliser dans la fonction [`Game.addOnError`](/jsdoc/pixi-vn/index/namespaces/Game/functions/addOnError).
+
+```ts title="main.ts"
+import { Game, drawCanvasErrorHandler } from "@drincs/pixi-vn";
+
+Game.addOnError(drawCanvasErrorHandler());
+```
+
+</Accordion>
+
+<Accordion title="Pause" id="pause">
+
+Il est possible de mettre en pause la couche principale utilisée pour le jeu en utilisant la fonction [`canvas.pause()`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#pause). Cela mettra en pause toutes les animations et les tickers associés au canvas. Pour reprendre l'exécution, vous pouvez utiliser [`canvas.resume()`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#resume).
+
+L'état de pause du canvas n'est pas sauvegardé dans les sauvegardes du jeu ; ainsi, si le canvas est en pause lors de la création d'une sauvegarde, il reprendra son exécution au chargement de celle-ci.
+
+Cette fonction est utile pour mettre en pause le canvas lors de l'affichage des paramètres ou d'autres menus, et non pour créer des effets de pause pendant le jeu.
+
+</Accordion>
+
+</Accordions>

@@ -1,0 +1,364 @@
+---
+title: 加载资源
+description: 了解如何在 Pixi’VN 中使用别名、捆绑包和不同的加载策略来加载和管理资源，保持游戏流畅运行。
+---
+
+特别是对于包含在线资源的游戏，遵循良好的加载规范至关重要，以避免漫长的等待时间并保持玩家的流畅体验。
+
+要加载和操作资源（图片、GIF、视频等） ，您需要使用 `Assets`。 `Assets` 是一个功能丰富的类，来自 PixiJS 库。 更多信息请参阅[此处](https://pixijs.com/8.x/guides/components/assets)。
+
+## 使用别名加载资源
+
+加载资源时，请始终使用其**别名**——在清单中或注册资源时定义的唯一标识符。 强烈不建议直接使用 `src` 路径：这会将代码与文件位置耦合，在路径或托管方式发生变化时变得脆弱。
+
+```ts title="main.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+const texture = await Assets.load("eggHead");
+```
+
+```json title="assets/manifest.gen.json"
+{
+    "bundles": [
+        {
+            "name": "default",
+            "assets": [
+                {
+                    "alias": "eggHead",
+                    "src": "./assets/eggHead.png"
+                }
+            ]
+        }
+    ]
+}
+```
+
+## 将资源组织到捆绑包中
+
+最佳实践是将资源分组为**捆绑包**，而不是逐一注册。 捆绑包允许您通过单次调用加载一组资源，并将加载推迟到实际需要时。
+
+:::tip
+
+对于本地资源，根据使用位置命名捆绑包不那么重要——由于本地文件加载即时，按屏幕或叙事节点（`label`）拆分并无实际好处。 这一规范对在线资源最有价值，因为有针对性的加载可以直接减少等待时间。
+
+:::
+
+建议根据**使用位置**命名每个捆绑包。 例如：
+
+* 对于在特定叙事节点（`label`）中使用的资源，使用该叙事节点（`label`）的 id（例如 `startLabel.id`）作为捆绑包名称
+* 对于在对应屏幕（如主菜单）中使用的资源，使用路由路径（例如 `"/"`）作为捆绑包名称
+
+这样，您就可以在正确的时机加载恰好所需的资源，而不会加载多余的内容。
+
+```ts title="assets/index.ts"
+import { startLabel } from "@/content/labels/start.label";
+import type { FileRouteTypes } from "@/routeTree.gen";
+import type { AssetsManifest } from "@drincs/pixi-vn";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        // screens
+        {
+            // main menu
+            name: "/" as FileRouteTypes["fullPaths"],
+            assets: [
+                {
+                    alias: "background_main_menu",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/main-menu.png",
+                },
+            ],
+        },
+        // labels
+        {
+            name: startLabel.id,
+            assets: [
+                {
+                    alias: "bg01-hallway",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/breakdown/bg01-hallway.webp",
+                },
+            ],
+        },
+    ],
+};
+```
+
+## 何时加载资源
+
+默认情况下，资源按需加载——仅在实际需要时才加载。 然而，最后时刻加载可能会在游戏过程中造成明显的卡顿。
+
+以下是提前加载资源最常见且推荐的时机：
+
+<Accordions>
+
+<Accordion title="在项目启动时加载资源" id="load-assets-at-project-start">
+
+可以在项目启动时、玩家开始交互之前加载资源，例如在启动加载画面期间。 建议仅对主页面使用的资源或频繁使用的资源采用此方式，且不要超过 100MB。
+
+为此，您必须在项目启动时使用 `Assets.load` 函数并等待其完成（使用 `await`）。
+
+```ts tab="lib/utils/assets-utility.ts"
+import { manifest } from "@/assets";
+import { Assets, sound } from "@drincs/pixi-vn";
+
+let assetsInitialized = false;
+
+/**
+ * Define all the assets that will be used in the game.
+ * This function will be called before the game starts.
+ */
+export async function defineAssets() {
+    if (!assetsInitialized) {
+        await Assets.init({ manifest });
+        assetsInitialized = true;
+    }
+
+    // The game will not start until these asserts are loaded.
+    await Assets.loadBundle("base");
+}
+```
+
+```ts tab="assets/index.ts"
+import type { AssetsManifest } from "@drincs/pixi-vn";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "base",
+            assets: [
+                {
+                    alias: "eggHead",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flowerTop",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+</Accordion>
+
+<Accordion title="在项目启动时后台加载资源" id="load-assets-in-the-background-at-project-start">
+
+可以在项目启动时在后台加载资源，以减少项目启动时的加载时间。 建议不要超过 2GB。
+
+为此，可以在项目启动时使用 `Assets.backgroundLoad` 函数。 您可以在[此处](https://pixijs.com/8.x/guides/components/assets)了解更多关于 `Assets.backgroundLoad` 函数的信息。
+
+```ts tab="lib/utils/assets-utility.ts"
+import { manifest } from "@/assets";
+import { Assets, sound } from "@drincs/pixi-vn";
+
+let assetsInitialized = false;
+
+/**
+ * Define all the assets that will be used in the game.
+ * This function will be called before the game starts.
+ */
+export async function defineAssets() {
+    if (!assetsInitialized) {
+        await Assets.init({ manifest });
+        assetsInitialized = true;
+    }
+
+    // The game will start immediately, but these assets will be loaded in the background.
+    Assets.backgroundLoadBundle(["audio"]);
+}
+```
+
+```ts tab="assets/index.ts"
+import type { AssetsManifest } from "@drincs/pixi-vn";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "audio",
+            assets: [
+                {
+                    alias: "bgm",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/audio/bgm.mp3",
+                },
+            ],
+        },
+    ],
+};
+```
+
+</Accordion>
+
+<Accordion title="在叙事节点启动时加载资源" id="load-assets-at-label-start">
+
+:::tip[*ink*]
+
+你可以在 *ink* 语法中使用此方法。 参见<DynamicLink href="/ink/assets">此处</DynamicLink>。
+
+:::
+
+为了将一个叙事节点（`label`）中从一个叙事步骤（`step`）到另一个叙事步骤（`step`）的加载合并为单次加载，可以在该叙事节点（`label`）开始之前加载其所使用的全部或部分资源。 由于这并不会减少玩家的等待时间，而是将其合并为单次加载，因此建议[在后台加载](#load-assets-in-the-background-at-label-start)。
+
+为此，您必须在叙事节点（`label`）启动时使用 `Assets.load` 函数并等待其完成（使用 `await`）。 您将使用 <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> 函数。
+
+为了使代码更整洁，建议在清单中定义一个捆绑包，其 id 对应于叙事节点（`label`）的 id，并在其中定义该叙事节点（`label`）中将使用的资源。
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
+
+const startLabel = newLabel(
+    "start",
+    [
+        () => {
+            await showImage("eggHead");
+        },
+        () => {
+            await showImage("flowerTop");
+        },
+    ],
+    {
+        onLoadingLabel: async (_stepId, label) => {
+            // The label will not start until these assets are loaded.
+            await Assets.loadBundle(label.id);
+    },
+);
+export default startLabel;
+```
+
+```ts tab="assets/index.ts"
+import type { AssetsManifest } from "@drincs/pixi-vn";
+import startLabel from "@/content/labels/start.label";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: startLabel.id,
+            assets: [
+                {
+                    alias: "eggHead",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flowerTop",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+</Accordion>
+
+<Accordion title="在叙事节点启动时后台加载资源" id="load-assets-in-the-background-at-label-start">
+
+:::tip[模板]
+
+在所有模板中，当一个叙事节点（`label`）启动时，将自动启动与该叙事节点（`label`）id 对应的捆绑包（如果存在）的后台加载。 因此，只需**为每个叙事节点（`label`）创建一个包含捆绑包的清单**即可。
+
+:::
+
+为了通过减少叙事步骤（`step`）之间的资源加载时间使游戏更流畅，可以在叙事节点（`label`）开始时启动一个"加载组"。 这意味着，尤其是在叙事节点（`label`）后续的叙事步骤（`step`）中，玩家可能感受不到任何加载延迟。
+
+为此，可以在叙事节点（`label`）启动时使用 `Assets.backgroundLoad` 函数。 您可以在[此处](https://pixijs.com/8.x/guides/components/assets)了解更多关于 `Assets.backgroundLoad` 函数的信息。 此外，你需要使用 <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> 函数。
+
+为了使代码更整洁，建议在清单中定义一个捆绑包，其 id 对应于叙事节点（`label`）的 id，并在其中定义该叙事节点（`label`）中将使用的资源。
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
+
+const startLabel = newLabel(
+    "start",
+    [
+        () => {
+            await showImage("eggHead");
+        },
+        () => {
+            await showImage("flowerTop");
+        },
+    ],
+    {
+        onLoadingLabel: async (_stepId, label) => {
+            // The label will start immediately, but these assets will be loaded in the background.
+            Assets.backgroundLoadBundle(label.id);
+        },
+    },
+);
+export default startLabel;
+```
+
+```ts tab="assets/index.ts"
+import type { AssetsManifest } from "@drincs/pixi-vn";
+import startLabel from "@/content/labels/start.label";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: startLabel.id,
+            assets: [
+                {
+                    alias: "eggHead",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flowerTop",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+</Accordion>
+
+<Accordion title="在显示屏幕前加载资源" id="load-assets-before-screen">
+
+可以在显示屏幕前加载资源。 当屏幕使用的图片或其他资源必须在组件渲染前准备就绪时，此方式非常有用。
+
+在此示例中使用了 TanStack Router，它已包含在所有模板中。 你可以在<DynamicLink href="/start/interface-navigate">此处</DynamicLink>找到更多相关信息。
+
+`loader` 函数在路由组件挂载前运行。 你可以在 `loader` 内调用 `Assets.loadBundle` 来预加载与该路由关联的包。
+
+此外，你可以使用 `pendingComponent` 在资源加载期间显示加载指示器，让用户看到有意义的过渡效果，而不是空白屏幕。
+
+```tsx tab="routes/game/narration.tsx"
+import { NarrationPendingComponent } from "@/components/loading";
+import { NarrationScreen } from "@/components/screens/narration";
+import { Assets } from "@drincs/pixi-vn";
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/game/narration")({
+    component: NarrationElement,
+    pendingComponent: NarrationPendingComponent,
+    loader: async () => {
+        await Assets.loadBundle("/game/narration");
+    },
+});
+
+function NarrationElement() {
+    return <NarrationScreen />;
+}
+```
+
+```ts tab="assets/index.ts"
+import type { AssetsManifest } from "@drincs/pixi-vn";
+import startLabel from "@/content/labels/start.label";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "/game/narration",
+            assets: [
+                {
+                    alias: "next-button",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/assets/next-button.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+</Accordion>
+
+</Accordions>

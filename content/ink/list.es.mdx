@@ -1,0 +1,367 @@
+---
+title: LIST
+---
+
+<Callout type="info">
+
+You can read more about lists in ink on the [official documentation](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#part-5-advanced-state-tracking).
+
+</Callout>
+
+***ink*** provides a powerful system for tracking state via **lists**. A list in ***ink*** is not an array — it is closer to an **enum** or a **boolean set** that can hold one or multiple values at the same time.
+
+In the ***ink* + Pixi'VN integration**, both `LIST` declarations and `VAR` variables holding list values are stored in the <DynamicLink href="/start/storage">Pixi'VN storage</DynamicLink>.
+
+## Define
+
+A list is defined with the `LIST` keyword followed by its name and a comma-separated sequence of possible values.
+
+```ink title="ink"
+LIST items = sword, key, potion
+```
+
+`LIST` works like an **enum**: each entry is a named constant with an implicit numeric value (the first entry = 1, the second = 2, and so on). You can use these names in conditions and assignments — ***ink*** handles the numeric comparison for you.
+
+<Callout type="info">
+
+In **Pixi'VN storage**, the declaration above creates the following entries:
+
+* a list definition called `items` with numeric values `[1, 2, 3]`
+* `items.sword = 1`
+* `items.key = 2`
+* `items.potion = 3`
+
+The entries are stored under the **qualified name** `listName.entryName`, just like accessing a member of an enum via its namespace.
+
+</Callout>
+
+<Callout type="warning">
+
+**Pixi'VN vs. native ink — use the qualified name**
+
+In native ***ink*** you can reference a list entry either by its short name (`sword`) or by its qualified name (`items.sword`) and they are equivalent.
+
+In **Pixi'VN** you must always use the qualified form **`items.sword`**. If you write just `sword`, Pixi'VN will look for a generic storage entry whose key is `"sword"` — it will **not** resolve to the list member. This is a common source of bugs when porting or reading ink scripts.
+
+</Callout>
+
+The `LIST` statement simultaneously defines the possible values (as named constants) and a variable (with the same name as the list) that holds the current state.
+
+By default, none of the values are "active". You can make a value active from the start by wrapping it in brackets:
+
+```ink title="ink"
+LIST kettleState = cold, (boiling), recently_boiled
+// the kettle starts boiling
+```
+
+### VAR with a list value
+
+You can also create a variable that holds a list value using `VAR`:
+
+```ink title="ink"
+VAR inventory = ()
+```
+
+<Callout type="info">
+
+In **Pixi'VN storage**, the declaration above creates:
+
+* a list called `inventory` that is empty (or with elements if specified)
+
+For example, `VAR inventory = (sword, potion)` creates an `inventory` list that initially contains `sword` and `potion`.
+
+</Callout>
+
+You can use the same set of states in multiple variables:
+
+```ink title="ink"
+LIST daysOfTheWeek = Monday, Tuesday, Wednesday, Thursday, Friday
+VAR today = daysOfTheWeek.Monday
+VAR tomorrow = daysOfTheWeek.Tuesday
+```
+
+<Callout type="info">
+
+In **Pixi'VN storage**, the declaration above creates entries such as `daysOfTheWeek.Monday = 1`, `daysOfTheWeek.Tuesday = 2`, … Always use the qualified form `daysOfTheWeek.Monday` — not the bare `Monday` — when referencing an entry in **Pixi'VN *ink***.
+
+</Callout>
+
+## Establecer
+
+Change the current value of a list variable using the `~` logic syntax:
+
+```ink title="ink"
+~ kettleState = kettleState.cold
+~ kettleState = kettleState.boiling
+```
+
+For multi-valued lists, you can assign several values at once:
+
+```ink title="ink"
+~ DoctorsInSurgery = (DoctorsInSurgery.Adams, DoctorsInSurgery.Bernard)
+```
+
+Or clear the list entirely:
+
+```ink title="ink"
+~ DoctorsInSurgery = ()
+```
+
+### Adding and removing entries
+
+Use `+=` and `-=` to add or remove individual entries without touching the rest of the list:
+
+```ink title="ink"
+~ DoctorsInSurgery += DoctorsInSurgery.Adams
+~ DoctorsInSurgery -= DoctorsInSurgery.Eamonn
+~ DoctorsInSurgery += (DoctorsInSurgery.Eamonn, DoctorsInSurgery.Denver)
+~ DoctorsInSurgery -= (DoctorsInSurgery.Adams, DoctorsInSurgery.Eamonn, DoctorsInSurgery.Denver)
+```
+
+Adding an entry that is already present, or removing one that isn't, does nothing — no error is produced.
+
+### Step forward / backward
+
+Because list values have an implicit numeric order, you can step through them with `++` and `--`:
+
+```ink title="ink"
+LIST PancakeState = ingredients_gathered, batter_mix, pan_hot, pancakes_tossed, ready_to_eat
+~ PancakeState++   // advances to the next state
+```
+
+## Get / Query
+
+### Reading the current value
+
+Print the current value of a list variable using the standard `{...}` syntax — it outputs the value's name:
+
+```ink title="ink"
+LIST volumeLevel = off, quiet, medium, loud, deafening
+VAR lecturersVolume = volumeLevel.quiet
+
+The lecturer's voice becomes {lecturersVolume}.
+```
+
+### Testing a single value
+
+```ink title="ink"
+{ kettleState == kettleState.cold:
+    The kettle is cool to the touch.
+- else:
+    The outside of the kettle is very warm!
+}
+```
+
+### Testing for containment (`has` / `?`)
+
+Use `has` (or `?`) to check whether a value is present in a multi-valued list:
+
+```ink title="ink"
+{ DoctorsInSurgery has DoctorsInSurgery.Eamonn:
+    Dr Eamonn is polishing his glasses.
+}
+
+{ DoctorsInSurgery ? (DoctorsInSurgery.Adams, DoctorsInSurgery.Bernard):
+    Dr Adams and Dr Bernard are having a hushed argument in one corner.
+}
+```
+
+Use `hasnt` (or `!?`) to negate:
+
+```ink title="ink"
+{ DoctorsInSurgery !? DoctorsInSurgery.Eamonn:
+    Dr Eamonn has left.
+}
+```
+
+### Testing for emptiness
+
+A list evaluates to `true` unless it is empty:
+
+```ink title="ink"
+{ DoctorsInSurgery: The surgery is open today. | Everyone has gone home. }
+```
+
+### Comparison operators
+
+List values carry numeric weights (first value = 1, second = 2, …), so you can compare them:
+
+```ink title="ink"
+{ lecturersVolume < volumeLevel.deafening:
+    ~ lecturersVolume++
+}
+```
+
+Exact equality (`==`) on a multi-valued list means **set equality** — both lists must contain exactly the same entries:
+
+```ink title="ink"
+{ DoctorsInSurgery == (DoctorsInSurgery.Adams, DoctorsInSurgery.Bernard):
+    Dr Adams and Dr Bernard are having a loud argument.
+}
+```
+
+## List functions
+
+***ink*** provides several built-in functions for working with lists.
+
+| Function                     | Description                                |
+| ---------------------------- | ------------------------------------------ |
+| `LIST_COUNT(list)`           | Number of active entries                   |
+| `LIST_MIN(list)`             | Lowest active entry                        |
+| `LIST_MAX(list)`             | Highest active entry                       |
+| `LIST_RANDOM(list)`          | A random active entry                      |
+| `LIST_ALL(list)`             | All possible entries (active and inactive) |
+| `LIST_VALUE(entry)`          | Numeric value of an entry (first = 1)      |
+| `LIST_INVERT(list)`          | Returns all entries *not* currently active |
+| `LIST_RANGE(list, min, max)` | Slice of the full list between two values  |
+
+```ink title="ink"
+LIST DoctorsInSurgery = (Adams), Bernard, (Cartwright), Denver, Eamonn
+
+{LIST_COUNT(DoctorsInSurgery)}   // "2"
+{LIST_MIN(DoctorsInSurgery)}     // "Adams"
+{LIST_MAX(DoctorsInSurgery)}     // "Cartwright"
+{LIST_RANDOM(DoctorsInSurgery)}  // "Adams" or "Cartwright"
+{LIST_ALL(DoctorsInSurgery)}     // "Adams, Bernard, Cartwright, Denver, Eamonn"
+```
+
+### Converting between values and numbers
+
+```ink title="ink"
+LIST volumeLevel = off, quiet, medium, loud, deafening
+
+// number → name: LIST_VALUE returns the integer (first entry = 1)
+The lecturer has {LIST_VALUE(volumeLevel.deafening) - LIST_VALUE(lecturersVolume)} notches left.
+
+// number → value: use the list name as a function
+LIST Numbers = one, two, three
+VAR score = Numbers.one
+~ score = Numbers(2)  // score is now "two"
+```
+
+### Custom numeric values
+
+By default values are numbered 1, 2, 3, … You can assign your own:
+
+```ink title="ink"
+LIST primeNumbers = two = 2, three = 3, five = 5
+```
+
+## Usage patterns
+
+<Accordions>
+
+<Accordion title="ink_list_flags" id="flags">
+
+Track game events as flags — add an entry when it happens, test it later:
+
+```ink title="ink"
+LIST GameEvents = foundSword, openedCasket, metGorgon
+
+~ GameEvents += GameEvents.metGorgon
+
+{ GameEvents ? GameEvents.openedCasket: You remember opening the casket. }
+{ GameEvents ? (GameEvents.foundSword, GameEvents.metGorgon): You are well prepared. }
+```
+
+</Accordion>
+
+<Accordion title="ink_list_state_machine" id="state-machine">
+
+Use a list as a state machine — each entry is a state, advance with `++`:
+
+```ink title="ink"
+LIST PancakeState = ingredients_gathered, batter_mix, pan_hot, pancakes_tossed, ready_to_eat
+
+{ PancakeState == PancakeState.batter_mix: The batter is ready. }
+{ PancakeState < PancakeState.ready_to_eat: Keep cooking! }
+~ PancakeState++
+```
+
+</Accordion>
+
+<Accordion title="ink_list_properties" id="properties">
+
+Model objects with multiple independent properties using a multi-list variable:
+
+```ink title="ink"
+LIST OnOffState = on, off
+LIST ChargeState = uncharged, charging, charged
+
+VAR PhoneState = (OnOffState.off, ChargeState.uncharged)
+
+* { PhoneState !? ChargeState.uncharged } [Plug in phone]
+    ~ PhoneState -= LIST_ALL(ChargeState)
+    ~ PhoneState += ChargeState.charging
+    You plug the phone into charge.
+* { PhoneState ? (OnOffState.on, ChargeState.charged) } [Call my mother]
+```
+
+</Accordion>
+
+<Accordion title="ink_list_multilist" id="multi-list">
+
+Variables can hold entries from multiple different lists, allowing you to model room contents or inventories:
+
+```ink title="ink"
+LIST Characters = Alfred, Batman, Robin
+LIST Props = champagne_glass, newspaper
+
+VAR BallroomContents = (Characters.Alfred, Characters.Batman, Props.newspaper)
+VAR HallwayContents = (Characters.Robin, Props.champagne_glass)
+```
+
+</Accordion>
+
+<Accordion title="ink_list_knowledge" id="knowledge-tracking">
+
+Track accumulated knowledge as a chain of facts:
+
+```ink title="ink"
+LIST Facts = (Fogg_is_fairly_odd), first_name_phileas, (Fogg_is_English)
+
+{ Facts ? Facts.Fogg_is_fairly_odd: I smiled politely. | I frowned. }
+{ Facts ? (Facts.Fogg_is_English, Facts.Fogg_is_fairly_odd):
+    'I know Englishmen are strange, but this is *incredible*!'
+}
+```
+
+</Accordion>
+
+</Accordions>
+
+## Ambiguous names
+
+If two lists share an entry name, qualify it with the list name:
+
+```ink title="ink"
+LIST colours = red, green, blue, purple
+LIST moods = mad, happy, blue
+
+VAR status = colours.blue  // must be explicit
+```
+
+## Reusing list types in multiple variables
+
+A `LIST` declaration defines both the set of possible values *and* a variable. You can create additional variables of the same "type" using `VAR`:
+
+```ink title="ink"
+LIST heatedWaterStates = cold, boiling, recently_boiled
+VAR kettleState = heatedWaterStates.cold
+VAR potState = heatedWaterStates.cold
+```
+
+Both `kettleState` and `potState` hold values drawn from `heatedWaterStates`.
+
+## Intersection (`^`)
+
+Use `^` to find the overlap between two lists:
+
+```ink title="ink"
+LIST CoreValues = strength, courage, compassion, greed, nepotism, self_belief
+VAR desiredValues = (CoreValues.strength, CoreValues.courage, CoreValues.compassion, CoreValues.self_belief)
+VAR actualValues  = (CoreValues.greed, CoreValues.nepotism, CoreValues.self_belief)
+
+{desiredValues ^ actualValues}  // prints "self_belief"
+{ desiredValues ^ actualValues: The new president has at least one desirable quality. }
+```

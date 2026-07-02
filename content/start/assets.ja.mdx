@@ -1,0 +1,371 @@
+---
+title: アセット
+description: Pixi’VN におけるアセットの種類と保存オプション（ローカルまたはオンライン）の概要と使用例。
+---
+
+<Accordions>
+
+<Accordion title="アセットとは？" id="what-is-assets">
+
+アセットとは、画像、音声、動画など、コード以外のすべてのファイルのことです。
+
+</Accordion>
+
+</Accordions>
+
+アセットはプロジェクト内に**ローカル**保存するか、**オンライン**でホストすることができます。 キャラクタースプライト、背景画像、BGM などの頻繁に使用するアセットはローカルに保存するのが最適です。 一度しか使用しないアセットやサイズの大きなオプションファイルはオンラインホスティングの方が適しています。 それぞれのアプローチにはトレードオフがあります：
+
+## ローカルアセット
+
+アセットをローカルに保存して使用するには、任意のフォルダーを使用できます——制限はありません。 ただし、`public/assets` フォルダーの使用を推奨します。 このフォルダー内にサブフォルダーを作成して、アセットをより整理された状態に保つことができます。
+
+<Accordions>
+
+<Accordion title="PixiJS AssetPack とは？" id="what-is-pixijsassetpack">
+
+PixiJS AssetPack は、Web 向けにローカルアセットを最適化するツールです。 アセットの変換、結合、圧縮に使用できます。
+
+PixiJS AssetPack の詳細については、[PixiJS 公式サイト](https://pixijs.io/assetpack)をご覧ください。
+
+</Accordion>
+
+</Accordions>
+
+PixiJS AssetPack は、Vite.js インテグレーションを通じて Pixi’VN プロジェクトテンプレートにあらかじめ設定されており、アセットの処理と最適化を自動化することで、プロジェクトの構築に集中できます。
+
+開発中（`vite dev`）は `public/assets` フォルダーの変更を監視し、その場で処理します。 本番ビルド（`vite build`）では、バンドル前に完全な最適化パスを実行します。
+
+適用される最適化には以下が含まれます：
+
+* **圧縮** — ファイルサイズを削減し、読み込みを高速化します。
+* **フォーマット変換** — サポートされている場合、画像を最新のフォーマット（WebP、AVIF など）に変換します。
+* **テクスチャアトラス** — 複数の小さな画像を1枚のスプライトシートにまとめ、描画呼び出しを削減します。
+
+処理が完了すると、すべてのアセットバンドルとそのパスのリストを含む `src/assets/manifest.gen.json` ファイルが生成されます。 このファイルは PixiJS がアセットを効率的に読み込むために使用されます。
+
+<Files>
+    <Folder name="project" defaultOpen>
+        <Folder name="public" defaultOpen>
+            <Folder name="assets" defaultOpen>
+                <Folder name="audio" defaultOpen>
+                    <File name="bgm_cheerful.wav" />
+                    <File name="sfx_whoosh.wav" />
+                </Folder>
+                <Folder name="mainmenu" defaultOpen>
+                    <File name="background_main_menu.png" />
+                </Folder>
+                <Folder name="start" defaultOpen>
+                    <File name="bg01-hallway.webp" />
+                </Folder>
+                <Folder name="mc" defaultOpen>
+                    <File name="mc-neutral.png" />
+                </Folder>
+            </Folder>
+        </Folder>
+        <Folder name="src" defaultOpen>
+            <Folder name="assets">
+                <File name="manifest.gen.json" />
+                <File name="index.ts" />
+            </Folder>
+        </Folder>
+        <File name=".assetpack.ts" />
+        <File name="vite.config.ts" />
+    </Folder>
+</Files>
+
+```json tab="src/assets/manifest.gen.json"
+{
+    "bundles": [
+        {
+            "name": "audio",
+            "assets": [
+                {
+                    "alias": "bgm_cheerful",
+                    "src": "./assets/audio/bgm_cheerful.wav"
+                },
+                {
+                    "alias": "sfx_whoosh",
+                    "src": "./assets/audio/sfx_whoosh.wav"
+                }
+            ]
+        },
+        {
+            "name": "mainmenu",
+            "assets": [
+                {
+                    "alias": "background_main_menu",
+                    "src": "./assets/mainmenu/background_main_menu.png"
+                }
+            ]
+        },
+        {
+            "name": "start",
+            "assets": [
+                {
+                    "alias": "bg01-hallway",
+                    "src": "./assets/start/bg01-hallway.webp"
+                }
+            ]
+        },
+        {
+            "name": "mc",
+            "assets": [
+                {
+                    "alias": "mc-neutral",
+                    "src": "./assets/mc/mc-neutral.png"
+                }
+            ]
+        }
+    ]
+}
+```
+
+```ts tab=".assetpack.ts"
+import type { AssetPackConfig } from "@assetpack/core";
+import { pixiPipes } from "@assetpack/core/pixi";
+
+const config: AssetPackConfig = {
+    entry: "./src/assets",
+    output: "./public/assets",
+    ignore: ["**/*.ts", "**/*.js", "**/*.gen.*"],
+    pipes: [
+        ...pixiPipes({
+            manifest: {
+                output: "src/assets/manifest.gen.json",
+                createShortcuts: true,
+            },
+        }),
+    ],
+};
+
+export default config;
+```
+
+```ts tab="vite.config.ts"
+import { AssetPack } from "@assetpack/core";
+import { defineConfig, type Plugin, type ResolvedConfig } from "vite";
+import assetPackConfig from "./.assetpack.ts";
+
+export default defineConfig(() => ({
+    plugins: [
+        assetpackPlugin(),
+        // ...
+    ],
+}));
+
+function assetpackPlugin(): Plugin {
+    let mode: ResolvedConfig["command"];
+    let ap: AssetPack | undefined;
+
+    return {
+        name: "vite-plugin-assetpack",
+        configResolved(resolvedConfig) {
+            mode = resolvedConfig.command;
+            if (!resolvedConfig.publicDir) return;
+            if (assetPackConfig.output) return;
+            const publicDir = resolvedConfig.publicDir.replace(
+                process.cwd(),
+                "",
+            );
+            assetPackConfig.output = `.${publicDir}/assets/`;
+        },
+        buildStart: async () => {
+            if (mode === "serve") {
+                if (ap) return;
+                ap = new AssetPack(assetPackConfig);
+                void ap.watch();
+            } else {
+                await new AssetPack(assetPackConfig).run();
+            }
+        },
+        buildEnd: async () => {
+            if (ap) {
+                await ap.stop();
+                ap = undefined;
+            }
+        },
+    };
+}
+```
+
+## アセットのホスティング
+
+アセットをオンラインに保存することができます。 これはプロジェクトのスペースを節約したい場合や、事前にダウンロードしなくてもオンラインでプレイできるゲームを作りたい場合に適した選択肢です。 ファイルをアップロードして公開 URL を生成できるクラウドサービスであれば何でも使用できます（使用するクラウドサービスが *CORS リクエスト* を許可していることを確認してください）。
+
+以下は、アセットをオンラインでホスティングする際の一般的な選択肢です：
+
+<Accordions>
+
+<Accordion title="Github" id="github">
+
+Github を使用してアセットをホスティングできます。 プロジェクト内でファイルの RAW リンクを使用できます。 リンクは以下の形式になります：
+
+```text
+https://raw.githubusercontent.com/[repository]/raw/refs/heads/main/[file path]
+```
+
+* **価格**：完全無料。
+* **容量制限**：容量制限なし、ただし各ファイルは 100 MB を超えてはなりません。
+* **ファイル形式**：あらゆる種類のファイルをアップロードできます。
+* **トラフィック**：速度は最良ではありません。
+* **アセットの編集**：同じ URL を維持したままファイルを編集できます。
+
+</Accordion>
+
+<Accordion title="画像ホスティング" id="image-hosting">
+
+画像ホスティングは画像をアップロードできるサービスです。 無料で画像をアップロードできるサイトが多数あります。例えば [imgbb](https://imgbb.com/)、[imgix](https://www.imgix.com/)、[imgur](https://imgur.com/) などです。 プロジェクト内で画像のリンクを使用できます。
+
+* **価格**：完全無料ですが、より多くの機能を有料で利用できます。
+* **容量制限**：容量制限なし、ただし各ファイルに最大サイズがあります。
+* **ファイル形式**：画像のみアップロードできます。
+* **トラフィック**：速度は良好です。
+* **アセットの編集**：同じ URL を維持したままファイルを編集することはできません。
+
+</Accordion>
+
+<Accordion title="クラウドストレージ" id="Cloud-storage">
+
+クラウドストレージは、あらゆる種類のファイルをオンラインでアップロードできるサービスです。多くの一般的な選択肢があります。 例えば [Cloudflare R2](https://www.cloudflare.com/developer-platform/r2/)、[Firebase Storage](https://firebase.google.com/pricing)、[Amazon S3](https://aws.amazon.com/s3/pricing/)、[Supabase](https://supabase.io/pricing)、[Convex](https://www.convex.dev/pricing) などです。
+
+* **価格**：通常は有料か、制限付きの無料プランがあります。
+* **容量制限**：使用スペースに基づく月額費用（通常、一定の閾値を超えなければ無料）。
+* **ファイル形式**：あらゆる種類のファイルをアップロードできます。
+* **トラフィック**：速度は良好です。
+* **アセットの編集**：同じ URL を維持したままファイルを編集できます。
+
+</Accordion>
+
+</Accordions>
+
+アセットの準備ができたら、ゲームが使用できるアセットと、それらがどのようにバンドルにグループ化されるかを手動で定義する必要があります。
+
+:::tip
+
+読み込み時間を最小化し、不必要にゲームをブロックしないよう、<DynamicLink href="/start/assets-management">アセット読み込みのベストプラクティス</DynamicLink>に従うことを強くお勧めします。
+
+:::
+
+すべての Pixi’VN テンプレートには、アセットを登録するために編集できる `src/assets/index.ts` ファイルが含まれています：
+
+```ts title="src/assets/index.ts"
+import generatedManifestJson from "@/assets/manifest.gen.json";
+import { AUDIO_BUNDLE_NAME } from "@/constants";
+import { startLabel } from "@/content/labels/start.label";
+import type { FileRouteTypes } from "@/routeTree.gen";
+import type { AssetsManifest } from "@drincs/pixi-vn";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        ...generatedManifestJson.bundles,
+        {
+            name: AUDIO_BUNDLE_NAME,
+            assets: [
+                {
+                    alias: "bgm_cheerful",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/audio/bgm_cheerful.wav",
+                },
+                {
+                    alias: "sfx_whoosh",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/audio/sfx_whoosh.wav",
+                },
+            ],
+        },
+        // screens
+        {
+            // main menu
+            name: "/" as FileRouteTypes["fullPaths"],
+            assets: [
+                {
+                    alias: "background_main_menu",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/main-menu.png",
+                },
+            ],
+        },
+        // labels
+        {
+            name: startLabel.id,
+            assets: [
+                {
+                    alias: "bg01-hallway",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/breakdown/bg01-hallway.webp",
+                },
+            ],
+        },
+        // characters
+        {
+            name: "mc",
+            assets: [
+                {
+                    alias: "mc-neutral",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/characters/mc-neutral.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+## その他の機能
+
+<Accordions>
+
+<Accordion title="アセットのキャッシュ" id="caching-assets">
+
+:::tip[テンプレート]
+
+すべてのテンプレートでは、外部 URL から読み込まれたアセットはオフライン使用のために Service Worker によって自動的にキャッシュされます。 これは `vite-plugin-pwa` プラグインを使用して `vite.config.ts` ファイルで設定されています。
+
+:::
+
+オンラインゲームでは、外部アセットのキャッシュが重要です。毎回のセッションで同じファイルを再ダウンロードするのを防ぎ、レイテンシーを削減し、接続が一時的に利用できない場合でもゲームが動作するようにします。
+
+これは [VitePWA](https://vite-pwa-org.netlify.app/) によって処理され、テンプレートにあらかじめ設定されています。 `vite.config.ts` でキャッシュの動作を直接カスタマイズできます：
+
+* **`CACHED_EXTERNAL_HOSTNAMES`** — アセットをキャッシュする外部ホスト名のリスト。 使用する CDN やリモートホストを追加してください。
+* **`cacheableResponse`** — キャッシュ対象となる HTTP レスポンスを定義します（例：不透明なレスポンスの場合はステータス `0`、成功の場合は `200`）。
+* **`expiration`** — キャッシュされたアセットの保持期間を制御します。 デフォルトでは 7 日間キャッシュされます（`maxAgeSeconds: 7 * 24 * 60 * 60`）。
+
+```ts title="vite.config.ts"
+import { defineConfig } from "vite";
+import { VitePWA } from "vite-plugin-pwa";
+
+/**
+ * List of external hostnames whose responses should be cached by the service worker.
+ * Add any CDN or remote asset host here to enable offline caching for it.
+ * Examples:
+ *   "cdn.jsdelivr.net"
+ *   "your.cdn.domain.com"
+ */
+const CACHED_EXTERNAL_HOSTNAMES: string[] = ["raw.githubusercontent.com"];
+
+export default defineConfig(() => ({
+    plugins: [
+        VitePWA({
+            // ...
+            workbox: {
+                runtimeCaching: [
+                    {
+                        urlPattern: ({ url }) =>
+                            CACHED_EXTERNAL_HOSTNAMES.includes(url.hostname),
+                        handler: "CacheFirst",
+                        options: {
+                            cacheName: "external-assets-v1",
+                            cacheableResponse: {
+                                statuses: [0, 200],
+                            },
+                            expiration: {
+                                maxAgeSeconds: 7 * 24 * 60 * 60,
+                            },
+                        },
+                    },
+                ],
+            },
+        }),
+    ],
+}));
+```
+
+</Accordion>
+
+</Accordions>

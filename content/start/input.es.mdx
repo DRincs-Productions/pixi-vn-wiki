@@ -1,0 +1,83 @@
+---
+title: Solicitud de entrada
+description: Explica cómo solicitar al jugador que introduzca datos en Pixi’VN, incluyendo el uso, la recuperación y la eliminación de solicitudes de entrada.
+---
+
+import { InputPrompt } from "@/components/examples";
+
+:::tip[Pantalla UI]
+
+Puedes encontrar un ejemplo de la interfaz de diálogo de entrada en la sección de <DynamicLink href="/start/interface-examples#input-prompt">ejemplos de interfaz</DynamicLink>.
+
+:::
+
+:::tip[*ink*]
+
+Puedes usar este método con la sintaxis *ink*. Consulta más información <DynamicLink href="/ink/input">aquí</DynamicLink>.
+
+:::
+
+En las novelas visuales, puede que necesites pedirle al jugador que introduzca texto, números, fechas u otros valores.
+
+Pixi’VN proporciona funciones para gestionar las solicitudes de entrada. El desarrollador puede requerir que el jugador introduzca un valor (el juego no continuará hasta que se proporcione un valor), mientras que la <DynamicLink href="/start/interface">UI</DynamicLink> es responsable de mostrar la solicitud.
+
+## Solicitar
+
+Para pedirle al jugador que introduzca datos, utiliza la función [`narration.requestInput`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#requestinput).
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        narration.dialogue = "Hello";
+    },
+    () => {
+        narration.dialogue = "What is your name?";
+        narration.requestInput({ type: "string" });
+    },
+    () => {
+        narration.dialogue = `My name is ${narration.inputValue}`;
+    },
+    () => {
+        narration.dialogue = "How old are you?";
+        narration.requestInput({ type: "number" }, 18);
+    },
+    () => {
+        narration.dialogue = `I am ${narration.inputValue} years old`;
+    },
+    () => {
+        narration.dialogue = "Describe who you are:";
+        narration.requestInput({ type: "html textarea" });
+    },
+    () => {
+        narration.dialogue = `${narration.inputValue}`;
+    },
+    () => {
+        narration.dialogue = "Restart";
+    },
+]);
+```
+
+<InputPrompt />
+
+## Obtener
+
+Para obtener información sobre la solicitud de entrada, utiliza:
+
+* [`narration.isRequiredInput`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#isrequiredinput)
+* [`narration.inputType`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#inputtype)
+
+```ts
+if (narration.isRequiredInput) {
+    openInputModal(narration.inputType);
+}
+```
+
+## Eliminar
+
+Para eliminar la solicitud de entrada, utiliza [`narration.removeInputRequest`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#removeinputrequest).
+
+```ts
+narration.removeInputRequest();
+```

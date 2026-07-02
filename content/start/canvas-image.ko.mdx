@@ -1,0 +1,142 @@
+---
+title: 이미지 (`ImageSprite`)
+description: Pixi'VN에서 ImageSprite 컴포넌트를 사용하는 방법 안내 — 캔버스에 이미지를 초기화, 로드, 추가, 표시 및 제거하는 방법을 포함합니다.
+---
+
+import { ImageSpriteAdd, ImageSpriteShow } from "@/components/examples";
+
+[`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite) 컴포넌트는 [`Sprite`](/jsdoc/pixi-vn/index/classes/Sprite) 컴포넌트를 확장하므로, [`Sprite`](/jsdoc/pixi-vn/index/classes/Sprite)의 모든 메서드와 속성을 사용할 수 있습니다. 캔버스에 단일 이미지를 표시하는 데 사용됩니다.
+
+```ts tab="main.ts"
+import { canvas, ImageSprite } from "@drincs/pixi-vn";
+
+let alien = new ImageSprite(
+    {
+        anchor: { x: 0.5, y: 0.5 },
+        x: 100,
+        y: 100,
+    },
+    "alien",
+);
+
+await alien.load();
+canvas.add("alien", alien);
+```
+
+```json tab="src/assets/manifest.gen.json"
+{
+    "bundles": [
+        {
+            "name": "image",
+            "assets": [
+                {
+                    "alias": "alien",
+                    "src": "./assets/image/eggHead.png"
+                }
+            ]
+        }
+    ]
+}
+```
+
+[`Sprite`](/jsdoc/pixi-vn/index/classes/Sprite) 컴포넌트와 비교하여, [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite)는 다음 기능을 추가합니다:
+
+* [`load`](/jsdoc/pixi-vn/index/classes/ImageSprite#load): 이미지 URL을 로드하고 결과 텍스처를 컴포넌트에 설정합니다.
+* 추가 위치 지정: <DynamicLink href="/start/canvas-position">퍼센트로 정렬 및 위치 지정</DynamicLink>.
+
+## 표시
+
+캔버스에 이미지를 표시하는 가장 간단한 방법은 [`showImage`](/jsdoc/pixi-vn/index/functions/showImage) 함수를 사용하는 것입니다. 이 함수는 [`load`](/jsdoc/pixi-vn/index/classes/ImageSprite#load)와 [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add)를 결합합니다.
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        // Show the images on the canvas
+        let alien1 = await showImage("alien");
+        // Show the image with a different alias and position
+        let alien2 = await showImage("alien2", "alien", {
+            xAlign: 0.5,
+        });
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<ImageSpriteShow />
+
+## 추가
+
+캔버스에 이미지를 추가하려면 [`addImage`](/jsdoc/pixi-vn/index/functions/addImage) 함수를 사용합니다. 이 함수는 컴포넌트를 캔버스에 추가하기만 하며, 이미지를 **표시하거나** 텍스처를 로드하지는 않습니다. [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add)를 사용하여 컴포넌트를 캔버스에 추가합니다.
+
+```ts tab="content/labels/start.label.ts"
+import { addImage, canvas, ImageSprite, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        // Add the images to the canvas
+        let alien1 = addImage("alien");
+        // Add the image with a different alias and position
+        let alien2 = addImage("alien2", "alien", {
+            xAlign: 0.5,
+        });
+    },
+    async () => {
+        let alien1 = canvas.find<ImageSprite>("alien");
+        let alien2 = canvas.find<ImageSprite>("alien2");
+        // Load the textures
+        alien1 && (await alien1.load());
+        alien2 && (await alien2.load());
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<ImageSpriteAdd />
+
+## 제거
+
+다른 캔버스 컴포넌트와 마찬가지로, [`canvas.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#remove) 함수를 사용하여 이 컴포넌트를 제거할 수 있습니다.

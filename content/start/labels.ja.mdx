@@ -1,0 +1,130 @@
+---
+title: ナラティブノード（label）とナラティブステップ（step）
+description: Pixi’VN におけるラベルとステップのコアコンセプトを解説し、ゲームエンジン内でナラティブフローがどのように構成・管理されるかを詳述します。
+---
+
+ビジュアルノベルは通常、画像とテキストを含む一連のシーンで構成されます。 Pixi’VN では、ナラティブフロー全体がナラティブノード（`label`）とナラティブステップ（`step`）のコンセプトに基づいています。
+
+ナラティブノード（`label`）はナラティブを整理するために使用され、ストーリーの「ブックマーク」またはセクションとして機能します。 技術的には、ナラティブノード（`label`）はナラティブステップ（`step`）のコンテナとして機能するクラスです。
+
+ナラティブステップ（`step`）は、ナラティブノード（`label`）内で発生する個々のアクションまたはイベントです。 ステップは画像、テキスト、その他のナラティブ要素を表示するために使用されます。
+
+:::tip[用語説明]
+
+ナラティブノード（`label`）という用語は Ren'Py から借用されており、ストーリーの「ブックマーク」または「ランドマーク」として機能します。 ink 言語では、対応する用語はナラティブノード（`knot`）です。ナラティブステップ（`step`）は、ナラティブノード（`label`）内で発生する個々のアクションやイベントを表すために Pixi’VN が導入した用語です。
+
+ナラティブステップ（`step`）は、ナラティブノード（`label`）内で発生する個々のアクションやイベントを表すために Pixi’VN が導入した用語です。
+
+:::
+
+<Accordions>
+
+<Accordion title="ライフサイクル" id="lifecycle">
+
+1. ゲームは [`Game.start`](/jsdoc/pixi-vn/index/namespaces/Game/functions/start) 関数でナラティブノード（`label`）を呼び出すことで開始されます。 ナラティブノードの最初のナラティブステップ（`step`）は自動的に実行されます。
+2. その後、[`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) 関数をイベント（ボタンクリックなど）に接続することで、関数が呼び出されるたびに、ナラティブノード（`label`）の次のナラティブステップ（`step`）が実行されます。 一部のナラティブステップ（`step`）は他のナラティブノード（`label`）を開始することもできます。
+3. すべてのナラティブステップ（`step`）が完了したときにのみゲームが終了します。 その時点で、[`Game.onEnd`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onEnd) 関数がトリガーされます。
+
+</Accordion>
+
+</Accordions>
+
+## 追加
+
+ナラティブノード（`label`）を作成するには、[`newLabel`](/jsdoc/pixi-vn/index/functions/newLabel) 関数を使用します。
+
+```ts title="content/labels/start.label.ts"
+import { narration, StepLabelProps } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        narration.dialogue = { character: liam, text: "Example of dialogue" };
+    },
+    (props: StepLabelProps, { labelId }) => narration.jump(labelId, props),
+]);
+```
+
+## その他の機能
+
+<Accordions>
+
+<Accordion title="`StepLabelProps`" id="steplabelprops">
+
+:::tip[テンプレート]
+
+すべてのテンプレートで、`StepLabelProps` インターフェースはすでにオーバーライドされています。 `pixi-vn.d.ts` ファイルで確認できます。
+
+:::
+
+すべての <DynamicLink href="/start/labels-flow">ナラティブフロー制御関数</DynamicLink> は、[`StepLabelProps`](/jsdoc/pixi-vn/index/interfaces/StepLabelProps) インターフェースに一致するオブジェクトを必要とします。 `.d.ts` ファイルで `StepLabelProps` インターフェースを「オーバーライド」して、必要なパラメーターを指定できます。
+
+```ts tab="pixi-vn.d.ts"
+import { narration } from "@drincs/pixi-vn";
+
+declare module "@drincs/pixi-vn" {
+    interface StepLabelProps {
+        navigate: (route: string) => void;
+    }
+}
+```
+
+```ts tab="content/labels/start.label.ts"
+export const startLabel = newLabel("start", [
+    ({ navigate }) => {
+        navigate("/new-route");
+    },
+]);
+```
+
+</Accordion>
+
+<Accordion title="`step` のカスタムプロパティ" id="step-pros">
+
+[`newLabel`](/jsdoc/pixi-vn/index/functions/newLabel) 関数に型を渡すことで、[`StepLabelProps`](#steplabelprops) に加えて、そのナラティブノード（`label`）にカスタムパラメーターを追加できます。
+
+```ts title="content/labels/start.label.ts"
+import { narration } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel<{ name: string }>("start", [
+    (props) => {
+        console.log(props.name);
+    },
+]);
+
+narration.call(startLabel, {
+    // Add StepLabelProps here
+    navigate: navigate, // example
+    // And the custom props for the label
+    name: "John",
+});
+```
+
+</Accordion>
+
+<Accordion title="`StepLabelResult`" id="step-results">
+
+ナラティブステップは [`StepLabelResult`](/jsdoc/pixi-vn/index/interfaces/StepLabelResult) オブジェクトを返すことができます。 `.d.ts` ファイルで `StepLabelResult` インターフェースを「オーバーライド」して、ナラティブステップ（`step`）の結果にカスタムプロパティを定義できます。
+
+```ts tab="pixi-vn.d.ts"
+declare module "@drincs/pixi-vn" {
+    interface StepLabelResult {
+        newRoute?: string;
+        [key: string]: any;
+    }
+}
+```
+
+```ts tab="content/labels/start.label.ts"
+export const startLabel = newLabel("start", [
+    () => {
+        return {
+            newRoute: "/new-route",
+            customProperty: 12,
+        };
+    },
+]);
+```
+
+</Accordion>
+
+</Accordions>

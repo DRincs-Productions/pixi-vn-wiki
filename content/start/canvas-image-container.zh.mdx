@@ -1,0 +1,189 @@
+---
+title: 容器（`ImageContainer`）
+description: 在 Pixi’VN 中使用 ImageContainer 组件对多张图片进行分组并将其作为单个画布组件进行操作的用法与功能。
+---
+
+import {
+    AddImageContainerExample,
+    ShowImageContainerExample,
+} from "@/components/examples";
+
+[`ImageContainer`](/jsdoc/pixi-vn/index/classes/ImageContainer) 组件扩展自 [`Container`](/jsdoc/pixi-vn/index/classes/Container) 组件，因此您可以使用 [`Container`](/jsdoc/pixi-vn/index/classes/Container) 的所有方法和属性。 它允许您将多张图片组合成单个组件，并将它们作为一个整体进行操作。
+
+[`ImageContainer`](/jsdoc/pixi-vn/index/classes/ImageContainer) 的子元素是 [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite) 组件。
+
+```ts tab="main.ts"
+import { canvas, ImageContainer } from "@drincs/pixi-vn";
+
+let james = new ImageContainer(
+    {
+        anchor: { x: 0.5, y: 0.5 },
+        x: 100,
+        y: 100,
+    },
+    ["m01-body", "m01-eyes", "m01-mouth"],
+);
+
+await james.load();
+canvas.add("james", james);
+```
+
+```json tab="src/assets/manifest.gen.json"
+{
+    "bundles": [
+        {
+            "name": "m01",
+            "assets": [
+                {
+                    "alias": "m01-body",
+                    "src": "./assets/m01/m01-body.png"
+                },
+                {
+                    "alias": "m01-head",
+                    "src": "./assets/m01/m01-head.png"
+                },
+                {
+                    "alias": "m01-eyes",
+                    "src": "./assets/m01/m01-eyes.png"
+                }
+            ]
+        }
+    ]
+}
+```
+
+与 [`Container`](/jsdoc/pixi-vn/index/classes/Container) 组件相比，[`ImageContainer`](/jsdoc/pixi-vn/index/classes/ImageContainer) 新增了以下功能：
+
+* [`load`](/jsdoc/pixi-vn/index/classes/ImageContainer#load)：加载所有图片 URL 并将生成的纹理设置到子元素中。
+* 额外定位功能：<DynamicLink href="/start/canvas-position">按百分比对齐和定位</DynamicLink>。
+
+## 显示
+
+在画布上显示一组图片最简单的方式是使用 [`showImageContainer`](/jsdoc/pixi-vn/index/functions/showImageContainer) 函数。 该函数结合了 [`load`](/jsdoc/pixi-vn/index/classes/ImageContainer#load) 和 [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add)。
+
+```ts tab="content/labels/start.label.ts"
+import {
+    canvas,
+    ImageContainer,
+    newLabel,
+    showImageContainer,
+} from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        let james = await showImageContainer(
+            "james",
+            ["m01-body", "m01-eyes", "m01-mouth"],
+            {
+                xAlign: 0.5,
+                yAlign: 1,
+            },
+        );
+    },
+    () => {
+        canvas.removeAllTickers();
+        let tickerId = canvas.animate<ImageContainer>("james", {
+            xAlign: 0,
+            yAlign: 1,
+        });
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "m01-body",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-body.webp",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-smile.webp",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-smile00.webp",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<ShowImageContainerExample />
+
+## 添加
+
+要将一组图片添加到画布，请使用 [`addImageCointainer`](/jsdoc/pixi-vn/index/functions/addImageCointainer) 函数。 该函数仅将组件添加到画布，**不会**显示它或加载其纹理。 它通过 [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add) 将组件添加到画布。
+
+```ts tab="content/labels/start.label.ts"
+import {
+    addImageCointainer,
+    canvas,
+    ImageContainer,
+    newLabel,
+} from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        let james = await addImageCointainer(
+            "james",
+            ["m01-body", "m01-eyes", "m01-mouth"],
+            {
+                xAlign: 0.5,
+                yAlign: 1,
+            },
+        );
+    },
+    async () => {
+        let james = canvas.find<ImageContainer>("james");
+        james && (await james.load());
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "m01-body",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-body.webp",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-smile.webp",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-smile00.webp",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<AddImageContainerExample />
+
+## 移除
+
+与其他画布组件一样，你可以使用 [`canvas.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#remove) 函数移除该组件。

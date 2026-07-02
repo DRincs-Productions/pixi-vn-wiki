@@ -1,0 +1,189 @@
+---
+title: Container (`ImageContainer`)
+description: Verwendung und Funktionen der ImageContainer-Komponente in Pixi’VN zum Gruppieren und Bearbeiten mehrerer Bilder als einzelne Canvas-Komponente.
+---
+
+import {
+    AddImageContainerExample,
+    ShowImageContainerExample,
+} from "@/components/examples";
+
+Die [`ImageContainer`](/jsdoc/pixi-vn/index/classes/ImageContainer)-Komponente erweitert die [`Container`](/jsdoc/pixi-vn/index/classes/Container)-Komponente, sodass Sie alle Methoden und Eigenschaften von [`Container`](/jsdoc/pixi-vn/index/classes/Container) verwenden können. Sie ermöglicht es, mehrere Bilder zu einer einzelnen Komponente zusammenzufassen und sie gemeinsam zu bearbeiten.
+
+Die Kindelemente von [`ImageContainer`](/jsdoc/pixi-vn/index/classes/ImageContainer) sind [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite)-Komponenten.
+
+```ts tab="main.ts"
+import { canvas, ImageContainer } from "@drincs/pixi-vn";
+
+let james = new ImageContainer(
+    {
+        anchor: { x: 0.5, y: 0.5 },
+        x: 100,
+        y: 100,
+    },
+    ["m01-body", "m01-eyes", "m01-mouth"],
+);
+
+await james.load();
+canvas.add("james", james);
+```
+
+```json tab="src/assets/manifest.gen.json"
+{
+    "bundles": [
+        {
+            "name": "m01",
+            "assets": [
+                {
+                    "alias": "m01-body",
+                    "src": "./assets/m01/m01-body.png"
+                },
+                {
+                    "alias": "m01-head",
+                    "src": "./assets/m01/m01-head.png"
+                },
+                {
+                    "alias": "m01-eyes",
+                    "src": "./assets/m01/m01-eyes.png"
+                }
+            ]
+        }
+    ]
+}
+```
+
+Im Vergleich zur [`Container`](/jsdoc/pixi-vn/index/classes/Container)-Komponente fügt [`ImageContainer`](/jsdoc/pixi-vn/index/classes/ImageContainer) folgende Funktionen hinzu:
+
+* [`load`](/jsdoc/pixi-vn/index/classes/ImageContainer#load): Lädt alle Bild-URLs und setzt die resultierenden Texturen in den Kindelementen.
+* Zusätzliche Positionierung: <DynamicLink href="/start/canvas-position">Ausrichten und Positionieren mit Prozentangaben</DynamicLink>.
+
+## Anzeigen
+
+Die einfachste Methode, eine Gruppe von Bildern auf dem Canvas anzuzeigen, ist die Verwendung der Funktion [`showImageContainer`](/jsdoc/pixi-vn/index/functions/showImageContainer). Diese Funktion kombiniert [`load`](/jsdoc/pixi-vn/index/classes/ImageContainer#load) und [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add).
+
+```ts tab="content/labels/start.label.ts"
+import {
+    canvas,
+    ImageContainer,
+    newLabel,
+    showImageContainer,
+} from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        let james = await showImageContainer(
+            "james",
+            ["m01-body", "m01-eyes", "m01-mouth"],
+            {
+                xAlign: 0.5,
+                yAlign: 1,
+            },
+        );
+    },
+    () => {
+        canvas.removeAllTickers();
+        let tickerId = canvas.animate<ImageContainer>("james", {
+            xAlign: 0,
+            yAlign: 1,
+        });
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "m01-body",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-body.webp",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-smile.webp",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-smile00.webp",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<ShowImageContainerExample />
+
+## Hinzufügen
+
+Um eine Gruppe von Bildern zum Canvas hinzuzufügen, verwenden Sie die Funktion [`addImageCointainer`](/jsdoc/pixi-vn/index/functions/addImageCointainer). Diese Funktion fügt die Komponente lediglich zur Leinwand hinzu; sie zeigt sie **nicht** an und lädt auch keine Textur. Sie nutzt [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add), um die Komponente zur Leinwand hinzuzufügen.
+
+```ts tab="content/labels/start.label.ts"
+import {
+    addImageCointainer,
+    canvas,
+    ImageContainer,
+    newLabel,
+} from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        let james = await addImageCointainer(
+            "james",
+            ["m01-body", "m01-eyes", "m01-mouth"],
+            {
+                xAlign: 0.5,
+                yAlign: 1,
+            },
+        );
+    },
+    async () => {
+        let james = canvas.find<ImageContainer>("james");
+        james && (await james.load());
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "m01-body",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-body.webp",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-smile.webp",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-smile00.webp",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<AddImageContainerExample />
+
+## Entfernen
+
+Wie bei anderen Leinwand-Komponenten kann diese Komponente mit der Funktion [`canvas.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#remove) entfernt werden.

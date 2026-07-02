@@ -1,0 +1,305 @@
+---
+title: Video (`VideoSprite`)
+description: |
+  Wie man Video-Assets auf dem Canvas mit der `VideoSprite`-Komponente anzeigt, hinzufügt, steuert und verwaltet (`play`, `pause`, `loop`, `restart` sowie die Lebenszyklus-Hilfsfunktionen `showVideo` / `addVideo`).
+---
+
+import {
+    VideoSpriteAdd,
+    VideoSpriteLooping,
+    VideoSpritePlayPause,
+    VideoSpriteRestart,
+    VideoSpriteShow,
+} from "@/components/examples";
+
+Die [`VideoSprite`](/jsdoc/pixi-vn/index/classes/VideoSprite)-Komponente erweitert die [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite)-Komponente, sodass Sie alle Methoden und Eigenschaften von [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite) verwenden können. Sie dient dazu, ein einzelnes Video auf dem Canvas anzuzeigen.
+
+```ts tab="main.ts"
+import { canvas, VideoSprite } from "@drincs/pixi-vn";
+
+let video = new VideoSprite(
+    {
+        anchor: { x: 0.5, y: 0.5 },
+        x: 100,
+        y: 100,
+    },
+    "film",
+);
+
+await video.load();
+canvas.add("my_video", video);
+```
+
+```json tab="src/assets/manifest.gen.json"
+{
+    "bundles": [
+        {
+            "name": "video",
+            "assets": [
+                {
+                    "alias": "film",
+                    "src": "https://pixijs.com/assets/video.mp4"
+                }
+            ]
+        }
+    ]
+}
+```
+
+Im Vergleich zur [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite)-Komponente fügt [`VideoSprite`](/jsdoc/pixi-vn/index/classes/VideoSprite) folgende Funktionen hinzu:
+
+* [`loop`](/jsdoc/pixi-vn/index/classes/VideoSprite#loop): Gibt an, ob das Video nach dem Ende wiederholt werden soll.
+* [`paused`](/jsdoc/pixi-vn/index/classes/VideoSprite#paused): Gibt an, ob das Video pausiert ist.
+* [`pause`](/jsdoc/pixi-vn/index/classes/VideoSprite#pause): Methode zum Pausieren des Videos.
+* [`play`](/jsdoc/pixi-vn/index/classes/VideoSprite#play): Methode zum Abspielen des Videos.
+* [`currentTime`](/jsdoc/pixi-vn/index/classes/VideoSprite#currenttime): Die aktuelle Wiedergabeposition des Videos.
+* [`restart`](/jsdoc/pixi-vn/index/classes/VideoSprite#restart): Methode zum Neustarten des Videos von Anfang an.
+
+## Anzeigen
+
+Die einfachste Möglichkeit, ein Video auf dem Canvas anzuzeigen, ist die Verwendung der Funktion [`showVideo`](/jsdoc/pixi-vn/index/functions/showVideo). Diese Funktion kombiniert [`load`](/jsdoc/pixi-vn/index/classes/ImageSprite#load) und [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add).
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showVideo } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        // Show the videos on the canvas
+        let video1 = await showVideo("video");
+        // Show the video with a different alias and position
+        let video2 = await showVideo("video2", "video", {
+            xAlign: 0.5,
+        });
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "video",
+                    src: "https://pixijs.com/assets/video.mp4",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<VideoSpriteShow />
+
+## Hinzufügen
+
+Um ein Video zum Canvas hinzuzufügen, verwenden Sie die Funktion [`addVideo`](/jsdoc/pixi-vn/index/functions/addVideo). Diese Funktion fügt die Komponente lediglich zur Leinwand hinzu; sie zeigt sie **nicht** an und lädt auch keine Textur. Sie nutzt [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add), um die Komponente zur Leinwand hinzuzufügen.
+
+```ts tab="content/labels/start.label.ts"
+import { addVideo, canvas, VideoSprite, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        // Add the videos to the canvas
+        let video1 = addVideo("video");
+        // Add the video with a different alias and position
+        let video2 = addVideo("video2", "video", {
+            xAlign: 0.5,
+        });
+    },
+    async () => {
+        let video1 = canvas.find<VideoSprite>("video");
+        let video2 = canvas.find<VideoSprite>("video2");
+        // Load the textures
+        video1 && (await video1.load());
+        video2 && (await video2.load());
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "video",
+                    src: "https://pixijs.com/assets/video.mp4",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<VideoSpriteAdd />
+
+## Entfernen
+
+Wie bei anderen Leinwand-Komponenten kann diese Komponente mit der Funktion [`canvas.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#remove) entfernt werden.
+
+## Abspielen und Pausieren
+
+Verwenden Sie die Methoden [`play`](/jsdoc/pixi-vn/index/classes/VideoSprite#play) und [`pause`](/jsdoc/pixi-vn/index/classes/VideoSprite#pause), oder setzen Sie die Eigenschaft [`paused`](/jsdoc/pixi-vn/index/classes/VideoSprite#paused).
+
+```ts tab="content/labels/start.label.ts"
+import {
+    canvas,
+    narration,
+    newLabel,
+    showVideo,
+    VideoSprite,
+} from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        narration.dialogue = "add video";
+        await showVideo("video");
+    },
+    async () => {
+        narration.dialogue = "pause video";
+        let video = canvas.find<VideoSprite>("video");
+        if (video) {
+            video.pause();
+            // or: video.paused = true
+        }
+    },
+    async () => {
+        narration.dialogue = "resume video";
+        let video = canvas.find<VideoSprite>("video");
+        if (video) {
+            video.play();
+            // or: video.paused = false
+        }
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "video",
+                    src: "https://pixijs.com/assets/video.mp4",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<VideoSpritePlayPause />
+
+## Wiederholen
+
+Setzen Sie die Eigenschaft [`loop`](/jsdoc/pixi-vn/index/classes/VideoSprite#loop), um das Video in einer Schleife abzuspielen.
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showVideo } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        let video = await showVideo("video");
+        video.loop = true;
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "video",
+                    src: "https://pixijs.com/assets/video.mp4",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<VideoSpriteLooping />
+
+## Neustart
+
+Verwenden Sie die Methode [`restart`](/jsdoc/pixi-vn/index/classes/VideoSprite#restart), um die Wiedergabe von Anfang an neu zu starten.
+
+```ts tab="content/labels/start.label.ts"
+import {
+    canvas,
+    narration,
+    newLabel,
+    showVideo,
+    VideoSprite,
+} from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        narration.dialogue = "add video";
+        await showVideo("video");
+    },
+    async () => {
+        narration.dialogue = "restart video";
+        let video = canvas.find<VideoSprite>("video");
+        if (video) {
+            video.restart();
+        }
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "video",
+                    src: "https://pixijs.com/assets/video.mp4",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<VideoSpriteRestart />

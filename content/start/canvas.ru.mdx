@@ -1,0 +1,147 @@
+---
+title: Canvas (WebGL/WebGPU)
+description: Обзор того, как Pixi’VN использует PixiJS для рендеринга, различия между Pixi’VN и PixiJS, а также способы взаимодействия с canvas и инструменты отладки.
+---
+
+Pixi’VN использует [PixiJS](https://pixijs.com/8.x/guides/basics/what-pixijs-is) — 2D-движок рендеринга WebGL/WebGPU — для отрисовки всего на экране. API Pixi’VN оборачивает PixiJS, позволяя добавлять, обновлять и удалять изображения, текст и анимации, автоматически отслеживая состояние canvas, чтобы его можно было корректно сохранять и восстанавливать при сохранении и загрузке игры.
+
+<Accordions>
+
+<Accordion title="Что такое PixiJS?" id="what-is-pixijs">
+
+PixiJS — самая быстрая и лёгкая 2D-библиотека для веба, работающая на всех устройствах и позволяющая создавать богатую интерактивную графику и кросс-платформенные приложения с использованием WebGL и WebGPU. Она быстрая, гибкая и простая в использовании. PixiJS применяется в таких играх, как [Good Pizza, Great Pizza](https://www.goodpizzagreatpizza.com/) и [The Enchanted Cave 2](https://store.steampowered.com/app/368610/The_Enchanted_Cave_2/).
+
+Подробнее о PixiJS вы можете узнать на [сайте PixiJS](https://www.pixijs.com/).
+
+</Accordion>
+
+</Accordions>
+
+## Использование
+
+:::tip[*ink*]
+
+Этот метод можно использовать с синтаксисом *ink*. Подробнее <DynamicLink href="/ink/canvas">здесь</DynamicLink>.
+
+:::
+
+Для взаимодействия с приложением PixiJS можно использовать элемент `canvas`, который выступает в роли обёртки. С его помощью вы можете добавлять набор <DynamicLink href="/start/canvas-components">компонентов</DynamicLink>, предоставляемых Pixi’VN, и запускать <DynamicLink href="/start/canvas-animations-effects">анимации</DynamicLink>.
+
+```ts tab="content/labels/start.label.ts"
+import { canvas, Sprite } from "@drincs/pixi-vn"; // [!code focus]
+
+export const startLabel = newLabel("start", [
+    () => {
+        let sprite = new Sprite({}); // [!code focus]
+        canvas.add("sprite", sprite); // [!code focus]
+    },
+]);
+```
+
+## Другие возможности
+
+<Accordions>
+
+<Accordion title="Использование PixiJS напрямую" id="use-pixijs-directly">
+
+:::tip[CDN]
+
+В средах на основе CDN, таких как CodePen, вы не можете установить pixi.js, поэтому придётся использовать подмодуль `@drincs/pixi-vn/pixi.js`.
+
+:::
+
+Если вы используете инструменты сборки, такие как Vite.js или аналогичные системы, вы можете напрямую установить и использовать пакет `pixi.js`.
+
+```npm
+npm install pixi.js
+```
+
+Это полезно при создании <DynamicLink href="/start/interface#adding-pixijs-ui-layers">UI-слоёв с PixiJS</DynamicLink> или для <DynamicLink href="/start/minigames">создания мини-игр</DynamicLink>.
+
+```ts
+import { canvas } from "@drincs/pixi-vn";
+import { Graphics } from "pixi.js";
+
+const graphic = new Graphics().rect(0, 0, 200, 100).fill(0xff0000);
+
+const container = canvas.addLayer("ui");
+container.addChild(graphic);
+```
+
+Хотя это не рекомендуется, вы можете использовать [`canvas.app`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#app) для прямого доступа к приложению PixiJS, используемому Pixi’VN.
+
+```ts
+import { canvas } from "@drincs/pixi-vn";
+import { Graphics } from "pixi.js";
+
+const graphic = new Graphics().rect(0, 0, 200, 100).fill(0xff0000);
+
+canvas.app.stage.addChild(graphic);
+```
+
+</Accordion>
+
+<Accordion title="Различия между Pixi’VN и PixiJS" id="pixijs-differences">
+
+Использование canvas в Pixi’VN очень похоже на PixiJS, но есть следующие отличия:
+
+* Все компоненты, добавленные на canvas, связаны с выбранным вами <DynamicLink href="/start/canvas-alias">псевдонимом</DynamicLink>. Этот псевдоним используется для идентификации и управления компонентом.
+* Pixi’VN сохраняет текущее состояние canvas на каждом нарративном шаге (`step`).
+  **Примечание:** Сохраняются только компоненты, связанные с псевдонимом. Если вы добавляете компоненты напрямую в [`canvas.app`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#app), они не будут включены в сохранённое состояние.
+* Pixi’VN предоставляет <DynamicLink href="/start/canvas-functions">различные функции</DynamicLink> для добавления, удаления, поиска и управления компонентами на canvas.
+* Pixi’VN предлагает <DynamicLink href="/start/canvas-components">пользовательские компоненты</DynamicLink>, часть из которых соответствует компонентам PixiJS, тогда как другие добавляют новые возможности.
+* Тикеры управляются Pixi’VN. Если вы используете тикер PixiJS, его состояние не будет сохранено.
+* Для добавления слушателей событий и сохранения их состояния в сохранениях рекомендуется ознакомиться с информацией <DynamicLink href="/start/canvas-functions#add-a-listener-for-a-given-event">здесь</DynamicLink>.
+
+</Accordion>
+
+<Accordion title="PixiJS DevTools" id="pixijs-devtools">
+
+[**PixiJS DevTools**](https://pixijs.io/devtools/) — это [расширение для Chrome](https://chromewebstore.google.com/detail/pixijs-devtools/dlkffcaaoccbofklocbjcmppahjjboce), позволяющее инспектировать и отлаживать приложения PixiJS. Вы можете использовать его для просмотра списка отображения, инспекции текстур и отладки вашего приложения PixiJS. PixiJS DevTools работает с Pixi’VN, позволяя инспектировать canvas.
+
+![devtools](/devtool-properties.gif)
+
+После установки PixiJS DevTools откройте Chrome DevTools (F12) и перейдите на вкладку `PixiJS`.
+
+![image](/devtool-info.png)
+
+</Accordion>
+
+<Accordion title="Рендерер" id="renderer">
+
+PixiJS поддерживает различные бэкенды рендеринга, включая WebGL и WebGPU. Pixi’VN определяет наилучший доступный рендерер для устройства пользователя и использует его по умолчанию. Однако вы можете указать предпочтительный рендерер в методе [`Game.init`](/jsdoc/pixi-vn/index/namespaces/Game/functions/init).
+
+Например:
+
+```ts
+Game.init({
+    // ...
+    preference: "webgpu",
+});
+```
+
+</Accordion>
+
+<Accordion title="Обработка ошибок" id="error-handling">
+
+Для обработки ошибок, связанных с canvas, вы можете использовать обработчик [`drawCanvasErrorHandler`](/jsdoc/pixi-vn/index/functions/drawCanvasErrorHandler), предоставляемый Pixi’VN. Этот обработчик отобразит сообщение об ошибке на canvas при возникновении ошибки, связанной с компонентом canvas. Вы можете использовать его в функции [`Game.addOnError`](/jsdoc/pixi-vn/index/namespaces/Game/functions/addOnError).
+
+```ts title="main.ts"
+import { Game, drawCanvasErrorHandler } from "@drincs/pixi-vn";
+
+Game.addOnError(drawCanvasErrorHandler());
+```
+
+</Accordion>
+
+<Accordion title="Пауза" id="pause">
+
+Можно приостановить главный слой, используемый для игры, с помощью функции [`canvas.pause()`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#pause). Это приостановит все анимации и тикеры, связанные с canvas. Чтобы возобновить выполнение, используйте [`canvas.resume()`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#resume).
+
+Состояние паузы canvas не сохраняется в сохранениях игры, поэтому если canvas был поставлен на паузу при создании сохранения, выполнение возобновится при его загрузке.
+
+Эта функция полезна для приостановки canvas во время отображения настроек или других меню, но не для создания эффектов паузы во время геймплея.
+
+</Accordion>
+
+</Accordions>

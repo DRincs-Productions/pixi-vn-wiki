@@ -1,0 +1,371 @@
+---
+title: 에셋
+description: Pixi’VN에서 에셋 유형 및 저장 옵션(로컬 또는 온라인) 개요와 사용 예시.
+---
+
+<Accordions>
+
+<Accordion title="에셋이란 무엇인가요?" id="what-is-assets">
+
+에셋은 이미지, 사운드, 비디오 등 코드가 아닌 모든 파일입니다.
+
+</Accordion>
+
+</Accordions>
+
+에셋은 프로젝트 내에 **로컬**로 저장하거나 **온라인**에 호스팅할 수 있습니다. 캐릭터 스프라이트, 배경 이미지, 배경 음악 등 자주 사용하는 에셋은 로컬에 보관하는 것이 가장 좋습니다. 한 번만 사용하는 에셋이나 크기가 큰 선택적 파일은 온라인으로 호스팅하는 편이 낫습니다. 각 방식에는 장단점이 있습니다:
+
+## 로컬 에셋
+
+에셋을 로컬에 저장하고 사용하려면 어떤 폴더든 사용할 수 있습니다 — 제한이 없습니다. 하지만 `public/assets` 폴더를 사용하는 것이 권장됩니다. 이 폴더 안에 하위 폴더를 만들어 에셋을 더 잘 정리할 수 있습니다.
+
+<Accordions>
+
+<Accordion title="PixiJS AssetPack이란 무엇인가요?" id="what-is-pixijsassetpack">
+
+PixiJS AssetPack은 웹용 로컬 에셋을 최적화하는 도구입니다. 에셋을 변환, 결합 및 압축하는 데 사용할 수 있습니다.
+
+PixiJS AssetPack에 대해 더 자세히 알아보려면 [PixiJS 웹사이트](https://pixijs.io/assetpack)를 참조하세요.
+
+</Accordion>
+
+</Accordions>
+
+PixiJS AssetPack은 Vite.js 통합을 통해 Pixi’VN 프로젝트 템플릿에 이미 사전 구성되어 있어 — 에셋 처리 및 최적화를 자동화함으로써 프로젝트 구축에 집중할 수 있습니다.
+
+개발 중(`vite dev`)에는 `public/assets` 폴더의 변경 사항을 감시하고 즉시 처리합니다. 프로덕션 빌드(`vite build`) 중에는 번들링 전에 전체 최적화 과정을 실행합니다.
+
+적용되는 최적화에는 다음이 포함됩니다:
+
+* **압축** — 파일 크기를 줄여 더 빠른 로딩을 가능하게 합니다.
+* **형식 변환** — 지원되는 경우 이미지를 최신 형식(예: WebP, AVIF)으로 변환합니다.
+* **텍스처 아틀라스** — 여러 작은 이미지를 하나의 스프라이트 시트로 결합하여 드로우 콜을 줄입니다.
+
+처리가 완료되면 모든 에셋 번들과 해당 경로 목록이 포함된 `src/assets/manifest.gen.json` 파일이 생성됩니다. 이 파일은 PixiJS가 에셋을 효율적으로 로드하는 데 사용됩니다.
+
+<Files>
+    <Folder name="project" defaultOpen>
+        <Folder name="public" defaultOpen>
+            <Folder name="assets" defaultOpen>
+                <Folder name="audio" defaultOpen>
+                    <File name="bgm_cheerful.wav" />
+                    <File name="sfx_whoosh.wav" />
+                </Folder>
+                <Folder name="mainmenu" defaultOpen>
+                    <File name="background_main_menu.png" />
+                </Folder>
+                <Folder name="start" defaultOpen>
+                    <File name="bg01-hallway.webp" />
+                </Folder>
+                <Folder name="mc" defaultOpen>
+                    <File name="mc-neutral.png" />
+                </Folder>
+            </Folder>
+        </Folder>
+        <Folder name="src" defaultOpen>
+            <Folder name="assets">
+                <File name="manifest.gen.json" />
+                <File name="index.ts" />
+            </Folder>
+        </Folder>
+        <File name=".assetpack.ts" />
+        <File name="vite.config.ts" />
+    </Folder>
+</Files>
+
+```json tab="src/assets/manifest.gen.json"
+{
+    "bundles": [
+        {
+            "name": "audio",
+            "assets": [
+                {
+                    "alias": "bgm_cheerful",
+                    "src": "./assets/audio/bgm_cheerful.wav"
+                },
+                {
+                    "alias": "sfx_whoosh",
+                    "src": "./assets/audio/sfx_whoosh.wav"
+                }
+            ]
+        },
+        {
+            "name": "mainmenu",
+            "assets": [
+                {
+                    "alias": "background_main_menu",
+                    "src": "./assets/mainmenu/background_main_menu.png"
+                }
+            ]
+        },
+        {
+            "name": "start",
+            "assets": [
+                {
+                    "alias": "bg01-hallway",
+                    "src": "./assets/start/bg01-hallway.webp"
+                }
+            ]
+        },
+        {
+            "name": "mc",
+            "assets": [
+                {
+                    "alias": "mc-neutral",
+                    "src": "./assets/mc/mc-neutral.png"
+                }
+            ]
+        }
+    ]
+}
+```
+
+```ts tab=".assetpack.ts"
+import type { AssetPackConfig } from "@assetpack/core";
+import { pixiPipes } from "@assetpack/core/pixi";
+
+const config: AssetPackConfig = {
+    entry: "./src/assets",
+    output: "./public/assets",
+    ignore: ["**/*.ts", "**/*.js", "**/*.gen.*"],
+    pipes: [
+        ...pixiPipes({
+            manifest: {
+                output: "src/assets/manifest.gen.json",
+                createShortcuts: true,
+            },
+        }),
+    ],
+};
+
+export default config;
+```
+
+```ts tab="vite.config.ts"
+import { AssetPack } from "@assetpack/core";
+import { defineConfig, type Plugin, type ResolvedConfig } from "vite";
+import assetPackConfig from "./.assetpack.ts";
+
+export default defineConfig(() => ({
+    plugins: [
+        assetpackPlugin(),
+        // ...
+    ],
+}));
+
+function assetpackPlugin(): Plugin {
+    let mode: ResolvedConfig["command"];
+    let ap: AssetPack | undefined;
+
+    return {
+        name: "vite-plugin-assetpack",
+        configResolved(resolvedConfig) {
+            mode = resolvedConfig.command;
+            if (!resolvedConfig.publicDir) return;
+            if (assetPackConfig.output) return;
+            const publicDir = resolvedConfig.publicDir.replace(
+                process.cwd(),
+                "",
+            );
+            assetPackConfig.output = `.${publicDir}/assets/`;
+        },
+        buildStart: async () => {
+            if (mode === "serve") {
+                if (ap) return;
+                ap = new AssetPack(assetPackConfig);
+                void ap.watch();
+            } else {
+                await new AssetPack(assetPackConfig).run();
+            }
+        },
+        buildEnd: async () => {
+            if (ap) {
+                await ap.stop();
+                ap = undefined;
+            }
+        },
+    };
+}
+```
+
+## 에셋 호스팅
+
+에셋을 온라인에 저장할 수 있습니다. 프로젝트의 공간을 절약하고 싶거나, 먼저 다운로드하지 않아도 온라인에서 플레이할 수 있는 게임을 만들고 싶다면 좋은 옵션입니다. 파일을 업로드하고 공개 URL을 생성할 수 있는 클라우드 서비스라면 무엇이든 사용할 수 있습니다(단, 사용하는 클라우드 서비스가 _CORS 요청_을 허용해야 합니다).
+
+에셋을 온라인으로 호스팅하기 위한 인기 있는 옵션들은 다음과 같습니다:
+
+<Accordions>
+
+<Accordion title="Github" id="github">
+
+Github를 사용하여 에셋을 호스팅할 수 있습니다. 프로젝트에서 파일의 raw 링크를 사용할 수 있습니다. 링크는 다음 형식으로 제공됩니다:
+
+```text
+https://raw.githubusercontent.com/[repository]/raw/refs/heads/main/[file path]
+```
+
+* **가격**: 완전 무료.
+* **공간 제한**: 공간 제한 없음, 단 각 단일 파일은 100 MB를 초과하면 안 됩니다.
+* **파일 유형**: 모든 유형의 파일을 업로드할 수 있습니다.
+* **트래픽**: 속도가 최선은 아닙니다.
+* **에셋 편집**: 동일한 URL을 유지하면서 파일을 편집할 수 있습니다.
+
+</Accordion>
+
+<Accordion title="이미지 호스팅" id="image-hosting">
+
+이미지 호스팅은 이미지를 업로드할 수 있는 서비스입니다. 예를 들어 [imgbb](https://imgbb.com/), [imgix](https://www.imgix.com/), [imgur](https://imgur.com/) 등이 있습니다. 프로젝트에서 이미지 링크를 사용할 수 있습니다. 무료로 이미지를 업로드할 수 있는 사이트가 많이 있습니다.
+
+* **가격**: 완전 무료이지만 더 많은 기능을 위해 결제할 수 있습니다.
+* **공간 제한**: 공간 제한 없음, 단 각 단일 파일에 최대 크기가 있을 수 있습니다.
+* **파일 유형**: 이미지만 업로드할 수 있습니다.
+* **트래픽**: 속도가 좋습니다.
+* **에셋 편집**: 동일한 URL을 유지하면서 파일을 편집할 수 없습니다.
+
+</Accordion>
+
+<Accordion title="클라우드 스토리지" id="Cloud-storage">
+
+클라우드 스토리지는 모든 유형의 파일을 온라인으로 업로드할 수 있는 서비스입니다. 인기 있는 옵션이 많이 있습니다. 예를 들어 [Cloudflare R2](https://www.cloudflare.com/developer-platform/r2/), [Firebase Storage](https://firebase.google.com/pricing), [Amazon S3](https://aws.amazon.com/s3/pricing/), [Supabase](https://supabase.io/pricing), [Convex](https://www.convex.dev/pricing) 등이 있습니다.
+
+* **가격**: 보통 유료이거나 제한이 있는 무료 버전이 있습니다.
+* **공간 제한**: 사용된 공간 기반의 월별 비용(보통 일정 임계값을 초과하지 않으면 무료).
+* **파일 유형**: 모든 유형의 파일을 업로드할 수 있습니다.
+* **트래픽**: 속도가 좋습니다.
+* **에셋 편집**: 동일한 URL을 유지하면서 파일을 편집할 수 있습니다.
+
+</Accordion>
+
+</Accordions>
+
+에셋이 준비되면 게임이 사용할 수 있는 에셋과 번들로 그룹화되는 방식을 수동으로 정의해야 합니다.
+
+:::tip
+
+로딩 시간을 최소화하고 게임을 불필요하게 차단하지 않으려면 <DynamicLink href="/start/assets-management">에셋 로딩 모범 사례</DynamicLink>를 따르는 것을 강력히 권장합니다.
+
+:::
+
+모든 Pixi’VN 템플릿에는 에셋을 등록하기 위해 편집할 수 있는 `src/assets/index.ts` 파일이 포함되어 있습니다:
+
+```ts title="src/assets/index.ts"
+import generatedManifestJson from "@/assets/manifest.gen.json";
+import { AUDIO_BUNDLE_NAME } from "@/constants";
+import { startLabel } from "@/content/labels/start.label";
+import type { FileRouteTypes } from "@/routeTree.gen";
+import type { AssetsManifest } from "@drincs/pixi-vn";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        ...generatedManifestJson.bundles,
+        {
+            name: AUDIO_BUNDLE_NAME,
+            assets: [
+                {
+                    alias: "bgm_cheerful",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/audio/bgm_cheerful.wav",
+                },
+                {
+                    alias: "sfx_whoosh",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/audio/sfx_whoosh.wav",
+                },
+            ],
+        },
+        // screens
+        {
+            // main menu
+            name: "/" as FileRouteTypes["fullPaths"],
+            assets: [
+                {
+                    alias: "background_main_menu",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/main-menu.png",
+                },
+            ],
+        },
+        // labels
+        {
+            name: startLabel.id,
+            assets: [
+                {
+                    alias: "bg01-hallway",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/breakdown/bg01-hallway.webp",
+                },
+            ],
+        },
+        // characters
+        {
+            name: "mc",
+            assets: [
+                {
+                    alias: "mc-neutral",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/characters/mc-neutral.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+## 기타 기능
+
+<Accordions>
+
+<Accordion title="에셋 캐싱" id="caching-assets">
+
+:::tip[템플릿]
+
+모든 템플릿에서 외부 URL에서 로드된 에셋은 오프라인 사용을 위해 service worker에 의해 자동으로 캐시됩니다. 이는 `vite-plugin-pwa` 플러그인을 사용하여 `vite.config.ts` 파일에서 구성됩니다.
+
+:::
+
+온라인 게임의 경우 외부 에셋 캐싱이 매우 중요합니다. 매 세션마다 동일한 파일을 다시 다운로드하는 것을 방지하고, 지연 시간을 줄이며, 연결이 일시적으로 불가능할 때도 게임이 작동할 수 있게 합니다.
+
+이는 [VitePWA](https://vite-pwa-org.netlify.app/)에 의해 처리되며, 템플릿에 사전 구성되어 있습니다. `vite.config.ts`에서 직접 캐싱 동작을 사용자 정의할 수 있습니다:
+
+* **`CACHED_EXTERNAL_HOSTNAMES`** — 에셋을 캐시해야 하는 외부 호스트 이름 목록. 사용하는 CDN이나 원격 호스트를 추가하세요.
+* **`cacheableResponse`** — 캐싱에 적합한 HTTP 응답을 정의합니다(예: 불투명한 응답의 경우 상태 `0`, 성공적인 응답의 경우 `200`).
+* **`expiration`** — 캐시된 에셋이 유지되는 기간을 제어합니다. 기본적으로 에셋은 7일 동안 캐시됩니다(`maxAgeSeconds: 7 * 24 * 60 * 60`).
+
+```ts title="vite.config.ts"
+import { defineConfig } from "vite";
+import { VitePWA } from "vite-plugin-pwa";
+
+/**
+ * List of external hostnames whose responses should be cached by the service worker.
+ * Add any CDN or remote asset host here to enable offline caching for it.
+ * Examples:
+ *   "cdn.jsdelivr.net"
+ *   "your.cdn.domain.com"
+ */
+const CACHED_EXTERNAL_HOSTNAMES: string[] = ["raw.githubusercontent.com"];
+
+export default defineConfig(() => ({
+    plugins: [
+        VitePWA({
+            // ...
+            workbox: {
+                runtimeCaching: [
+                    {
+                        urlPattern: ({ url }) =>
+                            CACHED_EXTERNAL_HOSTNAMES.includes(url.hostname),
+                        handler: "CacheFirst",
+                        options: {
+                            cacheName: "external-assets-v1",
+                            cacheableResponse: {
+                                statuses: [0, 200],
+                            },
+                            expiration: {
+                                maxAgeSeconds: 7 * 24 * 60 * 60,
+                            },
+                        },
+                    },
+                ],
+            },
+        }),
+    ],
+}));
+```
+
+</Accordion>
+
+</Accordions>

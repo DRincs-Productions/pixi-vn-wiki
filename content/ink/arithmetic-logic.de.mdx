@@ -1,0 +1,226 @@
+---
+title: Arithmetic logic
+---
+
+<Callout type="info">
+
+You can read more about logic and variables in ink on the [official documentation](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#2-logic).
+
+</Callout>
+
+***ink*** is fully-featured in terms of arithmetic and logic. Any line prefixed with `~` is treated as a **logic line** rather than story text, which is how you perform calculations and assignments without printing anything to the screen.
+
+## Arithmetic operators
+
+***ink*** supports the following arithmetic operators:
+
+| Operator    | Description                               |
+| ----------- | ----------------------------------------- |
+| `+`         | Addition                                  |
+| `-`         | Subtraction                               |
+| `*`         | Multiplication                            |
+| `/`         | Division                                  |
+| `%` / `mod` | Modulo (remainder after integer division) |
+
+```ink title="ink"
+~ x = (x * x) - (y * y) + c
+~ y = 2 * x * y
+~ remainder = 10 mod 3
+```
+
+### Implicit numerical types
+
+Results of operations are typed based on the type of the inputs. In particular, **integer division returns an integer**, while floating-point division returns a float:
+
+```ink title="ink"
+~ x = 2 / 3    // x is 0   (integer)
+~ y = 7 / 3    // y is 2   (integer)
+~ z = 1.2 / 0.5 // z is 2.4 (float)
+```
+
+## Comparison and logical operators
+
+The following operators are available for building conditions:
+
+| Operator               | Description              |
+| ---------------------- | ------------------------ |
+| `==`                   | Equal to                 |
+| `!=`                   | Not equal to             |
+| `>`                    | Greater than             |
+| `\<`  | Less than                |
+| `>=`                   | Greater than or equal to |
+| `\<=` | Less than or equal to    |
+| `&&` / `and`           | Logical AND              |
+| `\|\|` / `or`          | Logical OR               |
+| `!` / `not`            | Logical NOT              |
+
+Conditions are written inline inside `{` `}` braces:
+
+```ink title="ink"
+{ x == 1.2 }
+{ x / 2 > 4 }
+{ y - 1 <= x * x }
+```
+
+### String queries
+
+***ink*** supports three basic string operations:
+
+```ink title="ink"
+{ "Yes, please." == "Yes, please." }   // equality
+{ "No, thank you." != "Yes, please." } // inequality
+{ "Yes, please" ? "ease" }             // substring / contains
+```
+
+## Conditional blocks (if / else)
+
+<Accordions>
+
+<Accordion title="Simple if" id="if">
+
+```ink title="ink"
+{ x > 0:
+    ~ y = x - 1
+}
+```
+
+</Accordion>
+
+<Accordion title="if / else" id="else">
+
+```ink title="ink"
+{ x > 0:
+    ~ y = x - 1
+- else:
+    ~ y = x + 1
+}
+```
+
+</Accordion>
+
+<Accordion title="if / else-if / else" id="elseif">
+
+```ink title="ink"
+{
+    - x == 0:
+        ~ y = 0
+    - x > 0:
+        ~ y = x - 1
+    - else:
+        ~ y = x + 1
+}
+```
+
+</Accordion>
+
+<Accordion title="Switch" id="switch">
+
+```ink title="ink"
+{ x:
+- 0:    zero
+- 1:    one
+- 2:    two
+- else: lots
+}
+```
+
+</Accordion>
+
+</Accordions>
+
+## Weitere Funktionen
+
+<Accordions>
+
+<Accordion title="`POW()`" id="pow">
+
+To raise a number to a power use `POW(base, exponent)`:
+
+```ink title="ink"
+{POW(3, 2)} is 9.
+{POW(16, 0.5)} is 4.
+```
+
+</Accordion>
+
+<Accordion title="`INT()`, `FLOOR()` and `FLOAT()`" id="rounding">
+
+When you need explicit type conversion or controlled rounding, use the built-in cast functions:
+
+| Function   | Description                            |
+| ---------- | -------------------------------------- |
+| `INT(x)`   | Truncates toward zero                  |
+| `FLOOR(x)` | Rounds down (toward negative infinity) |
+| `FLOAT(x)` | Converts to floating-point             |
+
+```ink title="ink"
+{INT(3.2)}    // 3
+{FLOOR(4.8)}  // 4
+{INT(-4.8)}   // -4
+{FLOOR(-4.8)} // -5
+{FLOAT(4)}    // 4.0
+```
+
+</Accordion>
+
+<Accordion title="`RANDOM(min, max)`" id="random">
+
+***ink*** can generate a random integer with `RANDOM(min, max)`. Both bounds are **inclusive** (like rolling a dice):
+
+```ink title="ink"
+~ temp dice_roll = RANDOM(1, 6)
+~ temp score = RANDOM(30, 75)
+~ temp heads = RANDOM(3, 8)
+```
+
+</Accordion>
+
+<Accordion title="Conditions on story content" id="story-condition">
+
+Conditional blocks are not limited to pure logic — they can wrap story text and even choices:
+
+```ink title="ink"
+I stared at Monsieur Fogg.
+{ know_about_wager:
+    <> "But surely you are not serious?" I demanded.
+- else:
+    <> "But there must be a reason for this trip," I observed.
+}
+```
+
+```ink title="ink"
+{ door_open:
+    *   I strode out of the compartment[] and I fancied I heard my master quietly tutting to himself.
+        -> go_outside
+- else:
+    *   I asked permission to leave[] and Monsieur Fogg looked surprised.
+        -> open_door
+    *   I stood and went to open the door[]. Monsieur Fogg seemed untroubled by this small rebellion.
+        -> open_door
+}
+```
+
+</Accordion>
+
+<Accordion title="Complex conditions with AND / OR" id="complex-conditions">
+
+Multiple conditions can be combined with `and` / `&&` and `or` / `||`:
+
+```ink title="ink"
+{
+    - visited_snakes && not dream_about_snakes:
+        ~ fear++
+        -> dream_about_snakes
+
+    - visited_poland && not dream_about_polish_beer:
+        ~ fear--
+        -> dream_about_polish_beer
+
+    - else:
+        -> dream_about_marmalade
+}
+```
+
+</Accordion>
+
+</Accordions>

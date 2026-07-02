@@ -1,0 +1,371 @@
+---
+title: Assets
+description: Panoramica dei tipi di asset e delle opzioni di archiviazione (locale o online) in Pixi’VN, con esempi di utilizzo.
+---
+
+<Accordions>
+
+<Accordion title="Cosa sono gli asset?" id="what-is-assets">
+
+Gli asset sono tutti i file che non sono codice, come immagini, suoni e video.
+
+</Accordion>
+
+</Accordions>
+
+Gli asset possono essere archiviati **localmente** all'interno del progetto o ospitati **online**. Gli asset utilizzati frequentemente — come gli sprite dei personaggi, gli sfondi e la musica di sottofondo — è meglio tenerli in locale. Gli asset utilizzati una sola volta o i file opzionali di grandi dimensioni sono meglio ospitati online. Ogni approccio presenta dei compromessi:
+
+## Asset locali
+
+Per salvare e utilizzare asset localmente, puoi usare qualsiasi cartella — non ci sono restrizioni. Tuttavia, si raccomanda di utilizzare la cartella `public/assets`. All'interno di questa cartella puoi creare sottocartelle per organizzare meglio i tuoi asset.
+
+<Accordions>
+
+<Accordion title="Cos'è PixiJS AssetPack?" id="what-is-pixijsassetpack">
+
+PixiJS AssetPack è uno strumento per ottimizzare gli asset locali per il web. Può essere utilizzato per trasformare, combinare e comprimere gli asset.
+
+Puoi saperne di più su PixiJS AssetPack sul [sito di PixiJS](https://pixijs.io/assetpack).
+
+</Accordion>
+
+</Accordions>
+
+PixiJS AssetPack è già preconfigurato nei template di progetto di Pixi’VN tramite l'integrazione con Vite.js — automatizzando l'elaborazione e l'ottimizzazione dei tuoi asset così da permetterti di concentrarti sulla costruzione del progetto.
+
+Durante lo sviluppo (`vite dev`) monitora la cartella `public/assets` per le modifiche e le elabora al volo. Durante il build di produzione (`vite build`) esegue un passaggio di ottimizzazione completo prima del bundling.
+
+Le ottimizzazioni che applica includono:
+
+* **Compressione** — riduce le dimensioni dei file per un caricamento più rapido.
+* **Conversione di formato** — converte le immagini in formati moderni (es. WebP, AVIF) quando supportati.
+* **Atlanti di texture** — combina più immagini piccole in un unico sprite sheet per ridurre le chiamate di disegno.
+
+Al termine dell'elaborazione, genera il file `src/assets/manifest.gen.json`, che contiene l'elenco di tutti i bundle di asset e i loro percorsi. Questo file viene poi usato da PixiJS per caricare gli asset in modo efficiente.
+
+<Files>
+    <Folder name="project" defaultOpen>
+        <Folder name="public" defaultOpen>
+            <Folder name="assets" defaultOpen>
+                <Folder name="audio" defaultOpen>
+                    <File name="bgm_cheerful.wav" />
+                    <File name="sfx_whoosh.wav" />
+                </Folder>
+                <Folder name="mainmenu" defaultOpen>
+                    <File name="background_main_menu.png" />
+                </Folder>
+                <Folder name="start" defaultOpen>
+                    <File name="bg01-hallway.webp" />
+                </Folder>
+                <Folder name="mc" defaultOpen>
+                    <File name="mc-neutral.png" />
+                </Folder>
+            </Folder>
+        </Folder>
+        <Folder name="src" defaultOpen>
+            <Folder name="assets">
+                <File name="manifest.gen.json" />
+                <File name="index.ts" />
+            </Folder>
+        </Folder>
+        <File name=".assetpack.ts" />
+        <File name="vite.config.ts" />
+    </Folder>
+</Files>
+
+```json tab="src/assets/manifest.gen.json"
+{
+    "bundles": [
+        {
+            "name": "audio",
+            "assets": [
+                {
+                    "alias": "bgm_cheerful",
+                    "src": "./assets/audio/bgm_cheerful.wav"
+                },
+                {
+                    "alias": "sfx_whoosh",
+                    "src": "./assets/audio/sfx_whoosh.wav"
+                }
+            ]
+        },
+        {
+            "name": "mainmenu",
+            "assets": [
+                {
+                    "alias": "background_main_menu",
+                    "src": "./assets/mainmenu/background_main_menu.png"
+                }
+            ]
+        },
+        {
+            "name": "start",
+            "assets": [
+                {
+                    "alias": "bg01-hallway",
+                    "src": "./assets/start/bg01-hallway.webp"
+                }
+            ]
+        },
+        {
+            "name": "mc",
+            "assets": [
+                {
+                    "alias": "mc-neutral",
+                    "src": "./assets/mc/mc-neutral.png"
+                }
+            ]
+        }
+    ]
+}
+```
+
+```ts tab=".assetpack.ts"
+import type { AssetPackConfig } from "@assetpack/core";
+import { pixiPipes } from "@assetpack/core/pixi";
+
+const config: AssetPackConfig = {
+    entry: "./src/assets",
+    output: "./public/assets",
+    ignore: ["**/*.ts", "**/*.js", "**/*.gen.*"],
+    pipes: [
+        ...pixiPipes({
+            manifest: {
+                output: "src/assets/manifest.gen.json",
+                createShortcuts: true,
+            },
+        }),
+    ],
+};
+
+export default config;
+```
+
+```ts tab="vite.config.ts"
+import { AssetPack } from "@assetpack/core";
+import { defineConfig, type Plugin, type ResolvedConfig } from "vite";
+import assetPackConfig from "./.assetpack.ts";
+
+export default defineConfig(() => ({
+    plugins: [
+        assetpackPlugin(),
+        // ...
+    ],
+}));
+
+function assetpackPlugin(): Plugin {
+    let mode: ResolvedConfig["command"];
+    let ap: AssetPack | undefined;
+
+    return {
+        name: "vite-plugin-assetpack",
+        configResolved(resolvedConfig) {
+            mode = resolvedConfig.command;
+            if (!resolvedConfig.publicDir) return;
+            if (assetPackConfig.output) return;
+            const publicDir = resolvedConfig.publicDir.replace(
+                process.cwd(),
+                "",
+            );
+            assetPackConfig.output = `.${publicDir}/assets/`;
+        },
+        buildStart: async () => {
+            if (mode === "serve") {
+                if (ap) return;
+                ap = new AssetPack(assetPackConfig);
+                void ap.watch();
+            } else {
+                await new AssetPack(assetPackConfig).run();
+            }
+        },
+        buildEnd: async () => {
+            if (ap) {
+                await ap.stop();
+                ap = undefined;
+            }
+        },
+    };
+}
+```
+
+## Hosting degli asset
+
+Puoi salvare i tuoi asset online. È una buona opzione se vuoi risparmiare spazio nel progetto o se vuoi creare un gioco giocabile online senza la necessità di scaricarlo prima. Puoi utilizzare qualsiasi servizio cloud che ti permetta di caricare file e generare un URL pubblico (devi assicurarti che il servizio cloud che stai usando consenta le *richieste CORS*).
+
+Ecco alcune opzioni popolari per l'hosting online degli asset:
+
+<Accordions>
+
+<Accordion title="Github" id="github">
+
+Puoi usare Github per ospitare i tuoi asset. Puoi usare il link raw del file nel tuo progetto. Il link avrà il seguente formato:
+
+```text
+https://raw.githubusercontent.com/[repository]/raw/refs/heads/main/[file path]
+```
+
+* **Prezzo**: Completamente gratuito.
+* **Limiti di spazio**: Nessun limite di spazio, ma ogni singolo file non deve superare 100 MB.
+* **Tipo di file**: Puoi caricare qualsiasi tipo di file.
+* **Traffico**: La velocità non è la migliore.
+* **Modifica degli asset**: Puoi modificare il file mantenendo lo stesso URL.
+
+</Accordion>
+
+<Accordion title="Hosting di immagini" id="image-hosting">
+
+L'hosting di immagini è un servizio che ti permette di caricare immagini. Ci sono molti siti per caricare immagini gratuitamente, ad esempio [imgbb](https://imgbb.com/), [imgix](https://www.imgix.com/), [imgur](https://imgur.com/). Puoi usare il link dell'immagine nel tuo progetto.
+
+* **Prezzo**: Completamente gratuito, ma puoi pagare per più funzionalità.
+* **Limiti di spazio**: Nessun limite di spazio, ma ogni singolo file può avere una dimensione massima.
+* **Tipo di file**: Puoi caricare solo immagini.
+* **Traffico**: La velocità è buona.
+* **Modifica degli asset**: Non puoi modificare il file mantenendo lo stesso URL.
+
+</Accordion>
+
+<Accordion title="Archiviazione cloud" id="Cloud-storage">
+
+L'archiviazione cloud è un servizio che ti permette di caricare online qualsiasi tipo di file. Ci sono molte opzioni popolari, ad esempio [Cloudflare R2](https://www.cloudflare.com/developer-platform/r2/), [Firebase Storage](https://firebase.google.com/pricing), [Amazon S3](https://aws.amazon.com/s3/pricing/), [Supabase](https://supabase.io/pricing), [Convex](https://www.convex.dev/pricing).
+
+* **Prezzo**: Di solito a pagamento o con una versione gratuita con limitazioni.
+* **Limiti di spazio**: Costo mensile basato sullo spazio utilizzato (di solito gratuito se non si supera una certa soglia).
+* **Tipo di file**: Puoi caricare qualsiasi tipo di file.
+* **Traffico**: La velocità è buona.
+* **Modifica degli asset**: Puoi modificare il file mantenendo lo stesso URL.
+
+</Accordion>
+
+</Accordions>
+
+Una volta che i tuoi asset sono pronti, devi definire manualmente quali di essi il gioco può usare e come vengono raggruppati in bundle.
+
+:::tip
+
+Si raccomanda vivamente di seguire le <DynamicLink href="/start/assets-management">best practice per il caricamento degli asset</DynamicLink> per ridurre al minimo i tempi di caricamento ed evitare di bloccare inutilmente il gioco.
+
+:::
+
+Tutti i template di Pixi’VN includono un file `src/assets/index.ts` che puoi modificare per registrare i tuoi asset:
+
+```ts title="src/assets/index.ts"
+import generatedManifestJson from "@/assets/manifest.gen.json";
+import { AUDIO_BUNDLE_NAME } from "@/constants";
+import { startLabel } from "@/content/labels/start.label";
+import type { FileRouteTypes } from "@/routeTree.gen";
+import type { AssetsManifest } from "@drincs/pixi-vn";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        ...generatedManifestJson.bundles,
+        {
+            name: AUDIO_BUNDLE_NAME,
+            assets: [
+                {
+                    alias: "bgm_cheerful",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/audio/bgm_cheerful.wav",
+                },
+                {
+                    alias: "sfx_whoosh",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/audio/sfx_whoosh.wav",
+                },
+            ],
+        },
+        // screens
+        {
+            // main menu
+            name: "/" as FileRouteTypes["fullPaths"],
+            assets: [
+                {
+                    alias: "background_main_menu",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/main-menu.png",
+                },
+            ],
+        },
+        // labels
+        {
+            name: startLabel.id,
+            assets: [
+                {
+                    alias: "bg01-hallway",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/breakdown/bg01-hallway.webp",
+                },
+            ],
+        },
+        // characters
+        {
+            name: "mc",
+            assets: [
+                {
+                    alias: "mc-neutral",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/characters/mc-neutral.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+## Altre funzionalità
+
+<Accordions>
+
+<Accordion title="Caching degli asset" id="caching-assets">
+
+:::tip[Modelli]
+
+In tutti i template, gli asset caricati da URL esterne vengono automaticamente memorizzati nella cache dal service worker per l'uso offline. Questo è configurato nel file `vite.config.ts` tramite il plugin `vite-plugin-pwa`.
+
+:::
+
+Per i giochi online, la memorizzazione nella cache degli asset esterni è fondamentale: evita di ri-scaricare gli stessi file ad ogni sessione, riduce la latenza e permette al gioco di funzionare anche quando la connessione è temporaneamente non disponibile.
+
+Questo è gestito da [VitePWA](https://vite-pwa-org.netlify.app/), preconfigurato nei template. Puoi personalizzare il comportamento della cache direttamente in `vite.config.ts`:
+
+* **`CACHED_EXTERNAL_HOSTNAMES`** — elenco dei nomi host esterni i cui asset devono essere memorizzati nella cache. Aggiungi qualsiasi CDN o host remoto che utilizzi.
+* **`cacheableResponse`** — definisce quali risposte HTTP sono idonee alla cache (es. stato `0` per le risposte opache e `200` per quelle riuscite).
+* **`expiration`** — controlla per quanto tempo vengono conservati gli asset in cache. Per impostazione predefinita gli asset vengono memorizzati nella cache per 7 giorni (`maxAgeSeconds: 7 * 24 * 60 * 60`).
+
+```ts title="vite.config.ts"
+import { defineConfig } from "vite";
+import { VitePWA } from "vite-plugin-pwa";
+
+/**
+ * List of external hostnames whose responses should be cached by the service worker.
+ * Add any CDN or remote asset host here to enable offline caching for it.
+ * Examples:
+ *   "cdn.jsdelivr.net"
+ *   "your.cdn.domain.com"
+ */
+const CACHED_EXTERNAL_HOSTNAMES: string[] = ["raw.githubusercontent.com"];
+
+export default defineConfig(() => ({
+    plugins: [
+        VitePWA({
+            // ...
+            workbox: {
+                runtimeCaching: [
+                    {
+                        urlPattern: ({ url }) =>
+                            CACHED_EXTERNAL_HOSTNAMES.includes(url.hostname),
+                        handler: "CacheFirst",
+                        options: {
+                            cacheName: "external-assets-v1",
+                            cacheableResponse: {
+                                statuses: [0, 200],
+                            },
+                            expiration: {
+                                maxAgeSeconds: 7 * 24 * 60 * 60,
+                            },
+                        },
+                    },
+                ],
+            },
+        }),
+    ],
+}));
+```
+
+</Accordion>
+
+</Accordions>

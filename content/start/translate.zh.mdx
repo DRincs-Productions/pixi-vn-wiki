@@ -1,0 +1,227 @@
+---
+title: 国际化
+description: 本页面介绍如何使用 i18next 为您的 Pixi’VN 游戏添加多语言支持，包括 UI 和叙事翻译策略。 如何翻译视觉小说？
+---
+
+在视觉小说及类似游戏中，通常允许玩家选择其母语。
+
+对于您的 Pixi’VN 项目，您应该使用外部库来处理翻译。 这让您可以灵活选择最适合自身需求的实现方式。
+
+最流行且兼容性最广的库是 **i18next**。
+
+<Accordions>
+
+<Accordion title="什么是 i18next？" id="what-is-i18next">
+
+i18next 是一个用于 JavaScript 的国际化框架。 要使用它，您需要安装并初始化它。 了解更多请访问 [i18next 官网](https://www.i18next.com/)。
+
+</Accordion>
+
+</Accordions>
+
+:::tip[模板]
+
+在所有模板中，i18next 已包含并配置完毕。 您可以立即开始翻译游戏。
+
+:::
+
+翻译内容存储在多个 JSON 文件中（每种语言一个），使用键值对形式。 键是文本的唯一标识符，值是翻译后的字符串。
+
+<Accordions>
+
+<Accordion title="初始化" id="initialize">
+
+```ts title="lib/i18n.ts"
+import i18n, { type ReadCallback } from "i18next";
+import LanguageDetector from "i18next-browser-languagedetector";
+import ChainedBackend from "i18next-chained-backend";
+import { initReactI18next } from "react-i18next";
+
+class Backend extends ChainedBackend {
+    override async read(lng: string, ns: string, callback: ReadCallback) {
+        try {
+            const object = await getLocalesResource(lng);
+            const result = object[ns];
+            callback(null, result);
+        } catch (error) {
+            callback(error as Error, { data: null });
+        }
+    }
+}
+
+export const useI18n = async () => {
+    if (!i18n.isInitialized) {
+        return await i18n
+            .use(Backend)
+            .use(LanguageDetector)
+            .use(initReactI18next)
+            .init({
+                debug: false,
+                fallbackLng: "en",
+                supportedLngs: ["en"],
+                interpolation: {
+                    escapeValue: false,
+                },
+                load: "currentOnly",
+                detection: {
+                    order: ["localStorage"],
+                    caches: ["localStorage"],
+                },
+                missingInterpolationHandler(_text, value, _options) {
+                    return value[1];
+                },
+            });
+    }
+};
+
+function getLocalesResource(
+    lng: string,
+): Promise<Record<string, Record<string, string>>> {
+    return import(`./../locales/${lng}.json`);
+}
+```
+
+</Accordion>
+
+<Accordion title="翻译 UI" id="translate-ui">
+
+要翻译 UI，请使用 i18next 提供的 `t` 函数。 将翻译键传递给 `t`，即可获取玩家语言对应的文本。
+
+例如：
+
+```tsx tab="React"
+import { useTranslation } from "react-i18next";
+
+export default function MyComponent() {
+    const { t } = useTranslation("ui");
+
+    return (
+        <div>
+            <Button>{t("text_speed")}</Button>
+        </div>
+    );
+}
+```
+
+```vue tab="Vue"
+<script setup>
+import { useTranslation } from "i18next-vue";
+const { t } = useTranslation("ui");
+</script>
+
+<template>
+    <div>
+        <button>{{ t("text_speed") }}</button>
+    </div>
+</template>
+```
+
+```svelte tab="Svelte"
+<script>
+    import { useTranslation } from 'svelte-i18n';
+    const { t } = useTranslation("ui");
+</script>
+
+<div>
+    <button>{t('text_speed')}</button>
+</div>
+```
+
+</Accordion>
+
+<Accordion title="翻译叙事（TypeScript/JavaScript）" id="translate-narration">
+
+:::tip[模板]
+
+在所有模板中，`StepLabelProps` 接口已包含 `t` 函数。 参见 `pixi-vn.d.ts`。
+
+:::
+
+:::tip
+
+建议在 <DynamicLink href="/start/labels">label</DynamicLink> 中使用 `t`，而不是直接在 UI 中使用，这样可以利用 [i18n 插值](https://i18next.com/translation-function/interpolation)。
+
+:::
+
+在 Pixi’VN 项目中，您通常需要在 TypeScript/JavaScript <DynamicLink href="/start/labels">叙事节点（`labels`）</DynamicLink> 中翻译叙事文本。 为此，翻译函数必须包含在 <DynamicLink href="/start/labels#steplabelprops">`StepLabelProps` 接口</DynamicLink>中。
+
+建议使用原始字符串作为翻译键。
+
+```ts tab="content/labels/start.label.ts"
+export const startLabel = newLabel("start", [
+    ({ t }) => {
+        narration.dialogue = {
+            character: liam,
+            text: t("Hello, my name is {{name}}", { name: "Liam" }),
+        };
+    },
+]);
+```
+
+```ts tab="pixi-vn.d.ts"
+import type { TFunction } from "i18next";
+
+declare module "@drincs/pixi-vn" {
+    interface StepLabelProps {
+        /**
+         * Translate a key to a string.
+         * @param key The key to translate.
+         * @returns The translated string.
+         */
+        t: TFunction<[string], undefined>;
+        // ...
+    }
+}
+```
+
+```ts tab="locales/es.json"
+{
+    "narration": {
+        "Hello, my name is {{name}}": "Hola, mi nombre es {{name}}"
+        // ...
+    }
+}
+```
+
+```ts tab="lib/hooks/props-hooks.ts"
+import { useTranslation } from "react-i18next";
+
+export function useGameProps(): StepLabelProps {
+    const { t } = useTranslation(["narration"]);
+
+    return {
+        // ...
+        t,
+    };
+}
+```
+
+</Accordion>
+
+</Accordions>
+
+## 创建存档
+
+:::tip[*ink*]
+
+如果您使用 *ink*，可以自动从 *ink* 文本中提取字符串用于翻译。 了解更多 <DynamicLink href="/ink/translate">此处</DynamicLink>。
+
+:::
+
+翻译 JSON 文件需要手动创建。 建议将翻译分为两个部分（参见 `es.json`）：
+
+* UI 文本：用于屏幕、设置、快捷按钮等——所有不属于叙事的内容。
+* 叙事文本：用于对话、选项菜单等。
+
+```json tab="locales/es.json"
+{
+    "ui": {
+        "text_speed": "Velocidad del texto"
+        // ...
+    },
+    "narration": {
+        "Hello, my name is {{name}}": "Hola, mi nombre es {{name}}"
+        // ...
+    }
+}
+```

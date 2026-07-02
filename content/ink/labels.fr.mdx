@@ -1,0 +1,165 @@
+---
+title: Knots
+description: |
+  Learn how knots and labels work in Pixi’VN, how to run them from ink scripts or JavaScript, and the differences between native ink and Pixi’VN integration.
+---
+
+import {
+    NativeJumpExample,
+    NativeCallExample,
+    JumpExample,
+    CallExample,
+} from "@/components/ink-examples";
+
+What is a **`knot`**? As explained in the [official documentation](https://www.inklestudios.com/ink/web-tutorial/), the story is comprised of multiple linked sections which we call `knots` in ***ink* terminology**. The start of a `knot` is indicated in ***ink*** using at least two equals signs the left hand side `knot`'s name, and optionally on the right too (so for example `=== london ===`).
+
+Are there differences between `label` and `knot`? No, they are the same thing. In Pixi’VN, when you create a `knot` with ***ink***, a `label` will be created internally and saved in the registry.
+
+## Run a knot
+
+To run a `knot` you can use the following methods:
+
+<Accordions>
+
+<Accordion title="Diverts `-> start` (jump a `label`)" id="jump">
+
+You can execute a `knot` using the Divert operator, which is represented by the `-> start` syntax. It corresponds to the <DynamicLink href="/start/labels#jump-to-a-label">`jump` functionality</DynamicLink> in the Pixi’VN library.
+
+Write the `->` symbol followed by the name of the `knot`, for example:
+
+```ink title="ink/start.ink"
+=== start ===
+Start
+-> after // [!code focus]
+
+=== after ===
+After
+End
+-> DONE
+```
+
+<NativeJumpExample />
+
+</Accordion>
+
+<Accordion title="Tunnels `-> start ->` or Threads `<- start`  (call a `label`)" id="call">
+
+<Callout type="info" title="Threads">
+
+Unlike **native ink**, in **ink + Pixi’VN integration** "Threads" are not supported, so the `\<-` symbol corresponds to calling a `knot` instead of being a "Thread" operator.
+
+</Callout>
+
+<Callout type="info">
+
+For simplicity, in **ink + Pixi’VN integration**, `->->` and `-> DONE` will correctly close the `label`, so they are equivalent.
+
+</Callout>
+
+You can execute a `knot` using the Tunnels operator, which is represented by the `-> start ->` syntax. It corresponds to the <DynamicLink href="/start/labels#call-to-a-label">`call` functionality</DynamicLink> in the Pixi’VN library.
+
+Write the `->` symbol followed by the name of the `knot` and then the `->` symbol again, for example:
+
+```ink title="ink/start.ink"
+VAR reputation = 0
+
+-> start
+=== start ===
+You are in the square.
+
+* [Talk to the guard]
+    -> guard_dialogue ->
+    You return to the square.
+    -> start
+    You don't see this line because you are sent back to the city before.
+
+* {reputation >= 1} [Ask for a favor]
+    The guard helps you.
+    -> END
+
+=== guard_dialogue ===
+The guard looks at you.
+
+* [Greet]
+    "Hello citizen."
+    ~ reputation += 1
+->->
+
+* [Insult]
+    "Hey you!"
+    ~ reputation -= 1
+
+->->
+```
+
+<NativeCallExample />
+
+</Accordion>
+
+</Accordions>
+
+## Autres fonctionnalités
+
+<Accordions>
+
+<Accordion title="parameters" id="parameters">
+
+A particularly useful form of temporary variable is a **parameter**. Any knot or stitch can receive a value as a parameter, which is treated as a local temporary variable inside that knot:
+
+```ink title="ink/start.ink"
+=== start ===
+*   [Accuse Hastings]
+        -> accuse("Hastings")
+*   [Accuse Mrs Black]
+        -> accuse("Claudia")
+*   [Accuse myself]
+        -> accuse("myself")
+
+=== accuse(who) ===
+    "I accuse {who}!" Poirot declared.
+    "Really?" Japp replied. "{who == "myself":You did it?|{who}?}"
+    "And why not?" Poirot shot back.
+```
+
+Parameters are the correct way to pass a temporary value from one knot or stitch into another, because ordinary `temp` variables are not accessible outside the stitch where they were declared.
+
+### Recursive knots with parameters
+
+Temporary variables (including parameters) are safe to use in recursive knots:
+
+```ink title="ink/start.ink"
+-> add_one_to_one_hundred(0, 1)
+
+=== add_one_to_one_hundred(total, x) ===
+    ~ total = total + x
+    { x == 100:
+        -> finished(total)
+    - else:
+        -> add_one_to_one_hundred(total, x + 1)
+    }
+
+=== finished(total) ===
+    "The result is {total}!" you announce.
+    -> END
+```
+
+### Sending divert targets as parameters
+
+Knot addresses can also be passed as parameters. Use `->` to indicate that a parameter is a divert target:
+
+```ink title="ink/start.ink"
+=== sleeping_in_hut ===
+    You lie down and close your eyes.
+    -> generic_sleep(-> waking_in_the_hut)
+
+=== generic_sleep(-> waking) ===
+    You sleep perchance to dream etc. etc.
+    -> waking
+
+=== waking_in_the_hut ===
+    You get back to your feet, ready to continue your journey.
+```
+
+</Accordion>
+
+</Accordions>
