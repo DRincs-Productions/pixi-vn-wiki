@@ -227,7 +227,7 @@ export function StepsGrid({ terminal, writing }: { terminal: ReactNode; writing:
                 </div>
                 <h3 className="text-2xl font-semibold">{t("ship")}</h3>
                 <Markdown className="text-fd-muted-foreground">{t("ship_description")}</Markdown>
-                <div className="mt-4 flex flex-row flex-wrap items-center gap-8">
+                <div className="mt-4 flex flex-row flex-wrap items-center justify-center gap-8">
                     <Link href="/start/distribution-steam" rel="noreferrer noopener">
                         <SteamLogo className="h-10 w-auto" />
                     </Link>

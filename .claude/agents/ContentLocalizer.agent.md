@@ -41,13 +41,16 @@ The translated file is placed alongside the source file with the language code i
 
 When a glossary term appears **as inline code** in the source (e.g. `` `label` ``), expand it in the translation using the pattern **localized name (`original`)** — except in Chinese and Japanese where the pattern is **漢字/カナ（`original`）** using full-width parentheses.
 
-| English (`source`) | Chinese (`zh`)      | Japanese (`ja`)              | French (`fr`) | German (`de`) | Italian (`it`) | Russian (`ru`)             | Spanish (`es`) | Korean (`ko`)           |
-| ------------------ | ------------------- | ---------------------------- | ------------- | ------------- | -------------- | -------------------------- | -------------- | ----------------------- |
-| `` `label` ``      | 叙事节点（`label`） | ナラティブノード（`label`）  | `label`       | `label`       | `label`        | нарративный узел (`label`) | `label`        | 내러티브 노드 (`label`) |
-| `` `knot` ``       | 叙事节点（`knot`）  | ナラティブノード（`knot`）   | `knot`        | `knot`        | `knot`         | нарративный узел (`knot`)  | `knot`         | 내러티브 노드 (`knot`)  |
-| `"glue"`           | "グルー"（glue）    | "グルー"（glue）             | "glue"        | "glue"        | "glue"）       | "клей"（glue）             | "glue"         | "글루"（glue）          |
-| `` `step` ``       | 叙事步骤（`step`）  | ナラティブステップ（`step`） | `step`        | `step`        | `step`         | нарративный шаг (`step`)   | `step`         | 내러티브 단계 (`step`)  |
-| `` `alias` ``      | 别名（`alias`）     | エイリアス（`alias`）        | `alias`       | `alias`       | `alias`        | псевдоним (`alias`)        | `alias`        | 별칭 (`alias`)          |
+| English (`source`) | Chinese (`zh`)      | Japanese (`ja`)              | French (`fr`)            | German (`de`)       | Italian (`it`)               | Russian (`ru`)             | Spanish (`es`)            | Korean (`ko`)           |
+| ------------------ | ------------------- | ---------------------------- | ------------------------ | ------------------- | ---------------------------- | -------------------------- | ------------------------- | ----------------------- |
+| `` `label` ``      | 叙事节点（`label`） | ナラティブノード（`label`）  | `label`                  | `label`             | `label`                      | нарративный узел (`label`) | `label`                   | 내러티브 노드 (`label`) |
+| `` `knot` ``       | 叙事节点（`knot`）  | ナラティブノード（`knot`）   | `knot`                   | `knot`              | `knot`                       | нарративный узел (`knot`)  | `knot`                    | 내러티브 노드 (`knot`)  |
+| `"glue"`           | "グルー"（glue）    | "グルー"（glue）             | "glue"                   | "glue"              | "glue"）                     | "клей"（glue）             | "glue"                    | "글루"（glue）          |
+| `` `step` ``       | 叙事步骤（`step`）  | ナラティブステップ（`step`） | `step`                   | `step`              | `step`                       | нарративный шаг (`step`)   | `step`                    | 내러티브 단계 (`step`)  |
+| `` `alias` ``      | 别名（`alias`）     | エイリアス（`alias`）        | `alias`                  | `alias`             | `alias`                      | псевдоним (`alias`)        | `alias`                   | 별칭 (`alias`)          |
+| anchor             | 锚点（anchor）      | アンカー（anchor）           | point d'ancrage (anchor) | Ankerpunkt (anchor) | punto di ancoraggio (anchor) | точка привязки (anchor)    | punto de anclaje (anchor) | 앵커 (anchor)           |
+| pivot              | 轴心点（pivot）     | ピボット（pivot）            | point de pivot (pivot)   | Drehpunkt (pivot)   | perno (pivot)                | точка поворота (pivot)     | pivote (pivot)            | 피벗 (pivot)            |
+| align              | 对齐（align）       | 配置（align）                | alignement (align)       | Ausrichtung (align) | allineamento (align)         | выравнивание (align)       | alineación (align)        | 정렬 (align)            |
 
 > This glossary grows over time. Before starting a translation session, re-read this file to pick up any new entries added since your last session.
 
