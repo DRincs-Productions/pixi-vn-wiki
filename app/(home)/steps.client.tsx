@@ -1,6 +1,6 @@
 "use client";
 
-import { ItchLogo } from "@/components/ui/icons";
+import { GooglePlayLogo, ItchLogo, RedditLogo, SteamLogo } from "@/components/ui/icons";
 import { Markdown } from "@/components/ui/markdown";
 import { cn } from "@/lib/cn";
 import { cva } from "class-variance-authority";
@@ -228,8 +228,17 @@ export function StepsGrid({ terminal, writing }: { terminal: ReactNode; writing:
                 <h3 className="text-2xl font-semibold">{t("ship")}</h3>
                 <Markdown className="text-fd-muted-foreground">{t("ship_description")}</Markdown>
                 <div className="mt-4 flex flex-row flex-wrap items-center gap-8">
+                    <Link href="/start/distribution-steam" rel="noreferrer noopener">
+                        <SteamLogo className="h-10 w-auto" />
+                    </Link>
                     <Link href="/start/distribution-itchio" rel="noreferrer noopener">
-                        <ItchLogo className="h-auto w-32" />
+                        <ItchLogo className="h-10 w-auto" />
+                    </Link>
+                    <Link href="/start/distribution-reddit" rel="noreferrer noopener">
+                        <RedditLogo className="h-10 w-auto" />
+                    </Link>
+                    <Link href="/start/distribution-desktop-mobile" rel="noreferrer noopener">
+                        <GooglePlayLogo className="h-10 w-auto" />
                     </Link>
                 </div>
             </div>
