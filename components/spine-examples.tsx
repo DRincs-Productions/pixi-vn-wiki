@@ -44,7 +44,8 @@ export const BACKGROUND_COLOR = "#303030";`,
             }}
             previewHeight={previewHeight}
             dependencies={{
-                "@drincs/pixi-vn-spine": "^0.2.0",
+                "@drincs/pixi-vn-spine": "latest",
+"@esotericsoftware/spine-pixi-v8": "latest",
             }}
         />
     );
