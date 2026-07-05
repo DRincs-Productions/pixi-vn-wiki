@@ -26,11 +26,11 @@ const manifest: AssetsManifest = {
       assets: [
         {
           alias: "spineboySkeleton",
-          src: "https://raw.githubusercontent.com/pixijs/spine-v8/main/examples/assets/spineboy-pro.skel",
+          src: "https://raw.githubusercontent.com/EsotericSoftware/spine-runtimes/4.3/examples/spineboy/export/spineboy-pro.skel",
         },
         {
           alias: "spineboyAtlas",
-          src: "https://raw.githubusercontent.com/pixijs/spine-v8/main/examples/assets/spineboy-pma.atlas",
+          src: "https://raw.githubusercontent.com/EsotericSoftware/spine-runtimes/4.3/examples/spineboy/export/spineboy-pma.atlas",
         },
       ],
     },
@@ -45,7 +45,7 @@ export const BACKGROUND_COLOR = "#303030";`,
             previewHeight={previewHeight}
             dependencies={{
                 "@drincs/pixi-vn-spine": "latest",
-"@esotericsoftware/spine-pixi-v8": "latest",
+                "@esotericsoftware/spine-pixi-v8": "latest",
             }}
         />
     );
