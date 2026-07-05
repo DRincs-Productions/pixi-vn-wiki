@@ -4,12 +4,12 @@ import { Terminal } from "@/app/(home)/terminal";
 import { AnybodyCanWrite } from "@/app/(home)/writing";
 import { buttonVariants } from "@/components/ui/button";
 import {
+    BaseIcon,
     CloudeIcon,
-    ComfyUiIcon,
     CodexIcon,
+    ComfyUiIcon,
     CopilotIcon,
     CursorIcon,
-    BaseIcon,
     MatkDownIcon,
     MotionIcon,
     PixiJSIcon,
@@ -17,6 +17,7 @@ import {
     ShadcnIcon,
     TailwindcssIcon,
     TanstackIcon,
+    ViteIcon,
 } from "@/components/ui/icons";
 import { Markdown } from "@/components/ui/markdown";
 import { cn } from "@/lib/cn";
@@ -89,6 +90,7 @@ async function Wrappers() {
             <div className="mx-auto mt-2 flex w-fit flex-row flex-wrap items-center justify-center gap-3 rounded-xl bg-fd-primary p-3 text-fd-primary-foreground">
                 <MotionIcon className="size-6" />
                 <PixiJSIcon className="size-6" />
+                <ViteIcon className="size-6" />
                 <ReactIcon className="size-6" />
                 <TanstackIcon className="size-6" />
                 <MatkDownIcon className="size-6" />
@@ -139,9 +141,7 @@ async function CharacterAnimation() {
             <h3 className="text-2xl font-semibold">{t("animation_title")}</h3>
             <p className="max-w-2xl text-fd-muted-foreground">{t("animation_subtitle")}</p>
             <div className="mx-auto mt-2 flex w-fit flex-row flex-wrap items-center justify-center gap-2 rounded-xl bg-fd-primary p-3 text-sm font-semibold text-fd-primary-foreground">
-                <span className="rounded-lg bg-fd-primary-foreground/10 px-3 py-1.5">
-                    Spine 2D
-                </span>
+                <span className="rounded-lg bg-fd-primary-foreground/10 px-3 py-1.5">Spine 2D</span>
                 <span className="rounded-lg bg-fd-primary-foreground/10 px-3 py-1.5">Live2D</span>
                 <span className="rounded-lg bg-fd-primary-foreground/10 px-3 py-1.5">…</span>
             </div>
