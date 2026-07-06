@@ -384,20 +384,9 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                                 url: `${preUrl}/start/canvas-transition`,
                             },
                             {
-                                type: "folder",
+                                type: "page",
                                 name: t("canvas-tickers"),
-                                index: {
-                                    type: "page",
-                                    name: t("canvas-tickers"),
-                                    url: `${preUrl}/start/canvas-tickers`,
-                                },
-                                children: [
-                                    {
-                                        type: "page",
-                                        name: t("canvas-tickers-functions"),
-                                        url: `${preUrl}/start/canvas-tickers-functions`,
-                                    },
-                                ],
+                                url: `${preUrl}/start/canvas-tickers`,
                             },
                         ],
                     },
