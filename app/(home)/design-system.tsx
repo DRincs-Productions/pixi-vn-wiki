@@ -5,6 +5,7 @@ import { BaseIcon, ShadcnIcon, TailwindcssIcon } from "@/components/ui/icons";
 import { Markdown } from "@/components/ui/markdown";
 import { cn } from "@/lib/cn";
 import { useTranslations } from "next-intl";
+import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
 import { type RefObject, useEffect, useRef, useState } from "react";
 
@@ -65,6 +66,7 @@ export function DesignSystem() {
 function Background() {
     const ref = useRef<HTMLDivElement>(null);
     const visible = useIsVisible(ref);
+    const { resolvedTheme } = useTheme();
 
     return (
         <div
@@ -73,7 +75,7 @@ function Background() {
         >
             <Dithering
                 colorBack="#00000000"
-                colorFront="#6742D7"
+                colorFront={resolvedTheme === "dark" ? "#321782" : "#B6A5E9"}
                 shape="simplex"
                 type="4x4"
                 speed={visible ? 0.4 : 0}

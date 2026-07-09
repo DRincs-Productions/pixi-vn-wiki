@@ -44,10 +44,14 @@ export default async function Home() {
             <div className="mx-auto mt-12 w-full max-w-[1400px] lg:mt-20">
                 <StepsGrid terminal={<Terminal />} writing={<AnybodyCanWrite />} />
             </div>
-            <Wrappers />
-            <AiFirst />
-            <DesignSystem />
-            <CharacterAnimation />
+            <div className="mx-auto mt-12 w-full max-w-[1400px] lg:mt-20">
+                <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
+                    <Wrappers />
+                    <AiFirst />
+                    <DesignSystem />
+                    <CharacterAnimation />
+                </div>
+            </div>
             <div className="grid grid-cols-1 gap-10 mt-12 px-6 mx-auto w-full max-w-[1400px] md:px-12 lg:grid-cols-2 lg:mt-20">
                 <div className="relative p-4 rounded-2xl col-span-full z-2 overflow-hidden md:p-8">
                     <Architecture />

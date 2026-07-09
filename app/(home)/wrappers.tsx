@@ -12,6 +12,7 @@ import {
 import { Markdown } from "@/components/ui/markdown";
 import { cn } from "@/lib/cn";
 import { useTranslations } from "next-intl";
+import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
 import { type RefObject, useEffect, useRef, useState } from "react";
 
@@ -96,6 +97,7 @@ export function Wrappers() {
 function Background() {
     const ref = useRef<HTMLDivElement>(null);
     const visible = useIsVisible(ref);
+    const { resolvedTheme } = useTheme();
 
     return (
         <div
@@ -104,7 +106,7 @@ function Background() {
         >
             <Dithering
                 colorBack="#00000000"
-                colorFront="#2F90DA"
+                colorFront={resolvedTheme === "dark" ? "#175482" : "#A5CBE9"}
                 shape="warp"
                 type="4x4"
                 speed={visible ? 0.4 : 0}

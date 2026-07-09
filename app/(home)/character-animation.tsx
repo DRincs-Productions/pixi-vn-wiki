@@ -4,6 +4,7 @@ import { cardVariants, headingVariants } from "@/components/ui/button";
 import { Markdown } from "@/components/ui/markdown";
 import { cn } from "@/lib/cn";
 import { useTranslations } from "next-intl";
+import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
 import { type RefObject, useEffect, useRef, useState } from "react";
 
@@ -36,6 +37,7 @@ export function CharacterAnimation() {
 function Background() {
     const ref = useRef<HTMLDivElement>(null);
     const visible = useIsVisible(ref);
+    const { resolvedTheme } = useTheme();
 
     return (
         <div
@@ -44,7 +46,7 @@ function Background() {
         >
             <Dithering
                 colorBack="#00000000"
-                colorFront="#FA8023"
+                colorFront={resolvedTheme === "dark" ? "#824517" : "#E9C2A5"}
                 shape="dots"
                 type="4x4"
                 speed={visible ? 0.4 : 0}
