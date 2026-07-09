@@ -890,6 +890,12 @@ export async function sidebar(lang?: string): Promise<
                 url: `/jsdoc/pixi-vn`,
             },
             {
+                title: "@drinc/nqtr",
+                icon: <Image width={16} height={16} src="/nqtr.png" alt="NQTR" />,
+                description: "Auto-generated API reference",
+                url: `/jsdoc/nqtr`,
+            },
+            {
                 title: "@drinc/pixi-vn-ink",
                 icon: <Image width={16} height={16} src="/ink.svg" alt="ink" />,
                 description: "Auto-generated API reference",

@@ -2,6 +2,7 @@ import {
     docs,
     faqDocs,
     inkDocs,
+    jsdocNqtrDocs,
     jsdocPixiVnDocs,
     jsdocPixiVnInkDocs,
     jsdocPixiVnJsonDocs,
@@ -17,6 +18,7 @@ import {
     docsImageRoute,
     faqRoute,
     inkRoute,
+    jsdocNqtrRoute,
     jsdocPixiVnInkRoute,
     jsdocPixiVnJsonRoute,
     jsdocPixiVnRoute,
@@ -186,6 +188,7 @@ export const jsdocPixiVnInkSource = createJsdocLoader(
     jsdocPixiVnInkRoute,
     jsdocPixiVnInkDocs.toFumadocsSource(),
 );
+export const jsdocNqtrSource = createJsdocLoader(jsdocNqtrRoute, jsdocNqtrDocs.toFumadocsSource());
 
 export function getPageImage(page: InferPageType<typeof source>) {
     const segments = [...page.slugs, "image.png"];
@@ -214,7 +217,7 @@ export function getPageMarkdownUrl(
 
 export function getJsdocPageMarkdownUrl(
     page: { slugs: string[] },
-    lib: "pixi-vn" | "pixi-vn-json" | "pixi-vn-ink",
+    lib: "pixi-vn" | "pixi-vn-json" | "pixi-vn-ink" | "nqtr",
 ) {
     const segments = [...page.slugs, "content.md"];
     const url = `${docsContentRoute}/jsdoc/${lib}/${segments.join("/")}`;

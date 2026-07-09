@@ -12,6 +12,7 @@ export const renpyRoute = "/renpy";
 export const jsdocPixiVnRoute = "/jsdoc/pixi-vn";
 export const jsdocPixiVnJsonRoute = "/jsdoc/pixi-vn-json";
 export const jsdocPixiVnInkRoute = "/jsdoc/pixi-vn-ink";
+export const jsdocNqtrRoute = "/jsdoc/nqtr";
 export const docsImageRoute = "/og/docs";
 export const docsContentRoute = "/llms.mdx/docs";
 

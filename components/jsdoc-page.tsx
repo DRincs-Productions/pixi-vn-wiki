@@ -1,6 +1,7 @@
 import { getMDXComponents } from "@/components/mdx";
 import {
     getJsdocPageMarkdownUrl,
+    jsdocNqtrSource,
     jsdocPixiVnInkSource,
     jsdocPixiVnJsonSource,
     jsdocPixiVnSource,
@@ -33,6 +34,11 @@ const libConfig = {
         source: jsdocPixiVnInkSource,
         title: "pixi-vn-ink",
         githubUrl: "https://github.com/DRincs-Productions/pixi-vn-ink",
+    },
+    nqtr: {
+        source: jsdocNqtrSource,
+        title: "nqtr",
+        githubUrl: "https://github.com/DRincs-Productions/nqtr",
     },
 } as const;
 

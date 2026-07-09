@@ -110,3 +110,13 @@ export const jsdocPixiVnInkDocs = createDocsCollection(
         },
     }),
 );
+
+export const jsdocNqtrDocs = createDocsCollection(
+    "content/jsdoc/nqtr",
+    applyMdxPreset({
+        rehypeCodeOptions: fullRehypeCodeOptions,
+        remarkCodeTabOptions: {
+            parseMdx: true,
+        },
+    }),
+);

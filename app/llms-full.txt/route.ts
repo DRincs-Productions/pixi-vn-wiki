@@ -2,6 +2,7 @@ import {
     faqSource,
     getLLMText,
     inkSource,
+    jsdocNqtrSource,
     jsdocPixiVnInkSource,
     jsdocPixiVnJsonSource,
     jsdocPixiVnSource,
@@ -26,6 +27,7 @@ export async function GET() {
         ...jsdocPixiVnSource.getPages(),
         ...jsdocPixiVnJsonSource.getPages(),
         ...jsdocPixiVnInkSource.getPages(),
+        ...jsdocNqtrSource.getPages(),
     ].map(getLLMText);
 
     const [scanned, scannedJsdoc] = await Promise.all([Promise.all(scan), Promise.all(jsdocScan)]);
