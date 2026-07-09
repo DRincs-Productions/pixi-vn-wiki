@@ -5,13 +5,15 @@ import { buttonVariants } from "@/components/ui/button";
 import { DiscordIcon } from "@/components/ui/icons";
 import { cn } from "@/lib/cn";
 import { discordUrl } from "@/lib/shared";
+import { useIsVisible } from "@/lib/useIsVisible";
+import { useMediaQuery } from "@/lib/useMediaQuery";
 import { cva } from "class-variance-authority";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const GrainGradient = dynamic(
     () => import("@paper-design/shaders-react").then((mod) => mod.GrainGradient),
@@ -47,9 +49,12 @@ const demoUrls = [
 export function Hero() {
     const { resolvedTheme } = useTheme();
     const t = useTranslations("HomePage");
+    const ref = useRef<HTMLDivElement>(null);
+    const visible = useIsVisible(ref);
+    const isDesktop = useMediaQuery("(min-width: 768px)");
 
     return (
-        <>
+        <div ref={ref} className="contents">
             <GrainGradient
                 className="absolute inset-0 animate-fd-fade-in duration-800"
                 colors={
@@ -66,7 +71,7 @@ export function Hero() {
                 maxPixelCount={1920 * 1080}
                 rotation={150}
                 scale={2}
-                speed={0.3}
+                speed={visible ? 0.3 : 0}
             />
             <Dithering
                 width={720}
@@ -131,10 +136,12 @@ export function Hero() {
                     className="w-64 h-64 object-contain pointer-events-auto max-md:order-first max-md:mb-2 md:absolute md:top-10 md:right-10 md:w-64 md:h-64"
                 />
             </div>
-            <div className="hidden md:block absolute bottom-14 left-1/2 -translate-x-1/2 z-1 w-[40%] max-w-[540px]">
-                <Preview />
-            </div>
-        </>
+            {isDesktop && (
+                <div className="absolute bottom-14 left-1/2 -translate-x-1/2 z-1 w-[40%] max-w-[540px]">
+                    <Preview />
+                </div>
+            )}
+        </div>
     );
 }
 
@@ -184,17 +191,12 @@ function Preview() {
 
     return (
         <div className="relative w-full">
-            {demos.map((demo, i) => (
-                <iframe
-                    key={demo.url}
-                    src={demo.url}
-                    className={cn(
-                        "w-full aspect-video rounded-xl border-0 shadow-xl",
-                        active !== i && "hidden",
-                    )}
-                    title={demo.label}
-                />
-            ))}
+            <iframe
+                key={demos[active].url}
+                src={demos[active].url}
+                className="w-full aspect-video rounded-xl border-0 shadow-xl"
+                title={demos[active].label}
+            />
             <div className="absolute flex flex-row left-1/2 -translate-x-1/2 bottom-0 translate-y-[65%] z-10 p-1 rounded-full bg-fd-card border shadow-xl dark:shadow-fd-background">
                 <div
                     role="none"

@@ -3,10 +3,11 @@
 import { cardVariants, headingVariants } from "@/components/ui/button";
 import { Markdown } from "@/components/ui/markdown";
 import { cn } from "@/lib/cn";
+import { useIsVisible } from "@/lib/useIsVisible";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
-import { type RefObject, useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 
 const Dithering = dynamic(
     () => import("@paper-design/shaders-react").then((mod) => mod.Dithering),
@@ -55,33 +56,4 @@ function Background() {
             />
         </div>
     );
-}
-
-let observer: IntersectionObserver;
-const observerTargets = new WeakMap<Element, (entry: IntersectionObserverEntry) => void>();
-
-function useIsVisible(ref: RefObject<HTMLElement | null>) {
-    const [visible, setVisible] = useState(false);
-
-    useEffect(() => {
-        observer ??= new IntersectionObserver((entries) => {
-            for (const entry of entries) {
-                observerTargets.get(entry.target)?.(entry);
-            }
-        });
-
-        const element = ref.current;
-        if (!element) return;
-        observerTargets.set(element, (entry) => {
-            setVisible(entry.isIntersecting);
-        });
-        observer.observe(element);
-
-        return () => {
-            observer.unobserve(element);
-            observerTargets.delete(element);
-        };
-    }, [ref]);
-
-    return visible;
 }
