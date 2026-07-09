@@ -2,6 +2,7 @@
 
 import LogoImg from "@/app/icon.png";
 import { buttonVariants } from "@/components/ui/button";
+import { DiscordIcon } from "@/components/ui/icons";
 import { cn } from "@/lib/cn";
 import { discordUrl } from "@/lib/shared";
 import { cva } from "class-variance-authority";
@@ -111,9 +112,10 @@ export function Hero() {
                             rel="noreferrer noopener"
                             className={cn(
                                 buttonVariants({ variant: "secondary" }),
-                                "max-sm:text-sm",
+                                "max-sm:text-sm gap-2 border-transparent bg-[#5865F2] text-white hover:bg-[#4752C4] hover:shadow-[0_0_20px_-4px_#5865F2]",
                             )}
                         >
+                            <DiscordIcon className="size-4" />
                             {t("discord")}
                         </a>
                     </div>
