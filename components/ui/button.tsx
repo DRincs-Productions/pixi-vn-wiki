@@ -29,4 +29,25 @@ export const buttonVariants = cva(
     },
 );
 
+export const cardVariants = cva("rounded-2xl text-sm p-6 bg-origin-border shadow-lg", {
+    variants: {
+        variant: {
+            secondary: "bg-brand-secondary text-brand-secondary-foreground",
+            default: "border bg-fd-card",
+        },
+    },
+    defaultVariants: {
+        variant: "default",
+    },
+});
+
+export const headingVariants = cva("font-medium tracking-tight", {
+    variants: {
+        variant: {
+            h2: "text-3xl lg:text-4xl",
+            h3: "text-xl lg:text-2xl",
+        },
+    },
+});
+
 export type ButtonProps = VariantProps<typeof buttonVariants>;

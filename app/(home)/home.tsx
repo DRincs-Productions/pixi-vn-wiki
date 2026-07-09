@@ -1,24 +1,12 @@
+import { AiFirst } from "@/app/(home)/ai-first";
+import { CharacterAnimation } from "@/app/(home)/character-animation";
+import { DesignSystem } from "@/app/(home)/design-system";
 import { Hero } from "@/app/(home)/hero.client";
 import { StepsGrid } from "@/app/(home)/steps.client";
 import { Terminal } from "@/app/(home)/terminal";
+import { Wrappers } from "@/app/(home)/wrappers";
 import { AnybodyCanWrite } from "@/app/(home)/writing";
 import { buttonVariants } from "@/components/ui/button";
-import {
-    BaseIcon,
-    CloudeIcon,
-    CodexIcon,
-    ComfyUiIcon,
-    CopilotIcon,
-    CursorIcon,
-    MatkDownIcon,
-    MotionIcon,
-    PixiJSIcon,
-    ReactIcon,
-    ShadcnIcon,
-    TailwindcssIcon,
-    TanstackIcon,
-    ViteIcon,
-} from "@/components/ui/icons";
 import { Markdown } from "@/components/ui/markdown";
 import { cn } from "@/lib/cn";
 import { createMetadata } from "@/lib/metadata";
@@ -56,18 +44,10 @@ export default async function Home() {
             <div className="mx-auto mt-12 w-full max-w-[1400px] lg:mt-20">
                 <StepsGrid terminal={<Terminal />} writing={<AnybodyCanWrite />} />
             </div>
-            <div className="mx-auto mt-12 w-full max-w-[1400px] lg:mt-20">
-                <Wrappers />
-            </div>
-            <div className="mx-auto mt-12 w-full max-w-[1400px] lg:mt-20">
-                <AiFirst />
-            </div>
-            <div className="mx-auto mt-12 w-full max-w-[1400px] lg:mt-20">
-                <DesignSystem />
-            </div>
-            <div className="mx-auto mt-12 w-full max-w-[1400px] lg:mt-20">
-                <CharacterAnimation />
-            </div>
+            <Wrappers />
+            <AiFirst />
+            <DesignSystem />
+            <CharacterAnimation />
             <div className="grid grid-cols-1 gap-10 mt-12 px-6 mx-auto w-full max-w-[1400px] md:px-12 lg:grid-cols-2 lg:mt-20">
                 <div className="relative p-4 rounded-2xl col-span-full z-2 overflow-hidden md:p-8">
                     <Architecture />
@@ -77,75 +57,6 @@ export default async function Home() {
                 </div>
             </div>
         </main>
-    );
-}
-
-async function Wrappers() {
-    const t = await getTranslations("Ecosystem");
-
-    return (
-        <div className="flex flex-col items-center gap-4 rounded-2xl border bg-fd-card p-6 text-center shadow-lg md:p-8">
-            <h3 className="text-2xl font-semibold">{t("wrappers_title")}</h3>
-            <p className="max-w-2xl text-fd-muted-foreground">{t("wrappers_subtitle")}</p>
-            <div className="mx-auto mt-2 flex w-fit flex-row flex-wrap items-center justify-center gap-3 rounded-xl bg-fd-primary p-3 text-fd-primary-foreground">
-                <MotionIcon className="size-6" />
-                <PixiJSIcon className="size-6" />
-                <ViteIcon className="size-6" />
-                <ReactIcon className="size-6" />
-                <TanstackIcon className="size-6" />
-                <MatkDownIcon className="size-6" />
-            </div>
-        </div>
-    );
-}
-
-async function AiFirst() {
-    const t = await getTranslations("Ecosystem");
-
-    return (
-        <div className="flex flex-col items-center gap-4 rounded-2xl border bg-fd-card p-6 text-center shadow-lg md:p-8">
-            <h3 className="text-2xl font-semibold">{t("ai_title")}</h3>
-            <p className="max-w-2xl text-fd-muted-foreground">{t("ai_subtitle")}</p>
-            <div className="mx-auto mt-2 flex w-fit flex-row flex-wrap items-center justify-center gap-3 rounded-xl bg-fd-primary p-3 text-fd-primary-foreground">
-                <CloudeIcon className="size-6" />
-                <CodexIcon className="size-6" />
-                <CursorIcon className="size-6" />
-                <CopilotIcon className="size-6" />
-                <ComfyUiIcon className="size-6" />
-            </div>
-        </div>
-    );
-}
-
-async function DesignSystem() {
-    const t = await getTranslations("Ecosystem");
-
-    return (
-        <div className="flex flex-col items-center gap-4 rounded-2xl border bg-fd-card p-6 text-center shadow-lg md:p-8">
-            <h3 className="text-2xl font-semibold">{t("style_title")}</h3>
-            <p className="max-w-2xl text-fd-muted-foreground">{t("style_subtitle")}</p>
-            <div className="mx-auto mt-2 flex w-fit flex-row flex-wrap items-center justify-center gap-3 rounded-xl bg-fd-primary p-3 text-fd-primary-foreground">
-                <BaseIcon className="size-6" />
-                <ShadcnIcon className="size-6" />
-                <TailwindcssIcon className="size-6" />
-            </div>
-        </div>
-    );
-}
-
-async function CharacterAnimation() {
-    const t = await getTranslations("Ecosystem");
-
-    return (
-        <div className="flex flex-col items-center gap-4 rounded-2xl border bg-fd-card p-6 text-center shadow-lg md:p-8">
-            <h3 className="text-2xl font-semibold">{t("animation_title")}</h3>
-            <p className="max-w-2xl text-fd-muted-foreground">{t("animation_subtitle")}</p>
-            <div className="mx-auto mt-2 flex w-fit flex-row flex-wrap items-center justify-center gap-2 rounded-xl bg-fd-primary p-3 text-sm font-semibold text-fd-primary-foreground">
-                <span className="rounded-lg bg-fd-primary-foreground/10 px-3 py-1.5">Spine 2D</span>
-                <span className="rounded-lg bg-fd-primary-foreground/10 px-3 py-1.5">Live2D</span>
-                <span className="rounded-lg bg-fd-primary-foreground/10 px-3 py-1.5">…</span>
-            </div>
-        </div>
     );
 }
 
