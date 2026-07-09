@@ -22,6 +22,17 @@ export const gitConfig = {
     branch: "main",
 };
 
+// repos scanned to build the "contributed on GitHub" avatar list on the homepage
+export const contributorRepos = [
+    "pixi-vn",
+    "pixi-vn-ink",
+    "pixi-vn-json",
+    "nqtr",
+    "nqtr-react-template",
+    "pixi-vn-react-template",
+    "pixi-vn-wiki",
+];
+
 export const discordUrl = "https://discord.gg/E95FZWakzp";
 export const patreonUrl = "https://www.patreon.com/pixi_vn";
 
