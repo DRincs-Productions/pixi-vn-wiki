@@ -49,6 +49,7 @@ When a glossary term appears **as inline code** in the source (e.g. `` `label` `
 | anchor             | 锚点（anchor）      | アンカー（anchor）           | point d'ancrage (anchor) | Ankerpunkt (anchor) | punto di ancoraggio (anchor) | точка привязки (anchor)    | punto de anclaje (anchor) | 앵커 (anchor)            |
 | pivot              | 轴心点（pivot）     | ピボット（pivot）            | point de pivot (pivot)   | Drehpunkt (pivot)   | perno (pivot)                | точка поворота (pivot)     | pivote (pivot)            | 피벗 (pivot)            |
 | align              | 对齐（align）       | 配置（align）                | alignement (align)       | Ausrichtung (align) | allineamento (align)         | выравнивание (align)       | alineación (align)        | 정렬 (align)            |
+| UI                 | 界面（UI）          | ユーザーインターフェース（UI） | UI                       | UI                  | UI                           | интерфейс (UI)             | UI                        | 사용자 인터페이스 (UI)  |
 
 > This glossary grows over time. Before starting a translation session, re-read this file to pick up any new entries added since your last session.
 
