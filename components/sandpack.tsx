@@ -46,7 +46,7 @@ export function ReactTemplate({
                 "App.tsx": App,
                 "styles.css": styles,
                 "components/BackButton.tsx": BackButton,
-                "components/NextButton.tsx": NextButton,
+                "components/ContinueOverlay.tsx": ContinueOverlay,
                 "screens/modals/TextInput.tsx": TextInput,
                 "screens/NarrationScreen.tsx": NarrationScreen,
                 "hooks/useQueryInterface.ts": useQueryInterface,
@@ -94,28 +94,27 @@ const indexhtml = `<!DOCTYPE html>
 </html>`;
 
 const App = `import BackButton from "./components/BackButton";
-import NextButton from "./components/NextButton";
+import ContinueOverlay from "./components/ContinueOverlay";
 import TextInput from "./screens/modals/TextInput";
 import NarrationScreen from "./screens/NarrationScreen";
 
 export default function App() {
-  return (
-    <div>
-      <NarrationScreen />
-      <TextInput />
-      <div
-        style={{
-          position: "absolute",
-          right: 0,
-          top: "70%",
-          width: 40,
-        }}
-      >
-        <NextButton />
-        <BackButton />
-      </div>
-    </div>
-  );
+    return (
+        <ContinueOverlay>
+            <NarrationScreen />
+            <TextInput />
+            <div
+                style={{
+                    position: "absolute",
+                    right: 0,
+                    top: "70%",
+                    width: 40,
+                }}
+            >
+                <BackButton />
+            </div>
+        </ContinueOverlay>
+    );
 }`;
 
 const styles = `html,
@@ -130,90 +129,96 @@ body {
   overflow: hidden;
 }`;
 
-const NextButton = `import { useState } from "react";
+const ContinueOverlay = `import { ReactNode, useState } from "react";
 import useNarrationFunctions from "../hooks/useNarrationFunctions";
 import { useQueryCanGoNext } from "../hooks/useQueryInterface";
 
-export default function NextButton() {
-  const { data: canGoNext = false } = useQueryCanGoNext();
-  const [loading, setLoading] = useState(false);
-  const { goNext } = useNarrationFunctions();
+export default function ContinueOverlay({ children }: { children: ReactNode }) {
+    const { data: canGoNext = false } = useQueryCanGoNext();
+    const [loading, setLoading] = useState(false);
+    const { goNext } = useNarrationFunctions();
 
-  if (!canGoNext) {
-    return null;
-  }
-
-  return (
-    <button
-      onClick={() => {
-        setLoading(true);
-        goNext()
-          .then(() => setLoading(false))
-          .catch(() => setLoading(false));
-      }}
-      disabled={loading}
-      style={{
-        width: 40,
-        height: 20,
-        pointerEvents: "auto",
-      }}
-    >
-      Next
-    </button>
-  );
+    return (
+        <div
+            onClick={() => {
+                if (!canGoNext || loading) {
+                    return;
+                }
+                setLoading(true);
+                goNext()
+                    .then(() => setLoading(false))
+                    .catch(() => setLoading(false));
+            }}
+            style={{
+                position: "fixed",
+                inset: 0,
+            }}
+        >
+            {children}
+        </div>
+    );
 }`;
 
 const TextInput = `import { narration } from "@drincs/pixi-vn";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { INTERFACE_DATA_USE_QUEY_KEY, useQueryDialogue, useQueryInputValue } from "../../hooks/useQueryInterface";
+import {
+    INTERFACE_DATA_USE_QUEY_KEY,
+    useQueryDialogue,
+    useQueryInputValue,
+} from "../../hooks/useQueryInterface";
 
 export default function TextInput() {
-  const { data: { text } = {} } = useQueryDialogue();
-  const {
-    data: { isRequired: open, currentValue } = {
-      currentValue: undefined,
-      isRequired: false,
-    },
-  } = useQueryInputValue<string | number>();
-  const [tempValue, setTempValue] = useState<string | number>();
-  const queryClient = useQueryClient();
+    const { data: { text } = {} } = useQueryDialogue();
+    const {
+        data: { isRequired: open, currentValue } = {
+            currentValue: undefined,
+            isRequired: false,
+        },
+    } = useQueryInputValue<string | number>();
+    const [tempValue, setTempValue] = useState<string | number>();
+    const queryClient = useQueryClient();
 
-  return (
-    <dialog
-      open={open}
-      style={{
-        pointerEvents: "auto",
-      }}
-    >
-      <p>{text}</p>
-      {open && (
-        <input
-          defaultValue={currentValue || ""}
-          onChange={(e) => {
-            if (e && e.target && "value" in e.target) {
-              let value: any = e.target.value;
-              if ("type" in e.target && e.target.type === "number" && "valueAsNumber" in e.target) {
-                value = e.target.valueAsNumber;
-              }
-              setTempValue(value);
-            }
-          }}
-        />
-      )}
-      <button
-        onClick={() => {
-          narration.inputValue = tempValue || currentValue;
-          setTempValue(undefined);
-          queryClient.invalidateQueries({
-            queryKey: [INTERFACE_DATA_USE_QUEY_KEY],
-          });
-        }}
-      >
-        Confirm
-      </button>
-    </dialog>
-  );
+    return (
+        <dialog
+            open={open}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+                pointerEvents: "auto",
+            }}
+        >
+            <p>{text}</p>
+            {open && (
+                <input
+                    defaultValue={currentValue || ""}
+                    onChange={(e) => {
+                        if (e && e.target && "value" in e.target) {
+                            let value: any = e.target.value;
+                            if (
+                                "type" in e.target &&
+                                e.target.type === "number" &&
+                                "valueAsNumber" in e.target
+                            ) {
+                                value = e.target.valueAsNumber;
+                            }
+                            setTempValue(value);
+                        }
+                    }}
+                />
+            )}
+            <button
+                onClick={() => {
+                    narration.inputValue = tempValue || currentValue;
+                    setTempValue(undefined);
+                    queryClient.invalidateQueries({
+                        queryKey: [INTERFACE_DATA_USE_QUEY_KEY],
+                    });
+                }}
+            >
+                Confirm
+            </button>
+        </dialog>
+    );
 }`;
 
 const NarrationScreen = `import Markdown from "react-markdown";
@@ -223,70 +228,72 @@ import { useQueryCanGoBack, useQueryCanGoNext, useQueryDialogue } from "../hooks
 import ChoiceMenu from "./ChoiceMenu";
 
 export default function NarrationScreen() {
-  const { data: { text, character } = {} } = useQueryDialogue();
-  const { data: canGoNext = false } = useQueryCanGoNext();
-  const { data: canGoBack = false } = useQueryCanGoBack();
+    const { data: { text, character } = {} } = useQueryDialogue();
+    const { data: canGoNext = false } = useQueryCanGoNext();
+    const { data: canGoBack = false } = useQueryCanGoBack();
 
-  return (
-    <div
-      style={{
-        position: "absolute",
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        width: "100%",
-      }}
-    >
-      <div style={{ flex: 1, minHeight: 0 }}>
-        <ChoiceMenu />
-      </div>
-      {text && (
+    return (
         <div
-          style={{
-            flex: "0 0 auto",
-            height: "30%",
-            minHeight: 0,
-            pointerEvents: "auto",
-            backgroundColor: "white",
-            display: "flex",
-            flexDirection: "column",
-            overflow: "hidden",
-          }}
-        >
-          {character && character.name && <b>{\`\${character?.name || ""} \${character?.surname || ""}\`}</b>}
-          <div
             style={{
-              marginRight: canGoNext || canGoBack ? "40px" : undefined,
-              display: "flex",
-              flexDirection: "row",
-              height: "100%",
-              minHeight: 0,
-              overflow: "hidden",
+                position: "absolute",
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+                width: "100%",
             }}
-          >
-            {character?.icon && (
-              <img
-                src={character?.icon}
-                loading='lazy'
-                alt=''
-                style={{
-                  maxWidth: "30%",
-                  height: "auto",
-                  objectFit: "contain",
-                  display: "block",
-                }}
-              />
-            )}
-            <div style={{ flex: 1, minHeight: 0, overflow: "auto", height: "100%" }}>
-              <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
-                {text}
-              </Markdown>
+        >
+            <div style={{ flex: 1, minHeight: 0 }}>
+                <ChoiceMenu />
             </div>
-          </div>
+            {text && (
+                <div
+                    style={{
+                        flex: "0 0 auto",
+                        height: "30%",
+                        minHeight: 0,
+                        pointerEvents: "auto",
+                        backgroundColor: "white",
+                        display: "flex",
+                        flexDirection: "column",
+                        overflow: "hidden",
+                    }}
+                >
+                    {character && character.name && (
+                        <b>{\`\${character?.name || ""} \${character?.surname || ""}\`}</b>
+                    )}
+                    <div
+                        style={{
+                            marginRight: canGoNext || canGoBack ? "40px" : undefined,
+                            display: "flex",
+                            flexDirection: "row",
+                            height: "100%",
+                            minHeight: 0,
+                            overflow: "hidden",
+                        }}
+                    >
+                        {character?.icon && (
+                            <img
+                                src={character?.icon}
+                                loading="lazy"
+                                alt=""
+                                style={{
+                                    maxWidth: "30%",
+                                    height: "auto",
+                                    objectFit: "contain",
+                                    display: "block",
+                                }}
+                            />
+                        )}
+                        <div style={{ flex: 1, minHeight: 0, overflow: "auto", height: "100%" }}>
+                            <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                                {text}
+                            </Markdown>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 }`;
 
 const BackButton = `import { useState } from "react";
@@ -294,32 +301,33 @@ import useNarrationFunctions from "../hooks/useNarrationFunctions";
 import { useQueryCanGoBack } from "../hooks/useQueryInterface";
 
 export default function BackButton() {
-  const { data: canGoBack = false } = useQueryCanGoBack();
-  const [loading, setLoading] = useState(false);
-  const { goBack } = useNarrationFunctions();
+    const { data: canGoBack = false } = useQueryCanGoBack();
+    const [loading, setLoading] = useState(false);
+    const { goBack } = useNarrationFunctions();
 
-  if (!canGoBack) {
-    return null;
-  }
+    if (!canGoBack) {
+        return null;
+    }
 
-  return (
-    <button
-      onClick={() => {
-        setLoading(true);
-        goBack()
-          .then(() => setLoading(false))
-          .catch(() => setLoading(false));
-      }}
-      disabled={loading}
-      style={{
-        width: 40,
-        height: 20,
-        pointerEvents: "auto",
-      }}
-    >
-      Back
-    </button>
-  );
+    return (
+        <button
+            onClick={(e) => {
+                e.stopPropagation();
+                setLoading(true);
+                goBack()
+                    .then(() => setLoading(false))
+                    .catch(() => setLoading(false));
+            }}
+            disabled={loading}
+            style={{
+                width: 40,
+                height: 20,
+                pointerEvents: "auto",
+            }}
+        >
+            Back
+        </button>
+    );
 }`;
 
 const useQueryInterface = `import { CharacterBaseModel, narration, stepHistory } from "@drincs/pixi-vn";
@@ -329,133 +337,136 @@ export const INTERFACE_DATA_USE_QUEY_KEY = "interface_data_use_quey_key";
 
 const CAN_GO_BACK_USE_QUEY_KEY = "can_go_back_use_quey_key";
 export function useQueryCanGoBack() {
-  return useQuery({
-    queryKey: [INTERFACE_DATA_USE_QUEY_KEY, CAN_GO_BACK_USE_QUEY_KEY],
-    queryFn: async () => stepHistory.canGoBack,
-  });
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, CAN_GO_BACK_USE_QUEY_KEY],
+        queryFn: async () => stepHistory.canGoBack,
+    });
 }
 
 const CHOICE_MENU_OPTIONS_USE_QUEY_KEY = "choice_menu_options_use_quey_key";
 export function useQueryChoiceMenuOptions() {
-  return useQuery({
-    queryKey: [INTERFACE_DATA_USE_QUEY_KEY, CHOICE_MENU_OPTIONS_USE_QUEY_KEY],
-    queryFn: async () =>
-      narration.choices?.map((option) => ({
-        ...option,
-        text: typeof option.text === "string" ? option.text : option.text.join(" "),
-      })) || [],
-  });
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, CHOICE_MENU_OPTIONS_USE_QUEY_KEY],
+        queryFn: async () =>
+            narration.choices?.map((option) => ({
+                ...option,
+                text: typeof option.text === "string" ? option.text : option.text.join(" "),
+            })) || [],
+    });
 }
 
 const INPUT_VALUE_USE_QUEY_KEY = "input_value_use_quey_key";
 export function useQueryInputValue<T>() {
-  return useQuery({
-    queryKey: [INTERFACE_DATA_USE_QUEY_KEY, INPUT_VALUE_USE_QUEY_KEY],
-    queryFn: async () => ({
-      isRequired: narration.isRequiredInput,
-      type: narration.inputType,
-      currentValue: narration.inputValue as T | undefined,
-    }),
-  });
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, INPUT_VALUE_USE_QUEY_KEY],
+        queryFn: async () => ({
+            isRequired: narration.isRequiredInput,
+            type: narration.inputType,
+            currentValue: narration.inputValue as T | undefined,
+        }),
+    });
 }
 
 const DIALOGUE_USE_QUEY_KEY = "dialogue_use_quey_key";
 export function useQueryDialogue() {
-  return useQuery({
-    queryKey: [INTERFACE_DATA_USE_QUEY_KEY, DIALOGUE_USE_QUEY_KEY],
-    queryFn: async ({ queryKey }) => {
-      let dialogue = narration.dialogue;
-      let text = dialogue?.text;
-      if (Array.isArray(text)) {
-        text = text.join(" ");
-      }
-      let character = dialogue?.character as string | CharacterBaseModel | undefined;
-      if (typeof character === "string") {
-        character = new CharacterBaseModel(character, {
-          name: character,
-        });
-      }
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, DIALOGUE_USE_QUEY_KEY],
+        queryFn: async ({ queryKey }) => {
+            let dialogue = narration.dialogue;
+            let text = dialogue?.text;
+            if (Array.isArray(text)) {
+                text = text.join(" ");
+            }
+            let character = dialogue?.character as string | CharacterBaseModel | undefined;
+            if (typeof character === "string") {
+                character = new CharacterBaseModel(character, {
+                    name: character,
+                });
+            }
 
-      return {
-        text,
-        character,
-      };
-    },
-  });
+            return {
+                text,
+                character,
+            };
+        },
+    });
 }
 
 const CAN_GO_NEXT_USE_QUEY_KEY = "can_go_next_use_quey_key";
 export function useQueryCanGoNext() {
-  return useQuery({
-    queryKey: [INTERFACE_DATA_USE_QUEY_KEY, CAN_GO_NEXT_USE_QUEY_KEY],
-    queryFn: async () => narration.canContinue && !narration.isRequiredInput,
-  });
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, CAN_GO_NEXT_USE_QUEY_KEY],
+        queryFn: async () => narration.canContinue && !narration.isRequiredInput,
+    });
 }
 
 const NARRATIVE_HISTORY_USE_QUEY_KEY = "narrative_history_use_quey_key";
 export function useQueryNarrativeHistory() {
-  return useQuery({
-    queryKey: [INTERFACE_DATA_USE_QUEY_KEY, NARRATIVE_HISTORY_USE_QUEY_KEY],
-    queryFn: async () => {
-      const promises = stepHistory.narrativeHistory.map(async (step) => {
-        let character = step.dialogue?.character as string | CharacterBaseModel | undefined;
-        if (typeof character === "string") {
-          character = new CharacterBaseModel(character, { name: character });
-        }
-        let text = step.dialogue?.text;
-        if (Array.isArray(text)) {
-          text = text.join(" ");
-        }
-        return {
-          character: character?.name ? character.name + (character.surname ? " " + character.surname : "") : undefined,
-          text: text || "",
-          icon: character?.icon,
-          choices: step.choices,
-          inputValue: step.inputValue,
-        };
-      });
-      return await Promise.all(promises);
-    },
-  });
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, NARRATIVE_HISTORY_USE_QUEY_KEY],
+        queryFn: async () => {
+            const promises = stepHistory.narrativeHistory.map(async (step) => {
+                let character = step.dialogue?.character as string | CharacterBaseModel | undefined;
+                if (typeof character === "string") {
+                    character = new CharacterBaseModel(character, { name: character });
+                }
+                let text = step.dialogue?.text;
+                if (Array.isArray(text)) {
+                    text = text.join(" ");
+                }
+                return {
+                    character: character?.name
+                        ? character.name + (character.surname ? " " + character.surname : "")
+                        : undefined,
+                    text: text || "",
+                    icon: character?.icon,
+                    choices: step.choices,
+                    inputValue: step.inputValue,
+                };
+            });
+            return await Promise.all(promises);
+        },
+    });
 }`;
 
 const ChoiceMenu = `import useNarrationFunctions from "../hooks/useNarrationFunctions";
 import { useQueryChoiceMenuOptions } from "../hooks/useQueryInterface";
 
 export default function ChoiceMenu() {
-  const { data: menu = [] } = useQueryChoiceMenuOptions();
-  const { selectChoice } = useNarrationFunctions();
+    const { data: menu = [] } = useQueryChoiceMenuOptions();
+    const { selectChoice } = useNarrationFunctions();
 
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        width: "100%",
-        height: "100%",
-        overflow: "auto",
-        gap: "8px",
-        maxHeight: "100%",
-        margin: 0,
-        pointerEvents: menu?.length > 0 ? "auto" : "none",
-      }}
-    >
-      {menu?.map((item, index) => (
-        <button
-          key={"choice-" + index}
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-          onClick={() => selectChoice(item)}
+    return (
+        <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                height: "100%",
+                overflow: "auto",
+                gap: "8px",
+                maxHeight: "100%",
+                margin: 0,
+                pointerEvents: menu?.length > 0 ? "auto" : "none",
+            }}
         >
-          {item.text}
-        </button>
-      ))}
-    </div>
-  );
+            {menu?.map((item, index) => (
+                <button
+                    key={"choice-" + index}
+                    style={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                    }}
+                    onClick={() => selectChoice(item)}
+                >
+                    {item.text}
+                </button>
+            ))}
+        </div>
+    );
 }`;
 
 const startLabel = `import { narration, newLabel } from "@drincs/pixi-vn";
@@ -474,7 +485,7 @@ import manifest from "../assets/manifest";
  * You can read more about assets management in the documentation: https://pixi-vn.com/start/assets-management.html
  */
 export async function defineAssets() {
-  await Assets.init({ manifest });
+    await Assets.init({ manifest });
 }`;
 
 const index = `import { Assets, Container, Game, canvas, sound } from "@drincs/pixi-vn";
@@ -491,65 +502,65 @@ import { defineAssets } from "./utils/assets-utility";
 // Canvas setup with PIXI
 const body = document.body;
 if (!body) {
-  throw new Error("body element not found");
+    throw new Error("body element not found");
 }
 
 Game.init(body, {
-  height: HEIGHT,
-  width: WIDTH,
-  backgroundColor: BACKGROUND_COLOR,
+    height: HEIGHT,
+    width: WIDTH,
+    backgroundColor: BACKGROUND_COLOR,
 }).then(() => {
-  // Pixi.JS UI Layer
-  canvas.addLayer("ui", new Container());
+    // Pixi.JS UI Layer
+    canvas.addLayer("ui", new Container());
 
-  // Sound setup
-  sound.addChannel("bgm", { background: true });
-  sound.addChannel("sfx");
-  sound.defaultChannelAlias = "sfx";
+    // Sound setup
+    sound.addChannel("bgm", { background: true });
+    sound.addChannel("sfx");
+    sound.defaultChannelAlias = "sfx";
 
-  // React setup with ReactDOM
-  const root = document.getElementById("root");
-  if (!root) {
-    throw new Error("root element not found");
-  }
+    // React setup with ReactDOM
+    const root = document.getElementById("root");
+    if (!root) {
+        throw new Error("root element not found");
+    }
 
-  const htmlLayout = canvas.addHtmlLayer("ui", root);
-  if (!htmlLayout) {
-    throw new Error("htmlLayout not found");
-  }
-  const reactRoot = createRoot(htmlLayout);
-  const queryClient = new QueryClient();
+    const htmlLayout = canvas.addHtmlLayer("ui", root);
+    if (!htmlLayout) {
+        throw new Error("htmlLayout not found");
+    }
+    const reactRoot = createRoot(htmlLayout);
+    const queryClient = new QueryClient();
 
-  Game.onEnd(async () => {
-    await Game.start(startLabel, {});
-  });
-  Game.onLoadingLabel(async (_stepId, { id }) => await Assets.backgroundLoadBundle(id));
-
-  reactRoot.render(
-    <div
-      style={{
-        color: "white",
-        position: "absolute",
-        bottom: 0,
-        left: 0,
-      }}
-    >
-      Loading...
-    </div>
-  );
-
-  defineAssets().then(() => {
-    Game.start(startLabel, {}).then(() => {
-      reactRoot.render(
-        <QueryClientProvider client={queryClient}>
-          <App />
-        </QueryClientProvider>
-      );
-      queryClient.invalidateQueries({
-        queryKey: [INTERFACE_DATA_USE_QUEY_KEY],
-      });
+    Game.onEnd(async () => {
+        await Game.start(startLabel, {});
     });
-  });
+    Game.onLoadingLabel(async (_stepId, { id }) => await Assets.backgroundLoadBundle(id));
+
+    reactRoot.render(
+        <div
+            style={{
+                color: "white",
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+            }}
+        >
+            Loading...
+        </div>,
+    );
+
+    defineAssets().then(() => {
+        Game.start(startLabel, {}).then(() => {
+            reactRoot.render(
+                <QueryClientProvider client={queryClient}>
+                    <App />
+                </QueryClientProvider>,
+            );
+            queryClient.invalidateQueries({
+                queryKey: [INTERFACE_DATA_USE_QUEY_KEY],
+            });
+        });
+    });
 });`;
 
 const manifest = `import { AssetsManifest } from "@drincs/pixi-vn";
@@ -559,7 +570,7 @@ const manifest = `import { AssetsManifest } from "@drincs/pixi-vn";
  * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
  */
 const manifest: AssetsManifest = {
-  bundles: [],
+    bundles: [],
 };
 export default manifest;`;
 
@@ -569,46 +580,50 @@ import { useCallback } from "react";
 import { INTERFACE_DATA_USE_QUEY_KEY } from "./useQueryInterface";
 
 export default function useNarrationFunctions() {
-  const queryClient = useQueryClient();
-  const gameProps = {};
+    const queryClient = useQueryClient();
+    const gameProps = {};
 
-  const goNext = useCallback(async () => {
-    try {
-      if (!narration.canContinue) {
-        return;
-      }
-      return narration
-        .continue(gameProps)
-        .then(() => queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] }))
-        .catch((e) => console.error(e));
-    } catch (e) {
-      console.error(e);
-      return;
-    }
-  }, [gameProps, queryClient]);
+    const goNext = useCallback(async () => {
+        try {
+            if (!narration.canContinue) {
+                return;
+            }
+            return narration
+                .continue(gameProps)
+                .then(() =>
+                    queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] }),
+                )
+                .catch((e) => console.error(e));
+        } catch (e) {
+            console.error(e);
+            return;
+        }
+    }, [gameProps, queryClient]);
 
-  const goBack = useCallback(async () => {
-    return stepHistory
-      .back(gameProps)
-      .then(() => queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] }))
-      .catch((e) => console.error(e));
-  }, [gameProps, queryClient]);
+    const goBack = useCallback(async () => {
+        return stepHistory
+            .back(gameProps)
+            .then(() => queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] }))
+            .catch((e) => console.error(e));
+    }, [gameProps, queryClient]);
 
-  const selectChoice = useCallback(
-    async (item: StoredIndexedChoiceInterface) => {
-      return narration
-        .selectChoice(item, gameProps)
-        .then(() => queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] }))
-        .catch((e) => console.error(e));
-    },
-    [gameProps, queryClient]
-  );
+    const selectChoice = useCallback(
+        async (item: StoredIndexedChoiceInterface) => {
+            return narration
+                .selectChoice(item, gameProps)
+                .then(() =>
+                    queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] }),
+                )
+                .catch((e) => console.error(e));
+        },
+        [gameProps, queryClient],
+    );
 
-  return {
-    goNext,
-    goBack,
-    selectChoice,
-  };
+    return {
+        goNext,
+        goBack,
+        selectChoice,
+    };
 }`;
 
 const constants = `export const HEIGHT = 480;
