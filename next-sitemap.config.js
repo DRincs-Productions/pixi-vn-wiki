@@ -6,11 +6,12 @@ module.exports = {
     exclude: ["*/en/*"],
     transform: async (config, path) => {
         const isJsdocRoute = path === "/jsdoc" || path.startsWith("/jsdoc/");
+        const isContentMdRoute = path.endsWith("content.md");
 
         return {
             loc: path,
             changefreq: isJsdocRoute ? "daily" : "monthly",
-            priority: isJsdocRoute ? 0.5 : config.priority,
+            priority: isContentMdRoute ? 0.2 : isJsdocRoute ? 0.5 : config.priority,
             lastmod: config.autoLastmod ? new Date().toISOString() : undefined,
             alternateRefs: config.alternateRefs ?? [],
         };
