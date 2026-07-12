@@ -21,7 +21,7 @@ import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { ViewOptionsPopover } from "./ai/page-actions";
 import { GiscusComments } from "./giscus-comments";
-import { PatreonButton, TranslateButton } from "./page-actions";
+import { KofiButton, TranslateButton } from "./page-actions";
 
 export default async function MDXPage({
     lang,
@@ -81,7 +81,7 @@ export default async function MDXPage({
                 </EditOnGitHub>
                 <TranslateButton lang={lang} folther={folther} />
                 <ViewOptionsPopover markdownUrl={markdownUrl} />
-                <PatreonButton />
+                <KofiButton />
             </div>
             <DocsBody>
                 <MDX

@@ -35,7 +35,7 @@ export const contributorRepos = [
 ];
 
 export const discordUrl = "https://discord.gg/E95FZWakzp";
-export const patreonUrl = "https://www.patreon.com/pixi_vn";
+export const kofiUrl = "https://ko-fi.com/pixivn";
 
 // available languages that will be displayed on UI
 // make sure `locale` is consistent with your i18n config

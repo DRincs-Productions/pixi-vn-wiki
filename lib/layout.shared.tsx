@@ -1,9 +1,9 @@
 import LogoImg from "@/app/icon.png";
-import { DiscordIcon, PatreonIcon } from "@/components/ui/icons";
+import { DiscordIcon, KofiIcon } from "@/components/ui/icons";
 import { i18n } from "@/lib/i18n";
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import Image from "next/image";
-import { appName, discordUrl, gitConfig, patreonUrl } from "./shared";
+import { appName, discordUrl, gitConfig, kofiUrl } from "./shared";
 
 export function baseOptions(): BaseLayoutProps {
     return {
@@ -28,10 +28,10 @@ export function baseOptions(): BaseLayoutProps {
             },
             {
                 type: "icon",
-                label: "Patreon",
-                icon: <PatreonIcon className="size-5" />,
-                text: "Patreon",
-                url: patreonUrl,
+                label: "Ko-fi",
+                icon: <KofiIcon className="h-5 w-auto" />,
+                text: "Ko-fi",
+                url: kofiUrl,
             },
         ],
     };

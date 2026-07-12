@@ -2,18 +2,12 @@
 import { cva } from "class-variance-authority";
 import { Popover, PopoverContent, PopoverTrigger } from "fumadocs-ui/components/ui/popover";
 import { useCopyButton } from "fumadocs-ui/utils/use-copy-button";
-import {
-    Check,
-    ChevronDown,
-    Copy,
-    ExternalLinkIcon,
-    Globe,
-    Heart,
-    MessageCircleIcon,
-} from "lucide-react";
+import { Check, ChevronDown, Copy, ExternalLinkIcon, Globe, MessageCircleIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { cn } from "../lib/cn";
+import { kofiUrl } from "../lib/shared";
+import { KofiIcon } from "./ui/icons";
 import { buttonVariants } from "./ui/button";
 
 const cache = new Map<string, string>();
@@ -275,7 +269,7 @@ export function TranslateButton({ lang, folther }: { lang?: string; folther: str
     );
 }
 
-export function PatreonButton() {
+export function KofiButton() {
     return (
         <a
             target="_blank"
@@ -284,13 +278,14 @@ export function PatreonButton() {
                 buttonVariants({
                     variant: "secondary",
                     size: "xs",
-                    className: "gap-1.5 not-prose padding-6 padding-x-2",
+                    className:
+                        "gap-1.5 not-prose padding-6 padding-x-2 border-transparent bg-[#FF5A16] text-white hover:bg-[#e04d0f] hover:shadow-[0_0_16px_-4px_#FF5A16]",
                 }),
             )}
-            href={`https://www.patreon.com/cw/pixi_vn`}
+            href={kofiUrl}
         >
-            <Heart className="size-3.5" />
-            {"Patreon"}
+            <KofiIcon className="h-3.5 w-auto" />
+            {"Ko-fi"}
         </a>
     );
 }

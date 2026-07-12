@@ -17,7 +17,7 @@ import { createRelativeLink } from "fumadocs-ui/mdx";
 import { ExternalLink } from "lucide-react";
 import { notFound } from "next/navigation";
 import { ViewOptionsPopover } from "./ai/page-actions";
-import { PatreonButton } from "./page-actions";
+import { KofiButton } from "./page-actions";
 
 const libConfig = {
     "pixi-vn": {
@@ -64,7 +64,7 @@ export default async function JsdocPage({ slug, lib }: { slug?: string[]; lib: J
                     {config.title} on GitHub
                 </EditOnGitHub>
                 <ViewOptionsPopover markdownUrl={markdownUrl} />
-                <PatreonButton />
+                <KofiButton />
             </div>
             <DocsBody>
                 <MDX

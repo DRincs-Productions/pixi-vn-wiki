@@ -1,7 +1,8 @@
 import { buttonVariants } from "@/components/ui/button";
+import { KofiLogo } from "@/components/ui/icons";
 import { cn } from "@/lib/cn";
 import { fetchAllContributors, fetchCrowdinTranslators } from "@/lib/get-contributors";
-import { contributorRepos, gitConfig, patreonUrl } from "@/lib/shared";
+import { contributorRepos, gitConfig, kofiUrl } from "@/lib/shared";
 import { Heart } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
@@ -23,20 +24,13 @@ export async function Contributing() {
             <p className="mb-4 text-fd-muted-foreground">{t("subtitle")}</p>
             <div className="mb-8 flex flex-row items-center gap-2">
                 <a
-                    href={patreonUrl}
+                    href={kofiUrl}
                     target="_blank"
-                    className={cn(buttonVariants({ variant: "outline" }))}
                     rel="noopener"
+                    aria-label="Ko-fi"
+                    className={cn(buttonVariants({ variant: "outline" }), "px-4")}
                 >
-                    {t("patreon")}
-                </a>
-                <a
-                    href="https://pixi-vn.fanbox.cc/"
-                    target="_blank"
-                    className={cn(buttonVariants({ variant: "outline" }))}
-                    rel="noopener"
-                >
-                    {t("fanbox")}
+                    <KofiLogo className="h-5 w-auto" />
                 </a>
             </div>
             <div className="flex flex-col items-center gap-10">
