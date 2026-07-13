@@ -1,6 +1,4 @@
-import { buttonVariants } from "@/components/ui/button";
 import { KofiLogo } from "@/components/ui/icons";
-import { cn } from "@/lib/cn";
 import { fetchAllContributors, fetchCrowdinTranslators } from "@/lib/get-contributors";
 import { contributorRepos, gitConfig, kofiUrl } from "@/lib/shared";
 import { Heart } from "lucide-react";
@@ -23,14 +21,8 @@ export async function Contributing() {
             <h2 className="mb-4 text-xl font-semibold sm:text-2xl">{t("title")}</h2>
             <p className="mb-4 text-fd-muted-foreground">{t("subtitle")}</p>
             <div className="mb-8 flex flex-row items-center gap-2">
-                <a
-                    href={kofiUrl}
-                    target="_blank"
-                    rel="noopener"
-                    aria-label="Ko-fi"
-                    className={cn(buttonVariants({ variant: "outline" }), "px-4")}
-                >
-                    <KofiLogo className="h-5 w-auto" />
+                <a href={kofiUrl} target="_blank" rel="noreferrer noopener" aria-label="Ko-fi">
+                    <KofiLogo className="h-10 w-auto" />
                 </a>
             </div>
             <div className="flex flex-col items-center gap-10">

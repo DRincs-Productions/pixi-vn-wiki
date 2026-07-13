@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { cn } from "../lib/cn";
 import { kofiUrl } from "../lib/shared";
-import { KofiIcon } from "./ui/icons";
+import { KofiLogo } from "./ui/icons";
 import { buttonVariants } from "./ui/button";
 
 const cache = new Map<string, string>();
@@ -271,21 +271,8 @@ export function TranslateButton({ lang, folther }: { lang?: string; folther: str
 
 export function KofiButton() {
     return (
-        <a
-            target="_blank"
-            rel="noreferrer noopener"
-            className={cn(
-                buttonVariants({
-                    variant: "secondary",
-                    size: "xs",
-                    className:
-                        "gap-1.5 not-prose padding-6 padding-x-2 border-transparent bg-[#FF5A16] text-white hover:bg-[#e04d0f] hover:shadow-[0_0_16px_-4px_#FF5A16]",
-                }),
-            )}
-            href={kofiUrl}
-        >
-            <KofiIcon className="h-3.5 w-auto" />
-            {"Ko-fi"}
+        <a href={kofiUrl} target="_blank" rel="noreferrer noopener" aria-label="Ko-fi">
+            <KofiLogo className="h-6 w-auto" />
         </a>
     );
 }
