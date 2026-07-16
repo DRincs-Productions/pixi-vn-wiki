@@ -3,17 +3,23 @@ import type { Metadata } from "next/types";
 
 export function createMetadata(
     props: Metadata,
-    params: { lang?: string; slug?: string[] },
+    params: { lang?: string; slug?: string[]; isHome?: boolean },
 ): Metadata {
     const slug = params.slug;
     const slugString = slug ? `/${slug.join("/")}` : "";
     const lang = params.lang ? `/${params.lang}` : "";
-    const page = source.getPage(slug);
+    // The homepage route has no slug of its own, which collides with the
+    // `/start` index page (also reached with an empty slug). Skip the page
+    // lookup for the homepage so it always gets the SEO-focused fallback
+    // below, instead of inheriting the "Quick start" page's metadata.
+    const page = params.isHome ? undefined : source.getPage(slug);
     const images = page ? `${baseUrl}${getPageImage(page).url}` : `${baseUrl}/og_image.png`;
-    const title = page ? `Pixi'VN - ${page.data.title}` : "Pixi'VN - Visual Novel/2D game engine";
+    const title = page
+        ? `Pixi'VN - ${page.data.title}`
+        : "Pixi'VN - Visual Novel Engine for React, JavaScript & TypeScript";
     const description = page
         ? page.data.description
-        : "Create your own visual novel/2D game with Pixi'VN. It is a very versatile and powerful visual novel/2D game engine. It is based on JavaScript/TypeScript and uses the PixiJS library for rendering.";
+        : "Create your own visual novel or 2D game with Pixi'VN, a versatile visual novel engine for React and other JavaScript/TypeScript projects, built on the PixiJS rendering library.";
     return {
         title: title,
         description: description,
@@ -24,6 +30,8 @@ export function createMetadata(
             "PixiVN",
             "pixi vn",
             "visual novel engine",
+            "visual novel react",
+            "react visual novel",
             "2D game engine",
             "PixiJS",
             "Point & Click Adventure",
