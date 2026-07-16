@@ -32,6 +32,14 @@ const manifest: AssetsManifest = {
           alias: "spineboyAtlas",
           src: "https://raw.githubusercontent.com/EsotericSoftware/spine-runtimes/4.3/examples/spineboy/export/spineboy-pma.atlas",
         },
+            {
+      alias: "goblinsSkeleton",
+      src: "https://raw.githubusercontent.com/EsotericSoftware/spine-runtimes/4.3/examples/goblins/export/goblins-pro.skel",
+    },
+    {
+      alias: "goblinsAtlas",
+      src: "https://raw.githubusercontent.com/EsotericSoftware/spine-runtimes/4.3/examples/goblins/export/goblins-pma.atlas",
+    },
       ],
     },
   ],
@@ -40,6 +48,25 @@ export default manifest;`,
                 "constants.ts": `export const HEIGHT = 1080;
 export const WIDTH = 1920;
 export const BACKGROUND_COLOR = "#303030";`,
+                "labels/startLabel.ts": `import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
+import { Spine } from "@drincs/pixi-vn-spine";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await Assets.load(["spineboySkeleton", "spineboyAtlas"]);
+        const spine = new Spine({
+            atlas: "spineboyAtlas",
+            skeleton: "spineboySkeleton",
+            xAlign: 0.5,
+            yAlign: 1,
+            animation: "idle",
+        });
+        canvas.add("boy", spine);
+    },
+    () => {
+        canvas.find<Spine>("spine")?.addAnimation("walk", { loop: true });
+    },
+]);`,
                 ...files,
             }}
             previewHeight={previewHeight}
@@ -59,12 +86,20 @@ export function AnimationExample() {
 import { Spine } from "@drincs/pixi-vn-spine";
 
 export const startLabel = newLabel("start", [
-  async () => {
-    await Assets.load(["spineboySkeleton", "spineboyAtlas"]);
-    const spine = new Spine({ atlas: "spineboyAtlas", skeleton: "spineboySkeleton", xAlign: 0.5, yAlign: 1 });
-    spine.addAnimation("idle", { loop: true });
-    canvas.add("spine", spine);
-  },
+    async () => {
+        await Assets.load(["spineboySkeleton", "spineboyAtlas"]);
+        const spine = new Spine({
+            atlas: "spineboyAtlas",
+            skeleton: "spineboySkeleton",
+            xAlign: 0.5,
+            yAlign: 1,
+            animation: "idle",
+        });
+        canvas.add("boy", spine);
+    },
+    () => {
+        canvas.find<Spine>("spine")?.addAnimation("walk", { loop: true });
+    },
 ]);`,
             }}
         />
@@ -117,6 +152,35 @@ export const startLabel = newLabel("start", [
     });
     canvas.add("spine", spine);
   },
+]);`,
+            }}
+        />
+    );
+}
+
+export function SkinExample() {
+    return (
+        <SpineExample
+            files={{
+                "labels/startLabel.ts": `import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
+import { Spine } from "@drincs/pixi-vn-spine";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await Assets.load(["goblinsSkeleton", "goblinsAtlas"]);
+        const spine = new Spine({
+            atlas: "goblinsAtlas",
+            skeleton: "goblinsSkeleton",
+            skin: "goblin",
+            xAlign: 0.5,
+            yAlign: 1,
+            animation: "walk",
+        });
+        canvas.add("goblin", spine);
+    },
+    () => {
+        canvas.find<Spine>("goblin")?.setSkin("goblingirl");
+    },
 ]);`,
             }}
         />
