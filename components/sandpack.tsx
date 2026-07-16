@@ -129,7 +129,7 @@ body {
   overflow: hidden;
 }`;
 
-const ContinueOverlay = `import { ReactNode, useState } from "react";
+const ContinueOverlay = `import { type ReactNode, useState } from "react";
 import useNarrationFunctions from "../hooks/useNarrationFunctions";
 import { useQueryCanGoNext } from "../hooks/useQueryInterface";
 
@@ -150,8 +150,9 @@ export default function ContinueOverlay({ children }: { children: ReactNode }) {
                     .catch(() => setLoading(false));
             }}
             style={{
-                position: "fixed",
-                inset: 0,
+                height: "100%",
+                width: "100%",
+                pointerEvents: "auto",
             }}
         >
             {children}
