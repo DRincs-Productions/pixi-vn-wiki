@@ -18,6 +18,7 @@ MODULES = (
     "content/jsdoc/pixi-vn-json",
     "content/jsdoc/pixi-vn-ink",
     "content/jsdoc/nqtr",
+    "content/jsdoc/pixi-vn-spine",
 )
 
 # TypeDoc emits standard triple-backtick fences, so splitting on them keeps

@@ -23,6 +23,7 @@ MODULES = {
     "content/jsdoc/pixi-vn-json": "/jsdoc/pixi-vn-json",
     "content/jsdoc/pixi-vn-ink": "/jsdoc/pixi-vn-ink",
     "content/jsdoc/nqtr": "/jsdoc/nqtr",
+    "content/jsdoc/pixi-vn-spine": "/jsdoc/pixi-vn-spine",
 }
 
 LINK_RE = re.compile(r"\[([^\]]*)\]\(([^)]+)\)")

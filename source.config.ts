@@ -120,3 +120,13 @@ export const jsdocNqtrDocs = createDocsCollection(
         },
     }),
 );
+
+export const jsdocPixiVnSpineDocs = createDocsCollection(
+    "content/jsdoc/pixi-vn-spine",
+    applyMdxPreset({
+        rehypeCodeOptions: fullRehypeCodeOptions,
+        remarkCodeTabOptions: {
+            parseMdx: true,
+        },
+    }),
+);

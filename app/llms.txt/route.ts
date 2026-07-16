@@ -5,6 +5,7 @@ import {
     jsdocPixiVnInkSource,
     jsdocPixiVnJsonSource,
     jsdocPixiVnSource,
+    jsdocPixiVnSpineSource,
     nqtrSource,
     renpySource,
     source,
@@ -38,6 +39,10 @@ export function GET() {
             .concat(llms(jsdocPixiVnInkSource).index().replaceAll("# Docs", "## pixi-vn-ink API"))
             .concat("\n\n")
             .concat(llms(jsdocNqtrSource).index().replaceAll("# Docs", "## nqtr API"))
+            .concat("\n\n")
+            .concat(
+                llms(jsdocPixiVnSpineSource).index().replaceAll("# Docs", "## pixi-vn-spine API"),
+            )
             .replaceAll("/en/", "/"),
     );
 }

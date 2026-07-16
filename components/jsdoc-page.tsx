@@ -5,6 +5,7 @@ import {
     jsdocPixiVnInkSource,
     jsdocPixiVnJsonSource,
     jsdocPixiVnSource,
+    jsdocPixiVnSpineSource,
 } from "@/lib/source";
 import {
     DocsBody,
@@ -39,6 +40,11 @@ const libConfig = {
         source: jsdocNqtrSource,
         title: "nqtr",
         githubUrl: "https://github.com/DRincs-Productions/nqtr",
+    },
+    "pixi-vn-spine": {
+        source: jsdocPixiVnSpineSource,
+        title: "pixi-vn-spine",
+        githubUrl: "https://github.com/DRincs-Productions/pixi-vn-spine",
     },
 } as const;
 

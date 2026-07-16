@@ -907,6 +907,12 @@ export async function sidebar(lang?: string): Promise<
                 description: "Auto-generated API reference",
                 url: `/jsdoc/pixi-vn-json`,
             },
+            {
+                title: "@drinc/pixi-vn-spine",
+                icon: <Image width={16} height={16} src="/spine.svg" alt="Spine 2D" />,
+                description: "Auto-generated API reference",
+                url: `/jsdoc/pixi-vn-spine`,
+            },
         ],
     };
 }
