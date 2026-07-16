@@ -1,21 +1,16 @@
 ---
-icon: /spine.svg
 title: Spine 2D
+description: How to use the Spine 2D integration in Pixi’VN to load skeletons, switch skins, play and combine animations, and control animation tracks.
 ---
 
 import {
     AnimationExample,
     AnimationSequenceExample,
+    ClearExample,
     MotionExample,
+    SkinExample,
+    SpineExample,
 } from "@/components/spine-examples";
-
-<Callout title="This page is under construction" type="warn">
-
-This library is currently in **testing phase**, so it may change significantly between versions.
-
-</Callout>
-
----
 
 <Accordions>
 
@@ -68,6 +63,8 @@ addBaseHashtagCommands({ bundleIds, assetAliasIds });
 createSpineHandler(); // [!code focus]
 ```
 
+The `show`, `edit`, and `remove` hashtag commands can also be used with `spine`, just like with any other canvas element.
+
 </Accordion>
 
 </Accordions>
@@ -91,27 +88,13 @@ const spine = new Spine({
     yAlign: 1,
     animation: "idle",
 });
-canvas.add("spine", spine);
-```
-
-```ts tab="Typescript" title="main.ts" groupId="narrative_language"
-import { Assets, canvas } from "@drincs/pixi-vn";
-import { Spine } from "@drincs/pixi-vn-spine";
-
-await Assets.load(["spineboySkeleton", "spineboyAtlas"]);
-const spine = new Spine({
-    atlas: "spineboyAtlas",
-    skeleton: "spineboySkeleton",
-    xAlign: 0.5,
-    yAlign: 0.5,
-    animation: "idle",
-});
 canvas.add("boy", spine);
 ```
 
 ```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
 === start ===
-# show spine boy skeleton spineboySkeleton atlas spineboyAtlas x 0.5 y 0.5 animation idle
+# show spine boy skeleton spineboySkeleton atlas spineboyAtlas x 0.5 y 1 animation idle
+-> DONE
 ```
 
 ```ts title="src/assets/index.ts"
@@ -140,7 +123,56 @@ export const manifest: AssetsManifest = {
 };
 ```
 
-### Animation
+<SpineExample />
+
+<Accordions>
+
+<Accordion title="Skin" id="skin">
+
+A Spine model can have multiple skins, and you can switch between them at runtime by using the `setSkin` function.
+
+```ts tab="content/labels/start.label.ts"
+import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
+import { Spine } from "@drincs/pixi-vn-spine";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await Assets.load(["goblinsSkeleton", "goblinsAtlas"]);
+        const spine = new Spine({
+            atlas: "goblinsAtlas",
+            skeleton: "goblinsSkeleton",
+            skin: "goblin",
+            xAlign: 0.5,
+            yAlign: 1,
+            animation: "walk",
+        });
+        canvas.add("goblin", spine);
+    },
+    () => {
+        canvas.find<Spine>("goblin")?.setSkin("goblingirl");
+    },
+]);
+```
+
+```ink tab="ink/start.ink"
+=== start ===
+# show spine goblin skeleton goblinsSkeleton atlas goblinsAtlas skin goblin x 0.5 y 1 animation walk
+# pause
+# change spine goblin skin goblingirl
+# pause
+-> DONE
+```
+
+<SkinExample />
+
+</Accordion>
+
+<Accordion title="Animation" id="animation">
+
+There are two functions you can use to play a Spine animation: `setAnimation` and `addAnimation`.
+
+* `setAnimation` immediately replaces whatever animation is currently playing on the track with the new one.
+* `addAnimation` queues the new animation so that it starts only after the current animation on the track finishes, without interrupting it.
 
 ```ts tab="content/labels/start.label.ts"
 import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
@@ -154,45 +186,36 @@ export const startLabel = newLabel("start", [
             skeleton: "spineboySkeleton",
             xAlign: 0.5,
             yAlign: 1,
+            animation: "idle",
         });
-        spine.addAnimation("idle", { loop: true });
-        canvas.add("spine", spine);
+        canvas.add("boy", spine);
+    },
+    () => {
+        canvas.find<Spine>("spine")?.addAnimation("walk", { loop: true });
     },
 ]);
 ```
 
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
-
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
-    bundles: [
-        {
-            name: "start",
-            assets: [
-                {
-                    alias: "spineboySkeleton",
-                    src: "https://raw.githubusercontent.com/EsotericSoftware/spine-runtimes/4.3/examples/spineboy/export/spineboy-pro.skel",
-                },
-                {
-                    alias: "spineboyAtlas",
-                    src: "https://raw.githubusercontent.com/EsotericSoftware/spine-runtimes/4.3/examples/spineboy/export/spineboy-pma.atlas",
-                },
-            ],
-        },
-    ],
-};
-export default manifest;
+```ink tab="ink/start.ink"
+=== start ===
+# show spine boy skeleton spineboySkeleton atlas spineboyAtlas x 0.5 y 1 animation idle
+# pause
+# animate spine boy walk loop true
+# pause
+-> DONE
 ```
 
 <AnimationExample />
 
-### Spine + motion.js animations
+</Accordion>
 
-```ts tab="content/labels/start.label.ts"
+<Accordion title="Spine + motion.js animations" id="motion">
+
+You can combine Spine animations with Pixi’VN's classic motion-based animations (`canvas.animate`), as shown in the example below.
+
+For more advanced games, you can also drive Spine animations directly from a ticker triggered by events, such as a button press, instead of relying only on predefined sequences.
+
+```ts title="content/labels/start.label.ts"
 import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
 import { Spine } from "@drincs/pixi-vn-spine";
 
@@ -204,9 +227,9 @@ export const startLabel = newLabel("start", [
             skeleton: "spineboySkeleton",
             xAlign: 0,
             yAlign: 1,
+            animation: "walk",
         });
-        spine.addAnimation("walk", { loop: true });
-        canvas.add("spine", spine);
+        canvas.add("boy", spine);
         canvas.animate(
             spine,
             [
@@ -221,38 +244,15 @@ export const startLabel = newLabel("start", [
 ]);
 ```
 
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
-
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
-    bundles: [
-        {
-            name: "start",
-            assets: [
-                {
-                    alias: "spineboySkeleton",
-                    src: "https://raw.githubusercontent.com/EsotericSoftware/spine-runtimes/4.3/examples/spineboy/export/spineboy-pro.skel",
-                },
-                {
-                    alias: "spineboyAtlas",
-                    src: "https://raw.githubusercontent.com/EsotericSoftware/spine-runtimes/4.3/examples/spineboy/export/spineboy-pma.atlas",
-                },
-            ],
-        },
-    ],
-};
-export default manifest;
-```
-
 <MotionExample />
 
-### Animations sequence
+</Accordion>
 
-```ts tab="content/labels/start.label.ts"
+<Accordion title="Animation sequence" id="animation-sequence">
+
+It is also possible to create animation sequences by using the `playSequence` function.
+
+```ts title="content/labels/start.label.ts"
 import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
 import { Spine } from "@drincs/pixi-vn-spine";
 
@@ -268,36 +268,52 @@ export const startLabel = newLabel("start", [
         spine.playSequence([["idle", { loop: true, duration: 2 }], "jump"], {
             repeat: Infinity,
         });
-        canvas.add("spine", spine);
+        canvas.add("boy", spine);
     },
 ]);
 ```
 
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
+<AnimationSequenceExample />
 
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
-    bundles: [
-        {
-            name: "start",
-            assets: [
-                {
-                    alias: "spineboySkeleton",
-                    src: "https://raw.githubusercontent.com/EsotericSoftware/spine-runtimes/4.3/examples/spineboy/export/spineboy-pro.skel",
-                },
-                {
-                    alias: "spineboyAtlas",
-                    src: "https://raw.githubusercontent.com/EsotericSoftware/spine-runtimes/4.3/examples/spineboy/export/spineboy-pma.atlas",
-                },
-            ],
-        },
-    ],
-};
-export default manifest;
+</Accordion>
+
+<Accordion title="Clear tracks" id="clear-tracks">
+
+You can remove Spine animations using two methods: `clearTrack`, which clears the animation on a single track, and `clearTracks`, which clears the animations on all tracks.
+
+```ts tab="content/labels/start.label.ts"
+import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
+import { Spine } from "@drincs/pixi-vn-spine";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await Assets.load(["spineboySkeleton", "spineboyAtlas"]);
+        const spine = new Spine({
+            atlas: "spineboyAtlas",
+            skeleton: "spineboySkeleton",
+            xAlign: 0,
+            yAlign: 1,
+            animation: "walk",
+        });
+        canvas.add("boy", spine);
+    },
+    () => {
+        canvas.find<Spine>("spine")?.clearTracks();
+    },
+]);
 ```
 
-<AnimationSequenceExample />
+```ink tab="ink/start.ink"
+=== start ===
+# show spine boy skeleton spineboySkeleton atlas spineboyAtlas x 0 y 1 animation walk
+# pause
+# clear spine boy tracks
+# pause
+-> DONE
+```
+
+<ClearExample />
+
+</Accordion>
+
+</Accordions>
