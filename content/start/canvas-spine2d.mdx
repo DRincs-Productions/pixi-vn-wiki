@@ -6,6 +6,7 @@ title: Spine 2D
 import {
     AnimationExample,
     AnimationSequenceExample,
+    ClearExample,
     MotionExample,
     SkinExample,
     SpineExample,
@@ -236,7 +237,7 @@ export const startLabel = newLabel("start", [
             yAlign: 1,
             animation: "walk",
         });
-        canvas.add("spine", spine);
+        canvas.add("boy", spine);
         canvas.animate(
             spine,
             [
@@ -275,12 +276,49 @@ export const startLabel = newLabel("start", [
         spine.playSequence([["idle", { loop: true, duration: 2 }], "jump"], {
             repeat: Infinity,
         });
-        canvas.add("spine", spine);
+        canvas.add("boy", spine);
     },
 ]);
 ```
 
 <AnimationSequenceExample />
+
+</Accordion>
+
+<Accordion title="Clear tracks" id="clear-tracks">
+
+```ts tab="content/labels/start.label.ts"
+import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
+import { Spine } from "@drincs/pixi-vn-spine";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await Assets.load(["spineboySkeleton", "spineboyAtlas"]);
+        const spine = new Spine({
+            atlas: "spineboyAtlas",
+            skeleton: "spineboySkeleton",
+            xAlign: 0,
+            yAlign: 1,
+            animation: "walk",
+        });
+        canvas.add("boy", spine);
+    },
+    () => {
+        canvas.find<Spine>("spine")?.clearTracks();
+    },
+]);
+```
+
+```ink tab="ink/start.ink"
+=== start ===
+# show spine boy skeleton spineboySkeleton atlas spineboyAtlas x 0 y 1 animation walk
+# pause
+# clear spine boy tracks
+# pause
+-> DONE
+```
+
+<ClearExample />
 
 </Accordion>
 

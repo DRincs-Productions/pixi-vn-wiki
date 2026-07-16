@@ -186,3 +186,31 @@ export const startLabel = newLabel("start", [
         />
     );
 }
+
+export function ClearExample() {
+    return (
+        <SpineExample
+            files={{
+                "labels/startLabel.ts": `import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
+import { Spine } from "@drincs/pixi-vn-spine";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await Assets.load(["spineboySkeleton", "spineboyAtlas"]);
+        const spine = new Spine({
+            atlas: "spineboyAtlas",
+            skeleton: "spineboySkeleton",
+            xAlign: 0,
+            yAlign: 1,
+            animation: "walk",
+        });
+        canvas.add("boy", spine);
+    },
+    () => {
+        canvas.find<Spine>("spine")?.clearTracks();
+    },
+]);`,
+            }}
+        />
+    );
+}
