@@ -15,21 +15,22 @@ This library is currently in **testing phase**, so it may change significantly b
 
 </Callout>
 
-**What is Spine 2D?** Spine 2D is a powerful 2D animation software specifically designed for game development. It uses a skeletal animation system, meaning that characters and objects are animated through a hierarchy of **bones** that control the movement of attached parts.
+---
+
+<Accordions>
+
+<Accordion title="What is Spine 2D?" id="what-is-spine-2d">
+
+Spine 2D is a powerful 2D animation software specifically designed for game development. It uses a skeletal animation system, meaning that characters and objects are animated through a hierarchy of **bones** that control the movement of attached parts.
 
 You can learn more about Spine 2D on the [official Spine 2D website](https://it.esotericsoftware.com/).
 
-Within your **Pixi’VN** project, you can use the Spine 2D integration to create complex and smooth animations for your characters and objects.\
+</Accordion>
+
+</Accordions>
+
+Within your **Pixi’VN** project, you can use the Spine 2D integration to create complex and smooth animations for your characters and objects.
 This integration is essentially a wrapper around the official [Spine 2D runtime for PixiJS](https://it.esotericsoftware.com/spine-pixi), allowing you to use all Spine 2D features directly inside your Pixi’VN project.
-
-## Why?
-
-By using the Spine 2D integration in Pixi’VN, you can easily add animated components while taking advantage of both Pixi’VN and Spine 2D features, such as:
-
-* Saving the current animation state within game save files.
-* Using the <DynamicLink href="/start/canvas-position">additional Pixi’VN positioning properties</DynamicLink>.
-* Starting animation sequences quickly and easily.
-* Accessing additional features shared with other Pixi’VN components.
 
 ## Installation
 
@@ -39,28 +40,46 @@ To install the Spine 2D package in an existing JavaScript project, use one of th
 npm install @drincs/pixi-vn-spine
 ```
 
-### Initialisation
+:::danger
 
-Due to compatibility issues with Lazy components, the library must be imported when the game is initialized, so that it can be used inside Lazy components.
+The library must be imported when the game is initialized, so that it can be used inside Lazy components.
+
+:::
 
 ```ts title="main.ts"
-import "@drincs/pixi-vn-spine"; // [!code focus]
+import "@drincs/pixi-vn-spine";
 
 Game.init(body, {
     // ...
 });
 ```
 
+<Accordions>
+
+<Accordion title="*ink*" id="ink">
+
+You can enable Spine 2D hashtag commands in your **ink** scripts by using the `createSpineHandler` function.
+
+```ts title="content/ink/hashtag-commands.ts"
+import { addBaseHashtagCommands } from "@drincs/pixi-vn-ink";
+import { createSpineHandler } from "@drincs/pixi-vn-spine/ink"; // [!code focus]
+
+addBaseHashtagCommands({ bundleIds, assetAliasIds });
+createSpineHandler(); // [!code focus]
+```
+
+</Accordion>
+
+</Accordions>
+
 ## Usage
 
-You can use the `Spine` component just like any other Pixi’VN component.\
+You can use the `Spine` component just like any other Pixi’VN component.
 However, you must first load the Spine 2D assets (**skeleton** and **atlas**) before using it.
-
-This component has two required properties: `skeleton` and `atlas`, which must match the names of the loaded assets.
 
 Par exemple :
 
-```ts tab="main.ts"
+```ts tab="Typescript" title="main.ts" groupId="narrative_language"
 import { Assets, canvas } from "@drincs/pixi-vn";
 import { Spine } from "@drincs/pixi-vn-spine";
 
@@ -68,18 +87,41 @@ await Assets.load(["spineboySkeleton", "spineboyAtlas"]);
 const spine = new Spine({
     atlas: "spineboyAtlas",
     skeleton: "spineboySkeleton",
+    xAlign: 0.5,
+    yAlign: 1,
+    animation: "idle",
 });
 canvas.add("spine", spine);
 ```
 
-```ts tab="assets/manifest.ts"
+```ts tab="Typescript" title="main.ts" groupId="narrative_language"
+import { Assets, canvas } from "@drincs/pixi-vn";
+import { Spine } from "@drincs/pixi-vn-spine";
+
+await Assets.load(["spineboySkeleton", "spineboyAtlas"]);
+const spine = new Spine({
+    atlas: "spineboyAtlas",
+    skeleton: "spineboySkeleton",
+    xAlign: 0.5,
+    yAlign: 0.5,
+    animation: "idle",
+});
+canvas.add("boy", spine);
+```
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+# show spine boy skeleton spineboySkeleton atlas spineboyAtlas x 0.5 y 0.5 animation idle
+```
+
+```ts title="src/assets/index.ts"
 import { AssetsManifest } from "@drincs/pixi-vn";
 
 /**
  * Manifest for the assets used in the game.
  * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
  */
-const manifest: AssetsManifest = {
+export const manifest: AssetsManifest = {
     bundles: [
         {
             name: "start",
@@ -96,7 +138,6 @@ const manifest: AssetsManifest = {
         },
     ],
 };
-export default manifest;
 ```
 
 ### Animation
