@@ -64,7 +64,7 @@ export const startLabel = newLabel("start", [
         canvas.add("boy", spine);
     },
     () => {
-        canvas.find<Spine>("spine")?.addAnimation("walk", { loop: true });
+        canvas.find<Spine>("boy")?.addAnimation("walk", { loop: true });
     },
 ]);`,
                 ...files,
@@ -98,7 +98,7 @@ export const startLabel = newLabel("start", [
         canvas.add("boy", spine);
     },
     () => {
-        canvas.find<Spine>("spine")?.addAnimation("walk", { loop: true });
+        canvas.find<Spine>("boy")?.addAnimation("walk", { loop: true });
     },
 ]);`,
             }}
@@ -118,7 +118,7 @@ export const startLabel = newLabel("start", [
     await Assets.load(["spineboySkeleton", "spineboyAtlas"]);
     const spine = new Spine({ atlas: "spineboyAtlas", skeleton: "spineboySkeleton", xAlign: 0, yAlign: 1 });
     spine.addAnimation("walk", { loop: true });
-    canvas.add("spine", spine);
+    canvas.add("boy", spine);
     canvas.animate(
       spine,
       [
@@ -150,7 +150,7 @@ export const startLabel = newLabel("start", [
     spine.playSequence([["idle", { loop: true, duration: 2 }], "jump"], {
       repeat: Infinity,
     });
-    canvas.add("spine", spine);
+    canvas.add("boy", spine);
   },
 ]);`,
             }}
@@ -207,7 +207,7 @@ export const startLabel = newLabel("start", [
         canvas.add("boy", spine);
     },
     () => {
-        canvas.find<Spine>("spine")?.clearTracks();
+        canvas.find<Spine>("boy")?.clearTracks();
     },
 ]);`,
             }}
