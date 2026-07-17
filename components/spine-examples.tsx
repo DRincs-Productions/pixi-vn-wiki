@@ -3,7 +3,7 @@
 import type { SandpackFiles } from "@codesandbox/sandpack-react";
 import { ReactTemplate } from "./sandpack";
 
-function SpineExample({
+export function SpineExample({
     files,
     previewHeight = 400,
 }: {
