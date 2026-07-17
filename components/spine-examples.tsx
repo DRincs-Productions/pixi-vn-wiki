@@ -63,9 +63,6 @@ export const startLabel = newLabel("start", [
         });
         canvas.add("boy", spine);
     },
-    () => {
-        canvas.find<Spine>("boy")?.addAnimation("walk", { loop: true });
-    },
 ]);`,
                 ...files,
             }}
@@ -147,7 +144,7 @@ export const startLabel = newLabel("start", [
   async () => {
     await Assets.load(["spineboySkeleton", "spineboyAtlas"]);
     const spine = new Spine({ atlas: "spineboyAtlas", skeleton: "spineboySkeleton", xAlign: 0.5, yAlign: 1 });
-    spine.playSequence([["idle", { loop: true, duration: 2 }], "jump"], {
+    spine.playSequence([["idle", { loop: true, duration: 0.5 }], "jump"], {
       repeat: Infinity,
     });
     canvas.add("boy", spine);
