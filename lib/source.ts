@@ -58,17 +58,6 @@ export const source = loader({
                         borderRadius: "5px",
                     },
                 });
-            case "/spine.svg":
-                return createElement("img", {
-                    src: icon,
-                    alt: "icon",
-                    style: {
-                        width: "1em",
-                        height: "1em",
-                        verticalAlign: "middle",
-                        borderRadius: "5px",
-                    },
-                });
             case "/threejs.svg":
                 return createElement("img", {
                     src: icon,
