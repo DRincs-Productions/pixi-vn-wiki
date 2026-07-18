@@ -51,7 +51,7 @@ export const startLabel = newLabel("start", [
         canvas.add("shizuku", live2d);
     },
 ]);`,
-                "index.html": `<!DOCTYPE html>
+                "public/index.html": `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
