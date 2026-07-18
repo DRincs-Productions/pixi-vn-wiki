@@ -48,7 +48,7 @@ export const startLabel = newLabel("start", [
             scale: 0.5,
         });
         await live2d.ready;
-        canvas.add("hero", live2d);
+        canvas.add("shizuku", live2d);
     },
 ]);`,
                 "index.html": `<!DOCTYPE html>
@@ -98,10 +98,10 @@ export const startLabel = newLabel("start", [
             scale: 0.5,
         });
         await live2d.ready;
-        canvas.add("hero", live2d);
+        canvas.add("shizuku", live2d);
     },
     () => {
-        canvas.find<Live2D>("hero")?.motion("tap_body");
+        canvas.find<Live2D>("shizuku")?.motion("tap_body");
     },
 ]);`,
             }}
@@ -125,10 +125,10 @@ export const startLabel = newLabel("start", [
             scale: 0.5,
         });
         await live2d.ready;
-        canvas.add("hero", live2d);
+        canvas.add("shizuku", live2d);
     },
     () => {
-        canvas.find<Live2D>("hero")?.expression("f01");
+        canvas.find<Live2D>("shizuku")?.expression("f01");
     },
 ]);`,
             }}
@@ -152,7 +152,7 @@ export const startLabel = newLabel("start", [
             scale: 0.5,
         });
         await live2d.ready;
-        canvas.add("hero", live2d);
+        canvas.add("shizuku", live2d);
         canvas.animate(
             live2d,
             [
@@ -184,11 +184,11 @@ export const startLabel = newLabel("start", [
             scale: 0.5,
         });
         await live2d.ready;
-        canvas.add("hero", live2d);
+        canvas.add("shizuku", live2d);
         live2d.motion("tap_body");
     },
     () => {
-        canvas.find<Live2D>("hero")?.stopMotions();
+        canvas.find<Live2D>("shizuku")?.stopMotions();
     },
 ]);`,
             }}
