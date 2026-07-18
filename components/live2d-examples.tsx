@@ -65,7 +65,26 @@ export const startLabel = newLabel("start", [
   </body>
 </html>
 `,
-                "labels/index.ts": `import { extensions } from "pixi.js";
+                "labels/index.ts": `
+async function loadScript(src: string) {
+  await new Promise<void>((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = src;
+    script.onload = () => resolve();
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
+await loadScript(
+  "https://cdn.jsdelivr.net/npm/live2dcubismcore@1.0.2/live2dcubismcore.min.js"
+);
+
+await loadScript(
+  "https://cdn.jsdelivr.net/npm/live2dcubismcore@1.0.2/live2d.min.js"
+);
+
+import { extensions } from "pixi.js";
 import { Live2DPlugin } from "untitled-pixi-live2d-engine/cubism";
 extensions.add(Live2DPlugin);
 
