@@ -66,6 +66,27 @@ export const startLabel = newLabel("start", [
 </html>
 `,
                 "labels/index.ts": `
+import { extensions } from "pixi.js";
+import { Live2DPlugin } from "untitled-pixi-live2d-engine/cubism";
+extensions.add(Live2DPlugin);
+
+import "./startLabel";
+`,
+                "index.tsx": `import { Assets, Container, Game, canvas, sound } from "@drincs/pixi-vn";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { createRoot } from "react-dom/client";
+import App from "./App";
+import { BACKGROUND_COLOR, HEIGHT, WIDTH } from "./constants";
+import { INTERFACE_DATA_USE_QUEY_KEY } from "./hooks/useQueryInterface";
+import "./styles.css";
+import { defineAssets } from "./utils/assets-utility";
+
+// Canvas setup with PIXI
+const body = document.body;
+if (!body) {
+    throw new Error("body element not found");
+}
+
 async function loadScript(src: string) {
   await new Promise<void>((resolve, reject) => {
     const script = document.createElement("script");
@@ -76,7 +97,51 @@ async function loadScript(src: string) {
   });
 }
 
-await loadScript(
+Game.init(body, {
+    height: HEIGHT,
+    width: WIDTH,
+    backgroundColor: BACKGROUND_COLOR,
+}).then(async () => {
+    // Pixi.JS UI Layer
+    canvas.addLayer("ui", new Container());
+
+    // Sound setup
+    sound.addChannel("bgm", { background: true });
+    sound.addChannel("sfx");
+    sound.defaultChannelAlias = "sfx";
+
+    // React setup with ReactDOM
+    const root = document.getElementById("root");
+    if (!root) {
+        throw new Error("root element not found");
+    }
+
+    const htmlLayout = canvas.addHtmlLayer("ui", root);
+    if (!htmlLayout) {
+        throw new Error("htmlLayout not found");
+    }
+    const reactRoot = createRoot(htmlLayout);
+    const queryClient = new QueryClient();
+
+    Game.onEnd(async () => {
+        await Game.start("start", {});
+    });
+    Game.onLoadingLabel(async (_stepId, { id }) => await Assets.backgroundLoadBundle(id));
+
+    reactRoot.render(
+        <div
+            style={{
+                color: "white",
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+            }}
+        >
+            Loading...
+        </div>,
+    );
+
+    await loadScript(
   "https://cdn.jsdelivr.net/npm/live2dcubismcore@1.0.2/live2dcubismcore.min.js"
 );
 
@@ -84,12 +149,21 @@ await loadScript(
   "https://cdn.jsdelivr.net/npm/live2dcubismcore@1.0.2/live2d.min.js"
 );
 
-import { extensions } from "pixi.js";
-import { Live2DPlugin } from "untitled-pixi-live2d-engine/cubism";
-extensions.add(Live2DPlugin);
+await import("./labels");
 
-import "./startLabel";
-`,
+    defineAssets().then(() => {
+        Game.start("start", {}).then(() => {
+            reactRoot.render(
+                <QueryClientProvider client={queryClient}>
+                    <App />
+                </QueryClientProvider>,
+            );
+            queryClient.invalidateQueries({
+                queryKey: [INTERFACE_DATA_USE_QUEY_KEY],
+            });
+        });
+    });
+});`,
                 ...files,
             }}
             previewHeight={previewHeight}
