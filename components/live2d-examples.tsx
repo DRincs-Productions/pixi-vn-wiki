@@ -45,12 +45,32 @@ export const startLabel = newLabel("start", [
             source: "shizuku",
             xAlign: 0.5,
             yAlign: 1,
-            scale: 0.3,
+            scale: 0.5,
         });
         await live2d.ready;
         canvas.add("hero", live2d);
     },
 ]);`,
+                "index.html": `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pixi’VN</title>
+  </head>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/live2dcubismcore@1.0.2/live2dcubismcore.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/live2dcubismcore@1.0.2/live2d.min.js"></script>
+    <div id="root"></div>
+  </body>
+</html>
+`,
+                "labels/index.ts": `import { extensions } from "pixi.js";
+import { Live2DPlugin } from "untitled-pixi-live2d-engine/cubism";
+extensions.add(Live2DPlugin);
+
+import "./startLabel";
+`,
                 ...files,
             }}
             previewHeight={previewHeight}
@@ -69,17 +89,13 @@ export function MotionExample() {
                 "labels/startLabel.ts": `import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
 import { Live2D } from "@drincs/pixi-vn-live2d";
 
-import { extensions } from "pixi.js";
-import { Live2DPlugin } from "@drincs/pixi-vn-live2d/core";
-extensions.add(Live2DPlugin);
-
 export const startLabel = newLabel("start", [
     async () => {
         const live2d = new Live2D({
             source: "shizuku",
             xAlign: 0.5,
             yAlign: 1,
-            scale: 0.3,
+            scale: 0.5,
         });
         await live2d.ready;
         canvas.add("hero", live2d);
@@ -100,17 +116,13 @@ export function ExpressionExample() {
                 "labels/startLabel.ts": `import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
 import { Live2D } from "@drincs/pixi-vn-live2d";
 
-import { extensions } from "pixi.js";
-import { Live2DPlugin } from "@drincs/pixi-vn-live2d/core";
-extensions.add(Live2DPlugin);
-
 export const startLabel = newLabel("start", [
     async () => {
         const live2d = new Live2D({
             source: "shizuku",
             xAlign: 0.5,
             yAlign: 1,
-            scale: 0.3,
+            scale: 0.5,
         });
         await live2d.ready;
         canvas.add("hero", live2d);
@@ -131,17 +143,13 @@ export function PixiMotionExample() {
                 "labels/startLabel.ts": `import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
 import { Live2D } from "@drincs/pixi-vn-live2d";
 
-import { extensions } from "pixi.js";
-import { Live2DPlugin } from "@drincs/pixi-vn-live2d/core";
-extensions.add(Live2DPlugin);
-
 export const startLabel = newLabel("start", [
     async () => {
         const live2d = new Live2D({
             source: "shizuku",
             xAlign: 0.3,
             yAlign: 1,
-            scale: 0.2,
+            scale: 0.5,
         });
         await live2d.ready;
         canvas.add("hero", live2d);
@@ -167,17 +175,13 @@ export function StopMotionsExample() {
                 "labels/startLabel.ts": `import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
 import { Live2D } from "@drincs/pixi-vn-live2d";
 
-import { extensions } from "pixi.js";
-import { Live2DPlugin } from "@drincs/pixi-vn-live2d/core";
-extensions.add(Live2DPlugin);
-
 export const startLabel = newLabel("start", [
     async () => {
         const live2d = new Live2D({
             source: "shizuku",
             xAlign: 0.5,
             yAlign: 1,
-            scale: 0.3,
+            scale: 0.5,
         });
         await live2d.ready;
         canvas.add("hero", live2d);
