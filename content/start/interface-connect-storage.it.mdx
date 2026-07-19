@@ -1,21 +1,21 @@
 ---
-title: Connect the UI components with the game variables
-description: Explains how to connect UI components to the game's persistent storage using TanStack Query, with example hooks (useQueryText1, useQueryText2), cache invalidation on step/label/save-load events, and a UI input example.
+title: Collega i componenti dell'UI alle variabili di gioco
+description: Spiega come collegare i componenti dell'UI all'archiviazione persistente del gioco, utilizzando TanStack Query, con hook di esempio (useQueryText1, useQueryText2), l'invalidazione della cache agli eventi passaggio/etichetta/salva-carica, e un esempio di input dell'UI.
 ---
 
 ![usequery](/usequery.png)
 
-The best way to connect the UI with the game variables is to use the TanStack Query library.
+Il metodo migliore per collegare l'UI alle variabili di gioco è utilizzare la libreria di TanStack Query.
 
-**What is TanStack Query?** TanStack Query is a library that allows you to manage the state of your application in a simple and efficient way. It is based on the concept of queries, mutations and subscriptions. This library is very useful and is compatible with React, Vue, Angular, Svelte, etc.
+**Cos'è TanStack Query?** TanStack Query è una libreria che ti consente di gestire lo stato della tua applicazione in un modo semplice ed efficace. Si basa sul concetto delle richieste, delle mutazioni e delle sottoscrizioni. Questa libreria è molto utile ed è compatibile con React, Vue, Angular, Svelte, etc.
 
-You can learn more about TanStack Query on the [TanStack website](https://tanstack.com/query/latest).
+Puoi scoprire di più su TanStack Query sul [sito web di TanStack](https://tanstack.com/query/latest).
 
 Here is an example:
 
-In our example we have two variables, `text1` and `text2`, stored in the <DynamicLink href="/start/storage">game storage</DynamicLink>. These variables are updated either by a UI input or by a <DynamicLink href="/start/labels">`label`</DynamicLink> or during a `step`.
+Nel nostro esempio, abbiamo due variabili, `text1` e `text2`, memorizzate nell'<DynamicLink href="/start/storage">archiviazione di gioco</DynamicLink>. Tali variabili sono aggiornate da un input dell'UI o da una <DynamicLink href="/start/labels">`label`</DynamicLink>, oppure durante uno `step`.
 
-Because storage variables can only be changed during a <DynamicLink href="/start/labels#continue-and-go-back">next `step` / go back</DynamicLink>, when you <DynamicLink href="/start/labels#run-a-label">run a `label`</DynamicLink>, or when <DynamicLink href="/start/save#load">loading a save</DynamicLink> (outside the interface), we'll create `useQueryText1` and `useQueryText2` hooks and invalidate them after each of those events.
+Poiché le variabili di archiviazione sono modificabili esclusivamente durante lo <DynamicLink href="/start/labels#continue-and-go-back">`step` successivo / precedente</DynamicLink>, quando <DynamicLink href="/start/labels#run-a-label">esegui una `label`</DynamicLink> o <DynamicLink href="/start/save#load">carichi un salvataggio</DynamicLink> (al di fuori dell'interfaccia), creeremo gli hook `useQueryText1` e `useQueryText2` e li invalideremo dopo ciascuno di questi eventi.
 
 ```typescript
 import { useQuery } from "@tanstack/react-query";
@@ -45,16 +45,16 @@ export function useQueryText2() {
 }
 ```
 
-To invalidate queries, use the `queryClient.invalidateQueries` function.
+Per invalidare le richieste, utilizza la funzione `queryClient.InvalidateQueries`.
 
-In this example, to update all queries that depend on the `INTERFACE_DATA_USE_QUERY_KEY`, use:
+In questo esempio, per aggiornare tutte le richieste che dipendono da `INTERFACE_DATA_USE_QUERY_KEY`, utilizza:
 
 ```ts
 const queryClient = useQueryClient()
 queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUERY_KEY] })
 ```
 
-To update only the `text1` or `text2` query, use:
+Per aggiornare esclusivamente la richiesta `text1` o `text2`, utilizza:
 
 ```ts
 const queryClient = useQueryClient()
@@ -87,7 +87,7 @@ narration.call("myLabel", {})
     });
 ```
 
-In the UI, call the `useQueryText1` and `useQueryText2` hooks to access the stored `text1` and `text2` values.
+Nell'UI, chiama gli hook `useQueryText1` e `useQueryText2` per accedere ai valori memorizzati di `text1` e `text2`.
 
 ```tsx title="src/components/MyComponent.tsx"
 export function MyComponent() {
