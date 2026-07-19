@@ -1,38 +1,38 @@
 ---
 title: Steam
-description: How to integrate Steam into your game using the built-in Tauri + Steamworks support included in this template.
+description: Come integrare Steam nel tuo gioco utilizzando il supporto integrato per Tauri + Steamworks incluso in questo modello.
 ---
 
 :::tip[Mobile]
 
-Steam is not supported on iOS or Android — the feature is automatically disabled on those targets.
+Steam non è supportato su iOS o Android; la funzionalità viene disabilitata automaticamente su tali piattaforme.
 
 :::
 
-The multiplatform template includes a **ready-to-use Steam integration** built on [Tauri](https://tauri.app/) and the Rust crate [`steamworks`](https://crates.io/crates/steamworks) (a wrapper around the Steamworks SDK). Everything is opt-in: the feature is excluded from the build by default and adds zero overhead when unused.
+Il modello multipiattaforma include un'**integrazione pronta all'uso di Steam**, basata su [`Tauri`](https://tauri.app/) e sul crate di Rust [`steamworks`](https://crates.io/crates/steamworks) (contenente lo SDK di Steamworks). Tutto è opzionale: la funzionalità viene esclusa dalla compilazione di default e non comporta alcun sovraccarico quando inutilizzata.
 
-## Enabling Steam support
+## Abilitare il supporto a Steam
 
-Edit `steam_appid.txt` in the repo root and replace the value with your real Steam App ID.\
-Use `480` (Spacewar) for local testing without a published app.
+Modifica `steam_appid.txt` nella repository di root e sostituisci il valore con il tuo ID App di Steam reale.\
+Utilizza `480` (Spacewar) per eseguire test locali senza un'app pubblicata.
 
 ```txt title="steam_appid.txt"
 480
 ```
 
-Open `src-tauri/Cargo.toml` and add `steam` to the default features list:
+Apri `src-tauri/Cargo.toml` e aggiungi `steam` all'elenco delle funzionalità principali:
 
 ```toml title="src-tauri/Cargo.toml"
 default = ["steam"]
 ```
 
-Alternatively, pass `--features steam` to any `cargo` or `tauri build` command without touching the file.
+Altrimenti, passa `--features steam` a qualsiasi comando `cargo` o `tauri build`, senza toccare il file.
 
-The `steamworks` Rust crate already ships the native redistributable libraries for all platforms — **nothing to download manually**. The `build.rs` in this template copies the correct file into `src-tauri/` automatically during compilation.
+Il crate di Rust `steamworks` include già le librerie redistribuibili native per tutte le piattaforme; **nulla da scaricare manualmente**. `build.rs` in questo modello copia automaticamente il file corretto in `src-tauri/` durante la compilazione.
 
-### Bundling for distribution
+### Raggruppamento per la distribuzione
 
-To include the library in the final installer you need to tell Tauri to bundle it. Create a platform-specific config file for the platform you are targeting — you only need the one(s) that apply to you:
+Per includere la libreria nel programma di installazione finale, devi indicare a Tauri di impacchettarlo. Crea un file di configurazione specifico per la piattaforma di riferimento; ti serviranno soltanto quelli che ti riguardano:
 
 ```json tab="Windows" title="src-tauri/tauri.windows.conf.json"
 {
@@ -52,18 +52,18 @@ To include the library in the final installer you need to tell Tauri to bundle i
 }
 ```
 
-Tauri v2 merges the matching file into `tauri.conf.json` automatically at build time. Create only the files for the platforms you want to distribute on — one, two, or all three.
+Tauri v2 unisce automaticamente il file corrispondente in `tauri.config.json`, al momento della compilazione. Crea esclusivamente i file per le piattaforme in cui desideri distribuire: che sia una, due o tutte e tre.
 
 ## API
 
-Import the `steam` namespace from `@/lib/steam` and call any function directly.\
-All functions are safe to call even when Steam is unavailable or the app runs in a browser: they simply return `null` / `false` / `0` without throwing.
+Imposta il namespace `steam` da `@/lib/steam` e chiama direttamente qualsiasi funzione.\
+Tutte le funzioni possono essere chiamate in sicurezza quando Steam non è disponibile o l'app viene eseguita in un browser: semplicemente, restituiscono `null` / `false` / `0` senza generare errori.
 
 <Accordions>
 
-<Accordion title="`General`" id="general">
+<Accordion title="`Generale`" id="general">
 
-**`steam.isAvailable()`** returns `true` when the Steam client is running and the SDK is initialised. Use it to gate any Steam-specific UI or logic.
+**`steam.isAvailable()`** restituisce `true` quando il client di Steam è in esecuzione e lo SDK viene inizializzato. Utilizzalo per controllare l'accesso a qualsiasi UI o logica specifica di Steam.
 
 ```ts tab="JavaScript/TypeScript"
 import { steam } from "@/lib/steam";
@@ -74,7 +74,7 @@ if (available) {
 }
 ```
 
-**`steam.getPlayerName()`** returns the display name of the logged-in Steam user, or `null` if Steam is unavailable.
+**`steam.getPlayerName()`** restituisce il nome visualizzato dell'utente connesso a Steam, o `null` se Steam non è disponibile.
 
 ```ts tab="JavaScript/TypeScript"
 import { steam } from "@/lib/steam";
@@ -85,7 +85,7 @@ if (name) {
 }
 ```
 
-**`steam.getAppId()`** returns the numeric App ID of the running application as registered on Steamworks, or `null` if Steam is unavailable.
+**`steam.getAppId()`** restituisce l'ID numerico dell'applicazione in esecuzione come registrato su Steamworks, o `null` se Steam non è disponibile.
 
 ```ts tab="JavaScript/TypeScript"
 import { steam } from "@/lib/steam";
@@ -96,9 +96,9 @@ console.log(`Running app: ${appId}`);
 
 </Accordion>
 
-<Accordion title="Achievements" id="achievements">
+<Accordion title="Obiettivi" id="obiettivi">
 
-**`steam.unlockAchievement(id)`** unlocks and persists an achievement. The `id` must match the API Name set in the Steamworks Partner dashboard.
+**`steam.unlockAchievement(id)`** sblocca e salva un obiettivo. `id` deve corrispondere al Nome dell'API impostato nel pannello di controllo di Steamworks Partner.
 
 ```ts tab="JavaScript/TypeScript"
 import { steam } from "@/lib/steam";
@@ -110,7 +110,7 @@ await steam.unlockAchievement("FIRST_WIN");
 # unlock achievement {achievementId}
 ```
 
-**`steam.isAchievementUnlocked(id)`** returns `true` if the user has already unlocked the given achievement. Use it to avoid showing unlock animations more than once.
+**`steam.isAchievementUnlocked(id)`** restituisce `true` se l'utente ha già sbloccato il dato obiettivo. Utilizzalo per evitare di mostrare le animazioni di sblocco più di una volta.
 
 ```ts tab="JavaScript/TypeScript"
 import { steam } from "@/lib/steam";
@@ -121,7 +121,7 @@ if (!unlocked) {
 }
 ```
 
-**`steam.clearAchievement(id)`** resets an achievement back to locked. This is intended for development and QA only — do not call it in production.
+**`steam.clearAchievement(id)`** ripristina un obiettivo a bloccato. Ciò è destinato esclusivamente allo sviluppo e al controllo qualità; non utilizzarlo in produzione.
 
 ```ts tab="JavaScript/TypeScript"
 import { steam } from "@/lib/steam";
@@ -131,9 +131,9 @@ await steam.clearAchievement("FIRST_WIN");
 
 </Accordion>
 
-<Accordion title="Stats" id="stats">
+<Accordion title="Statistiche" id="stats">
 
-**`steam.setStatInt(name, value)`** writes an integer stat. Changes are staged locally; call `storeStats()` to commit them to Steam.
+**`steam.setStatInt(name, value)`** scrive una statistica intera. Le modifiche sono salvate temporaneamente in locale; chiama `storeStats()` per impegnarle su Steam.
 
 ```ts tab="JavaScript/TypeScript"
 import { steam } from "@/lib/steam";
@@ -142,7 +142,7 @@ await steam.setStatInt("TOTAL_KILLS", 42);
 await steam.storeStats();
 ```
 
-**`steam.getStatInt(name)`** reads an integer stat. Returns `0` if the stat does not exist or Steam is unavailable.
+**`steam.getStatInt(name)`** legge una statistica intera. Restituisce `0` se la statistica non esiste o se Steam non è disponibile.
 
 ```ts tab="JavaScript/TypeScript"
 import { steam } from "@/lib/steam";
@@ -151,7 +151,7 @@ const kills = await steam.getStatInt("TOTAL_KILLS");
 console.log(`Total kills: ${kills}`);
 ```
 
-**`steam.setStatFloat(name, value)`** writes a float stat. Same staging behaviour as `setStatInt` — requires `storeStats()` to persist.
+**`steam.setStatFloat(name, value)`** scrive una statistica decimale. Lo stesso comportamento di salvataggio temporaneo di `setStatInt`; richiede che `storeStats()` persista.
 
 ```ts tab="JavaScript/TypeScript"
 import { steam } from "@/lib/steam";
@@ -160,7 +160,7 @@ await steam.setStatFloat("ACCURACY", 0.87);
 await steam.storeStats();
 ```
 
-**`steam.getStatFloat(name)`** reads a float stat. Returns `0` if the stat does not exist or Steam is unavailable.
+**`steam.getStatFloat(name)`** legge una statistica decimale. Restituisce `0` se la statistica non esiste o se Steam non è disponibile.
 
 ```ts tab="JavaScript/TypeScript"
 import { steam } from "@/lib/steam";
@@ -169,7 +169,7 @@ const accuracy = await steam.getStatFloat("ACCURACY");
 console.log(`Accuracy: ${(accuracy * 100).toFixed(1)}%`);
 ```
 
-**`steam.storeStats()`** commits all pending stat changes to Steam. Achievement unlock functions call this automatically, but you must call it manually after `setStatInt` or `setStatFloat`.
+**`steam.storeStats()`** salva tutte le modifiche alle statistiche in sospeso su Steam. Le funzioni di sblocco degli obiettivi lo chiamano automaticamente, ma devi chiamarlo manualmente dopo `setStatInt` o `setStatFloat`.
 
 ```ts tab="JavaScript/TypeScript"
 import { steam } from "@/lib/steam";
@@ -182,7 +182,7 @@ await steam.storeStats();
 
 <Accordion title="DLC" id="dlc">
 
-**`steam.isDlcInstalled(appId)`** returns `true` if the user owns and has installed the DLC identified by the given App ID. Use it to gate DLC content at runtime.
+**`steam.isDlcInstalled(appId)`** restituisce `true` se l'utente possiede e ha installato il DLC identificato dall'ID App dato. Utilizzalo per limitare l'accesso ai contenuti del DLC durante l'esecuzione.
 
 ```ts tab="JavaScript/TypeScript"
 import { steam } from "@/lib/steam";
@@ -195,9 +195,9 @@ if (hasDlc) {
 
 </Accordion>
 
-<Accordion title="Overlay" id="overlay">
+<Accordion title="Sovrapposizione" id="overlay">
 
-**`steam.openOverlay(dialog)`** opens the Steam overlay to a specific page. Accepted values are `"achievements"`, `"friends"`, `"community"`, `"stats"`, `"settings"`, `"officialgamegroup"`, and `"players"`.
+**`steam.openOverlay(dialog)`** apre la sovrapposizione di Steam su una pagina specifica. Sono valori accettati `"achievements"`, `"friends"`, `"community"`, `"stats"`, `"settings"`, `"officialgamegroup e `"players"\`.
 
 ```ts tab="JavaScript/TypeScript"
 import { steam } from "@/lib/steam";
@@ -205,7 +205,7 @@ import { steam } from "@/lib/steam";
 await steam.openOverlay("achievements");
 ```
 
-**`steam.openStore(appId?)`** opens the Steam Store page for this game. Pass a different `appId` to link to another app, for example a DLC or a sequel.
+**`steam.openStore(appId?)`** apre la pagina dello Store di Steam per questo gioco. Passa un `appId` differente per collegarsi a un'altra app, ad esempio un DLC o un sequel.
 
 ```ts tab="JavaScript/TypeScript"
 import { steam } from "@/lib/steam";
@@ -221,9 +221,9 @@ await steam.openStore(1234560);
 
 </Accordions>
 
-## Base implementation
+## Implementazione di base
 
-For reference, the base implementation is located in `src-tauri/src/steam.rs` and the API is exposed to the frontend via Tauri's `invoke` system in `src-tauri/src/lib.rs`.
+Per riferimento, l'implementazione di base si trova in `src-tauri/src/steam.rs` e l'API è esposta al frontend tramite il sistema `invoke` di Tauri, in `src-tauri/src/lib.rs`.
 
 ```toml tab="src-tauri/Cargo.toml"
 [features]
