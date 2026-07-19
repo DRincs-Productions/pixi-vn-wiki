@@ -1,6 +1,6 @@
 ---
 title: Spine 2D
-description: How to use the Spine 2D integration in Pixi’VN to load skeletons, switch skins, play and combine animations, and control animation tracks.
+description: Pixi’VN で Spine 2D 統合を使用してスケルトンを読み込み、スキンを切り替え、アニメーションを再生・組み合わせ、アニメーショントラックを制御する方法。
 ---
 
 import {
@@ -14,22 +14,22 @@ import {
 
 <Accordions>
 
-<Accordion title="What is Spine 2D?" id="what-is-spine-2d">
+<Accordion title="Spine 2D とは？" id="what-is-spine-2d">
 
-Spine 2D is a powerful 2D animation software specifically designed for game development. It uses a skeletal animation system, meaning that characters and objects are animated through a hierarchy of **bones** that control the movement of attached parts.
+Spine 2D は、ゲーム開発向けに特別に設計された強力な 2D アニメーションソフトウェアです。 骨格アニメーションシステムを使用しており、キャラクターやオブジェクトは、付随するパーツの動きを制御する**ボーン**の階層を通じてアニメーション化されます。
 
-You can learn more about Spine 2D on the [official Spine 2D website](https://it.esotericsoftware.com/).
+Spine 2D について詳しくは、[Spine 2D 公式サイト](https://it.esotericsoftware.com/)をご覧ください。
 
 </Accordion>
 
 </Accordions>
 
-Within your **Pixi’VN** project, you can use the Spine 2D integration to create complex and smooth animations for your characters and objects.
-This integration is essentially a wrapper around the official [Spine 2D runtime for PixiJS](https://it.esotericsoftware.com/spine-pixi), allowing you to use all Spine 2D features directly inside your Pixi’VN project.
+**Pixi’VN** プロジェクト内では、Spine 2D 統合を使用して、キャラクターやオブジェクトの複雑で滑らかなアニメーションを作成できます。
+この統合は、本質的に公式の [PixiJS 向け Spine 2D ランタイム](https://it.esotericsoftware.com/spine-pixi) のラッパーであり、Pixi’VN プロジェクト内で直接すべての Spine 2D 機能を使用できます。
 
 ## インストール
 
-To install the Spine 2D package in an existing JavaScript project, use one of the following commands:
+既存の JavaScript プロジェクトに Spine 2D パッケージをインストールするには、以下のいずれかのコマンドを使用します。
 
 ```npm
 npm install @drincs/pixi-vn-spine
@@ -37,7 +37,7 @@ npm install @drincs/pixi-vn-spine
 
 :::danger
 
-The library must be imported when the game is initialized, so that it can be used inside Lazy components.
+このライブラリは、Lazy コンポーネント内で使用できるように、ゲームの初期化時にインポートする必要があります。
 
 :::
 
@@ -53,7 +53,7 @@ Game.init(body, {
 
 <Accordion title="ink" id="ink">
 
-You can enable Spine 2D hashtag commands in your **ink** scripts by using the [`createSpineHandler`](/jsdoc/pixi-vn-spine/ink/functions/createSpineHandler) function.
+[`createSpineHandler`](/jsdoc/pixi-vn-spine/ink/functions/createSpineHandler) 関数を使用することで、**ink** スクリプト内で Spine 2D のハッシュタグコマンドを有効にできます。
 
 ```ts title="content/ink/hashtag-commands.ts"
 import { addBaseHashtagCommands } from "@drincs/pixi-vn-ink";
@@ -63,16 +63,16 @@ addBaseHashtagCommands({ bundleIds, assetAliasIds });
 createSpineHandler(); // [!code focus]
 ```
 
-The `show`, `edit`, and `remove` hashtag commands can also be used with `spine`, just like with any other canvas element.
+`show`、`edit`、`remove` ハッシュタグコマンドは、他のキャンバス要素と同様に `spine` でも使用できます。
 
 </Accordion>
 
 </Accordions>
 
-## Usage
+## 使用方法
 
-You can use the [`Spine`](/jsdoc/pixi-vn-spine/index/classes/Spine) component just like any other Pixi’VN component.
-However, you must first load the Spine 2D assets (**skeleton** and **atlas**) before using it.
+他の Pixi’VN コンポーネントと同様に、[`Spine`](/jsdoc/pixi-vn-spine/index/classes/Spine) コンポーネントを使用できます。
+ただし、使用する前に、まず Spine 2D のアセット（**skeleton** と **atlas**）を読み込む必要があります。
 
 例：
 
@@ -127,9 +127,9 @@ export const manifest: AssetsManifest = {
 
 <Accordions>
 
-<Accordion title="Skin" id="skin">
+<Accordion title="スキン" id="skin">
 
-A Spine model can have multiple skins, and you can switch between them at runtime by using the [`setSkin`](/jsdoc/pixi-vn-spine/index/classes/Spine#setskin) function.
+Spine モデルは複数のスキンを持つことができ、[`setSkin`](/jsdoc/pixi-vn-spine/index/classes/Spine#setskin) 関数を使用して実行時に切り替えることができます。
 
 ```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
 import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
@@ -167,12 +167,12 @@ export const startLabel = newLabel("start", [
 
 </Accordion>
 
-<Accordion title="Animation" id="animation">
+<Accordion title="アニメーション" id="animation">
 
-There are two functions you can use to play a Spine animation: [`setAnimation`](/jsdoc/pixi-vn-spine/index/classes/Spine#setanimation) and [`addAnimation`](/jsdoc/pixi-vn-spine/index/classes/Spine#addanimation).
+Spine アニメーションを再生するために使用できる関数が 2 つあります：[`setAnimation`](/jsdoc/pixi-vn-spine/index/classes/Spine#setanimation) と [`addAnimation`](/jsdoc/pixi-vn-spine/index/classes/Spine#addanimation)。
 
-* [`setAnimation`](/jsdoc/pixi-vn-spine/index/classes/Spine#setanimation) immediately replaces whatever animation is currently playing on the track with the new one.
-* [`addAnimation`](/jsdoc/pixi-vn-spine/index/classes/Spine#addanimation) queues the new animation so that it starts only after the current animation on the track finishes, without interrupting it.
+* [`setAnimation`](/jsdoc/pixi-vn-spine/index/classes/Spine#setanimation) は、トラック上で現在再生中のアニメーションを新しいアニメーションに即座に置き換えます。
+* [`addAnimation`](/jsdoc/pixi-vn-spine/index/classes/Spine#addanimation) は新しいアニメーションをキューに追加し、トラック上の現在のアニメーションを中断することなく、それが終了した後にのみ開始されるようにします。
 
 ```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
 import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
@@ -209,11 +209,11 @@ export const startLabel = newLabel("start", [
 
 </Accordion>
 
-<Accordion title="Spine + motion.js animations" id="motion">
+<Accordion title="Spine + motion.js アニメーション" id="motion">
 
-You can combine Spine animations with Pixi’VN's classic motion-based animations ([`canvas.animate`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#animate)), as shown in the example below.
+以下の例に示すように、Spine アニメーションを Pixi’VN の従来のモーションベースのアニメーション（[`canvas.animate`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#animate)）と組み合わせることができます。
 
-For more advanced games, you can also drive Spine animations directly from a ticker triggered by events, such as a button press, instead of relying only on predefined sequences.
+より高度なゲームでは、事前に定義されたシーケンスのみに依存するのではなく、ボタン押下などのイベントによってトリガーされるティッカーから直接 Spine アニメーションを制御することもできます。
 
 ```ts title="content/labels/start.label.ts" groupId="narrative_language"
 import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
@@ -248,9 +248,9 @@ export const startLabel = newLabel("start", [
 
 </Accordion>
 
-<Accordion title="Animation sequence" id="animation-sequence">
+<Accordion title="アニメーションシーケンス" id="animation-sequence">
 
-It is also possible to create animation sequences by using the [`playSequence`](/jsdoc/pixi-vn-spine/index/classes/Spine#playsequence) function.
+[`playSequence`](/jsdoc/pixi-vn-spine/index/classes/Spine#playsequence) 関数を使用して、アニメーションシーケンスを作成することもできます。
 
 ```ts title="content/labels/start.label.ts" groupId="narrative_language"
 import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
@@ -277,9 +277,9 @@ export const startLabel = newLabel("start", [
 
 </Accordion>
 
-<Accordion title="Clear tracks" id="clear-tracks">
+<Accordion title="トラックのクリア" id="clear-tracks">
 
-You can remove Spine animations using two methods: [`clearTrack`](/jsdoc/pixi-vn-spine/index/classes/Spine#cleartrack), which clears the animation on a single track, and [`clearTracks`](/jsdoc/pixi-vn-spine/index/classes/Spine#cleartracks), which clears the animations on all tracks.
+Spine アニメーションを削除するには 2 つの方法があります：単一トラックのアニメーションをクリアする [`clearTrack`](/jsdoc/pixi-vn-spine/index/classes/Spine#cleartrack) と、すべてのトラックのアニメーションをクリアする [`clearTracks`](/jsdoc/pixi-vn-spine/index/classes/Spine#cleartracks) です。
 
 ```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
 import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
