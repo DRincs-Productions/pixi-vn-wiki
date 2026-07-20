@@ -85,11 +85,18 @@ export default manifest;
 
 ## Initialize
 
-First of all, you need to define the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink> exactly as with other components. After that, it is recommended to load sounds at the start of the game using the functions provided by `sound`.
+<Accordions>
+
+<Accordion title="Assets" id="assets">
+
+As with other components that use assets, you need to define them in the <DynamicLink href="/start/assets">assets</DynamicLink>. After that, it is recommended to <DynamicLink href="/start/assets-management#load-assets-in-the-background-at-project-start">load the main sounds in the background</DynamicLink> at game startup using the functions provided by [`sound`](/jsdoc/pixi-vn/index/variables/sound).
 
 ```ts tab="utils/assets-utility.ts"
+import { manifest } from "@/assets";
+import { AUDIO_BUNDLE_NAME } from "@/constants";
 import { Assets, sound } from "@drincs/pixi-vn";
-import manifest from "../assets/manifest";
+
+let assetsInitialized = false;
 
 /**
  * Define all the assets that will be used in the game.
@@ -97,21 +104,24 @@ import manifest from "../assets/manifest";
  * You can read more about assets management in the documentation: https://pixi-vn.com/start/assets-management.html
  */
 export async function defineAssets() {
-    await Assets.init({ manifest });
+    if (!assetsInitialized) {
+        await Assets.init({ manifest });
+        assetsInitialized = true;
+    }
 
-    // The audio bundle will be loaded in the background, so it will be available when needed, but it won't block the game start. // [!code focus]
-    sound.backgroundLoadBundle("audio"); // [!code focus]
+    // The audio bundle will be loaded in the background, so it will be available when needed, but it won't block the game start.
+    sound.backgroundLoadBundle(AUDIO_BUNDLE_NAME);
 }
 ```
 
-```ts tab="assets/manifest.ts"
+```ts tab="assets/index.ts"
 import { AssetsManifest } from "@drincs/pixi-vn";
 
 /**
  * Manifest for the assets used in the game.
  * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
  */
-const manifest: AssetsManifest = {
+export const manifest: AssetsManifest = {
     bundles: [
         {
             name: "audio",
@@ -128,12 +138,13 @@ const manifest: AssetsManifest = {
         },
     ],
 };
-export default manifest;
 ```
 
-It is also recommended to define `channels` immediately after game initialization. During the definition of `channels`, you can configure their settings, which are all intuitive and based on PixiJS Sound, except for:
+</Accordion>
 
-- `background` (Optional): this is a boolean value that can be used to define `channels` intended for background sounds such as music or ambient audio. Unlike other sounds, they will not be stopped between narrative `step`s.
+</Accordions>
+
+It is also recommended to define `channels` immediately after game initialization. To do this, you can use the `sound.addChannel` function.
 
 ```ts title="main.ts"
 import { Game, sound } from "@drincs/pixi-vn";
