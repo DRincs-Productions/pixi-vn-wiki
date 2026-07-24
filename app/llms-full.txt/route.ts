@@ -3,9 +3,12 @@ import {
     getLLMText,
     inkSource,
     jsdocNqtrSource,
+    jsdocPixiVnAiSource,
     jsdocPixiVnInkSource,
     jsdocPixiVnJsonSource,
+    jsdocPixiVnLive2dSource,
     jsdocPixiVnSource,
+    jsdocPixiVnSpineSource,
     nqtrSource,
     renpySource,
     source,
@@ -28,6 +31,9 @@ export async function GET() {
         ...jsdocPixiVnJsonSource.getPages(),
         ...jsdocPixiVnInkSource.getPages(),
         ...jsdocNqtrSource.getPages(),
+        ...jsdocPixiVnSpineSource.getPages(),
+        ...jsdocPixiVnLive2dSource.getPages(),
+        ...jsdocPixiVnAiSource.getPages(),
     ].map(getLLMText);
 
     const [scanned, scannedJsdoc] = await Promise.all([Promise.all(scan), Promise.all(jsdocScan)]);

@@ -2,8 +2,10 @@ import {
     faqSource,
     inkSource,
     jsdocNqtrSource,
+    jsdocPixiVnAiSource,
     jsdocPixiVnInkSource,
     jsdocPixiVnJsonSource,
+    jsdocPixiVnLive2dSource,
     jsdocPixiVnSource,
     jsdocPixiVnSpineSource,
     nqtrSource,
@@ -43,6 +45,12 @@ export function GET() {
             .concat(
                 llms(jsdocPixiVnSpineSource).index().replaceAll("# Docs", "## pixi-vn-spine API"),
             )
+            .concat("\n\n")
+            .concat(
+                llms(jsdocPixiVnLive2dSource).index().replaceAll("# Docs", "## pixi-vn-live2d API"),
+            )
+            .concat("\n\n")
+            .concat(llms(jsdocPixiVnAiSource).index().replaceAll("# Docs", "## pixi-vn-ai API"))
             .replaceAll("/en/", "/"),
     );
 }

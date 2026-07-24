@@ -130,3 +130,23 @@ export const jsdocPixiVnSpineDocs = createDocsCollection(
         },
     }),
 );
+
+export const jsdocPixiVnLive2dDocs = createDocsCollection(
+    "content/jsdoc/pixi-vn-live2d",
+    applyMdxPreset({
+        rehypeCodeOptions: fullRehypeCodeOptions,
+        remarkCodeTabOptions: {
+            parseMdx: true,
+        },
+    }),
+);
+
+export const jsdocPixiVnAiDocs = createDocsCollection(
+    "content/jsdoc/pixi-vn-ai",
+    applyMdxPreset({
+        rehypeCodeOptions: fullRehypeCodeOptions,
+        remarkCodeTabOptions: {
+            parseMdx: true,
+        },
+    }),
+);

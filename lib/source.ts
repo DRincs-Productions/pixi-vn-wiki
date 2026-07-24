@@ -3,9 +3,11 @@ import {
     faqDocs,
     inkDocs,
     jsdocNqtrDocs,
+    jsdocPixiVnAiDocs,
     jsdocPixiVnDocs,
     jsdocPixiVnInkDocs,
     jsdocPixiVnJsonDocs,
+    jsdocPixiVnLive2dDocs,
     jsdocPixiVnSpineDocs,
     nqtrDocs,
     renpyDocs,
@@ -20,8 +22,10 @@ import {
     faqRoute,
     inkRoute,
     jsdocNqtrRoute,
+    jsdocPixiVnAiRoute,
     jsdocPixiVnInkRoute,
     jsdocPixiVnJsonRoute,
+    jsdocPixiVnLive2dRoute,
     jsdocPixiVnRoute,
     jsdocPixiVnSpineRoute,
     nqtrRoute,
@@ -184,6 +188,14 @@ export const jsdocPixiVnSpineSource = createJsdocLoader(
     jsdocPixiVnSpineRoute,
     jsdocPixiVnSpineDocs.toFumadocsSource(),
 );
+export const jsdocPixiVnLive2dSource = createJsdocLoader(
+    jsdocPixiVnLive2dRoute,
+    jsdocPixiVnLive2dDocs.toFumadocsSource(),
+);
+export const jsdocPixiVnAiSource = createJsdocLoader(
+    jsdocPixiVnAiRoute,
+    jsdocPixiVnAiDocs.toFumadocsSource(),
+);
 
 export function getPageImage(page: InferPageType<typeof source>) {
     const segments = [...page.slugs, "image.png"];
@@ -212,7 +224,14 @@ export function getPageMarkdownUrl(
 
 export function getJsdocPageMarkdownUrl(
     page: { slugs: string[] },
-    lib: "pixi-vn" | "pixi-vn-json" | "pixi-vn-ink" | "nqtr" | "pixi-vn-spine",
+    lib:
+        | "pixi-vn"
+        | "pixi-vn-json"
+        | "pixi-vn-ink"
+        | "nqtr"
+        | "pixi-vn-spine"
+        | "pixi-vn-live2d"
+        | "pixi-vn-ai",
 ) {
     const segments = [...page.slugs, "content.md"];
     const url = `${docsContentRoute}/jsdoc/${lib}/${segments.join("/")}`;

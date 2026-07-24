@@ -2,8 +2,10 @@ import { getMDXComponents } from "@/components/mdx";
 import {
     getJsdocPageMarkdownUrl,
     jsdocNqtrSource,
+    jsdocPixiVnAiSource,
     jsdocPixiVnInkSource,
     jsdocPixiVnJsonSource,
+    jsdocPixiVnLive2dSource,
     jsdocPixiVnSource,
     jsdocPixiVnSpineSource,
 } from "@/lib/source";
@@ -45,6 +47,16 @@ const libConfig = {
         source: jsdocPixiVnSpineSource,
         title: "pixi-vn-spine",
         githubUrl: "https://github.com/DRincs-Productions/pixi-vn-spine",
+    },
+    "pixi-vn-live2d": {
+        source: jsdocPixiVnLive2dSource,
+        title: "pixi-vn-live2d",
+        githubUrl: "https://github.com/DRincs-Productions/pixi-vn-live2d",
+    },
+    "pixi-vn-ai": {
+        source: jsdocPixiVnAiSource,
+        title: "pixi-vn-ai",
+        githubUrl: "https://github.com/DRincs-Productions/pixi-vn-ai",
     },
 } as const;
 

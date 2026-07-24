@@ -920,6 +920,18 @@ export async function sidebar(lang?: string): Promise<
                 description: "Auto-generated API reference",
                 url: `/jsdoc/pixi-vn-spine`,
             },
+            {
+                title: "@drinc/pixi-vn-live2d",
+                icon: <Image width={16} height={16} src="/live2d.png" alt="Live2D" />,
+                description: "Auto-generated API reference",
+                url: `/jsdoc/pixi-vn-live2d`,
+            },
+            {
+                title: "@drinc/pixi-vn-ai",
+                icon: <Image width={16} height={16} src="/pixi-vn-ai.svg" alt="Pixi’VN AI" />,
+                description: "Auto-generated API reference",
+                url: `/jsdoc/pixi-vn-ai`,
+            },
         ],
     };
 }

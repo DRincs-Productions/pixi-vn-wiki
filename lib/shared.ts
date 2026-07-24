@@ -14,6 +14,8 @@ export const jsdocPixiVnJsonRoute = "/jsdoc/pixi-vn-json";
 export const jsdocPixiVnInkRoute = "/jsdoc/pixi-vn-ink";
 export const jsdocNqtrRoute = "/jsdoc/nqtr";
 export const jsdocPixiVnSpineRoute = "/jsdoc/pixi-vn-spine";
+export const jsdocPixiVnLive2dRoute = "/jsdoc/pixi-vn-live2d";
+export const jsdocPixiVnAiRoute = "/jsdoc/pixi-vn-ai";
 export const docsImageRoute = "/og/docs";
 export const docsContentRoute = "/llms.mdx/docs";
 
