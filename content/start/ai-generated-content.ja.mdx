@@ -41,16 +41,36 @@ To install the AI package in an existing JavaScript project, use one of the foll
 npm install @drincs/pixi-vn-ai
 ```
 
-Call `ai.init(...)` once, at startup:
+Call `ai.init(...)` once, at startup. Wrap it in its own function, exported from a dedicated file,
+so it can be awaited alongside your other startup tasks and later swapped for a different provider
+without touching where it's called from:
 
-```ts title="main.ts"
-import { Game } from "@drincs/pixi-vn";
+```ts title="lib/utils/ai-utility.ts"
 import { ai } from "@drincs/pixi-vn-ai";
 
-Game.init(body, {
-    // ...
-}).then(async () => {
+export async function initAi() {
     await ai.init();
+}
+```
+
+If you're using the router-based template, run it from the root route's `loader`, alongside the
+other startup tasks, instead of from `main.ts`:
+
+```tsx title="routes/__root.tsx"
+import { initAi } from "@/lib/utils/ai-utility"; // [!code focus]
+
+export const Route = createRootRouteWithContext<RouterContext>()({
+    // ...
+    loader: async ({ context, location }) => {
+        await Promise.all([
+            import("@/content"),
+            initAi(), // [!code focus]
+            // ...
+        ]);
+        await setupPixivnViteData();
+        // ...
+    },
+    // ...
 });
 ```
 
@@ -65,21 +85,19 @@ model — an AI SDK provider or ComfyUI. WebLLM cannot generate images.
 
 :::
 
-To use a specific model instead, pass it through the AI SDK:
+To use a specific model instead, pass it through the AI SDK. From here on, only the body of
+`initAi` changes — how and where you call it stays the same:
 
-```ts title="main.ts"
-import { Game } from "@drincs/pixi-vn";
+```ts title="lib/utils/ai-utility.ts"
 import { ai } from "@drincs/pixi-vn-ai";
 import { openai } from "@ai-sdk/openai";
 
-Game.init(body, {
-    // ...
-}).then(async () => {
+export async function initAi() {
     await ai.init({
         textProvider: openai("gpt-5"),
         imageProvider: openai.image("gpt-image-1"),
     });
-});
+}
 ```
 
 * `textProvider` is a [`LanguageModel`](https://ai-sdk.dev/docs/foundations/providers-and-models)
@@ -131,15 +149,12 @@ npm install @stable-canvas/comfyui-client
 Then pass a [`ComfyUIImageModel`](/jsdoc/pixi-vn-ai/comfyui/classes/ComfyUIImageModel) as
 `imageProvider`:
 
-```ts title="main.ts"
-import { Game } from "@drincs/pixi-vn";
+```ts title="lib/utils/ai-utility.ts"
 import { ai } from "@drincs/pixi-vn-ai";
 import { ComfyUIImageModel } from "@drincs/pixi-vn-ai/comfyui";
 import myWorkflow from "./my-workflow-api.json"; // exported from ComfyUI's "Save (API Format)"
 
-Game.init(body, {
-    // ...
-}).then(async () => {
+export async function initAi() {
     await ai.init({
         imageProvider: new ComfyUIImageModel({
             apiHost: "127.0.0.1:8188",
@@ -149,7 +164,7 @@ Game.init(body, {
             promptInputName: "text", // optional, defaults to "text"
         }),
     });
-});
+}
 ```
 
 Since ComfyUI runs an arbitrary node graph rather than accepting a plain prompt,
@@ -202,13 +217,13 @@ Tauri sidecars must be named with the target's platform triple suffix (e.g.
 docs for the exact naming and signing requirements per
 platform.
 
-Since ComfyUI takes a few seconds to boot, poll its HTTP API before calling `ai.init`:
+Since ComfyUI takes a few seconds to boot, poll its HTTP API before calling `ai.init`. Add the wait
+inside the same `initAi` function from before — where and how it's called doesn't change:
 
-```ts title="main.ts"
-import { Game } from "@drincs/pixi-vn";
+```ts title="lib/utils/ai-utility.ts"
 import { ai } from "@drincs/pixi-vn-ai";
 import { ComfyUIImageModel } from "@drincs/pixi-vn-ai/comfyui";
-import myWorkflow from "./my-workflow-api.json";
+import myWorkflow from "./my-workflow-api.json"; // exported from ComfyUI's "Save (API Format)"
 
 async function waitForComfyUI(apiHost: string, timeoutMs = 30000) {
     const start = Date.now();
@@ -223,14 +238,16 @@ async function waitForComfyUI(apiHost: string, timeoutMs = 30000) {
     throw new Error("ComfyUI did not start in time");
 }
 
-Game.init(body, {
-    // ...
-}).then(async () => {
+export async function initAi() {
     await waitForComfyUI("127.0.0.1:8188");
     await ai.init({
-        imageProvider: new ComfyUIImageModel({ apiHost: "127.0.0.1:8188", workflow: myWorkflow, promptNodeId: "6" }),
+        imageProvider: new ComfyUIImageModel({
+            apiHost: "127.0.0.1:8188",
+            workflow: myWorkflow,
+            promptNodeId: "6",
+        }),
     });
-});
+}
 ```
 
 :::warning
@@ -441,6 +458,16 @@ commands. It behaves exactly like Pixi’VN's own `ImageSprite`, but also keeps 
 (a data URI) in its `memory`, so that <DynamicLink href="/start/save">save games</DynamicLink>
 store the generated image itself and restore the exact same image on load, instead of calling the
 AI provider again — which would produce a different image.
+
+:::warning
+
+That same `memory` is also kept in the <DynamicLink href="/start/labels-flow#go-back">go back</DynamicLink>
+step history, as a plain string — a data URI can easily be several hundred KB, so generating many
+`AIImageSprite`s can make that history heavy. It's recommended to lower
+[`stepHistory.stepLimitSaved`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#steplimitsaved)
+so only the last few steps keep their full canvas/storage data in the save file.
+
+:::
 
 ```ts
 import { canvas } from "@drincs/pixi-vn/canvas";
