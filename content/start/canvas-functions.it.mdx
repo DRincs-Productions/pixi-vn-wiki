@@ -1,0 +1,267 @@
+---
+title: Funzioni dei componenti
+description: Funzioni per aggiungere, trovare, rimuovere e gestire eventi sui componenti del canvas in Pixi’VN.
+---
+
+import {
+    AddCanvasComponents,
+    AddListenerGivenEvent,
+    GetCanvasComponents,
+    RemoveAllCanvasComponents,
+    RemoveCanvasComponents,
+} from "@/components/examples";
+
+## Aggiungere
+
+Per aggiungere un componente al canvas del gioco, puoi usare [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add).
+
+```ts tab="content/labels/start.label.ts"
+import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        const sprite = new Sprite();
+        const texture = await Assets.load("egg_head");
+        sprite.texture = texture;
+        canvas.add("sprite", sprite); // [!code focus]
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<AddCanvasComponents />
+
+## Ottenere
+
+Per ottenere un componente dal canvas del gioco, puoi usare [`canvas.find`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#find).
+
+```ts tab="content/labels/start.label.ts"
+import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        const sprite = new Sprite();
+        const texture = await Assets.load("egg_head");
+        sprite.texture = texture;
+        canvas.add("sprite", sprite);
+    },
+    () => {
+        const sprite = canvas.find("sprite"); // [!code focus]
+        if (sprite) {
+            sprite.x = 100;
+            sprite.y = 100;
+        }
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<GetCanvasComponents />
+
+## Rimuovere
+
+Per rimuovere un componente dal canvas del gioco, puoi usare [`canvas.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#remove).
+
+```ts tab="content/labels/start.label.ts"
+import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        const sprite = new Sprite();
+        const texture = await Assets.load("egg_head");
+        sprite.texture = texture;
+        canvas.add("sprite", sprite);
+    },
+    () => {
+        canvas.remove("sprite"); // [!code focus]
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<RemoveCanvasComponents />
+
+## Rimuovere tutto
+
+Per rimuovere tutti i componenti dal canvas del gioco, puoi usare [`canvas.removeAll`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#removeAll).
+
+```ts tab="content/labels/start.label.ts"
+import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        const texture = await Assets.load("egg_head");
+        for (let i = 0; i < 3; i++) {
+            const sprite = new Sprite();
+            sprite.texture = texture;
+            sprite.x = i * 150;
+            canvas.add(`sprite${i}`, sprite);
+        }
+    },
+    () => {
+        canvas.removeAll(); // [!code focus]
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<RemoveAllCanvasComponents />
+
+## Altre funzionalità
+
+<Accordions>
+
+<Accordion title="Aggiungere un listener a un evento" id="add-a-listener-to-an-event">
+
+:::tip
+
+Se possibile, prova a usare <DynamicLink href="/start/interface">HTML e PixiJS UI</DynamicLink> per aggiungere pulsanti o altri elementi con eventi.
+
+:::
+
+In Pixi’VN, rispetto a PixiJS, puoi usare un [listener con il metodo `on`](https://pixijs.com/8.x/examples/events/click) (ad esempio per renderlo cliccabile), ma se non usi il decoratore [`@eventDecorator`](/jsdoc/pixi-vn/index/functions/eventDecorator), l'evento non verrà registrato nel sistema di eventi di Pixi’VN, quindi se carichi un salvataggio in cui quell'evento è stato usato, andrà perso.
+
+```ts tab="content/canvas/events.ts"
+import { eventDecorator, FederatedEvent, Sprite } from "@drincs/pixi-vn";
+
+export default class Events {
+    @eventDecorator()
+    static buttonEvent(event: FederatedEvent, sprite: Sprite): void {
+        switch (event.type) {
+            case "pointerdown":
+                sprite.scale.x *= 1.25;
+                sprite.scale.y *= 1.25;
+                break;
+        }
+    }
+}
+```
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showImage } from "@drincs/pixi-vn";
+import Events from "../canvas/events";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        const bunny = await showImage("bunny", "bunny", {
+            align: 0.5,
+            anchor: 0.5,
+        });
+        // Opt-in to interactivity
+        bunny.eventMode = "static";
+        // Shows hand cursor
+        bunny.cursor = "pointer";
+        // Pointers normalize touch and mouse (good for mobile and desktop)
+        bunny.on("pointerdown", Events.buttonEvent);
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                { alias: "bunny", src: "https://pixijs.com/assets/bunny.png" },
+            ],
+        },
+    ],
+};
+```
+
+<AddListenerGivenEvent />
+
+</Accordion>
+
+</Accordions>

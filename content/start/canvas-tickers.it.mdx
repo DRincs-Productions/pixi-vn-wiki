@@ -1,0 +1,364 @@
+---
+title: Ticker
+description: Panoramica dei ticker di Pixi'VN, utilizzati per animare i componenti dell'area di lavoro ed eseguire transizioni. Scopri come creare ticker personalizzati e utilizzarli efficacemente nei tuoi progetti di Pixi'VN.
+---
+
+Pixi'VN ti consente di animare i componenti dell'area di lavoro utilizzando i ticker.
+
+<Accordions>
+
+<Accordion title="Cos'è un Ticker?" id="what-is-ticker">
+
+Un ticker è una classe che viene eseguita su ogni fotogramma e che esegue una funzione. I ticker sono utilizzabili per animare i componenti, eseguire transizioni o eseguire qualsiasi logica che necessiti di aggiornamenti regolari.
+
+</Accordion>
+
+<Accordion title="Differenze tra i ticker di Pixi'VN e di PixiJS" id="pixijs-ticker-differences">
+
+Rispetto ai `PixiJS.tickers`, i ticker di Pixi'VN sono classi con un metodo [`fn`](/jsdoc/pixi-vn/index/classes/TickerBase#fn) chiamate a ogni fotogramma. Questo metodo viene utilizzato per animare i componenti dell'area di lavoro. Pixi'VN gestisce tutti i ticker in esecuzione, rileva quando non sono più necessari, e ti consente di interromperli, riprenderne la riproduzione o eliminarli, utilizzando vari metodi.
+
+</Accordion>
+
+</Accordions>
+
+## Functions
+
+Per riprodurre, mettere in pausa o interrompere un ticker, devi utilizzare le funzioni di [`canvas`](/jsdoc/pixi-vn/index/variables/canvas).
+
+È importante tenere presenti i seguenti comportamenti:
+
+* Se un ticker non è associato ad alcun componente dell'area di lavoro, sarà eliminato.
+* Se <DynamicLink href="/start/canvas-functions#remove">rimuovi un componente dell'area di lavoro</DynamicLink>, anche il tuo alias sarà scollegato dal ticker.
+* Se aggiungi un componente dell'area di lavoro con un alias preesistente, il nuovo componente sostituirà quello vecchio. Il nuovo componente erediterà i ticker del componente precedente.
+
+<Accordions>
+
+<Accordion title="Ottenere" id="get">
+
+Per trovare un ticker, devi utilizzare la funzione [`canvas.findTicker`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#findticker).
+
+```ts tab="content/labels/start.label.ts"
+import { canvas, newLabel, RotateTicker, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("egg_head", "egg_head", {
+            yAlign: 0.5,
+            xAlign: 0.25,
+            anchor: 0.5,
+        });
+        await showImage("flower_top", "flower_top", {
+            yAlign: 0.5,
+            xAlign: 0.75,
+            anchor: 0.5,
+        });
+        let tikerId = canvas.addTicker(
+            ["egg_head", "flower_top"],
+            new RotateTicker({}),
+        );
+        let ticker = canvas.findTicker(tikerId); // [!code focus]
+        console.log(ticker);
+    },
+]);
+```
+
+```ts tab="utils/defineAssets.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+export async function defineAssets() {
+    Assets.add({
+        alias: "egg_head",
+        src: "https://pixijs.com/assets/eggHead.png",
+    });
+    Assets.add({
+        alias: "flower_top",
+        src: "https://pixijs.com/assets/flowerTop.png",
+    });
+}
+```
+
+</Accordion>
+
+<Accordion title="Rimuovere" id="remove">
+
+Per rimuovere un ticker, devi utilizzare la funzione [`canvas.removeTicker`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#removeticker).
+
+```ts tab="content/labels/start.label.ts"
+import {
+    canvas,
+    newLabel,
+    RotateTicker,
+    showImage,
+    storage,
+} from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("egg_head", "egg_head", {
+            yAlign: 0.5,
+            xAlign: 0.25,
+            anchor: 0.5,
+        });
+        await showImage("flower_top", "flower_top", {
+            yAlign: 0.5,
+            xAlign: 0.75,
+            anchor: 0.5,
+        });
+        let tikerId = canvas.addTicker(
+            ["egg_head", "flower_top"],
+            new RotateTicker({}),
+        );
+        storage.set("tiker_id", tikerId);
+    },
+    () => {
+        let tikerId = storage.get<string>("tiker_id");
+        tikerId && canvas.removeTicker(tikerId); // [!code focus]
+    },
+]);
+```
+
+```ts tab="utils/defineAssets.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+export async function defineAssets() {
+    Assets.add({
+        alias: "egg_head",
+        src: "https://pixijs.com/assets/eggHead.png",
+    });
+    Assets.add({
+        alias: "flower_top",
+        src: "https://pixijs.com/assets/flowerTop.png",
+    });
+}
+```
+
+<Sandbox template="zglj8q" entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts" />
+
+</Accordion>
+
+<Accordion title="Pause and resume" id="pause-and-resume">
+
+Per mettere in pausa un ticker, devi utilizzare la funzione [`canvas.pauseTicker`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#pauseticker).
+
+Per riprendere la riproduzione di un ticker in pausa, devi utilizzare la funzione [`canvas.resumeTicker`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#resumeticker).
+
+```ts tab="content/labels/start.label.ts"
+import {
+    canvas,
+    narration,
+    newLabel,
+    RotateTicker,
+    showImage,
+} from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("egg_head", "egg_head", { align: 0.5, anchor: 0.5 });
+        let tikerId = canvas.addTicker(["egg_head"], new RotateTicker({}));
+        narration.dialogue = "start";
+    },
+    () => {
+        canvas.pauseTicker("egg_head"); // [!code focus]
+        narration.dialogue = "pause";
+    },
+    () => {
+        canvas.resumeTicker("egg_head"); // [!code focus]
+        narration.dialogue = "resume";
+    },
+]);
+```
+
+```ts tab="utils/defineAssets.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+export async function defineAssets() {
+    Assets.add({
+        alias: "egg_head",
+        src: "https://pixijs.com/assets/eggHead.png",
+    });
+}
+```
+
+<Sandbox template="ns726n" entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts" />
+
+</Accordion>
+
+<Accordion title="Forza il completamento a fine passaggio" id="force-completion-at-step-end">
+
+Quando l'animazione deve raggiungere un obiettivo, come una destinazione, talvolta necessitiamo che l'animazione lo raggiunga prima del termine del `step` attuale.
+
+Per farlo, puoi utilizzare la funzione [`canvas.completeTickerOnStepEnd`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#completetickeronstepend).
+
+```ts tab="content/labels/start.label.ts"
+import { canvas, narration, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("egg_head", "egg_head", {
+            yAlign: 0,
+            xAlign: 0,
+            anchor: 0,
+        });
+        let tikerId = canvas.addTicker(
+            ["egg_head"],
+            new MoveTicker({
+                destination: { x: 1, y: 0, type: "align" },
+                speed: 1,
+            }),
+        );
+        tikerId && canvas.completeTickerOnStepEnd({ id: tikerId }); // [!code focus]
+    },
+    () => {
+        narration.dialogue = "complete";
+    },
+]);
+```
+
+```ts tab="utils/defineAssets.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+export async function defineAssets() {
+    Assets.add({
+        alias: "egg_head",
+        src: "https://pixijs.com/assets/eggHead.png",
+    });
+}
+```
+
+<Sandbox template="7zgqr6" entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts" />
+
+</Accordion>
+
+<Accordion title="Sequenza" id="sequence">
+
+Se desideri eseguire una sequenza di ticker, puoi utilizzare la funzione [`canvas.addTickersSequence`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#addtickerssequence).
+
+```ts tab="content/labels/start.label.ts"
+import { canvas, newLabel, RotateTicker, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("egg_head", "egg_head", { anchor: 0.5 });
+        let tikerId = canvas.addTickersSequence("egg_head", [
+            new MoveTicker({
+                destination: { x: 0.5, y: 0.5, type: "align" },
+            }),
+            new RotateTicker({ speed: 2, clockwise: false }, 2),
+        ]);
+    },
+]);
+```
+
+```ts tab="utils/defineAssets.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+export async function defineAssets() {
+    Assets.add({
+        alias: "egg_head",
+        src: "https://pixijs.com/assets/eggHead.png",
+    });
+}
+```
+
+<Sandbox template="k3wj6d" entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts" />
+
+</Accordion>
+
+</Accordions>
+
+## Altre funzionalità
+
+<Accordions>
+
+<Accordion title="Crea il tuo ticker" id="create-your-own-ticker">
+
+Creare il proprio ticker è semplice: estendi la classe [`TickerBase`](/jsdoc/pixi-vn/index/classes/TickerBase), sovrascrivi il metodo [`fn`](/jsdoc/pixi-vn/index/classes/TickerBase#fn), e implementa la tua logica.
+
+Quindi, decora la classe con il decoratore [`@tickerDecorator`](/jsdoc/pixi-vn/index/functions/tickerDecorator). Il decoratore può accettare una stringa come alias del ticker; altrimenti, viene utilizzato il nome della classe.
+
+Ad esempio:
+
+```typescript title="canvas/tickers/RotateTicker.ts"
+import {
+    canvas,
+    Container,
+    TickerBase,
+    tickerDecorator,
+    TickerValue,
+} from "@drincs/pixi-vn";
+
+@tickerDecorator() // or @tickerDecorator('RotateTicker')
+export default class RotateTicker extends TickerBase<{
+    speed?: number;
+    clockwise?: boolean;
+}> {
+    fn(
+        t: TickerValue,
+        args: {
+            speed?: number;
+            clockwise?: boolean;
+        },
+        aliases: string[],
+    ): void {
+        let speed = args.speed === undefined ? 0.1 : args.speed;
+        let clockwise = args.clockwise === undefined ? true : args.clockwise;
+        aliases.forEach((alias) => {
+            let component = canvas.find(alias);
+            if (component && component instanceof Container) {
+                if (clockwise) component.rotation += speed * t.deltaTime;
+                else component.rotation -= speed * t.deltaTime;
+            }
+        });
+    }
+}
+```
+
+</Accordion>
+
+<Accordion title="Esegui un ticker" id="run-a-ticker">
+
+Per aggiungere un ticker devi utilizzare la funzione [`canvas.addTicker`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#addticker).
+
+```ts tab="content/labels/start.label.ts"
+import { canvas, newLabel, RotateTicker, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("egg_head", "egg_head", {
+            yAlign: 0.5,
+            xAlign: 0.25,
+            anchor: 0.5,
+        });
+        await showImage("flower_top", "flower_top", {
+            yAlign: 0.5,
+            xAlign: 0.75,
+            anchor: 0.5,
+        });
+        let tikerId = canvas.addTicker(
+            ["egg_head", "flower_top"],
+            new RotateTicker({}),
+        );
+    },
+]);
+```
+
+```ts tab="utils/defineAssets.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+export async function defineAssets() {
+    Assets.add({
+        alias: "egg_head",
+        src: "https://pixijs.com/assets/eggHead.png",
+    });
+    Assets.add({
+        alias: "flower_top",
+        src: "https://pixijs.com/assets/flowerTop.png",
+    });
+}
+```
+
+<Sandbox template="vfqzch" entry="/src/labels/startLabel.ts,/src/utils/assets-utility.ts" />
+
+</Accordion>
+
+</Accordions>

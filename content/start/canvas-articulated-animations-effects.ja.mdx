@@ -1,0 +1,66 @@
+---
+title: 関節アニメーション
+description: 関節アニメーション（canvas.animate を基に構築され、Pixi’VN のキャンバスコンポーネントで揺れなどの複雑なエフェクトを作成するための関数）の使い方を学びます。
+---
+
+import { ShakeExample } from "@/components/examples";
+
+関節アニメーションとは、[`canvas.animate`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#animate) 関数を使用して、キャンバスコンポーネントに適用できるアニメーションを作成する関数です。 これらの関数は通常、揺れやバウンドなど、複数のステップやコンポーネントを含む複雑なアニメーション効果を作成するために使用されます。
+
+<Accordions>
+
+<Accordion title="揺れ" id="shake">
+
+[`shakeEffect`](/jsdoc/pixi-vn/index/functions/shakeEffect) 関数は、コンポーネントを揺らす関節アニメーションです。
+
+```ts tab="content/labels/start.label.ts"
+import {
+    CANVAS_APP_GAME_LAYER_ALIAS,
+    newLabel,
+    shakeEffect,
+    showImage,
+} from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("bg", "bg", { scale: 1.3 });
+        await showImage("alien", "alien", { align: 0.5 });
+        shakeEffect("alien"); // [!code focus]
+    },
+    async () => {
+        shakeEffect(CANVAS_APP_GAME_LAYER_ALIAS); // [!code focus]
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "bg",
+                    src: "https://pixijs.com/assets/bg_grass.jpg",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<ShakeExample />
+
+</Accordion>
+
+</Accordions>

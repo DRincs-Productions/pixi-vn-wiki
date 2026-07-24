@@ -1,0 +1,401 @@
+---
+title: アニメーション（motion）
+description: canvas.animate 関数を使用して Pixi’VN のキャンバスコンポーネントにアニメーションを付ける方法を学びます。移動、回転、フェード、ズーム、ミラーリングの例を含みます。
+---
+
+import {
+    FadeExample,
+    MirrorExample,
+    MotionSequenceExample,
+    MoveExample,
+    RotateExample,
+    SequenceExample,
+    ZoomExample,
+} from "@/components/examples";
+
+Pixi’VN では、[`canvas.animate`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#animate) という関数を使用して、開発者がキャンバスコンポーネントにアニメーションを付けることができます。 この関数は、[`motion` ライブラリの `animate` 関数](https://motion.dev/docs/animate) を再実装したもので、アニメーションイベントのトリガーに PixiJS のティッカーを使用するように調整されています。
+
+<Accordions>
+
+<Accordion title="motion とは？" id="what-is-motion">
+
+`motion` は、シンプルかつ強力な方法でアニメーションを作成できる、人気の JavaScript ライブラリです。 詳しくは[こちら](https://motion.dev/)をご覧ください。
+
+</Accordion>
+
+</Accordions>
+
+## 使用
+
+[`canvas.animate`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#animate) は Pixi’VN で最もよく使われる関数の一つで、シンプルに使えるように設計されています——ただし、その基本的な考え方は最初は少しわかりにくいかもしれません。考え方はシンプルです。 キャンバスコンポーネントの**目標状態**（例えば位置、スケール、不透明度など）と**継続時間**を定義すると、Pixi’VN はフレームごとにコンポーネントをその状態へスムーズに遷移させます。 目標に到達すると、アニメーションは自動的に終了します。
+
+例えば、コンポーネントを1秒かけて位置 `{ x: 100, y: 50 }` に移動させるには、[`keyframes`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#keyframes) として `{ x: 100, y: 50 }` を、[`options`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#options) として `{ duration: 1 }` を渡します。 [`keyframes`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#keyframes) パラメータは_何を_達成するかを定義し、[`options`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#options) は_どのように_達成するかを定義します。
+
+:::warning
+
+[`canvas.animate`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#animate) は内部で Ticker を作成します。 アニメーションの一時停止、再開、停止などの高度なユースケースでは、<DynamicLink href="/start/canvas-tickers#functions">Pixi’VN の Ticker を制御するための関数</DynamicLink>を使用できます。
+
+:::
+
+以下にいくつかの例を示します。
+
+<Accordions>
+
+<Accordion title="移動" id="move">
+
+```ts tab="content/labels/start.label.ts"
+import { canvas, ImageSprite, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        const alien = await showImage("alien");
+        canvas.animate(alien, { xAlign: 1, yAlign: 0 }, { ease: "easeOut" });
+    },
+    () =>
+        canvas.animate<ImageSprite>(
+            "alien",
+            { xAlign: 1, yAlign: 1 },
+            { ease: "backOut" },
+        ),
+    () =>
+        canvas.animate<ImageSprite>(
+            "alien",
+            { xAlign: 0, yAlign: 1 },
+            { ease: "circIn" },
+        ),
+    () =>
+        canvas.animate<ImageSprite>(
+            "alien",
+            { xAlign: 0, yAlign: 0 },
+            { ease: "linear" },
+        ),
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<MoveExample />
+
+</Accordion>
+
+<Accordion title="回転" id="rotate">
+
+```ts tab="content/labels/start.label.ts"
+import { canvas, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        const alien = await showImage("alien", "alien", {
+            align: 0.5,
+            anchor: 0.5,
+        });
+        canvas.animate(
+            alien,
+            { angle: 360 },
+            { duration: 1, type: "spring", repeat: Infinity, repeatDelay: 0.2 },
+        );
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<RotateExample />
+
+</Accordion>
+
+<Accordion title="フェード" id="fade">
+
+```ts tab="content/labels/start.label.ts"
+import { canvas, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        const alien = await showImage("alien", "alien", {
+            align: 0.5,
+            anchor: 0.5,
+            alpha: 0,
+        });
+        canvas.animate(alien, { alpha: 1 }, { ease: "linear", duration: 1 });
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<FadeExample />
+
+</Accordion>
+
+<Accordion title="ズーム" id="zoom">
+
+```ts tab="content/labels/start.label.ts"
+import { canvas, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        const alien = await showImage("alien", "alien", {
+            align: 0.5,
+            anchor: 0.5,
+            scale: 0,
+        });
+        canvas.animate(
+            alien,
+            { scaleX: 1, scaleY: 1 },
+            { ease: "circInOut", duration: 1 },
+        );
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<ZoomExample />
+
+</Accordion>
+
+<Accordion title="ミラーリング" id="mirror">
+
+```ts tab="content/labels/start.label.ts"
+import { canvas, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        const alien = await showImage("alien", "alien", {
+            align: 0.5,
+            anchor: 0.5,
+        });
+        canvas.animate(alien, { scaleX: -1 });
+    },
+    () => canvas.animate("alien", { scaleX: 1 }),
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<MirrorExample />
+
+</Accordion>
+
+</Accordions>
+
+## その他の機能
+
+<Accordions>
+
+<Accordion title="シーケンス" id="sequence">
+
+[`canvas.animate`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#animate) 関数は、アニメーションのシーケンスを作成するためにも使用できます。
+
+シーケンスを作成するには、keyframes オブジェクトのプロパティの値として配列を渡すことができます。 この場合、各キーフレームのタイミングを指定するために [`times` プロパティ](https://motion.dev/docs/animate#times) を使用できます。
+
+例：
+
+```ts tab="main.ts"
+import { canvas, showImage } from "@drincs/pixi-vn";
+
+const alien = await showImage("alien");
+canvas.animate(
+    alien,
+    {
+        xAlign: [0, 1, 1, 0, 0],
+        yAlign: [0, 0, 1, 1, 0],
+    },
+    { repeat: Infinity, duration: 10 },
+);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<SequenceExample />
+
+</Accordion>
+
+<Accordion title="タイムラインシーケンス" id="timeline-sequences">
+
+:::warning
+
+この方法には、元となる `motion` ライブラリの制約により、[`repeat`](https://motion.dev/docs/animate#repeat) プロパティに制限があるなど、前の方法と比べていくつかの制限があります。
+
+:::
+
+[`canvas.animate`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#animate) でアニメーションのシーケンスを作成するもう一つの方法は、[タイムライン](https://motion.dev/docs/animate#timeline-sequences)を使用することです。 これは、厳密に線形ではない複数のアニメーションを連結したい場合に便利です。 キーフレームの配列を指定できます。各キーフレームは、アニメーションさせるプロパティとその値、およびオプションのアニメーションオプションを持つオブジェクトです。
+
+例：
+
+```ts tab="main.ts"
+import { canvas, showImage } from "@drincs/pixi-vn";
+
+const alien = await showImage("alien");
+canvas.animate(
+    alien,
+    [
+        [{ xAlign: 0, yAlign: 0 }, { ease: "circInOut" }],
+        [{ xAlign: 1, yAlign: 0 }, { ease: "backInOut" }],
+        [{ xAlign: 1, yAlign: 1 }, { ease: "linear" }],
+        [{ xAlign: 0, yAlign: 1 }, { ease: "anticipate" }],
+        [{ xAlign: 0, yAlign: 0 }, { ease: "easeOut" }],
+    ],
+    { repeat: 10, duration: 10 },
+);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<MotionSequenceExample />
+
+</Accordion>
+
+<Accordion title="PixiJS UI にアニメーションを付ける" id="animate-pixijs-ui">
+
+Pixi’VN は `motion` から直接 `animate` 関数も公開しており、次のようにインポートできます。
+
+```ts
+import { animate } from "@drincs/pixi-vn/motion";
+```
+
+`canvas.animate` とは異なり、この関数は現在のアニメーション状態を**保存しません**。 そのためパフォーマンスが向上し、<DynamicLink href="/start/interface-pixijs">PixiJS UI</DynamicLink> コンポーネントにアニメーションを付けるのに適した選択肢です——そもそも PixiJS UI の要素は Pixi’VN の保存状態には含まれないためです。
+
+</Accordion>
+
+</Accordions>

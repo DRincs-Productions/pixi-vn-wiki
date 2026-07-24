@@ -1,0 +1,123 @@
+---
+title: Collega i componenti dell'UI alle variabili di gioco
+description: Spiega come collegare i componenti dell'UI all'archiviazione persistente del gioco, utilizzando TanStack Query, con hook di esempio (useQueryText1, useQueryText2), l'invalidazione della cache agli eventi passaggio/etichetta/salva-carica, e un esempio di input dell'UI.
+---
+
+![usequery](/usequery.png)
+
+Il metodo migliore per collegare l'UI alle variabili di gioco è utilizzare la libreria di TanStack Query.
+
+**Cos'è TanStack Query?** TanStack Query è una libreria che ti consente di gestire lo stato della tua applicazione in un modo semplice ed efficace. Si basa sul concetto delle richieste, delle mutazioni e delle sottoscrizioni. Questa libreria è molto utile ed è compatibile con React, Vue, Angular, Svelte, etc.
+
+Puoi scoprire di più su TanStack Query sul [sito web di TanStack](https://tanstack.com/query/latest).
+
+Here is an example:
+
+Nel nostro esempio, abbiamo due variabili, `text1` e `text2`, memorizzate nell'<DynamicLink href="/start/storage">archiviazione di gioco</DynamicLink>. Tali variabili sono aggiornate da un input dell'UI o da una <DynamicLink href="/start/labels">`label`</DynamicLink>, oppure durante uno `step`.
+
+Poiché le variabili di archiviazione sono modificabili esclusivamente durante lo <DynamicLink href="/start/labels#continue-and-go-back">`step` successivo / precedente</DynamicLink>, quando <DynamicLink href="/start/labels#run-a-label">esegui una `label`</DynamicLink> o <DynamicLink href="/start/save#load">carichi un salvataggio</DynamicLink> (al di fuori dell'interfaccia), creeremo gli hook `useQueryText1` e `useQueryText2` e li invalideremo dopo ciascuno di questi eventi.
+
+```typescript
+import { useQuery } from "@tanstack/react-query";
+import { getLastSaveFromIndexDB } from "../utilities/save-utility";
+
+// parent key used to invalidate all related queries
+export const INTERFACE_DATA_USE_QUERY_KEY = "interface_data_use_query_key";
+
+const TEXT1_USE_QUERY_KEY = "text1_save_use_query_key";
+export function useQueryText1() {
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUERY_KEY, TEXT1_USE_QUERY_KEY],
+        queryFn: async () => {
+            return storage.get<string>("text1") || "";
+        },
+    });
+}
+
+const TEXT2_USE_QUERY_KEY = "text2_save_use_query_key";
+export function useQueryText2() {
+    return useQuery({
+        queryKey: [INTERFACE_DATA_USE_QUERY_KEY, TEXT2_USE_QUERY_KEY],
+        queryFn: async () => {
+            return storage.get("text2") || "";
+        },
+    });
+}
+```
+
+Per invalidare le richieste, utilizza la funzione `queryClient.InvalidateQueries`.
+
+In questo esempio, per aggiornare tutte le richieste che dipendono da `INTERFACE_DATA_USE_QUERY_KEY`, utilizza:
+
+```ts
+const queryClient = useQueryClient()
+queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUERY_KEY] })
+```
+
+Per aggiornare esclusivamente la richiesta `text1` o `text2`, utilizza:
+
+```ts
+const queryClient = useQueryClient()
+queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUERY_KEY, TEXT1_USE_QUERY_KEY] })
+queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUERY_KEY, TEXT2_USE_QUERY_KEY] })
+```
+
+```typescript
+const queryClient = useQueryClient()
+
+narration.continue({})
+    .then((result) => {
+        queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUERY_KEY] })
+    });
+
+stepHistory.back({})
+    .then((result) => {
+        queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUERY_KEY] })
+    });
+
+Game.restoreGameState(jsonString, navigate)
+    .then(() => {
+        queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUERY_KEY] })
+    })
+
+// only if you are not in a label step
+narration.call("myLabel", {})
+    .then((result) => {
+        queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUERY_KEY] })
+    });
+```
+
+Nell'UI, chiama gli hook `useQueryText1` e `useQueryText2` per accedere ai valori memorizzati di `text1` e `text2`.
+
+```tsx title="src/components/MyComponent.tsx"
+export function MyComponent() {
+    const { data: text1 = "" } = useQueryText1()
+    const { data: text2 = "" } = useQueryText2()
+    const queryClient = useQueryClient()
+
+    return (
+        <>
+            <Input
+                sx={{
+                    pointerEvents: "auto",
+                }}
+                value={text1}
+                onChange={(e) => {
+                    storage.set("text1", e.target.value);
+                    queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUERY_KEY, TEXT1_USE_QUEY_KEY] })
+                }}
+            />
+            <Input
+                sx={{
+                    pointerEvents: "auto",
+                }}
+                value={text2}
+                onChange={(e) => {
+                    storage.set("text2", e.target.value);
+                    queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUERY_KEY, TEXT2_USE_QUEY_KEY] })
+                }}
+            />
+        </>
+    );
+}
+```

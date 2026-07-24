@@ -1,0 +1,112 @@
+---
+title: Storage
+description: Come archiviare, recuperare e gestire variabili persistenti e temporanee in Pixi'VN, inclusa l'integrazione Keyv.
+---
+
+<Accordions>
+
+<Accordion title="What is the game storage?" id="what-is-storage">
+
+The game storage is a place where you can save variables that you want to keep between game sessions.
+
+</Accordion>
+
+</Accordions>
+
+È fondamentale capire che se le variabili non vengono salvate nella memoria del gioco, il motore non sarà in grado di gestirle quando <DynamicLink href="/start/save#load">carichi un salvataggio</DynamicLink> o quando <DynamicLink href="/start/labels-flow#go-back">torni indietro</DynamicLink>.
+
+Inoltre, nell'archivio del gioco è possibile salvare qualsiasi tipo di variabile, eccetto `class` e `function` (perché non possono essere convertite in JSON), come: `string`, `number`, `boolean`, `object`, `array`, ecc. Se si desidera salvare i "flag" (booleani), si consiglia di utilizzare la <DynamicLink href="/start/flags">funzionalità flag</DynamicLink>, un sistema di gestione dei flag ad altissime prestazioni.
+
+<Callout title="ink" type="info">
+
+Puoi usare questo metodo con la sintassi *ink*. Scopri di più <DynamicLink href="/ink/storage">qui</DynamicLink>.
+
+</Callout>
+
+## Impostare
+
+To set a variable in the game storage, use [`storage.set`](/jsdoc/pixi-vn/index/interfaces/StorageManagerInterface#set).
+
+```ts
+import { storage } from "@drincs/pixi-vn";
+
+storage.set("myVariable", 42);
+```
+
+## Ottenere
+
+To get a variable from the game storage, use [`storage.get`](/jsdoc/pixi-vn/index/interfaces/StorageManagerInterface#get).
+
+```ts
+import { storage } from "@drincs/pixi-vn";
+
+const myVariable = storage.get("myVariable");
+```
+
+## Rimuovere
+
+To remove a variable from the game storage, use [`storage.remove`](/jsdoc/pixi-vn/index/interfaces/StorageManagerInterface#remove).
+
+```ts
+import { storage } from "@drincs/pixi-vn";
+
+storage.remove("myVariable");
+```
+
+## Altre funzionalità
+
+<Accordions>
+
+<Accordion title="System variables" id="system-variables">
+
+Nello storage di gioco sono presenti alcune variabili di sistema utilizzate dal motore di gioco. Tutte le variabili di sistema iniziano con il prefisso `___`.
+Si prega quindi di evitare di utilizzare questo prefisso nelle tue variabili.
+
+You can get all system variable keys from the [`SYSTEM_RESERVED_STORAGE_KEYS`](/jsdoc/pixi-vn/index/variables/SYSTEM_RESERVED_STORAGE_KEYS) constant.
+
+</Accordion>
+
+<Accordion title="Keyv" id="keyv">
+
+L'intero sistema di archiviazione è stato sviluppato utilizzando `Map`, un oggetto JavaScript nativo, in modo da poter utilizzare Keyv per interagire con l'archiviazione dei giochi.
+
+**Cos'è Keyv?** Keyv è un semplice sistema di archiviazione chiave-valore. È un sistema molto semplice da usare e molto popolare nella comunità Node.js. Keyv può essere combinato con altre librerie, come [Cacheable](https://cacheable.org/) (Caching per Node.js basata su Keyv). Per saperne di più, visita il [sito web Keyv](https://keyv.org/).
+
+**Come utilizzare Keyv con Pixi'VN?** È possibile utilizzare Keyv con Pixi'VN creando una nuova istanza di Keyv e passando lo storage come parametro.
+
+```ts
+import { storage } from "@drincs/pixi-vn";
+import Keyv from "keyv";
+
+const keyvStorage = new Keyv({ store: storage.base });
+
+keyvStorage.get<string>("myValue").then((value) => {
+    console.log(value);
+});
+```
+
+</Accordion>
+
+<Accordion title="Default storage variables" id="default-storage-variables">
+
+È possibile impostare il valore iniziale delle variabili di archiviazione.
+
+Queste variabili avranno le seguenti caratteristiche:
+
+* Se vengono rimossi o impostati su undefined o null, il valore verrà automaticamente impostato sul valore predefinito (quindi non potranno mai essere undefined o null).
+* I valori predefiniti non verranno salvati nei salvataggi, quindi potrai modificarli da una versione all'altra senza problemi.
+
+You can set the default storage variables using the [`storage.default`](/jsdoc/pixi-vn/index/interfaces/StorageManagerInterface#default) object.
+
+```ts
+import { storage } from "@drincs/pixi-vn";
+
+storage.default = {
+    myVariable: 42,
+    anotherVariable: "Hello, world!",
+};
+```
+
+</Accordion>
+
+</Accordions>

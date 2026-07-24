@@ -1,0 +1,385 @@
+---
+title: ナラティブノードによる叙述フローの管理
+description: Pixi'VN で `call`、`jump`、`closeLabel` などを使用してナラティブノード（`label`）で叙述フローを制御する方法について説明します。
+---
+
+叙述フローは `call`、`jump`、`continue`、`back`、`closeLabel` などの関数によって管理されており、これらはすべて `narration` オブジェクトから使用できます。
+
+## ナラティブノードの実行
+
+:::tip[*ink*]
+
+このメソッドは *ink* 構文で使用できます。 詳細は <DynamicLink href="/ink/labels#run-a-knot">こちら</DynamicLink> をご覧ください。
+
+:::
+
+<Accordions>
+
+<Accordion title="ナラティブノード（`label`）を `call` する" id="call-a-label">
+
+ナラティブノード（`label`）を呼び出すには、[`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) 関数を使用します。
+
+```ts
+import { narration } from "@drincs/pixi-vn";
+
+narration.call(startLabel, {});
+```
+
+ナラティブノード（`label`）を呼び出すと、そのナラティブノード（`label`）の最初のナラティブステップ（`step`）が実行されます。 呼び出し前に別のナラティブノード（`label`）が実行中だった場合、呼び出されたナラティブノード（`label`）が終了した後、前のナラティブノード（`label`）の残りのナラティブステップ（`steps`）が再開されます。
+
+例えば、ゲームがナラティブノード（`label`）A のナラティブステップ（`step`）5 を実行中に、ナラティブノード（`label`）B を **呼び出した** 場合、ナラティブノード（`label`）B のすべてのナラティブステップ（`steps`）が実行された後、ゲームはナラティブノード（`label`）A のナラティブステップ（`step`）6 から続行されます。
+
+[`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) は、呼び出されたナラティブノード（`label`）の最初のナラティブステップ（`step`）の <DynamicLink href="/start/labels#step-results">結果</DynamicLink> を返します。
+
+---
+
+ナラティブステップ（`step`）内で [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) を実行する場合、[`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) の結果を返し、`await` を使用する必要があります。 これにより、履歴が正しく管理されます。
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async (props) => {
+        return await narration.call(TestLabel, props);
+    },
+    async (props) => await narration.call(TestLabel, props),
+]);
+```
+
+</Accordion>
+
+<Accordion title="ナラティブノード（`label`）へ `jump` する" id="jump-to-a-label">
+
+ナラティブノード（`label`）へジャンプするには、[`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) 関数を使用します。
+
+```ts
+import { narration } from "@drincs/pixi-vn";
+
+narration.jump(startLabel, {});
+```
+
+ナラティブノード（`label`）へジャンプすると、現在のナラティブノード（`label`）のナラティブステップ（`steps`）が停止し、新しいナラティブノード（`label`）のナラティブステップ（`steps`）が開始されます。
+
+例えば、ゲームがナラティブノード（`label`）A のナラティブステップ（`step`）5 を実行中に、ナラティブノード（`label`）B を **呼び出し**、その後ナラティブノード（`label`）C へ **ジャンプ** した場合、ナラティブノード（`label`）C が終了した後、ゲームはナラティブノード（`label`）A のナラティブステップ（`step`）6 から続行されます。ナラティブノード（`label`）C へジャンプすると、ナラティブノード（`label`）B は閉じられます。
+
+[`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) は、呼び出されたナラティブノード（`label`）の <DynamicLink href="/start/labels#all-steps-result">最初のナラティブステップ（`step`）の結果</DynamicLink> を返します。
+
+---
+
+ナラティブステップ（`step`）内で [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) を実行する場合、[`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) の結果を返し、`await` を使用する必要があります。 これにより、新しいナラティブノード（`label`）の最初のナラティブステップ（`step`）が確実に待機されます。
+
+```ts title="content/labels/start.label.ts"
+import { narration } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async (props) => {
+        return await narration.jump(TestLabel, props);
+    },
+    async (props) => await narration.jump(TestLabel, props),
+]);
+```
+
+</Accordion>
+
+<Accordion title="ゲームを開始する" id="start-game">
+
+ゲームを開始するには、[`Game.start`](/jsdoc/pixi-vn/index/namespaces/Game/functions/start) 関数を使用します。 この関数はナラティブノード（`label`）を呼び出すことと同等ですが、よりクリーンなスタートアップのために使用することを推奨します。
+
+```ts title="content/labels/start.label.ts"
+import { Game } from "@drincs/pixi-vn";
+
+Game.start(startLabel, gameProps);
+```
+
+</Accordion>
+
+</Accordions>
+
+## ナラティブステップの進行と戻る
+
+### 進む
+
+:::tip[UI 画面]
+
+"continue" ボタンの例は <DynamicLink href="/start/interface-examples#go-next">インターフェース例</DynamicLink> セクションで確認できます。
+
+:::
+
+次のナラティブステップ（`step`）を実行するには、[`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) 関数を使用します。
+
+```ts
+import { narration } from "@drincs/pixi-vn";
+
+await narration.continue({});
+```
+
+[`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) は非同期なので、`.then` を使用して、例えばナラティブステップ（`step`）が完了するまで「次へ」ボタンを無効にするといったことができます。
+
+```ts
+import { narration } from "@drincs/pixi-vn";
+
+// disable next button
+narration.continue({}).then((result) => {
+    // enable next button
+});
+```
+
+<Accordions>
+
+<Accordion title="ナラティブステップ（`step`）内で continue を実行する" id="call-continue-inside-a-step">
+
+ナラティブステップ（`step`）内で [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) を呼び出すと、"continue" リクエストはキューに追加され、キューが空になったときに実行されます。
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async (props) => {
+        narration.continue(props);
+    },
+]);
+```
+
+キューの動作を説明する例を示します：
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async (props) => {
+        await narration.call(label2, props);
+        console.log(1);
+    },
+    () => {
+        console.log(3);
+    },
+]);
+
+const label2 = newLabel("label_02", [
+    async (props) => {
+        await narration.continue(props);
+        console.log(2);
+    },
+]);
+```
+
+この例では、出力は `2`、`1`、`3` になります。 手順は以下のとおりです：
+
+1. `await narration.call(label2, props)` が label2 を呼び出し、その最初のナラティブステップ（`step`）を待機します。 （キューに 1 件）
+2. label2 の最初のナラティブステップ（`step`）が `await narration.continue(props)` を実行しますが、キューが空でないため continue リクエストはキューに追加されます。 （キューに 2 件）
+3. `console.log(2)` が実行され、label2 の最初のナラティブステップ（`step`）が完了します。 （キューに 1 件）
+4. `console.log(1)` が実行され、startLabel の最初のナラティブステップ（`step`）が完了します。 （キューに 0 件）
+5. continue リクエストが実行され、startLabel の 2 番目のナラティブステップ（`step`）が実行されます。 （キューに 1 件）
+6. `console.log(3)` が実行され、startLabel の 2 番目のナラティブステップ（`step`）が完了します。 （キューに 0 件）
+
+</Accordion>
+
+<Accordion title="次のナラティブステップ（`step`）に進めるか確認する" id="can-go-next">
+
+[`narration.canContinue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#cancontinue) プロパティを使用して、次のナラティブステップ（`step`）を実行できるか確認できます。
+
+[`narration.canContinue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#cancontinue) が `false` になるのは以下の場合です：
+
+* ナラティブステップ（`step`）が実行中
+* プレイヤーが <DynamicLink href="/start/choices">選択</DynamicLink> を行う必要がある
+* プレイヤーが <DynamicLink href="/start/input">値を入力</DynamicLink> する必要がある
+
+```tsx title="components/NextButton.tsx"
+import { narration } from "@drincs/pixi-vn";
+
+function NextButton() {
+    return (
+        <button
+            disabled={!narration.canContinue}
+            onClick={() => {
+                narration.continue({});
+            }}
+        >
+            Next
+        </button>
+    );
+}
+```
+
+</Accordion>
+
+</Accordions>
+
+### 戻る
+
+:::tip[UI 画面]
+
+戻るボタンの例は <DynamicLink href="/start/interface-examples#go-back">インターフェース例</DynamicLink> セクションで確認できます。
+
+:::
+
+すべてのナラティブステップ（`step`）で、システムはゲームの現在の状態を保存します。 前のナラティブステップ（`step`）に戻るには、[`stepHistory.back`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#back) 関数を使用します。
+
+<Accordions>
+
+<Accordion title="戻れるかどうか確認する" id="can-go-back">
+
+[`stepHistory.canGoBack`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#cangoback) プロパティを使用して、戻れるかどうかを確認できます。
+
+履歴に復元できるナラティブステップ（`steps`）がない場合、[`stepHistory.canGoBack`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#cangoback) は `false` になります。
+
+```ts
+import { stepHistory } from "@drincs/pixi-vn";
+
+if (stepHistory.canGoBack) {
+    stepHistory.back();
+}
+```
+
+</Accordion>
+
+<Accordion title="戻る機能をブロックする" id="block-the-possibility-of-going-back">
+
+[`stepHistory.blockGoBack`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#blockgoback) を呼び出すことで「戻る」を無効にできます。
+
+```typescript
+import { stepHistory } from "@drincs/pixi-vn";
+
+stepHistory.blockGoBack();
+```
+
+</Accordion>
+
+</Accordions>
+
+## ナラティブノードを閉じる
+
+<Accordions>
+
+<Accordion title="現在のナラティブノード（`label`）を閉じる" id="close-current-label">
+
+現在のナラティブノード（`label`）を閉じるには、[`narration.closeCurrentLabel`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#closecurrentlabel) 関数を使用します。
+
+```typescript
+import { narration } from "@drincs/pixi-vn";
+
+narration.closeCurrentLabel();
+```
+
+</Accordion>
+
+<Accordion title="すべてのナラティブノード（`labels`）を閉じる" id="close-all-labels">
+
+すべてのナラティブノード（`labels`）を閉じるには、[`narration.closeAllLabels`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#closealllabels) 関数を使用します。 **この関数を呼び出した後に何もナラティブノード（`label`）を呼び出さない場合、ゲームは終了します**
+
+```typescript
+import { narration } from "@drincs/pixi-vn";
+
+narration.closeAllLabels();
+```
+
+</Accordion>
+
+</Accordions>
+
+## その他の機能
+
+<Accordions>
+
+<Accordion title="ロールバックとロールフォワード" id="rollback-rollforward">
+
+:::tip[テンプレート]
+
+すべてのテンプレートには、この実装がすでに含まれています。
+
+:::
+
+複数の [`stepHistory.back`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#back) と [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) リクエストを同期的に実行すると、システムは内部でそれらをキューに入れ、必要な処理のみを実行するようにデルタを計算します。
+
+そのため、[`stepHistory.back`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#back) と [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) 関数を使用してロールバックおよびロールフォワード機能を実装できます。
+
+```tsx title="lib/hooks/quick-tools-hooks.ts"
+import { HTML_CANVAS_LAYER_NAME, HTML_UI_LAYER_NAME } from "@/constans";
+import { useGameProps } from "@/lib/hooks/props-hooks";
+import { GameStatus } from "@/lib/stores/game-status-store";
+import { hasScrollableParent } from "@/lib/utils/scroll-utils";
+import { type StepLabelProps, stepHistory } from "@drincs/pixi-vn";
+import { narration } from "@drincs/pixi-vn/narration";
+import { useThrottler } from "@tanstack/react-pacer";
+import { useEffect, useRef } from "react";
+
+function isInsideRoot(target: EventTarget | null, selector: string): boolean {
+    if (!(target instanceof HTMLElement)) return false;
+    return target.closest(`#${selector}`) !== null;
+}
+
+export function useWheelActions({
+    throttleMs = 300,
+    minDelta = 20,
+}: {
+    throttleMs?: number;
+    minDelta?: number;
+} = {}) {
+    const pendingAsync = useRef(0);
+    const gameProps = useGameProps();
+
+    const runAsync = async (
+        fn: (props: StepLabelProps) => Promise<unknown>,
+    ) => {
+        try {
+            pendingAsync.current += 1;
+            GameStatus.setLoading(pendingAsync.current > 0);
+            await fn(gameProps);
+        } finally {
+            pendingAsync.current -= 1;
+            GameStatus.setLoading(pendingAsync.current > 0);
+            if (pendingAsync.current === 0) {
+                gameProps.invalidateInterfaceData();
+            }
+        }
+    };
+
+    const handleWheel = useThrottler(
+        async (event: WheelEvent) => {
+            if (
+                !(
+                    isInsideRoot(event.target, HTML_UI_LAYER_NAME) ||
+                    isInsideRoot(event.target, HTML_CANVAS_LAYER_NAME)
+                )
+            )
+                return;
+            if (hasScrollableParent(event.target)) return;
+
+            // blocca lo scroll nativo
+            event.preventDefault();
+
+            const { deltaY } = event;
+
+            // ignora micro-movimenti del trackpad
+            if (Math.abs(deltaY) < minDelta) return;
+
+            if (deltaY < 0) {
+                // ⬆️ Scroll up
+                await runAsync(narration.continue.bind(narration));
+            }
+
+            if (deltaY > 0) {
+                // ⬇️ Scroll down
+                await runAsync(stepHistory.back.bind(stepHistory));
+            }
+        },
+        { wait: throttleMs },
+    );
+
+    useEffect(() => {
+        window.addEventListener("wheel", handleWheel.maybeExecute, {
+            passive: false,
+        });
+
+        return () => {
+            window.removeEventListener("wheel", handleWheel.maybeExecute);
+        };
+    }, [handleWheel.maybeExecute]);
+
+    return null;
+}
+```
+
+</Accordion>
+
+</Accordions>

@@ -1,0 +1,179 @@
+---
+title: 빠른 시작
+description: Pixi’VN 시작하기
+---
+
+Pixi’VN을 [새 프로젝트 초기화](#project-initialization) 또는 기존 프로젝트에 [패키지 설치](#installation)를 통해 사용을 시작할 수 있습니다.
+
+<Accordions>
+
+<Accordion title="사전 요구 사항" id="prerequisites">
+
+시작하기 전에 다음 도구들이 설치되어 있어야 합니다:
+
+* [Node.js](https://nodejs.org/) 버전 18 이상.
+* TypeScript를 지원하는 텍스트 편집기, 예:
+  * [Visual Studio Code](https://code.visualstudio.com/)
+  * [Cursor](https://www.cursor.com/)
+  * [VSCodium](https://vscodium.com/)
+* (권장) [Git](https://git-scm.com/)
+  * [GitHub 계정](https://github.com/) - Copilot(AI 어시스턴트)을 사용하고, 배포용 패키지를 자동 생성하며, 위키에 댓글을 추가할 수 있습니다.
+
+</Accordion>
+
+</Accordions>
+
+## 프로젝트 초기화
+
+새 프로젝트를 시작하려면 다음 명령어를 사용하여 Pixi’VN 템플릿으로 새 프로젝트를 초기화할 수 있습니다:
+
+```npm
+npm create pixi-vn@latest
+```
+
+사용 가능한 템플릿 목록과 인터랙티브 데모는 <DynamicLink href="/start/templates">여기</DynamicLink>에서 확인할 수 있습니다.
+
+프로젝트가 초기화된 후, 텍스트 편집기(VSCode 권장)로 프로젝트 디렉터리를 열고 프로젝트 개발을 시작하세요.
+
+## 설치
+
+기존 JavaScript 프로젝트에 Pixi’VN 패키지를 설치하려면 다음 명령어 중 하나를 사용하세요:
+
+```npm
+npm install @drincs/pixi-vn
+```
+
+<Accordions>
+
+<Accordion title="CDN 버전" id="cdn-installation">
+
+이 플러그인의 CDN 버전도 사용할 수 있습니다:
+
+```html tab="script tag" title="index.html"
+<script src="https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@<version>/+esm"></script>
+```
+
+```html tab="map import" title="index.html"
+<script type="importmap">
+    {
+        "imports": {
+            "@drincs/pixi-vn@<version>": "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn/+esm"
+        }
+    }
+</script>
+```
+
+```js tab="js import" title="index.js"
+import pixivn from "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@<version>/+esm";
+```
+
+<iframe
+src="https://codepen.io/BlackRam-oss/embed/oNrqgNd?default-tab=js%2Cresult"
+height="300"
+style={{
+      width: "100%",
+  }}
+title="Pixi’VN"
+loading="lazy"
+allowFullScreen={true}
+/>
+
+</Accordion>
+
+<Accordion title="Vite.js 플러그인" id="vite-plugin">
+
+더 나은 개발자 경험을 위해 [`vitePluginPixivn`](/jsdoc/pixi-vn/vite/functions/vitePluginPixivn)과 [`setupPixivnViteData`](/jsdoc/pixi-vn/vite-listener/functions/setupPixivnViteData)를 사용하세요.
+
+```ts tab="vite.config.ts"
+import { defineConfig } from "vite";
+import { vitePluginPixivn } from "@drincs/pixi-vn/vite";
+export default defineConfig({
+    // ...
+    plugins: [
+        // other plugins...
+        vitePluginPixivn(),
+    ],
+});
+```
+
+```ts tab="main.ts"
+import { setupPixivnViteData } from "@drincs/pixi-vn/vite-listener"; // [!code focus]
+
+await Promise.all([import("./values"), import("./labels")]);
+await Promise.all([initializeIndexedDB(), defineAssets(), useI18n()]);
+setupPixivnViteData(); // [!code focus]
+```
+
+</Accordion>
+
+<Accordion title="오류 처리" id="error-handling">
+
+Pixi’VN에서 오류를 처리하려면 [`Game.addOnError`](/jsdoc/pixi-vn/index/namespaces/Game/functions/addOnError) 함수를 사용할 수 있습니다. 이 함수는 게임에서 오류가 발생할 때마다 호출될 콜백을 받습니다.
+
+</Accordion>
+
+</Accordions>
+
+### 초기화
+
+Pixi’VN 엔진을 사용하기 전에 게임을 초기화해야 합니다. [`Game.init`](/jsdoc/pixi-vn/index/namespaces/Game/functions/init) 메서드를 호출하여 초기화할 수 있습니다.
+
+```ts title="src/main.tsx"
+import { Game } from "@drincs/pixi-vn";
+
+const body = document.body;
+if (!body) {
+    throw new Error("body element not found");
+}
+
+Game.init(body, {
+    height: 1080,
+    width: 1920,
+    backgroundColor: "#303030",
+}).then(() => {
+    // ...
+    Game.start("start", {});
+});
+
+// read more here: https://pixi-vn.com/start/other-narrative-features.html#how-manage-the-end-of-the-game
+Game.onEnd(async (props) => {
+    Game.clear();
+    // navigate to main menu
+});
+
+Game.addOnError((error, props) => {
+    console.error(`Error occurred`, error);
+});
+
+Game.onNavigate((path) => navigateTo(path));
+```
+
+```html title="index.html"
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Game</title>
+    </head>
+    <body>
+        <div id="root"></div>
+        <script type="module" src="/src/main.ts"></script>
+    </body>
+</html>
+```
+
+```css title="styles.css"
+html,
+body {
+    background-color: #242424;
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    overflow: hidden;
+}
+```

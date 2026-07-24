@@ -1,0 +1,179 @@
+---
+title: 快速入门
+description: 开始使用 Pixi’VN
+---
+
+你可以通过[初始化新项目](#project-initialization)或在现有项目中[安装软件包](#installation)来开始使用 Pixi’VN。
+
+<Accordions>
+
+<Accordion title="前提条件" id="prerequisites">
+
+在开始之前，你必须安装以下工具：
+
+* [Node.js](https://nodejs.org/) 18 或更高版本。
+* 支持 TypeScript 的文本编辑器，例如：
+  * [Visual Studio Code](https://code.visualstudio.com/)
+  * [Cursor](https://www.cursor.com/)
+  * [VSCodium](https://vscodium.com/)
+* （推荐）[Git](https://git-scm.com/)
+  * 一个 [GitHub 账号](https://github.com/) - 你将能够使用 Copilot（AI 助手）、自动生成发布包并向 wiki 添加评论
+
+</Accordion>
+
+</Accordions>
+
+## 项目初始化
+
+如果你想从新项目开始，可以使用以下命令通过 Pixi’VN 模板初始化新项目：
+
+```npm
+npm create pixi-vn@latest
+```
+
+你可以在<DynamicLink href="/start/templates">这里</DynamicLink>查看可用模板列表和交互式演示。
+
+项目初始化完成后，用你的文本编辑器（推荐使用 VSCode）打开项目目录，开始开发你的项目。
+
+## 安装
+
+要在现有 JavaScript 项目中安装 Pixi’VN 软件包，请使用以下命令之一：
+
+```npm
+npm install @drincs/pixi-vn
+```
+
+<Accordions>
+
+<Accordion title="CDN 版本" id="cdn-installation">
+
+你也可以使用该插件的 CDN 版本：
+
+```html tab="script tag" title="index.html"
+<script src="https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@<version>/+esm"></script>
+```
+
+```html tab="map import" title="index.html"
+<script type="importmap">
+    {
+        "imports": {
+            "@drincs/pixi-vn@<version>": "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn/+esm"
+        }
+    }
+</script>
+```
+
+```js tab="js import" title="index.js"
+import pixivn from "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@<version>/+esm";
+```
+
+<iframe
+src="https://codepen.io/BlackRam-oss/embed/oNrqgNd?default-tab=js%2Cresult"
+height="300"
+style={{
+      width: "100%",
+  }}
+title="Pixi’VN"
+loading="lazy"
+allowFullScreen={true}
+/>
+
+</Accordion>
+
+<Accordion title="Vite.js 插件" id="vite-plugin">
+
+为了获得更好的开发体验，请使用 [`vitePluginPixivn`](/jsdoc/pixi-vn/vite/functions/vitePluginPixivn) 和 [`setupPixivnViteData`](/jsdoc/pixi-vn/vite-listener/functions/setupPixivnViteData)。
+
+```ts tab="vite.config.ts"
+import { defineConfig } from "vite";
+import { vitePluginPixivn } from "@drincs/pixi-vn/vite";
+export default defineConfig({
+    // ...
+    plugins: [
+        // other plugins...
+        vitePluginPixivn(),
+    ],
+});
+```
+
+```ts tab="main.ts"
+import { setupPixivnViteData } from "@drincs/pixi-vn/vite-listener"; // [!code focus]
+
+await Promise.all([import("./values"), import("./labels")]);
+await Promise.all([initializeIndexedDB(), defineAssets(), useI18n()]);
+setupPixivnViteData(); // [!code focus]
+```
+
+</Accordion>
+
+<Accordion title="错误处理" id="error-handling">
+
+要在 Pixi’VN 中处理错误，你可以使用 [`Game.addOnError`](/jsdoc/pixi-vn/index/namespaces/Game/functions/addOnError) 函数。 该函数接受一个回调，每当游戏中发生错误时都会调用它。
+
+</Accordion>
+
+</Accordions>
+
+### 初始化
+
+在使用 Pixi’VN 引擎之前，你必须初始化游戏。 你可以通过调用 [`Game.init`](/jsdoc/pixi-vn/index/namespaces/Game/functions/init) 方法来完成此操作。
+
+```ts title="src/main.tsx"
+import { Game } from "@drincs/pixi-vn";
+
+const body = document.body;
+if (!body) {
+    throw new Error("body element not found");
+}
+
+Game.init(body, {
+    height: 1080,
+    width: 1920,
+    backgroundColor: "#303030",
+}).then(() => {
+    // ...
+    Game.start("start", {});
+});
+
+// read more here: https://pixi-vn.com/start/other-narrative-features.html#how-manage-the-end-of-the-game
+Game.onEnd(async (props) => {
+    Game.clear();
+    // navigate to main menu
+});
+
+Game.addOnError((error, props) => {
+    console.error(`Error occurred`, error);
+});
+
+Game.onNavigate((path) => navigateTo(path));
+```
+
+```html title="index.html"
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Game</title>
+    </head>
+    <body>
+        <div id="root"></div>
+        <script type="module" src="/src/main.ts"></script>
+    </body>
+</html>
+```
+
+```css title="styles.css"
+html,
+body {
+    background-color: #242424;
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    overflow: hidden;
+}
+```

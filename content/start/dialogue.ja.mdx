@@ -1,0 +1,123 @@
+---
+title: ダイアログ
+description: Pixi’VN でダイアログオブジェクトを使用、カスタマイズ、管理する方法（グルーや UI 統合を含む）。
+---
+
+import {
+    CurrentDialogueExample,
+    DialogueGlueExample,
+} from "@/components/examples";
+
+:::tip[UI 画面]
+
+ナラティブダイアログ UI 画面の例は、<DynamicLink href="/start/interface-examples#narrative-dialogue">インターフェース例</DynamicLink>のセクションで確認できます。
+
+:::
+
+**ダイアログとは？** 2 人以上のキャラクターが会話している様子を表した文章の形式です。
+
+Pixi’VN において、`dialogue` は現在*誰が*何を_言っているかに関する情報を含むオブジェクトです。 その機能はより広範で、独白や自問自答、またはプレイヤーへのメッセージ表示など、他の目的にも使用できます。 そのため、<DynamicLink href="/start/character#use-characters-in-the-game">キャラクター</DynamicLink>に関連付けられたテキストとして捉えるのがより適切です。
+
+## 設定
+
+現在のダイアログを設定するには、[`narration.dialogue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#dialogue) を使用します。
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+import { eggHead } from "@/content/characters";
+
+export const startLabel = newLabel("start", [
+    // A simple dialogue with only text, without a character // [!code focus]
+    () => (narration.dialogue = "Hello, world!"), // [!code focus]
+    // A dialogue with a character // [!code focus]
+    () => {
+        narration.dialogue = { // [!code focus]
+            character: eggHead, // [!code focus]
+            text: "My name is ${eggHead.name}!", // [!code focus]
+        }; // [!code focus]
+    },
+    // A dialogue with a character, but the character is not defined in the characters list // [!code focus]
+    () => {
+        narration.dialogue = { // [!code focus]
+            character: "Narrator", // [!code focus]
+            text: "This is a narration without a character.", // [!code focus]
+        }; // [!code focus]
+    },
+]);
+```
+
+<CurrentDialogueExample />
+
+## 取得
+
+現在のダイアログを取得するには、[`narration.dialogue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#dialogue) を使用します。 戻り値は [`DialogueInterface`](/jsdoc/pixi-vn/index/interfaces/DialogueInterface) です。
+
+```ts
+const currentDialogue: DialogueInterface = narration.dialogue;
+```
+
+## 削除
+
+現在のダイアログをクリアするには、[`narration.dialogue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#dialogue) を `undefined` に設定します。
+
+```ts
+narration.dialogue = undefined;
+```
+
+## その他の機能
+
+<Accordions>
+
+<Accordion title="グルー（Glue）" id="dialogue-glue">
+
+:::tip
+
+"グルー"（glue）は、元々 ***ink*** のために作られた機能で、Pixi’VN にも導入されました。
+
+:::
+
+"グルー"（glue）が有効になると、次のダイアログが現在のダイアログの後に追加されます。 [`narration.dialogGlue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#dialogglue) を `true` に設定することでグルーを有効にできます。
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+
+const startLabel = newLabel("start", [
+    () => {
+        narration.dialogue = `Hello, my name is Alice and ...`; // [!code focus]
+    },
+    () => {
+        narration.dialogGlue = true; // [!code focus]
+        narration.dialogue = `I am a character in this game.`; // [!code focus]
+    },
+]);
+```
+
+<DialogueGlueExample />
+
+</Accordion>
+
+<Accordion title="カスタムクラス" id="custom-class">
+
+[`DialogueInterface`](/jsdoc/pixi-vn/index/interfaces/DialogueInterface) にプロパティを追加することで、ダイアログインターフェースをカスタマイズできます。 たとえば、テキストの色を変更するための `color` プロパティを追加できます。
+
+これを行うには、`.d.ts` ファイルで [`DialogueInterface`](/jsdoc/pixi-vn/index/interfaces/DialogueInterface) インターフェースを「オーバーライド」します：
+
+```ts tab="pixi-vn.d.ts"
+declare module "@drincs/pixi-vn" {
+    interface DialogueInterface {
+        color?: string;
+    }
+}
+```
+
+```ts tab="content/labels/startLabel.ts"
+narration.dialogue = {
+    character: "Alice",
+    text: "Hello, world!",
+    color: "#ff0000",
+};
+```
+
+</Accordion>
+
+</Accordions>

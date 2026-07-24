@@ -1,0 +1,189 @@
+---
+title: Контейнер (`ImageContainer`)
+description: Использование и возможности компонента ImageContainer в Pixi’VN для группировки и управления несколькими изображениями как единым компонентом холста.
+---
+
+import {
+    AddImageContainerExample,
+    ShowImageContainerExample,
+} from "@/components/examples";
+
+Компонент [`ImageContainer`](/jsdoc/pixi-vn/index/classes/ImageContainer) расширяет компонент [`Container`](/jsdoc/pixi-vn/index/classes/Container), поэтому вы можете использовать все методы и свойства [`Container`](/jsdoc/pixi-vn/index/classes/Container). Он позволяет объединить несколько изображений в один компонент и управлять ими как единым целым.
+
+Дочерние элементы [`ImageContainer`](/jsdoc/pixi-vn/index/classes/ImageContainer) являются компонентами [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite).
+
+```ts tab="main.ts"
+import { canvas, ImageContainer } from "@drincs/pixi-vn";
+
+let james = new ImageContainer(
+    {
+        anchor: { x: 0.5, y: 0.5 },
+        x: 100,
+        y: 100,
+    },
+    ["m01-body", "m01-eyes", "m01-mouth"],
+);
+
+await james.load();
+canvas.add("james", james);
+```
+
+```json tab="src/assets/manifest.gen.json"
+{
+    "bundles": [
+        {
+            "name": "m01",
+            "assets": [
+                {
+                    "alias": "m01-body",
+                    "src": "./assets/m01/m01-body.png"
+                },
+                {
+                    "alias": "m01-head",
+                    "src": "./assets/m01/m01-head.png"
+                },
+                {
+                    "alias": "m01-eyes",
+                    "src": "./assets/m01/m01-eyes.png"
+                }
+            ]
+        }
+    ]
+}
+```
+
+По сравнению с компонентом [`Container`](/jsdoc/pixi-vn/index/classes/Container), [`ImageContainer`](/jsdoc/pixi-vn/index/classes/ImageContainer) добавляет следующие возможности:
+
+* [`load`](/jsdoc/pixi-vn/index/classes/ImageContainer#load): загружает все URL изображений и устанавливает полученные текстуры в дочерние элементы.
+* Дополнительное позиционирование: <DynamicLink href="/start/canvas-position">выравнивание и позиционирование в процентах</DynamicLink>.
+
+## Отображение
+
+Самый простой способ отобразить группу изображений на холсте — использовать функцию [`showImageContainer`](/jsdoc/pixi-vn/index/functions/showImageContainer). Эта функция объединяет [`load`](/jsdoc/pixi-vn/index/classes/ImageContainer#load) и [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add).
+
+```ts tab="content/labels/start.label.ts"
+import {
+    canvas,
+    ImageContainer,
+    newLabel,
+    showImageContainer,
+} from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        let james = await showImageContainer(
+            "james",
+            ["m01-body", "m01-eyes", "m01-mouth"],
+            {
+                xAlign: 0.5,
+                yAlign: 1,
+            },
+        );
+    },
+    () => {
+        canvas.removeAllTickers();
+        let tickerId = canvas.animate<ImageContainer>("james", {
+            xAlign: 0,
+            yAlign: 1,
+        });
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "m01-body",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-body.webp",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-smile.webp",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-smile00.webp",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<ShowImageContainerExample />
+
+## Добавление
+
+Чтобы добавить группу изображений на холст, используйте функцию [`addImageCointainer`](/jsdoc/pixi-vn/index/functions/addImageCointainer). Эта функция только добавляет компонент на холст; она **не** отображает его и не загружает его текстуру. Для добавления компонента на холст она использует [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add).
+
+```ts tab="content/labels/start.label.ts"
+import {
+    addImageCointainer,
+    canvas,
+    ImageContainer,
+    newLabel,
+} from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        let james = await addImageCointainer(
+            "james",
+            ["m01-body", "m01-eyes", "m01-mouth"],
+            {
+                xAlign: 0.5,
+                yAlign: 1,
+            },
+        );
+    },
+    async () => {
+        let james = canvas.find<ImageContainer>("james");
+        james && (await james.load());
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "m01-body",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-body.webp",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-smile.webp",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-smile00.webp",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<AddImageContainerExample />
+
+## Удалить
+
+Как и другие компоненты холста, данный компонент можно удалить с помощью функции [`canvas.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#remove).

@@ -1,0 +1,179 @@
+---
+title: Démarrage rapide
+description: Premiers pas avec Pixi’VN
+---
+
+Vous pouvez commencer à utiliser Pixi’VN en [initialisant un nouveau projet](#project-initialization) ou en [installant le paquet](#installation) dans un projet existant.
+
+<Accordions>
+
+<Accordion title="Prérequis" id="prerequisites">
+
+Avant de commencer, vous devez avoir installé les outils suivants :
+
+* [Node.js](https://nodejs.org/) version 18 ou supérieure.
+* Un éditeur de texte avec prise en charge de TypeScript, tel que :
+  * [Visual Studio Code](https://code.visualstudio.com/)
+  * [Cursor](https://www.cursor.com/)
+  * [VSCodium](https://vscodium.com/)
+* (Recommandé) [Git](https://git-scm.com/)
+  * Un [compte GitHub](https://github.com/) - Vous pourrez utiliser Copilot (assistant IA), la génération automatique de paquets à distribuer et ajouter des commentaires au wiki
+
+</Accordion>
+
+</Accordions>
+
+## Initialisation du projet
+
+Si vous souhaitez démarrer à partir d'un nouveau projet, vous pouvez utiliser la commande suivante pour initialiser un nouveau projet avec les modèles Pixi’VN :
+
+```npm
+npm create pixi-vn@latest
+```
+
+Vous pouvez consulter la liste des modèles disponibles et les démos interactives <DynamicLink href="/start/templates">ici</DynamicLink>.
+
+Après l'initialisation du projet, ouvrez le répertoire du projet avec votre éditeur de texte (VSCode est recommandé) et commencez à développer votre projet.
+
+## Installation
+
+Pour installer le paquet Pixi’VN dans un projet JavaScript existant, utilisez l'une des commandes suivantes :
+
+```npm
+npm install @drincs/pixi-vn
+```
+
+<Accordions>
+
+<Accordion title="Version CDN" id="cdn-installation">
+
+Vous pouvez également utiliser la version CDN de ce plugin :
+
+```html tab="script tag" title="index.html"
+<script src="https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@<version>/+esm"></script>
+```
+
+```html tab="map import" title="index.html"
+<script type="importmap">
+    {
+        "imports": {
+            "@drincs/pixi-vn@<version>": "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn/+esm"
+        }
+    }
+</script>
+```
+
+```js tab="js import" title="index.js"
+import pixivn from "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@<version>/+esm";
+```
+
+<iframe
+src="https://codepen.io/BlackRam-oss/embed/oNrqgNd?default-tab=js%2Cresult"
+height="300"
+style={{
+      width: "100%",
+  }}
+title="Pixi’VN"
+loading="lazy"
+allowFullScreen={true}
+/>
+
+</Accordion>
+
+<Accordion title="Plugin Vite.js" id="vite-plugin">
+
+Pour une meilleure expérience de développement, utilisez [`vitePluginPixivn`](/jsdoc/pixi-vn/vite/functions/vitePluginPixivn) et [`setupPixivnViteData`](/jsdoc/pixi-vn/vite-listener/functions/setupPixivnViteData).
+
+```ts tab="vite.config.ts"
+import { defineConfig } from "vite";
+import { vitePluginPixivn } from "@drincs/pixi-vn/vite";
+export default defineConfig({
+    // ...
+    plugins: [
+        // other plugins...
+        vitePluginPixivn(),
+    ],
+});
+```
+
+```ts tab="main.ts"
+import { setupPixivnViteData } from "@drincs/pixi-vn/vite-listener"; // [!code focus]
+
+await Promise.all([import("./values"), import("./labels")]);
+await Promise.all([initializeIndexedDB(), defineAssets(), useI18n()]);
+setupPixivnViteData(); // [!code focus]
+```
+
+</Accordion>
+
+<Accordion title="Gestion des erreurs" id="error-handling">
+
+Pour gérer les erreurs dans Pixi’VN, vous pouvez utiliser la fonction [`Game.addOnError`](/jsdoc/pixi-vn/index/namespaces/Game/functions/addOnError). Cette fonction prend un callback qui sera appelé chaque fois qu'une erreur se produit dans le jeu.
+
+</Accordion>
+
+</Accordions>
+
+### Initialisation
+
+Avant d'utiliser le moteur Pixi’VN, vous devez initialiser le jeu. Vous pouvez le faire en appelant la méthode [`Game.init`](/jsdoc/pixi-vn/index/namespaces/Game/functions/init).
+
+```ts title="src/main.tsx"
+import { Game } from "@drincs/pixi-vn";
+
+const body = document.body;
+if (!body) {
+    throw new Error("body element not found");
+}
+
+Game.init(body, {
+    height: 1080,
+    width: 1920,
+    backgroundColor: "#303030",
+}).then(() => {
+    // ...
+    Game.start("start", {});
+});
+
+// read more here: https://pixi-vn.com/start/other-narrative-features.html#how-manage-the-end-of-the-game
+Game.onEnd(async (props) => {
+    Game.clear();
+    // navigate to main menu
+});
+
+Game.addOnError((error, props) => {
+    console.error(`Error occurred`, error);
+});
+
+Game.onNavigate((path) => navigateTo(path));
+```
+
+```html title="index.html"
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Game</title>
+    </head>
+    <body>
+        <div id="root"></div>
+        <script type="module" src="/src/main.ts"></script>
+    </body>
+</html>
+```
+
+```css title="styles.css"
+html,
+body {
+    background-color: #242424;
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    overflow: hidden;
+}
+```

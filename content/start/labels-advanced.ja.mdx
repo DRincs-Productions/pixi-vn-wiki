@@ -1,0 +1,158 @@
+---
+title: 高度なラベル機能
+description: Pixi'VN における高度なラベルオプション（onLoadingLabel、onStepStart、onStepEnd、動的ステップリストなど）を説明します。
+---
+
+import { ReturningDifferentStepLists } from "@/components/examples";
+
+このセクションでは、高度な<DynamicLink href="/start/labels">ナラティブノード</DynamicLink>機能について説明します。 基本的なゲームを作成するために必須ではありませんが、より複雑でインタラクティブな体験を構築するのに役立ちます。
+
+<Accordions>
+
+<Accordion title="`onLoadingLabel`" id="onloadinglabel">
+
+[`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) は、ナラティブステップ（`step`）インデックスが 0 の場合に [`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart) 内で実行される関数で、ユーザーがセーブファイルをロードしたときにも実行されます。
+
+セーブファイルがロードされると、[`narration.openedLabels`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#openedlabels) のすべての [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) 関数（現在のナラティブノード（`label`）およびスタック内のすべてのナラティブノード（`labels`））が実行されます。
+
+たとえば、ナラティブノード（`label`）が開始する前に、そのナラティブノード（`label`）で使用するすべての画像をキャッシュするために役立ちます。
+
+この関数は、ナラティブノード（`label`）オプションの [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) プロパティに渡すことで設定できます。
+
+```ts title="content/labels/start.label.ts"
+const startLabel = newLabel(
+    "start",
+    [
+        async () => {
+            await showImage("image1", "path/to/image1.png");
+            await showImage("image2", "path/to/image2.png");
+        },
+    ],
+    {
+        onLoadingLabel: async (stepIndex, label) => { // [!code focus]
+            await Assets.load("path/to/image1.png"); // [!code focus]
+            await Assets.load("path/to/image2.png"); // [!code focus]
+        }, // [!code focus]
+    },
+);
+```
+
+[`Game.onLoadingLabel`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onLoadingLabel) を使用して、すべてのナラティブノード（`labels`）のロードをグローバルにインターセプトすることもできます。
+
+```ts
+import { Game } from "@drincs/pixi-vn";
+
+Game.onLoadingLabel((_stepId, label) => { // [!code focus]
+    Assets.backgroundLoadBundle(label.id); // [!code focus]
+}); // [!code focus]
+```
+
+</Accordion>
+
+<Accordion title="`onStepStart`" id="onstepstart">
+
+[`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart) は、ナラティブノード（`label`）の各ナラティブステップ（`step`）の前に実行される関数です。 ナラティブノード（`label`）オプションの [`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart) プロパティを使用して設定します。
+
+```ts title="content/labels/start.label.ts"
+const startLabel = newLabel(
+    "start",
+    [
+        () => {
+            narration.dialogue = "Step 1";
+        },
+        () => {
+            narration.dialogue = "Step 2";
+        },
+    ],
+    {
+        onStepStart: (stepIndex, label) => { // [!code focus]
+            console.log(`Step ${stepIndex} started`); // [!code focus]
+        }, // [!code focus]
+    },
+);
+```
+
+[`Game.onStepStart`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onStepStart) を使用して、任意のナラティブノード（`label`）内の任意のナラティブステップ（`step`）の開始をインターセプトすることもできます。
+
+```ts
+import { Game } from "@drincs/pixi-vn";
+
+Game.onStepStart((stepIndex, label) => { // [!code focus]
+    console.log(`Step ${stepIndex} started`); // [!code focus]
+}); // [!code focus]
+```
+
+</Accordion>
+
+<Accordion title="`onStepEnd`" id="onstepend">
+
+[`onStepEnd`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepend) は、ナラティブノード（`label`）の各ナラティブステップ（`step`）の後に実行される関数です。 ナラティブノード（`label`）オプションの [`onStepEnd`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepend) プロパティを使用して設定します。
+
+```ts title="content/labels/start.label.ts"
+const startLabel = newLabel(
+    "start",
+    [
+        () => {
+            narration.dialogue = "Step 1";
+        },
+        () => {
+            narration.dialogue = "Step 2";
+        },
+    ],
+    {
+        onStepEnd: (stepIndex, label) => { // [!code focus]
+            console.log(`Step ${stepIndex} ended`); // [!code focus]
+        }, // [!code focus]
+    },
+);
+```
+
+[`Game.onStepEnd`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onStepEnd) を使用して、任意のナラティブノード（`label`）内の任意のナラティブステップ（`step`）の終了をインターセプトすることもできます。
+
+```ts
+import { Game } from "@drincs/pixi-vn";
+
+Game.onStepEnd((stepIndex, label) => { // [!code focus]
+    console.log(`Step ${stepIndex} ended`); // [!code focus]
+}); // [!code focus]
+```
+
+</Accordion>
+
+<Accordion title="動的 `step` リスト" id="dynamic-step-list">
+
+新しいナラティブノード（`label`）を作成する際、そのナラティブノード（`label`）のナラティブステップ（`steps`）を返す関数を渡すことができます。 これにより、条件に基づいてナラティブステップ（`step`）リストを動的に変更できます。
+
+```ts title="content/labels/start.label.ts"
+import { storage, narration, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", () => {
+    let condition = storage.getFlag("condition");
+    if (condition) {
+        return [
+            () => {
+                narration.dialogue = "Step 2";
+            },
+            () => {
+                narration.dialogue = "Restart";
+            },
+        ];
+    } else {
+        return [
+            () => {
+                narration.dialogue = "Step 1";
+            },
+            async (props, { labelId }) => {
+                storage.setFlag("condition", true);
+                return await narration.jump(labelId, props);
+            },
+        ];
+    }
+});
+```
+
+<ReturningDifferentStepLists />
+
+</Accordion>
+
+</Accordions>

@@ -1,0 +1,267 @@
+---
+title: コンポーネント関数
+description: Pixi’VN でキャンバスコンポーネントの追加、検索、削除、イベント処理を行うための関数。
+---
+
+import {
+    AddCanvasComponents,
+    AddListenerGivenEvent,
+    GetCanvasComponents,
+    RemoveAllCanvasComponents,
+    RemoveCanvasComponents,
+} from "@/components/examples";
+
+## 追加
+
+ゲームキャンバスにコンポーネントを追加するには、[`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add) を使用できます。
+
+```ts tab="content/labels/start.label.ts"
+import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        const sprite = new Sprite();
+        const texture = await Assets.load("egg_head");
+        sprite.texture = texture;
+        canvas.add("sprite", sprite); // [!code focus]
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<AddCanvasComponents />
+
+## 取得
+
+ゲームキャンバスからコンポーネントを取得するには、[`canvas.find`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#find) を使用できます。
+
+```ts tab="content/labels/start.label.ts"
+import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        const sprite = new Sprite();
+        const texture = await Assets.load("egg_head");
+        sprite.texture = texture;
+        canvas.add("sprite", sprite);
+    },
+    () => {
+        const sprite = canvas.find("sprite"); // [!code focus]
+        if (sprite) {
+            sprite.x = 100;
+            sprite.y = 100;
+        }
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<GetCanvasComponents />
+
+## 削除
+
+ゲームキャンバスからコンポーネントを削除するには、[`canvas.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#remove) を使用できます。
+
+```ts tab="content/labels/start.label.ts"
+import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        const sprite = new Sprite();
+        const texture = await Assets.load("egg_head");
+        sprite.texture = texture;
+        canvas.add("sprite", sprite);
+    },
+    () => {
+        canvas.remove("sprite"); // [!code focus]
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<RemoveCanvasComponents />
+
+## すべて削除
+
+ゲームキャンバスからすべてのコンポーネントを削除するには、[`canvas.removeAll`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#removeAll) を使用できます。
+
+```ts tab="content/labels/start.label.ts"
+import { Assets, canvas, newLabel, Sprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        const texture = await Assets.load("egg_head");
+        for (let i = 0; i < 3; i++) {
+            const sprite = new Sprite();
+            sprite.texture = texture;
+            sprite.x = i * 150;
+            canvas.add(`sprite${i}`, sprite);
+        }
+    },
+    () => {
+        canvas.removeAll(); // [!code focus]
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<RemoveAllCanvasComponents />
+
+## その他の機能
+
+<Accordions>
+
+<Accordion title="イベントにリスナーを追加する" id="add-a-listener-to-an-event">
+
+:::tip
+
+可能であれば、<DynamicLink href="/start/interface">HTML と PixiJS UI</DynamicLink> を使用して、イベント付きのボタンやその他の要素を追加することを試してください。
+
+:::
+
+Pixi’VN では、PixiJS と比較して、[`on` メソッドを使ったリスナー](https://pixijs.com/8.x/examples/events/click)を使用できます（例えばクリック可能にするため）が、[`@eventDecorator`](/jsdoc/pixi-vn/index/functions/eventDecorator) デコレーターを使用しない場合、そのイベントは Pixi’VN のイベントシステムに登録されないため、そのイベントが使用されたセーブをロードすると、そのイベントは失われます。
+
+```ts tab="content/canvas/events.ts"
+import { eventDecorator, FederatedEvent, Sprite } from "@drincs/pixi-vn";
+
+export default class Events {
+    @eventDecorator()
+    static buttonEvent(event: FederatedEvent, sprite: Sprite): void {
+        switch (event.type) {
+            case "pointerdown":
+                sprite.scale.x *= 1.25;
+                sprite.scale.y *= 1.25;
+                break;
+        }
+    }
+}
+```
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showImage } from "@drincs/pixi-vn";
+import Events from "../canvas/events";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        const bunny = await showImage("bunny", "bunny", {
+            align: 0.5,
+            anchor: 0.5,
+        });
+        // Opt-in to interactivity
+        bunny.eventMode = "static";
+        // Shows hand cursor
+        bunny.cursor = "pointer";
+        // Pointers normalize touch and mouse (good for mobile and desktop)
+        bunny.on("pointerdown", Events.buttonEvent);
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                { alias: "bunny", src: "https://pixijs.com/assets/bunny.png" },
+            ],
+        },
+    ],
+};
+```
+
+<AddListenerGivenEvent />
+
+</Accordion>
+
+</Accordions>

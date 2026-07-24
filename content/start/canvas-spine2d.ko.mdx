@@ -1,0 +1,319 @@
+---
+title: Spine 2D
+description: Pixi’VN에서 Spine 2D 통합을 사용하여 스켈레톤을 불러오고, 스킨을 전환하고, 애니메이션을 재생 및 결합하고, 애니메이션 트랙을 제어하는 방법.
+---
+
+import {
+    AnimationExample,
+    AnimationSequenceExample,
+    ClearExample,
+    MotionExample,
+    SkinExample,
+    SpineExample,
+} from "@/components/spine-examples";
+
+<Accordions>
+
+<Accordion title="Spine 2D란 무엇인가요?" id="what-is-spine-2d">
+
+Spine 2D는 게임 개발을 위해 특별히 설계된 강력한 2D 애니메이션 소프트웨어입니다. 스켈레탈 애니메이션 시스템을 사용하며, 이는 캐릭터와 오브젝트가 부착된 부분의 움직임을 제어하는 **뼈대**의 계층 구조를 통해 애니메이션화된다는 것을 의미합니다.
+
+Spine 2D에 대해 더 알아보려면 [Spine 2D 공식 웹사이트](https://it.esotericsoftware.com/)를 참고하세요.
+
+</Accordion>
+
+</Accordions>
+
+**Pixi’VN** 프로젝트 내에서 Spine 2D 통합을 사용하여 캐릭터와 오브젝트를 위한 복잡하고 부드러운 애니메이션을 만들 수 있습니다.
+이 통합은 본질적으로 공식 [PixiJS용 Spine 2D 런타임](https://it.esotericsoftware.com/spine-pixi)의 래퍼로, Pixi’VN 프로젝트 내에서 직접 모든 Spine 2D 기능을 사용할 수 있게 해줍니다.
+
+## 설치
+
+기존 JavaScript 프로젝트에 Spine 2D 패키지를 설치하려면 다음 명령어 중 하나를 사용하세요.
+
+```npm
+npm install @drincs/pixi-vn-spine
+```
+
+:::danger
+
+이 라이브러리는 Lazy 컴포넌트 내부에서 사용할 수 있도록 게임 초기화 시 임포트해야 합니다.
+
+:::
+
+```ts title="main.ts"
+import "@drincs/pixi-vn-spine";
+
+Game.init(body, {
+    // ...
+});
+```
+
+<Accordions>
+
+<Accordion title="ink" id="ink">
+
+[`createSpineHandler`](/jsdoc/pixi-vn-spine/ink/functions/createSpineHandler) 함수를 사용하여 **ink** 스크립트에서 Spine 2D 해시태그 명령을 활성화할 수 있습니다.
+
+```ts title="content/ink/hashtag-commands.ts"
+import { addBaseHashtagCommands } from "@drincs/pixi-vn-ink";
+import { createSpineHandler } from "@drincs/pixi-vn-spine/ink"; // [!code focus]
+
+addBaseHashtagCommands({ bundleIds, assetAliasIds });
+createSpineHandler(); // [!code focus]
+```
+
+`show`, `edit`, `remove` 해시태그 명령은 다른 캔버스 요소와 마찬가지로 `spine`에도 사용할 수 있습니다.
+
+</Accordion>
+
+</Accordions>
+
+## 사용법
+
+다른 Pixi’VN 컴포넌트와 마찬가지로 [`Spine`](/jsdoc/pixi-vn-spine/index/classes/Spine) 컴포넌트를 사용할 수 있습니다.
+하지만 사용하기 전에 먼저 Spine 2D 에셋(**skeleton**과 **atlas**)을 불러와야 합니다.
+
+예를 들어:
+
+```ts tab="Typescript" title="main.ts" groupId="narrative_language"
+import { Assets, canvas } from "@drincs/pixi-vn";
+import { Spine } from "@drincs/pixi-vn-spine";
+
+await Assets.load(["spineboySkeleton", "spineboyAtlas"]);
+const spine = new Spine({
+    atlas: "spineboyAtlas",
+    skeleton: "spineboySkeleton",
+    xAlign: 0.5,
+    yAlign: 1,
+    animation: "idle",
+});
+canvas.add("boy", spine);
+```
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+# show spine boy skeleton spineboySkeleton atlas spineboyAtlas xAlign 0.5 yAlign 1 animation idle
+-> DONE
+```
+
+```ts tab="src/assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "spineboySkeleton",
+                    src: "https://raw.githubusercontent.com/EsotericSoftware/spine-runtimes/4.3/examples/spineboy/export/spineboy-pro.skel",
+                },
+                {
+                    alias: "spineboyAtlas",
+                    src: "https://raw.githubusercontent.com/EsotericSoftware/spine-runtimes/4.3/examples/spineboy/export/spineboy-pma.atlas",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<SpineExample />
+
+<Accordions>
+
+<Accordion title="스킨" id="skin">
+
+Spine 모델은 여러 개의 스킨을 가질 수 있으며, [`setSkin`](/jsdoc/pixi-vn-spine/index/classes/Spine#setskin) 함수를 사용하여 런타임에 이를 전환할 수 있습니다.
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
+import { Spine } from "@drincs/pixi-vn-spine";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await Assets.load(["goblinsSkeleton", "goblinsAtlas"]);
+        const spine = new Spine({
+            atlas: "goblinsAtlas",
+            skeleton: "goblinsSkeleton",
+            skin: "goblin",
+            xAlign: 0.5,
+            yAlign: 1,
+            animation: "walk",
+        });
+        canvas.add("goblin", spine);
+    },
+    () => {
+        canvas.find<Spine>("goblin")?.setSkin("goblingirl");
+    },
+]);
+```
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+# show spine goblin skeleton goblinsSkeleton atlas goblinsAtlas skin goblin xAlign 0.5 yAlign 1 animation walk
+# pause
+# change skin goblingirl on spine goblin
+# pause
+-> DONE
+```
+
+<SkinExample />
+
+</Accordion>
+
+<Accordion title="애니메이션" id="animation">
+
+Spine 애니메이션을 재생하는 데 사용할 수 있는 함수는 두 가지입니다: [`setAnimation`](/jsdoc/pixi-vn-spine/index/classes/Spine#setanimation)과 [`addAnimation`](/jsdoc/pixi-vn-spine/index/classes/Spine#addanimation)입니다.
+
+* [`setAnimation`](/jsdoc/pixi-vn-spine/index/classes/Spine#setanimation)은 트랙에서 현재 재생 중인 애니메이션을 새 애니메이션으로 즉시 교체합니다.
+* [`addAnimation`](/jsdoc/pixi-vn-spine/index/classes/Spine#addanimation)은 새 애니메이션을 대기열에 추가하여, 트랙의 현재 애니메이션을 중단하지 않고 그것이 끝난 후에만 시작되도록 합니다.
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
+import { Spine } from "@drincs/pixi-vn-spine";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await Assets.load(["spineboySkeleton", "spineboyAtlas"]);
+        const spine = new Spine({
+            atlas: "spineboyAtlas",
+            skeleton: "spineboySkeleton",
+            xAlign: 0.5,
+            yAlign: 1,
+            animation: "idle",
+        });
+        canvas.add("boy", spine);
+    },
+    () => {
+        canvas.find<Spine>("boy")?.addAnimation("walk", { loop: true });
+    },
+]);
+```
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+# show spine boy skeleton spineboySkeleton atlas spineboyAtlas xAlign 0.5 yAlign 1 animation idle
+# pause
+# play walk on spine boy loop true
+# pause
+-> DONE
+```
+
+<AnimationExample />
+
+</Accordion>
+
+<Accordion title="Spine + motion.js 애니메이션" id="motion">
+
+아래 예제와 같이 Spine 애니메이션을 Pixi’VN의 전통적인 모션 기반 애니메이션([`canvas.animate`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#animate))과 결합할 수 있습니다.
+
+더 고급 게임에서는 미리 정의된 시퀀스에만 의존하는 대신, 버튼 누름과 같은 이벤트에 의해 트리거되는 티커로부터 직접 Spine 애니메이션을 구동할 수도 있습니다.
+
+```ts title="content/labels/start.label.ts" groupId="narrative_language"
+import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
+import { Spine } from "@drincs/pixi-vn-spine";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await Assets.load(["spineboySkeleton", "spineboyAtlas"]);
+        const spine = new Spine({
+            atlas: "spineboyAtlas",
+            skeleton: "spineboySkeleton",
+            xAlign: 0,
+            yAlign: 1,
+            animation: "walk",
+        });
+        canvas.add("boy", spine);
+        canvas.animate(
+            spine,
+            [
+                [{ xAlign: 1 }, { duration: 1, ease: "linear" }],
+                [{ scaleX: -1 }, { duration: 0.2 }],
+                [{ xAlign: 0 }, { duration: 1, ease: "linear" }],
+                [{ scaleX: 1 }, { duration: 0.2 }],
+            ],
+            { repeat: Infinity },
+        );
+    },
+]);
+```
+
+<MotionExample />
+
+</Accordion>
+
+<Accordion title="애니메이션 시퀀스" id="animation-sequence">
+
+[`playSequence`](/jsdoc/pixi-vn-spine/index/classes/Spine#playsequence) 함수를 사용하여 애니메이션 시퀀스를 만드는 것도 가능합니다.
+
+```ts title="content/labels/start.label.ts" groupId="narrative_language"
+import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
+import { Spine } from "@drincs/pixi-vn-spine";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await Assets.load(["spineboySkeleton", "spineboyAtlas"]);
+        const spine = new Spine({
+            atlas: "spineboyAtlas",
+            skeleton: "spineboySkeleton",
+            xAlign: 0.5,
+            yAlign: 1,
+        });
+        spine.playSequence([["idle", { loop: true, duration: 0.5 }], "jump"], {
+            repeat: Infinity,
+        });
+        canvas.add("boy", spine);
+    },
+]);
+```
+
+<AnimationSequenceExample />
+
+</Accordion>
+
+<Accordion title="트랙 지우기" id="clear-tracks">
+
+Spine 애니메이션을 제거하는 방법에는 두 가지가 있습니다: 단일 트랙의 애니메이션을 지우는 [`clearTrack`](/jsdoc/pixi-vn-spine/index/classes/Spine#cleartrack)과 모든 트랙의 애니메이션을 지우는 [`clearTracks`](/jsdoc/pixi-vn-spine/index/classes/Spine#cleartracks)입니다.
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+import { Assets, canvas, newLabel } from "@drincs/pixi-vn";
+import { Spine } from "@drincs/pixi-vn-spine";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await Assets.load(["spineboySkeleton", "spineboyAtlas"]);
+        const spine = new Spine({
+            atlas: "spineboyAtlas",
+            skeleton: "spineboySkeleton",
+            xAlign: 0,
+            yAlign: 1,
+            animation: "walk",
+        });
+        canvas.add("boy", spine);
+    },
+    () => {
+        canvas.find<Spine>("boy")?.clearTracks();
+    },
+]);
+```
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+# show spine boy skeleton spineboySkeleton atlas spineboyAtlas x 0 y 1 animation walk
+# pause
+# clear tracks on spine boy
+# pause
+-> DONE
+```
+
+<ClearExample />
+
+</Accordion>
+
+</Accordions>

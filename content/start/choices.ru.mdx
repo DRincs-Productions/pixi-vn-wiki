@@ -1,0 +1,225 @@
+---
+title: Меню выбора
+description: Объясняет, как реализовывать и настраивать интерактивные меню выбора в Pixi’VN, позволяя игрокам принимать решения, влияющие на историю.
+---
+
+import { ChoiceMenus, ChoicesAlreadyMade } from "@/components/examples";
+
+:::tip[Экран UI]
+
+Пример экрана UI меню выбора можно найти в разделе <DynamicLink href="/start/interface-examples#choice-menu">примеры интерфейса</DynamicLink>.
+
+:::
+
+:::tip[*ink*]
+
+Этот метод можно использовать с синтаксисом *ink*. Подробнее <DynamicLink href="/ink/choices">здесь</DynamicLink>.
+
+:::
+
+В визуальных новеллах меню выбора позволяют игроку принимать решения, влияющие на историю.
+
+В Pixi’VN вы можете предложить игроку сделать выбор. Каждый выбор может либо запустить нарративный узел (`label`), либо закрыть меню выбора.
+
+## Требование к игроку сделать выбор
+
+Чтобы потребовать от игрока сделать выбор, установите [`narration.choices`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#choices) в массив [`StoredChoiceInterface`](/jsdoc/pixi-vn/index/type-aliases/StoredChoiceInterface). Для создания объекта [`StoredChoiceInterface`](/jsdoc/pixi-vn/index/type-aliases/StoredChoiceInterface) используйте:
+
+* [`newChoiceOption`](/jsdoc/pixi-vn/index/functions/newChoiceOption)
+* [`newCloseChoiceOption`](/jsdoc/pixi-vn/index/functions/newCloseChoiceOption)
+
+```ts title="content/labels/start.label.ts"
+import {
+    newChoiceOption,
+    newCloseChoiceOption,
+    narration,
+    newLabel,
+} from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        narration.dialogue = "Choose a fruit:";
+        narration.choices = [
+            // [!code focus]
+            newChoiceOption("Orange", orangeLabel, {}), // by default, the label will be called with "call" // [!code focus]
+            newChoiceOption("Banana", bananaLabel, {}, { type: "jump" }), // [!code focus]
+            newChoiceOption(
+                // [!code focus]
+                "Apple", // [!code focus]
+                appleLabel, // [!code focus]
+                { quantity: 5 }, // [!code focus]
+                { type: "call" }, // [!code focus]
+            ), // [!code focus]
+            newCloseChoiceOption("Cancel"), // [!code focus]
+        ]; // [!code focus]
+    },
+    () => {
+        narration.dialogue = "Restart";
+    },
+    async (props) => await narration.jump("start", props),
+]);
+```
+
+<ChoiceMenus />
+
+## Получить
+
+Чтобы получить текущее меню выбора, используйте [`narration.choices`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#choices). Возвращает массив [`StoredChoiceInterface`](/jsdoc/pixi-vn/index/type-aliases/StoredChoiceInterface).
+
+```ts
+const menuOptions: StoredChoiceInterface[] = narration.choices;
+```
+
+## Запрос
+
+Чтобы выбрать вариант, используйте [`narration.selectChoice`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#selectchoice).
+
+```ts
+const item = narration.choices![0]; // get the first item
+
+narration
+    .selectChoice(item, {
+        // Add StepLabelProps here
+        navigate: navigate, // example
+        // And the props to pass to the label
+        ...item.props,
+    })
+    .then(() => {
+        // ...
+    })
+    .catch((e) => {
+        // ...
+    });
+```
+
+## Удалить
+
+Чтобы очистить варианты выбора, установите `narration.choices = undefined`.
+
+```ts
+narration.choices = undefined;
+```
+
+## Другие возможности
+
+<Accordions>
+
+<Accordion title="Уже сделанные выборы" id="choices-already-made">
+
+Чтобы получить выборы, уже сделанные в текущем нарративном шаге (`step`), используйте [`narration.alreadyCurrentStepMadeChoices`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#alreadycurrentstepmadechoices).
+
+```ts tab="hooks/useQueryInterface.ts"
+import { INTERFACE_DATA_USE_QUERY_KEY } from "@/constants";
+import { narration } from "@drincs/pixi-vn";
+import { useQuery } from "@tanstack/react-query";
+
+const CHOICE_MENU_OPTIONS_USE_QUERY_KEY = "choice_menu_options_use_query_key";
+export function useQueryChoiceMenuOptions() {
+    return useQuery({
+        queryKey: [
+            INTERFACE_DATA_USE_QUERY_KEY,
+            CHOICE_MENU_OPTIONS_USE_QUERY_KEY,
+        ],
+        queryFn: async () =>
+            narration.choices?.map((option) => ({
+                ...option,
+                text:
+                    typeof option.text === "string"
+                        ? option.text
+                        : option.text.map((text) => text).join(" "),
+                alreadyChosen: // [!code ++]
+                    narration.alreadyCurrentStepMadeChoices?.find( // [!code ++]
+                        (index) => index === option.choiceIndex, // [!code ++]
+                    ) !== undefined, // [!code ++]
+            })) || [],
+    });
+}
+```
+
+```tsx tab="components/menus/choice-menus.tsx"
+import { Button } from "@/components/ui/button";
+import { useNarrationFunctions } from "@/lib/hooks/narration-hooks";
+import { useQueryChoiceMenuOptions } from "@/lib/query/narration-query";
+import { CornerDownLeft } from "lucide-react";
+
+export function ChoiceMenu() {
+    const { data: menu = [] } = useQueryChoiceMenuOptions();
+    const { selectChoice } = useNarrationFunctions();
+
+    return (
+        <div
+            className="flex flex-col items-center justify-center gap-2 w-full h-full overflow-auto"
+            role="menu"
+        >
+            {menu.map((item) => (
+                <div key={`choice-${item.choiceIndex}`}>
+                    <Button onClick={() => selectChoice(item)}>
+                        {item.alreadyChosen ? "✓ " : ""} // [!code ++]
+                        {item.type === "close" && <CornerDownLeft />}
+                        {item.text}
+                    </Button>
+                </div>
+            ))}
+        </div>
+    );
+}
+```
+
+<ChoicesAlreadyMade />
+
+</Accordion>
+
+<Accordion title="Пользовательский класс" id="custom-class">
+
+Вы можете настроить вариант меню выбора, добавив свойства в интерфейс [`ChoiceInterface`](/jsdoc/pixi-vn/index/interfaces/ChoiceInterface). Например, добавьте свойство `icon` для отображения значка.
+
+Переопределите интерфейс [`ChoiceInterface`](/jsdoc/pixi-vn/index/interfaces/ChoiceInterface) в вашем файле `.d.ts`:
+
+```ts tab="pixi-vn.d.ts"
+declare module "@drincs/pixi-vn" {
+    interface ChoiceInterface {
+        icon?: string;
+    }
+}
+```
+
+```ts tab="content/labels/start.label.ts"
+narration.choices = [
+    newChoiceOption("Orange", orangeLabel, {}, { icon: "orange.png" }),
+    newChoiceOption("Banana", bananaLabel, {}, { icon: "banana.png" }),
+    newChoiceOption("Apple", appleLabel, {}, { icon: "apple.png" }),
+];
+```
+
+```tsx tab="components/menus/choice-menus.tsx"
+import { Button } from "@/components/ui/button";
+import { useNarrationFunctions } from "@/lib/hooks/narration-hooks";
+import { useQueryChoiceMenuOptions } from "@/lib/query/narration-query";
+import { CornerDownLeft } from "lucide-react";
+
+export function ChoiceMenu() {
+    const { data: menu = [] } = useQueryChoiceMenuOptions();
+    const { selectChoice } = useNarrationFunctions();
+
+    return (
+        <div
+            className="flex flex-col items-center justify-center gap-2 w-full h-full overflow-auto"
+            role="menu"
+        >
+            {menu.map((item) => (
+                <div key={`choice-${item.choiceIndex}`}>
+                    {choice.icon && <img src={choice.icon} alt={choice.text} />} // [!code ++]
+                    <Button onClick={() => selectChoice(item)}>
+                        {item.type === "close" && <CornerDownLeft />}
+                        {item.text}
+                    </Button>
+                </div>
+            ))}
+        </div>
+    );
+}
+```
+
+</Accordion>
+
+</Accordions>

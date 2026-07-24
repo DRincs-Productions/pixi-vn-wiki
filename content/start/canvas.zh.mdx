@@ -1,0 +1,147 @@
+---
+title: 画布（Canvas/WebGL/WebGPU）
+description: 概述 Pixi’VN 如何使用 PixiJS 进行渲染、Pixi’VN 与 PixiJS 的区别，以及如何与画布交互和使用调试工具。
+---
+
+Pixi’VN 使用 [PixiJS](https://pixijs.com/8.x/guides/basics/what-pixijs-is) —— 一款 2D WebGL/WebGPU 渲染引擎 —— 来在屏幕上绘制所有内容。 Pixi’VN 的 API 封装了 PixiJS，让你可以添加、更新和移除图像、文字及动画，同时自动追踪画布状态，以便在游戏存档的保存与加载之间正确地保存和恢复。
+
+<Accordions>
+
+<Accordion title="什么是 PixiJS？" id="what-is-pixijs">
+
+PixiJS 是目前 Web 上最快、最轻量的 2D 库，可跨所有设备运行，并允许你使用 WebGL 和 WebGPU 创建丰富的交互式图形和跨平台应用程序。 它快速、灵活且易于使用。 PixiJS 被用于 [Good Pizza, Great Pizza](https://www.goodpizzagreatpizza.com/) 和 [The Enchanted Cave 2](https://store.steampowered.com/app/368610/The_Enchanted_Cave_2/) 等游戏中。
+
+你可以在 [PixiJS 官网](https://www.pixijs.com/) 上了解更多关于 PixiJS 的信息。
+
+</Accordion>
+
+</Accordions>
+
+## 使用
+
+:::tip[*ink*]
+
+你可以在 *ink* 语法中使用此方法。 详情请见<DynamicLink href="/ink/canvas">此处</DynamicLink>。
+
+:::
+
+要与 PixiJS 应用程序交互，你可以使用 `canvas` 元素，它充当一个包装器。 通过它，你可以添加 Pixi’VN 提供的一组<DynamicLink href="/start/canvas-components">组件</DynamicLink>，并启动<DynamicLink href="/start/canvas-animations-effects">动画</DynamicLink>。
+
+```ts tab="content/labels/start.label.ts"
+import { canvas, Sprite } from "@drincs/pixi-vn"; // [!code focus]
+
+export const startLabel = newLabel("start", [
+    () => {
+        let sprite = new Sprite({}); // [!code focus]
+        canvas.add("sprite", sprite); // [!code focus]
+    },
+]);
+```
+
+## 其他功能
+
+<Accordions>
+
+<Accordion title="直接使用 PixiJS" id="use-pixijs-directly">
+
+:::tip[CDN]
+
+在 CodePen 等基于 CDN 的环境中，你无法安装 pixi.js，但可以使用 `@drincs/pixi-vn/pixi.js` 子模块。
+
+:::
+
+如果你使用 Vite.js 等构建工具或类似系统，可以直接安装并使用 `pixi.js` 包。
+
+```npm
+npm install pixi.js
+```
+
+这在<DynamicLink href="/start/interface#adding-pixijs-ui-layers">使用 PixiJS 创建 UI 层</DynamicLink>或<DynamicLink href="/start/minigames">创建小游戏</DynamicLink>时非常有用。
+
+```ts
+import { canvas } from "@drincs/pixi-vn";
+import { Graphics } from "pixi.js";
+
+const graphic = new Graphics().rect(0, 0, 200, 100).fill(0xff0000);
+
+const container = canvas.addLayer("ui");
+container.addChild(graphic);
+```
+
+虽然不推荐，但你可以使用 [`canvas.app`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#app) 直接访问 Pixi’VN 使用的 PixiJS 应用程序。
+
+```ts
+import { canvas } from "@drincs/pixi-vn";
+import { Graphics } from "pixi.js";
+
+const graphic = new Graphics().rect(0, 0, 200, 100).fill(0xff0000);
+
+canvas.app.stage.addChild(graphic);
+```
+
+</Accordion>
+
+<Accordion title="Pixi’VN 与 PixiJS 的区别" id="pixijs-differences">
+
+在 Pixi’VN 中使用画布与 PixiJS 非常相似，但有以下区别：
+
+* 所有添加到画布的组件都与你选择的<DynamicLink href="/start/canvas-alias">别名</DynamicLink>关联。 该别名用于识别和操作组件。
+* Pixi’VN 在每个叙事步骤（`step`）保存当前画布状态。
+  **注意：** 只有与别名关联的组件才会被保存。 如果你直接将组件添加到 [`canvas.app`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#app)，它们将不会包含在保存状态中。
+* Pixi’VN 提供<DynamicLink href="/start/canvas-functions">多种函数</DynamicLink>用于在画布中添加、移除、查找和操作组件。
+* Pixi’VN 提供<DynamicLink href="/start/canvas-components">自定义组件</DynamicLink>，其中一些对应 PixiJS 组件，另一些则添加了新功能。
+* Ticker 由 Pixi’VN 管理。 如果你使用 PixiJS 的 ticker，其状态将不会被保存。
+* 若要添加事件监听器并在存档中保存其状态，建议阅读<DynamicLink href="/start/canvas-functions#add-a-listener-for-a-given-event">此处</DynamicLink>。
+
+</Accordion>
+
+<Accordion title="PixiJS DevTools" id="pixijs-devtools">
+
+[**PixiJS DevTools**](https://pixijs.io/devtools/) 是一款 [Chrome 扩展](https://chromewebstore.google.com/detail/pixijs-devtools/dlkffcaaoccbofklocbjcmppahjjboce)，可让你检查和调试 PixiJS 应用程序。 你可以用它查看显示列表、检查纹理并调试 PixiJS 应用程序。 PixiJS DevTools 与 Pixi’VN 兼容，可让你检查画布。
+
+![devtools](/devtool-properties.gif)
+
+安装 PixiJS DevTools 后，打开 Chrome DevTools（F12）并转到 `PixiJS` 选项卡。
+
+![image](/devtool-info.png)
+
+</Accordion>
+
+<Accordion title="渲染器" id="renderer">
+
+PixiJS 支持多种渲染后端，包括 WebGL 和 WebGPU。 Pixi’VN 会检测用户设备上可用的最佳渲染器并默认使用它。 但是，你可以在 [`Game.init`](/jsdoc/pixi-vn/index/namespaces/Game/functions/init) 方法中指定首选渲染器。
+
+例如：
+
+```ts
+Game.init({
+    // ...
+    preference: "webgpu",
+});
+```
+
+</Accordion>
+
+<Accordion title="错误处理" id="error-handling">
+
+要处理与画布相关的错误，你可以使用 Pixi’VN 提供的 [`drawCanvasErrorHandler`](/jsdoc/pixi-vn/index/functions/drawCanvasErrorHandler) 处理程序。 当与画布组件相关的错误发生时，该处理程序会在画布上绘制错误信息。 你可以在 [`Game.addOnError`](/jsdoc/pixi-vn/index/namespaces/Game/functions/addOnError) 函数中使用它。
+
+```ts title="main.ts"
+import { Game, drawCanvasErrorHandler } from "@drincs/pixi-vn";
+
+Game.addOnError(drawCanvasErrorHandler());
+```
+
+</Accordion>
+
+<Accordion title="暂停" id="pause">
+
+可以使用 [`canvas.pause()`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#pause) 函数暂停用于游戏的主层。 这将暂停与画布关联的所有动画和 ticker。 要恢复执行，可以使用 [`canvas.resume()`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#resume)。
+
+画布的暂停状态不会保存在游戏存档中，因此如果在创建存档时画布处于暂停状态，加载存档后它将恢复执行。
+
+此函数适用于在显示设置或其他菜单时暂停画布，而非用于在游戏过程中创建暂停效果。
+
+</Accordion>
+
+</Accordions>

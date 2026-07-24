@@ -1,0 +1,123 @@
+---
+title: 대화
+description: Pixi’VN에서 대화 객체를 사용, 커스터마이즈 및 관리하는 방법(글루 및 UI 통합 포함).
+---
+
+import {
+    CurrentDialogueExample,
+    DialogueGlueExample,
+} from "@/components/examples";
+
+:::tip[UI 화면]
+
+내러티브 대화 UI 화면 예시는 <DynamicLink href="/start/interface-examples#narrative-dialogue">인터페이스 예시</DynamicLink> 섹션에서 확인할 수 있습니다.
+
+:::
+
+**대화란 무엇인가요?** 두 명 이상의 캐릭터가 대화하는 모습을 표현한 서면 형식의 구성물입니다.
+
+Pixi’VN에서 `dialogue`는 현재 *누가* *무엇을* 말하고 있는지에 대한 정보를 담고 있는 객체입니다. 그 기능은 더 폭넓게 활용될 수 있으며, 독백, 혼잣말, 또는 플레이어에게 메시지를 표시하는 등 다른 목적으로도 사용할 수 있습니다. 그러므로 이를 <DynamicLink href="/start/character#use-characters-in-the-game">캐릭터</DynamicLink>와 연결할 수 있는 텍스트로 이해하는 것이 더 적절합니다.
+
+## 설정
+
+현재 대화를 설정하려면 [`narration.dialogue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#dialogue)를 사용할 수 있습니다.
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+import { eggHead } from "@/content/characters";
+
+export const startLabel = newLabel("start", [
+    // A simple dialogue with only text, without a character // [!code focus]
+    () => (narration.dialogue = "Hello, world!"), // [!code focus]
+    // A dialogue with a character // [!code focus]
+    () => {
+        narration.dialogue = { // [!code focus]
+            character: eggHead, // [!code focus]
+            text: "My name is ${eggHead.name}!", // [!code focus]
+        }; // [!code focus]
+    },
+    // A dialogue with a character, but the character is not defined in the characters list // [!code focus]
+    () => {
+        narration.dialogue = { // [!code focus]
+            character: "Narrator", // [!code focus]
+            text: "This is a narration without a character.", // [!code focus]
+        }; // [!code focus]
+    },
+]);
+```
+
+<CurrentDialogueExample />
+
+## 가져오기
+
+현재 대화를 가져오려면 [`narration.dialogue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#dialogue)를 사용합니다. 반환값은 [`DialogueInterface`](/jsdoc/pixi-vn/index/interfaces/DialogueInterface)입니다.
+
+```ts
+const currentDialogue: DialogueInterface = narration.dialogue;
+```
+
+## 삭제
+
+현재 대화를 지우려면 [`narration.dialogue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#dialogue)를 `undefined`로 설정합니다.
+
+```ts
+narration.dialogue = undefined;
+```
+
+## 기타 기능
+
+<Accordions>
+
+<Accordion title="글루 (Glue)" id="dialogue-glue">
+
+:::tip
+
+"글루"는 원래 ***ink***&#xB97C; 위해 만들어진 기능으로, Pixi’VN에도 도입되었습니다.
+
+:::
+
+"글루" (Glue)가 활성화되면 다음 대화가 현재 대화 뒤에 이어서 추가됩니다. [`narration.dialogGlue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#dialogglue)를 `true`로 설정하여 글루를 활성화할 수 있습니다.
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+
+const startLabel = newLabel("start", [
+    () => {
+        narration.dialogue = `Hello, my name is Alice and ...`; // [!code focus]
+    },
+    () => {
+        narration.dialogGlue = true; // [!code focus]
+        narration.dialogue = `I am a character in this game.`; // [!code focus]
+    },
+]);
+```
+
+<DialogueGlueExample />
+
+</Accordion>
+
+<Accordion title="커스텀 클래스" id="custom-class">
+
+[`DialogueInterface`](/jsdoc/pixi-vn/index/interfaces/DialogueInterface)에 추가 속성을 더해 대화 인터페이스를 커스터마이즈할 수 있습니다. 예를 들어, 텍스트 색상을 변경하기 위한 `color` 속성을 추가할 수 있습니다.
+
+이를 위해 `.d.ts` 파일에서 [`DialogueInterface`](/jsdoc/pixi-vn/index/interfaces/DialogueInterface) 인터페이스를 "오버라이드"합니다:
+
+```ts tab="pixi-vn.d.ts"
+declare module "@drincs/pixi-vn" {
+    interface DialogueInterface {
+        color?: string;
+    }
+}
+```
+
+```ts tab="content/labels/startLabel.ts"
+narration.dialogue = {
+    character: "Alice",
+    text: "Hello, world!",
+    color: "#ff0000",
+};
+```
+
+</Accordion>
+
+</Accordions>

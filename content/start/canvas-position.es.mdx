@@ -1,0 +1,227 @@
+---
+title: Propiedades para el posicionamiento
+description: Descripción general de las propiedades de posicionamiento en Pixi’VN, incluyendo píxel, porcentaje, punto de anclaje (anchor), pivote (pivot) y alineación (align).
+---
+
+import {
+    AlignExample,
+    PositionwithpercentageExample,
+} from "@/components/examples";
+
+:::tip[Referencias y citas]
+
+La mayoría de los textos e imágenes de esta página fueron copiados de Position Properties – [Pos and Anchor](https://feniksdev.com/renpy-position-properties-pos-and-anchor/) y [align, xycenter, and offset](https://feniksdev.com/renpy-position-properties-align-xycenter-and-offset/). Feniks explicó muy bien en estas dos páginas las propiedades de posicionamiento de Ren'Py, comunes a muchos otros canvas, incluido Pixi’VN.
+
+:::
+
+Antes de adentrarnos en las diferentes propiedades de posicionamiento, ten en cuenta que Pixi’VN considera que el valor predeterminado para todas las propiedades de posición es `{ x: 0, y: 0 }`, lo que corresponde a la esquina superior izquierda del elemento que estás posicionando.
+
+Los números positivos mueven el elemento hacia la derecha y hacia abajo. Así, algo ubicado en la posición `{ x: 200, y: 300 }` en el juego estará a 200 píxeles del borde izquierdo de la pantalla y a 300 píxeles del borde superior de la pantalla. Los números negativos mueven el elemento hacia la izquierda y hacia arriba en relación con su posición inicial.
+
+[Posición](#position-pixel) y [punto de anclaje (anchor)](#anchor-and-pivot) son las principales propiedades que usas para mover elementos por la pantalla. Es importante entender cómo funcionan, porque la mayoría de las demás propiedades de posicionamiento actúan como alguna combinación de estas dos.
+
+## Posición (píxel)
+
+La posición se usa para posicionar el componente utilizando unidades de píxeles.
+
+Puedes modificarla con estas propiedades:
+
+* `x`: mueve el componente de izquierda a derecha (a lo largo del eje x)
+* `y`: mueve el componente de arriba hacia abajo (a lo largo del eje y)
+* `position`: un objeto `{ x: number, y: number }`. También puedes establecer x e y con el mismo valor, por ejemplo `component.position = 200`.
+
+## Punto de anclaje (anchor) y pivote (pivot)
+
+El pivote es un desplazamiento, expresado en píxeles, desde la esquina superior izquierda del componente. Si tienes un componente cuya textura mide 100px x 50px, y quieres establecer el pivote en el centro de la imagen, deberías establecer tu pivote en (50, 25) - la mitad del ancho y la mitad de la altura.
+
+Los puntos de anclaje se especifican en porcentajes, de 0.0 a 1.0, en cada dimensión. Tienen la misma utilidad que el pivote, pero para deducir el punto en el que se encuentran calculan el porcentaje de la altura y el ancho de la textura. Por ejemplo, para rotar alrededor del punto central de una textura usando puntos de anclaje, establecerías el punto de anclaje de tu componente en (0.5, 0.5) - 50% en ancho y altura. En comparación con el pivote, el punto de anclaje es más fácil de usar.
+
+Puedes modificarla con estas propiedades:
+
+* punto de anclaje (`anchor`): un objeto `{ x: number, y: number }`. También puedes establecer x e y con el mismo valor, por ejemplo `conponent.anchor = 0.5`.
+* pivote (`pivot`): es un objeto que corresponde a `{ x: number, y: number }`.
+
+<Accordions>
+
+<Accordion title="¿Qué es exactamente el punto de anclaje/pivote?" id="what-exactly-is-anchor-pivot">
+
+Pensemos en ello en términos de algo con lo que puedas estar más familiarizado. En lugar de posicionar un elemento en una pantalla, estás intentando fijar una foto en un tablón de corcho. Tienes tres cosas:
+
+* un tablón de corcho
+* una chincheta
+* una fotografía
+
+Supongamos que 1mm equivale a 1 píxel en una pantalla de computadora.
+
+![17351596389764883495402859713640](/anchor-pivot1.png)
+
+* El tablón de corcho es la pantalla, o el contenedor dentro del cual estás intentando posicionar el elemento.
+* La fotografía es el elemento.
+* El lugar donde colocas la chincheta en la foto es el punto de anclaje/pivote de la fotografía.
+* El lugar donde clavas la chincheta en el tablón de corcho es la posición de la fotografía.
+
+Por defecto en Pixi’VN, la chincheta siempre comienza en la esquina superior izquierda de la foto, por así decirlo. Si quieres que la esquina superior izquierda de la foto esté a 200mm del lado izquierdo del tablón de corcho, la colocarás en x 200. Si también quieres que la esquina superior izquierda esté a 300mm hacia abajo desde la parte superior del tablón, la colocarás en y 300.
+
+![17351597056618553068745888144175](/anchor-pivot2.png)
+
+¿Qué pasa si quieres que el centro de la foto esté en 200mm x 300mm?
+
+Esto significa que necesitas mover el lugar donde está la chincheta en relación con la foto. La chincheta permanecerá en el punto (200, 300) del tablón de corcho - solo necesitas centrar también la foto alrededor de ese punto. Esto significa que necesitas cambiar el punto de anclaje/pivote de la foto.
+
+Para establecer el punto de anclaje de la foto en el centro de la foto, puedes usar el punto de anclaje (0.5, 0.5) o el pivote (100, 150)
+
+</Accordion>
+
+</Accordions>
+
+## Posición con porcentaje
+
+Pixi’VN introduce la posibilidad de posicionar un componente mediante porcentaje. Su funcionamiento es muy similar al de html.
+
+En la práctica, el porcentaje se multiplicará por la altura o el ancho del componente padre para calcular la posición en píxeles.
+
+Puedes modificarla con estas propiedades:
+
+* `percentageX`: para mover elementos de izquierda a derecha (a lo largo del eje x)
+* `percentageY`: para mover elementos de arriba hacia abajo (a lo largo del eje y).
+* `percentagePosition`: un objeto `{ x: number, y: number }`. También puedes establecer x e y con el mismo valor, por ejemplo `conponent.align = 0.5`.
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("egg_head", "egg_head", {
+            percentagePosition: 0.5,
+            anchor: 0.5,
+        });
+        await showImage("flower_top", "flower_top", {
+            percentagePosition: 0,
+        });
+        await showImage("panda", "panda", {
+            percentageX: 1,
+            percentageY: 0,
+            anchor: { x: 1, y: 0 },
+        });
+        await showImage("skully", "skully", {
+            percentageX: 0,
+            percentageY: 1,
+            anchor: { x: 0, y: 1 },
+        });
+        await showImage("helmlok", "helmlok", {
+            percentagePosition: 1,
+            anchor: 1,
+        });
+        await showImage("bunny", "bunny", {
+            percentageX: 0.5,
+            percentageY: 1,
+            anchor: { x: 0.5, y: 1 },
+        });
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                { alias: "panda", src: "https://pixijs.com/assets/panda.png" },
+                {
+                    alias: "skully",
+                    src: "https://pixijs.com/assets/skully.png",
+                },
+                {
+                    alias: "helmlok",
+                    src: "https://pixijs.com/assets/helmlok.png",
+                },
+                { alias: "bunny", src: "https://pixijs.com/assets/bunny.png" },
+            ],
+        },
+    ],
+};
+```
+
+<PositionwithpercentageExample />
+
+## Alineación (align)
+
+Hasta ahora hemos visto métodos de posicionamiento influenciados por [punto de anclaje/pivote](#anchor-and-pivot). La desventaja de estos métodos es que si, por ejemplo, quieres agregar tu componente al centro de la pantalla, primero tendrás que establecer el punto de anclaje en 0.5 y luego establecer la posición en la mitad del ancho y la altura de la pantalla. Aquí es donde entra en juego la propiedad de alineación.
+
+La alineación es una característica creada originalmente para ***Ren'Py***, que también fue introducida en Pixi’VN. La alineación combina [posición](#position-pixel) y [punto de anclaje/pivote](#anchor-and-pivot) para brindarte una forma más intuitiva de posicionar tus componentes al principio, en el centro o al final de la pantalla.
+
+La alineación se especifica en porcentajes, de 0.0 a 1.0, en cada dimensión. Por ejemplo, si usas 0.25 como porcentaje, tu componente se posicionará al 25% de la pantalla con un punto de anclaje de 0.25.
+
+Puedes modificarla con estas propiedades:
+
+* `xAlign`: para mover elementos de izquierda a derecha (a lo largo del eje x)
+* `yAlign`: para mover elementos de arriba hacia abajo (a lo largo del eje y).
+* alineación (`align`): un objeto `{ x: number, y: number }`. También puedes establecer x e y con el mismo valor, por ejemplo `conponent.align = 0.5`.
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("egg_head", "egg_head", { align: 0.5 });
+        await showImage("flower_top", "flower_top", { align: 0 });
+        await showImage("panda", "panda", { xAlign: 1, yAlign: 0 });
+        await showImage("skully", "skully", { xAlign: 0, yAlign: 1 });
+        await showImage("helmlok", "helmlok", { align: 1 });
+        await showImage("bunny", "bunny", { xAlign: 0.5, yAlign: 1 });
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                { alias: "panda", src: "https://pixijs.com/assets/panda.png" },
+                {
+                    alias: "skully",
+                    src: "https://pixijs.com/assets/skully.png",
+                },
+                {
+                    alias: "helmlok",
+                    src: "https://pixijs.com/assets/helmlok.png",
+                },
+                { alias: "bunny", src: "https://pixijs.com/assets/bunny.png" },
+            ],
+        },
+    ],
+};
+```
+
+<AlignExample />

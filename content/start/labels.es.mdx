@@ -1,0 +1,130 @@
+---
+title: Labels y steps
+description: Explica los conceptos fundamentales de labels y steps en Pixi’VN, detallando cómo se estructura y gestiona el flujo narrativo dentro del motor de juego.
+---
+
+Las visual novels son típicamente una secuencia de escenas con imágenes y texto. En Pixi’VN, todo el flujo narrativo se basa en los conceptos de `labels` y `steps`.
+
+Un `label` se utiliza para organizar la narración; funciona como un "marcador" o sección de la historia. Técnicamente, un `label` es una clase que actúa como contenedor de `steps`.
+
+Un `step` es una acción o evento individual que ocurre dentro de un `label`. Los steps se utilizan para mostrar imágenes, texto y otros elementos narrativos.
+
+:::tip[Nomenclatura]
+
+El término `label` está tomado de Ren'Py, donde actúa como un "marcador" o "punto de referencia" en la historia. En el lenguaje ink, el término equivalente es `knot`.El término `step` es introducido por Pixi’VN para representar las acciones o eventos individuales que ocurren dentro de un `label`.
+
+El término `step` es introducido por Pixi’VN para representar las acciones o eventos individuales que ocurren dentro de un `label`.
+
+:::
+
+<Accordions>
+
+<Accordion title="Ciclo de vida" id="lifecycle">
+
+1. El juego comienza llamando a un `label`, con la función [`Game.start`](/jsdoc/pixi-vn/index/namespaces/Game/functions/start). El primer `step` del `label` se ejecuta automáticamente.
+2. Después de eso, conectando la función [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) a un evento (como un clic en un botón), cada vez que se llama a la función, se ejecuta el siguiente `step` del `label`. Algunos `steps` también pueden iniciar otros `labels`.
+3. El juego termina solo cuando todos los `steps` se han completado. En ese momento, se activa la función [`Game.onEnd`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onEnd).
+
+</Accordion>
+
+</Accordions>
+
+## Agregar
+
+Para crear un `label`, utilice la función [`newLabel`](/jsdoc/pixi-vn/index/functions/newLabel).
+
+```ts title="content/labels/start.label.ts"
+import { narration, StepLabelProps } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        narration.dialogue = { character: liam, text: "Example of dialogue" };
+    },
+    (props: StepLabelProps, { labelId }) => narration.jump(labelId, props),
+]);
+```
+
+## Otras funcionalidades
+
+<Accordions>
+
+<Accordion title="`StepLabelProps`" id="steplabelprops">
+
+:::tip[Plantillas]
+
+En todos los templates, la interfaz `StepLabelProps` ya está sobrescrita. Puede encontrarla en el archivo `pixi-vn.d.ts`.
+
+:::
+
+Todas las <DynamicLink href="/start/labels-flow">funciones de control del flujo narrativo</DynamicLink> requieren un objeto que coincida con la interfaz [`StepLabelProps`](/jsdoc/pixi-vn/index/interfaces/StepLabelProps). Puede "sobrescribir" la interfaz `StepLabelProps` en su archivo `.d.ts` para especificar los parámetros requeridos.
+
+```ts tab="pixi-vn.d.ts"
+import { narration } from "@drincs/pixi-vn";
+
+declare module "@drincs/pixi-vn" {
+    interface StepLabelProps {
+        navigate: (route: string) => void;
+    }
+}
+```
+
+```ts tab="content/labels/start.label.ts"
+export const startLabel = newLabel("start", [
+    ({ navigate }) => {
+        navigate("/new-route");
+    },
+]);
+```
+
+</Accordion>
+
+<Accordion title="Propiedades del `step`" id="step-pros">
+
+Puede pasar un tipo a la función [`newLabel`](/jsdoc/pixi-vn/index/functions/newLabel) para agregar parámetros personalizados para ese `label`, además de [`StepLabelProps`](#steplabelprops).
+
+```ts title="content/labels/start.label.ts"
+import { narration } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel<{ name: string }>("start", [
+    (props) => {
+        console.log(props.name);
+    },
+]);
+
+narration.call(startLabel, {
+    // Add StepLabelProps here
+    navigate: navigate, // example
+    // And the custom props for the label
+    name: "John",
+});
+```
+
+</Accordion>
+
+<Accordion title="`StepLabelResult`" id="step-results">
+
+Los steps pueden devolver un objeto [`StepLabelResult`](/jsdoc/pixi-vn/index/interfaces/StepLabelResult). Puede "sobrescribir" la interfaz `StepLabelResult` en su archivo `.d.ts` para definir propiedades personalizadas para los resultados de `step`.
+
+```ts tab="pixi-vn.d.ts"
+declare module "@drincs/pixi-vn" {
+    interface StepLabelResult {
+        newRoute?: string;
+        [key: string]: any;
+    }
+}
+```
+
+```ts tab="content/labels/start.label.ts"
+export const startLabel = newLabel("start", [
+    () => {
+        return {
+            newRoute: "/new-route",
+            customProperty: 12,
+        };
+    },
+]);
+```
+
+</Accordion>
+
+</Accordions>

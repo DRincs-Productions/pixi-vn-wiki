@@ -1,0 +1,364 @@
+---
+title: アセットの読み込み
+description: エイリアス、バンドル、さまざまな読み込み戦略を使用して、Pixi’VN でアセットを読み込み・管理する方法を学び、ゲームをスムーズに保ちましょう。
+---
+
+特にオンラインアセットを使用するゲームでは、適切な読み込み方法を実践することが、長い待機時間を避けてプレイヤーの体験をスムーズに保つために不可欠です。
+
+アセット（画像、GIF、動画など） を読み込んで操作するには、`Assets` を使用する必要があります。 `Assets` は多くの機能を持つクラスで、PixiJS ライブラリから提供されています。 詳細については、[こちら](https://pixijs.com/8.x/guides/components/assets)をご覧ください。
+
+## エイリアスを使ってアセットを読み込む
+
+アセットを読み込む際は、常にその**エイリアス**（マニフェストまたはアセット登録時に定義した一意の識別子）を使用してください。 `src` パスを直接使用することは強く推奨されません。パスやホスティングが変更された際にコードが壊れやすくなるためです。
+
+```ts title="main.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+const texture = await Assets.load("eggHead");
+```
+
+```json title="assets/manifest.gen.json"
+{
+    "bundles": [
+        {
+            "name": "default",
+            "assets": [
+                {
+                    "alias": "eggHead",
+                    "src": "./assets/eggHead.png"
+                }
+            ]
+        }
+    ]
+}
+```
+
+## アセットをバンドルにまとめる
+
+アセットを個別に登録するのではなく、**バンドル**にグループ化することがベストプラクティスです。 バンドルを使うことで、1 回の呼び出しでアセットのセット全体を読み込んだり、実際に必要になるまで読み込みを遅延させたりすることができます。
+
+:::tip
+
+ローカルアセットの場合、バンドルを使用場所に基づいて命名することの重要性は低くなります — ローカルファイルは即座に読み込まれるため、スクリーンやナラティブノード（`label`）ごとに分割しても実質的なメリットはありません。 この規則は、ターゲットを絞った読み込みが待機時間を直接削減するオンラインアセットで最も有効です。
+
+:::
+
+各バンドルには**使用される場所**に基づいた名前を付けることが推奨されます。 例：
+
+* 特定のナラティブノード（`label`）で使用するアセットのバンドル名には、そのナラティブノード（`label`）の id（例：`startLabel.id`）を使用する
+* 対応するスクリーン（メインメニューなど）で使用するアセットのバンドル名には、ルートパス（例：`"/"`）を使用する
+
+こうすることで、必要以上に読み込むことなく、適切なタイミングで適切なアセットだけを読み込むことができます。
+
+```ts title="assets/index.ts"
+import { startLabel } from "@/content/labels/start.label";
+import type { FileRouteTypes } from "@/routeTree.gen";
+import type { AssetsManifest } from "@drincs/pixi-vn";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        // screens
+        {
+            // main menu
+            name: "/" as FileRouteTypes["fullPaths"],
+            assets: [
+                {
+                    alias: "background_main_menu",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/main-menu.png",
+                },
+            ],
+        },
+        // labels
+        {
+            name: startLabel.id,
+            assets: [
+                {
+                    alias: "bg01-hallway",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/breakdown/bg01-hallway.webp",
+                },
+            ],
+        },
+    ],
+};
+```
+
+## アセットを読み込むタイミング
+
+デフォルトでは、アセットはオンデマンドで読み込まれます — 実際に必要になったときにのみ読み込まれます。 しかし、最後の瞬間に読み込むと、ゲームプレイ中に目立つ一時停止が生じる可能性があります。
+
+事前にアセットを読み込む最も一般的で推奨されるタイミングを以下に示します：
+
+<Accordions>
+
+<Accordion title="プロジェクト開始時にアセットを読み込む" id="load-assets-at-project-start">
+
+プロジェクトの起動時（例えばスタートアップのローディング画面中）に、プレイヤーがプロジェクトを操作できるようになる前にアセットを読み込むことができます。 この手順は、メインページで使用するアセットや頻繁に使用するアセットにのみ使用し、100MB を超えないようにすることが推奨されます。
+
+これを行うには、プロジェクト開始時に `Assets.load` 関数を使用し、それが完了するまで（`await` を使って）待機する必要があります。
+
+```ts tab="lib/utils/assets-utility.ts"
+import { manifest } from "@/assets";
+import { Assets, sound } from "@drincs/pixi-vn";
+
+let assetsInitialized = false;
+
+/**
+ * Define all the assets that will be used in the game.
+ * This function will be called before the game starts.
+ */
+export async function defineAssets() {
+    if (!assetsInitialized) {
+        await Assets.init({ manifest });
+        assetsInitialized = true;
+    }
+
+    // The game will not start until these asserts are loaded.
+    await Assets.loadBundle("base");
+}
+```
+
+```ts tab="assets/index.ts"
+import type { AssetsManifest } from "@drincs/pixi-vn";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "base",
+            assets: [
+                {
+                    alias: "eggHead",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flowerTop",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+</Accordion>
+
+<Accordion title="プロジェクト開始時にバックグラウンドでアセットを読み込む" id="load-assets-in-the-background-at-project-start">
+
+プロジェクト開始時にバックグラウンドでアセットを読み込むことができ、プロジェクト起動時の読み込み時間を短縮できます。 2GB を超えないようにすることが推奨されます。
+
+これを行うには、プロジェクト開始時に `Assets.backgroundLoad` 関数を使用します。 `Assets.backgroundLoad` 関数の詳細については、[こちら](https://pixijs.com/8.x/guides/components/assets)をご覧ください。
+
+```ts tab="lib/utils/assets-utility.ts"
+import { manifest } from "@/assets";
+import { Assets, sound } from "@drincs/pixi-vn";
+
+let assetsInitialized = false;
+
+/**
+ * Define all the assets that will be used in the game.
+ * This function will be called before the game starts.
+ */
+export async function defineAssets() {
+    if (!assetsInitialized) {
+        await Assets.init({ manifest });
+        assetsInitialized = true;
+    }
+
+    // The game will start immediately, but these assets will be loaded in the background.
+    Assets.backgroundLoadBundle(["audio"]);
+}
+```
+
+```ts tab="assets/index.ts"
+import type { AssetsManifest } from "@drincs/pixi-vn";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "audio",
+            assets: [
+                {
+                    alias: "bgm",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/audio/bgm.mp3",
+                },
+            ],
+        },
+    ],
+};
+```
+
+</Accordion>
+
+<Accordion title="ナラティブノード（label）開始時にアセットを読み込む" id="load-assets-at-label-start">
+
+:::tip[*ink*]
+
+このメソッドは *ink* 構文で使用できます。 詳細は<DynamicLink href="/ink/assets">こちら</DynamicLink>をご覧ください。
+
+:::
+
+ナラティブノード（`label`）内のナラティブステップ（`step`）間の読み込みを 1 回の読み込みにまとめるために、ナラティブノード（`label`）が開始される前に、その中で使用されるアセットの全部または一部を読み込むことができます。 これはプレイヤーの待機時間を短縮するのではなく、1 回の読み込みに集約するため、[バックグラウンドで読み込む](#load-assets-in-the-background-at-label-start)ことが推奨されます。
+
+これを行うには、ナラティブノード（`label`）の開始時に `Assets.load` 関数を使用し、それが完了するまで（`await` を使って）待機する必要があります。 <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> 関数を使用します。
+
+コードをより整理するために、マニフェスト内に、対応するナラティブノード（`label`）の id と一致する id を持つバンドルを定義し、そのナラティブノード（`label`）で使用されるアセットをその中に定義することが推奨されます。
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
+
+const startLabel = newLabel(
+    "start",
+    [
+        () => {
+            await showImage("eggHead");
+        },
+        () => {
+            await showImage("flowerTop");
+        },
+    ],
+    {
+        onLoadingLabel: async (_stepId, label) => {
+            // The label will not start until these assets are loaded.
+            await Assets.loadBundle(label.id);
+    },
+);
+export default startLabel;
+```
+
+```ts tab="assets/index.ts"
+import type { AssetsManifest } from "@drincs/pixi-vn";
+import startLabel from "@/content/labels/start.label";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: startLabel.id,
+            assets: [
+                {
+                    alias: "eggHead",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flowerTop",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+</Accordion>
+
+<Accordion title="ナラティブノード（label）開始時にバックグラウンドでアセットを読み込む" id="load-assets-in-the-background-at-label-start">
+
+:::tip[テンプレート]
+
+すべてのテンプレートでは、ナラティブノード（`label`）が開始されると、そのナラティブノード（`label`）の id に対応するバンドル（存在する場合）のバックグラウンド読み込みが開始されます。 そのため、**各ナラティブノード（`label`）にバンドルを持つマニフェストを作成する**だけで十分です。
+
+:::
+
+ナラティブステップ（`step`）間のアセット読み込み時間をなくすことでゲームをよりスムーズにするために、ナラティブノード（`label`）の開始時に「読み込みグループ」を開始することができます。 これにより、特にナラティブノード（`label`）の後半のナラティブステップ（`step`）では、読み込みをほとんど感じないかもしれません。
+
+これを行うには、ナラティブノード（`label`）の開始時に `Assets.backgroundLoad` 関数を使用します。 `Assets.backgroundLoad` 関数の詳細については、[こちら](https://pixijs.com/8.x/guides/components/assets)をご覧ください。 また、<DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink> 関数を使用します。
+
+コードをより整理するために、マニフェスト内に、対応するナラティブノード（`label`）の id と一致する id を持つバンドルを定義し、そのナラティブノード（`label`）で使用されるアセットをその中に定義することが推奨されます。
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
+
+const startLabel = newLabel(
+    "start",
+    [
+        () => {
+            await showImage("eggHead");
+        },
+        () => {
+            await showImage("flowerTop");
+        },
+    ],
+    {
+        onLoadingLabel: async (_stepId, label) => {
+            // The label will start immediately, but these assets will be loaded in the background.
+            Assets.backgroundLoadBundle(label.id);
+        },
+    },
+);
+export default startLabel;
+```
+
+```ts tab="assets/index.ts"
+import type { AssetsManifest } from "@drincs/pixi-vn";
+import startLabel from "@/content/labels/start.label";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: startLabel.id,
+            assets: [
+                {
+                    alias: "eggHead",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flowerTop",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+</Accordion>
+
+<Accordion title="スクリーン表示前にアセットを読み込む" id="load-assets-before-screen">
+
+スクリーンが表示される前にアセットを読み込むことができます。 これは、コンポーネントがレンダリングされる前に画像やその他のリソースが準備できていなければならないスクリーンで便利です。
+
+この例では、すべてのテンプレートに既に含まれている TanStack Router を使用しています。 詳細については<DynamicLink href="/start/interface-navigate">こちら</DynamicLink>をご覧ください。
+
+`loader` 関数はルートコンポーネントがマウントされる前に実行されます。 `loader` 内で `Assets.loadBundle` を呼び出すことで、そのルートに関連するバンドルをプリロードできます。
+
+さらに、`pendingComponent` を使用して、アセットのフェッチ中に読み込みインジケーターを表示することができます。これにより、ユーザーは空白の画面ではなく意味のある遷移を見ることができます。
+
+```tsx tab="routes/game/narration.tsx"
+import { NarrationPendingComponent } from "@/components/loading";
+import { NarrationScreen } from "@/components/screens/narration";
+import { Assets } from "@drincs/pixi-vn";
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/game/narration")({
+    component: NarrationElement,
+    pendingComponent: NarrationPendingComponent,
+    loader: async () => {
+        await Assets.loadBundle("/game/narration");
+    },
+});
+
+function NarrationElement() {
+    return <NarrationScreen />;
+}
+```
+
+```ts tab="assets/index.ts"
+import type { AssetsManifest } from "@drincs/pixi-vn";
+import startLabel from "@/content/labels/start.label";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "/game/narration",
+            assets: [
+                {
+                    alias: "next-button",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/assets/next-button.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+</Accordion>
+
+</Accordions>

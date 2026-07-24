@@ -1,0 +1,179 @@
+---
+title: クイックスタート
+description: Pixi’VN を使い始める
+---
+
+Pixi’VN を使用するには、[新しいプロジェクトを初期化する](#project-initialization)か、既存のプロジェクトに[パッケージをインストールする](#installation)ことで始められます。
+
+<Accordions>
+
+<Accordion title="前提条件" id="prerequisites">
+
+開始する前に、以下のツールをインストールしておく必要があります：
+
+* [Node.js](https://nodejs.org/) バージョン 18 以上。
+* TypeScript をサポートするテキストエディタ（例）：
+  * [Visual Studio Code](https://code.visualstudio.com/)
+  * [Cursor](https://www.cursor.com/)
+  * [VSCodium](https://vscodium.com/)
+* （推奨）[Git](https://git-scm.com/)
+  * [GitHub アカウント](https://github.com/) - Copilot（AI アシスタント）の利用、配布パッケージの自動生成、wiki へのコメント追加が可能になります
+
+</Accordion>
+
+</Accordions>
+
+## プロジェクトの初期化
+
+新しいプロジェクトから始める場合は、以下のコマンドを使用して Pixi’VN テンプレートで新しいプロジェクトを初期化できます：
+
+```npm
+npm create pixi-vn@latest
+```
+
+利用可能なテンプレートの一覧とインタラクティブなデモは<DynamicLink href="/start/templates">こちら</DynamicLink>でご確認いただけます。
+
+プロジェクトが初期化されたら、テキストエディタ（VSCode を推奨）でプロジェクトディレクトリを開き、プロジェクトの開発を始めてください。
+
+## インストール
+
+既存の JavaScript プロジェクトに Pixi’VN パッケージをインストールするには、以下のコマンドのいずれかを使用してください：
+
+```npm
+npm install @drincs/pixi-vn
+```
+
+<Accordions>
+
+<Accordion title="CDN バージョン" id="cdn-installation">
+
+このプラグインの CDN バージョンを使用することもできます：
+
+```html tab="script tag" title="index.html"
+<script src="https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@<version>/+esm"></script>
+```
+
+```html tab="map import" title="index.html"
+<script type="importmap">
+    {
+        "imports": {
+            "@drincs/pixi-vn@<version>": "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn/+esm"
+        }
+    }
+</script>
+```
+
+```js tab="js import" title="index.js"
+import pixivn from "https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@<version>/+esm";
+```
+
+<iframe
+src="https://codepen.io/BlackRam-oss/embed/oNrqgNd?default-tab=js%2Cresult"
+height="300"
+style={{
+      width: "100%",
+  }}
+title="Pixi’VN"
+loading="lazy"
+allowFullScreen={true}
+/>
+
+</Accordion>
+
+<Accordion title="Vite.js 插件" id="vite-plugin">
+
+より良い開発体験のために、[`vitePluginPixivn`](/jsdoc/pixi-vn/vite/functions/vitePluginPixivn) と [`setupPixivnViteData`](/jsdoc/pixi-vn/vite-listener/functions/setupPixivnViteData) を使用してください。
+
+```ts tab="vite.config.ts"
+import { defineConfig } from "vite";
+import { vitePluginPixivn } from "@drincs/pixi-vn/vite";
+export default defineConfig({
+    // ...
+    plugins: [
+        // other plugins...
+        vitePluginPixivn(),
+    ],
+});
+```
+
+```ts tab="main.ts"
+import { setupPixivnViteData } from "@drincs/pixi-vn/vite-listener"; // [!code focus]
+
+await Promise.all([import("./values"), import("./labels")]);
+await Promise.all([initializeIndexedDB(), defineAssets(), useI18n()]);
+setupPixivnViteData(); // [!code focus]
+```
+
+</Accordion>
+
+<Accordion title="エラー処理" id="error-handling">
+
+Pixi’VN でエラーを処理するには、[`Game.addOnError`](/jsdoc/pixi-vn/index/namespaces/Game/functions/addOnError) 関数を使用できます。 この関数はコールバックを受け取り、ゲーム内でエラーが発生するたびに呼び出されます。
+
+</Accordion>
+
+</Accordions>
+
+### 初期化
+
+Pixi’VN エンジンを使用する前に、ゲームを初期化する必要があります。 これは [`Game.init`](/jsdoc/pixi-vn/index/namespaces/Game/functions/init) メソッドを呼び出すことで行えます。
+
+```ts title="src/main.tsx"
+import { Game } from "@drincs/pixi-vn";
+
+const body = document.body;
+if (!body) {
+    throw new Error("body element not found");
+}
+
+Game.init(body, {
+    height: 1080,
+    width: 1920,
+    backgroundColor: "#303030",
+}).then(() => {
+    // ...
+    Game.start("start", {});
+});
+
+// read more here: https://pixi-vn.com/start/other-narrative-features.html#how-manage-the-end-of-the-game
+Game.onEnd(async (props) => {
+    Game.clear();
+    // navigate to main menu
+});
+
+Game.addOnError((error, props) => {
+    console.error(`Error occurred`, error);
+});
+
+Game.onNavigate((path) => navigateTo(path));
+```
+
+```html title="index.html"
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Game</title>
+    </head>
+    <body>
+        <div id="root"></div>
+        <script type="module" src="/src/main.ts"></script>
+    </body>
+</html>
+```
+
+```css title="styles.css"
+html,
+body {
+    background-color: #242424;
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    overflow: hidden;
+}
+```

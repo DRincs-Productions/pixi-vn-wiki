@@ -1,0 +1,147 @@
+---
+title: キャンバス（Canvas/WebGL/WebGPU）
+description: Pixi’VN が PixiJS をレンダリングに使用する方法、Pixi’VN と PixiJS の違い、キャンバスの操作方法とデバッグツールの概要。
+---
+
+Pixi’VN は [PixiJS](https://pixijs.com/8.x/guides/basics/what-pixijs-is) —— 2D WebGL/WebGPU レンダリングエンジン —— を使用して画面上のすべてを描画します。 Pixi’VN の API は PixiJS をラップし、画像・テキスト・アニメーションの追加・更新・削除を可能にしながら、ゲームのセーブとロードをまたいで正しく保存・復元できるようキャンバスの状態を自動的に追跡します。
+
+<Accordions>
+
+<Accordion title="PixiJS とは？" id="what-is-pixijs">
+
+PixiJS は Web 向けに利用可能な最速かつ最軽量の 2D ライブラリで、すべてのデバイスで動作し、WebGL と WebGPU を使用してリッチなインタラクティブグラフィックスとクロスプラットフォームアプリケーションを作成できます。 高速で柔軟、かつ使いやすいのが特徴です。 PixiJS は [Good Pizza, Great Pizza](https://www.goodpizzagreatpizza.com/) や [The Enchanted Cave 2](https://store.steampowered.com/app/368610/The_Enchanted_Cave_2/) などのゲームで使用されています。
+
+PixiJS の詳細については [PixiJS ウェブサイト](https://www.pixijs.com/) をご覧ください。
+
+</Accordion>
+
+</Accordions>
+
+## 使用
+
+:::tip[*ink*]
+
+このメソッドは *ink* 構文で使用できます。 詳細は<DynamicLink href="/ink/canvas">こちら</DynamicLink>をご覧ください。
+
+:::
+
+PixiJS アプリケーションと連携するには、ラッパーとして機能する `canvas` 要素を使用します。 これを使って、Pixi’VN が提供する<DynamicLink href="/start/canvas-components">コンポーネント</DynamicLink>のセットを追加したり、<DynamicLink href="/start/canvas-animations-effects">アニメーション</DynamicLink>を開始したりできます。
+
+```ts tab="content/labels/start.label.ts"
+import { canvas, Sprite } from "@drincs/pixi-vn"; // [!code focus]
+
+export const startLabel = newLabel("start", [
+    () => {
+        let sprite = new Sprite({}); // [!code focus]
+        canvas.add("sprite", sprite); // [!code focus]
+    },
+]);
+```
+
+## その他の機能
+
+<Accordions>
+
+<Accordion title="PixiJS を直接使用する" id="use-pixijs-directly">
+
+:::tip[CDN]
+
+CodePen のような CDN ベースの環境では pixi.js をインストールできないため、`@drincs/pixi-vn/pixi.js` サブモジュールを使用する必要があります。
+
+:::
+
+Vite.js などのビルドツールや類似のシステムを使用している場合は、`pixi.js` パッケージを直接インストールして使用できます。
+
+```npm
+npm install pixi.js
+```
+
+これは <DynamicLink href="/start/interface#adding-pixijs-ui-layers">PixiJS を使った UI レイヤーの作成</DynamicLink>や<DynamicLink href="/start/minigames">ミニゲームの作成</DynamicLink>に役立ちます。
+
+```ts
+import { canvas } from "@drincs/pixi-vn";
+import { Graphics } from "pixi.js";
+
+const graphic = new Graphics().rect(0, 0, 200, 100).fill(0xff0000);
+
+const container = canvas.addLayer("ui");
+container.addChild(graphic);
+```
+
+推奨はされませんが、[`canvas.app`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#app) を使用して Pixi’VN が使用する PixiJS アプリケーションに直接アクセスすることもできます。
+
+```ts
+import { canvas } from "@drincs/pixi-vn";
+import { Graphics } from "pixi.js";
+
+const graphic = new Graphics().rect(0, 0, 200, 100).fill(0xff0000);
+
+canvas.app.stage.addChild(graphic);
+```
+
+</Accordion>
+
+<Accordion title="Pixi’VN と PixiJS の違い" id="pixijs-differences">
+
+Pixi’VN でのキャンバスの使用方法は PixiJS と非常に似ていますが、以下の違いがあります：
+
+* キャンバスに追加されたすべてのコンポーネントは、任意の<DynamicLink href="/start/canvas-alias">エイリアス</DynamicLink>に紐付けられます。 このエイリアスはコンポーネントの識別と操作に使用されます。
+* Pixi’VN は各ナラティブステップ（`step`）で現在のキャンバス状態を保存します。
+  **注意：** エイリアスに紐付けられたコンポーネントのみが保存されます。 [`canvas.app`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#app) に直接コンポーネントを追加した場合、それらは保存状態に含まれません。
+* Pixi’VN はキャンバス内のコンポーネントを追加・削除・検索・操作するための<DynamicLink href="/start/canvas-functions">さまざまな関数</DynamicLink>を提供します。
+* Pixi’VN は<DynamicLink href="/start/canvas-components">カスタムコンポーネント</DynamicLink>を提供しており、一部は PixiJS コンポーネントに対応し、その他は新機能を追加します。
+* ティッカーは Pixi’VN によって管理されます。 PixiJS のティッカーを使用しても、その状態は保存されません。
+* イベントリスナーを追加し、セーブデータにその状態を保存するには、<DynamicLink href="/start/canvas-functions#add-a-listener-for-a-given-event">こちら</DynamicLink>を参照することをお勧めします。
+
+</Accordion>
+
+<Accordion title="PixiJS DevTools" id="pixijs-devtools">
+
+[**PixiJS DevTools**](https://pixijs.io/devtools/) は、PixiJS アプリケーションの検査とデバッグを可能にする [Chrome 拡張機能](https://chromewebstore.google.com/detail/pixijs-devtools/dlkffcaaoccbofklocbjcmppahjjboce)です。 表示リストの確認、テクスチャの検査、PixiJS アプリケーションのデバッグに使用できます。 PixiJS DevTools は Pixi’VN と連携して動作し、キャンバスを検査できます。
+
+![devtools](/devtool-properties.gif)
+
+PixiJS DevTools をインストールした後、Chrome DevTools（F12）を開いて `PixiJS` タブに移動します。
+
+![image](/devtool-info.png)
+
+</Accordion>
+
+<Accordion title="レンダラー" id="renderer">
+
+PixiJS は WebGL や WebGPU を含むさまざまなレンダリングバックエンドをサポートしています。 Pixi’VN はユーザーのデバイスで利用可能な最適なレンダラーを検出し、デフォルトで使用します。 ただし、[`Game.init`](/jsdoc/pixi-vn/index/namespaces/Game/functions/init) メソッドで優先レンダラーを指定することもできます。
+
+例：
+
+```ts
+Game.init({
+    // ...
+    preference: "webgpu",
+});
+```
+
+</Accordion>
+
+<Accordion title="エラー処理" id="error-handling">
+
+キャンバスに関連するエラーを処理するには、Pixi’VN が提供する [`drawCanvasErrorHandler`](/jsdoc/pixi-vn/index/functions/drawCanvasErrorHandler) ハンドラーを使用できます。 このハンドラーはキャンバスコンポーネントに関連するエラーが発生したときにキャンバス上にエラーメッセージを描画します。 [`Game.addOnError`](/jsdoc/pixi-vn/index/namespaces/Game/functions/addOnError) 関数内で使用できます。
+
+```ts title="main.ts"
+import { Game, drawCanvasErrorHandler } from "@drincs/pixi-vn";
+
+Game.addOnError(drawCanvasErrorHandler());
+```
+
+</Accordion>
+
+<Accordion title="一時停止" id="pause">
+
+[`canvas.pause()`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#pause) 関数を使用して、ゲームに使用されるメインレイヤーを一時停止できます。 これにより、キャンバスに関連するすべてのアニメーションとティッカーが一時停止されます。 実行を再開するには、[`canvas.resume()`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#resume) を使用します。
+
+キャンバスの一時停止状態はゲームのセーブデータには保存されないため、セーブ作成時にキャンバスが一時停止していた場合、セーブをロードすると実行が再開されます。
+
+この関数は、設定画面やその他のメニューを表示する際にキャンバスを一時停止するのに適しており、ゲームプレイ中に一時停止エフェクトを作成するためのものではありません。
+
+</Accordion>
+
+</Accordions>

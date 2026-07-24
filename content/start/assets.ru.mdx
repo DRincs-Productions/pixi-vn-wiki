@@ -1,0 +1,493 @@
+---
+title: Ресурсы
+description: Обзор типов ресурсов и вариантов хранения (локально или онлайн) в Pixi’VN, с примерами использования.
+---
+
+<Accordions>
+
+<Accordion title="Что такое ресурсы?" id="what-is-assets">
+
+Ресурсы — это все файлы, которые не являются кодом, например изображения, звуки и видео.
+
+</Accordion>
+
+</Accordions>
+
+Ассеты можно хранить **локально** внутри проекта или размещать **онлайн**. Часто используемые ассеты — такие как спрайты персонажей, фоновые изображения и фоновая музыка — лучше всего хранить локально. Ассеты, используемые единожды, или большие необязательные файлы лучше размещать онлайн. У каждого подхода есть свои компромиссы:
+
+## Локальные ресурсы
+
+Для сохранения и использования ресурсов локально можно использовать любую папку — ограничений нет. Однако рекомендуется использовать папку `src/assets`. Внутри этой папки можно создавать подпапки для лучшей организации ресурсов.
+
+<Accordions>
+
+<Accordion title="Что такое PixiJS AssetPack?" id="what-is-pixijsassetpack">
+
+PixiJS AssetPack — это инструмент для оптимизации локальных ресурсов для веба. Он может использоваться для преобразования, объединения и сжатия ресурсов.
+
+Узнать больше о PixiJS AssetPack можно на [сайте PixiJS](https://pixijs.io/assetpack).
+
+</Accordion>
+
+</Accordions>
+
+PixiJS AssetPack уже преднастроен в шаблонах проектов Pixi’VN через интеграцию с Vite.js — автоматизируя обработку и оптимизацию ресурсов, чтобы вы могли сосредоточиться на разработке проекта.
+
+Во время разработки (`vite dev`) он отслеживает изменения в папке `src/assets` и обрабатывает их на лету. При сборке для продакшена (`vite build`) выполняется полный проход оптимизации перед бандлингом.
+
+Применяемые оптимизации включают:
+
+* **Сжатие** — уменьшает размеры файлов для более быстрой загрузки.
+* **Конвертация форматов** — конвертирует изображения в современные форматы (например, WebP, AVIF) при наличии поддержки.
+* **Текстурные атласы** — объединяет несколько маленьких изображений в один спрайт-лист для уменьшения количества вызовов отрисовки.
+
+По завершении обработки он генерирует оптимизированные файлы в `public/assets`, а также файл `src/assets/manifest.gen.json`, который содержит список всех бандлов ресурсов и их путей. Затем эти данные используются PixiJS для эффективной загрузки ресурсов.
+
+<Files>
+    <Folder name="project" defaultOpen>
+        <Folder name="public">
+            <Folder name="assets" defaultOpen>
+                <Folder name="audio" defaultOpen>
+                    <File name="bgm_cheerful.ogg" />
+                    <File name="sfx_whoosh.ogg" />
+                </Folder>
+                <Folder name="mainmenu" defaultOpen>
+                    <File name="background_main_menu.avif" />
+                </Folder>
+                <Folder name="start" defaultOpen>
+                    <File name="bg01-hallway.avif" />
+                </Folder>
+                <Folder name="mc" defaultOpen>
+                    <File name="mc-neutral.avif" />
+                </Folder>
+            </Folder>
+        </Folder>
+        <Folder name="src" defaultOpen>
+            <Folder name="assets" defaultOpen>
+                <Folder name="audio" defaultOpen>
+                    <File name="bgm_cheerful.wav" />
+                    <File name="sfx_whoosh.wav" />
+                </Folder>
+                <Folder name="mainmenu" defaultOpen>
+                    <File name="background_main_menu.png" />
+                </Folder>
+                <Folder name="start" defaultOpen>
+                    <File name="bg01-hallway.webp" />
+                </Folder>
+                <Folder name="mc" defaultOpen>
+                    <File name="mc-neutral.png" />
+                </Folder>
+                <File name="manifest.gen.json" />
+                <File name="index.ts" />
+            </Folder>
+        </Folder>
+        <File name=".assetpack.ts" />
+        <File name="vite.config.ts" />
+    </Folder>
+</Files>
+
+```json tab="src/assets/manifest.gen.json"
+{
+    "bundles": [
+        {
+            "name": "audio",
+            "assets": [
+                {
+                    "alias": "bgm_cheerful",
+                    "src": "./assets/audio/bgm_cheerful.wav"
+                },
+                {
+                    "alias": "sfx_whoosh",
+                    "src": "./assets/audio/sfx_whoosh.wav"
+                }
+            ]
+        },
+        {
+            "name": "mainmenu",
+            "assets": [
+                {
+                    "alias": "background_main_menu",
+                    "src": "./assets/mainmenu/background_main_menu.png"
+                }
+            ]
+        },
+        {
+            "name": "start",
+            "assets": [
+                {
+                    "alias": "bg01-hallway",
+                    "src": "./assets/start/bg01-hallway.webp"
+                }
+            ]
+        },
+        {
+            "name": "mc",
+            "assets": [
+                {
+                    "alias": "mc-neutral",
+                    "src": "./assets/mc/mc-neutral.png"
+                }
+            ]
+        }
+    ]
+}
+```
+
+```ts tab=".assetpack.ts"
+import fs from "node:fs/promises";
+import type { AssetPackConfig, AssetPipe } from "@assetpack/core";
+import { path } from "@assetpack/core";
+import { pixiPipes } from "@assetpack/core/pixi";
+
+// TAURI_ENV_TARGET_TRIPLE is set by `tauri build` before running beforeBuildCommand
+const isTauri = !!process.env.TAURI_ENV_TARGET_TRIPLE;
+
+const manifestOutput = "src/assets/manifest.gen.json";
+
+/**
+ * AssetPack only creates a manifest bundle for folders explicitly tagged
+ * with "{m}" (see pixiManifest's `manifest` tag); everything else lands in
+ * the single "default" bundle. This splits the "default" bundle into one
+ * bundle per top-level folder under the assets entry, named after that
+ * folder, so bundles mirror the folder structure without needing to tag
+ * every folder manually. Files directly at the entry root (no folder) stay
+ * in "default". Runs after the manifest has been written to disk, so it
+ * re-reads and rewrites the file.
+ */
+function groupBundlesByFolder(options: {
+    output: string;
+}): AssetPipe<{ output: string }> {
+    return {
+        name: "group-bundles-by-folder",
+        defaultOptions: options,
+        async finish(_asset, opts) {
+            const manifest = JSON.parse(
+                await fs.readFile(opts.output, "utf-8"),
+            );
+
+            const bundles = new Map<
+                string,
+                { name: string; assets: unknown[] }
+            >();
+            for (const bundle of manifest.bundles) {
+                if (bundle.name !== "default") {
+                    bundles.set(bundle.name, bundle);
+                    continue;
+                }
+                for (const asset of bundle.assets) {
+                    const folder = path.dirname(asset.src[0]).split("/")[0];
+                    const bundleName = folder === "." ? "default" : folder;
+                    const target = bundles.get(bundleName) ?? {
+                        name: bundleName,
+                        assets: [],
+                    };
+                    target.assets.push(asset);
+                    bundles.set(bundleName, target);
+                }
+            }
+            manifest.bundles = [...bundles.values()];
+
+            await fs.writeFile(opts.output, JSON.stringify(manifest, null, 2));
+        },
+    };
+}
+
+/**
+ * Removes file extensions from the aliases generated by the pixi manifest
+ * pipe and replaces path separators with underscores (e.g.
+ * "yard/yard1.png" -> "yard_yard1"). Runs after the manifest has been
+ * written to disk, so it re-reads and rewrites the file.
+ *
+ * If two assets end up with the same normalized alias, the later one is
+ * prefixed with its bundle name (e.g. "yard_yard_yard1") to keep aliases
+ * unique across the whole manifest.
+ */
+function normalizeAliases(options: {
+    output: string;
+}): AssetPipe<{ output: string }> {
+    return {
+        name: "normalize-aliases",
+        defaultOptions: options,
+        async finish(_asset, opts) {
+            const manifest = JSON.parse(
+                await fs.readFile(opts.output, "utf-8"),
+            );
+
+            const seen = new Set<string>();
+            for (const bundle of manifest.bundles) {
+                for (const asset of bundle.assets) {
+                    asset.alias = asset.alias.map((alias: string) => {
+                        const normalized = path
+                            .trimExt(alias)
+                            .replaceAll("/", "_");
+                        const unique = seen.has(normalized)
+                            ? `${bundle.name}_${normalized}`
+                            : normalized;
+                        seen.add(normalized);
+                        return unique;
+                    });
+                }
+            }
+
+            await fs.writeFile(opts.output, JSON.stringify(manifest, null, 2));
+        },
+    };
+}
+
+const config: AssetPackConfig = {
+    entry: "./src/assets",
+    output: "./public/assets",
+    ignore: ["**/*.ts", "**/*.js", "**/*.gen.*"],
+    pipes: [
+        ...pixiPipes({
+            manifest: {
+                output: manifestOutput,
+                createShortcuts: true,
+            },
+            // For Tauri: skip @0.5x mipmaps (unused on desktop, WebView handles DPR)
+            resolutions: isTauri ? { default: 1 } : undefined,
+            // For Tauri: raise WebP quality — files are local so bandwidth is not a concern
+            compression: isTauri
+                ? {
+                      png: true,
+                      jpg: true,
+                      webp: { quality: 88, alphaQuality: 88 },
+                  }
+                : undefined,
+        }),
+        groupBundlesByFolder({ output: manifestOutput }),
+        normalizeAliases({ output: manifestOutput }),
+    ],
+};
+
+export default config;
+```
+
+```ts tab="vite.config.ts"
+import { AssetPack } from "@assetpack/core";
+import { defineConfig, type Plugin, type ResolvedConfig } from "vite";
+import assetPackConfig from "./.assetpack.ts";
+
+export default defineConfig(() => ({
+    plugins: [
+        assetpackPlugin(),
+        // ...
+    ],
+}));
+
+function assetpackPlugin(): Plugin {
+    let mode: ResolvedConfig["command"];
+    let ap: AssetPack | undefined;
+
+    return {
+        name: "vite-plugin-assetpack",
+        configResolved(resolvedConfig) {
+            mode = resolvedConfig.command;
+            if (!resolvedConfig.publicDir) return;
+            if (assetPackConfig.output) return;
+            const publicDir = resolvedConfig.publicDir.replace(
+                process.cwd(),
+                "",
+            );
+            assetPackConfig.output = `.${publicDir}/assets/`;
+        },
+        buildStart: async () => {
+            if (mode === "serve") {
+                if (ap) return;
+                ap = new AssetPack(assetPackConfig);
+                void ap.watch();
+            } else {
+                await new AssetPack(assetPackConfig).run();
+            }
+        },
+        buildEnd: async () => {
+            if (ap) {
+                await ap.stop();
+                ap = undefined;
+            }
+        },
+    };
+}
+```
+
+## Хостинг ресурсов
+
+Вы можете хранить ресурсы онлайн. Это хороший вариант, если вы хотите сэкономить место в проекте или создать игру, в которую можно играть онлайн без необходимости предварительной загрузки. Можно использовать любой облачный сервис, позволяющий загружать файлы и генерировать публичный URL (необходимо убедиться, что используемый облачный сервис поддерживает *CORS-запросы*).
+
+Вот несколько популярных вариантов для онлайн-хостинга ресурсов:
+
+<Accordions>
+
+<Accordion title="Github" id="github">
+
+Для хостинга ресурсов можно использовать Github. В проекте можно использовать raw-ссылку на файл. Ссылка будет в следующем формате:
+
+```text
+https://raw.githubusercontent.com/[repository]/raw/refs/heads/main/[file path]
+```
+
+* **Цена**: Полностью бесплатно.
+* **Ограничения по объёму**: Без ограничений по объёму, но каждый отдельный файл не должен превышать 100 МБ.
+* **Типы файлов**: Можно загружать любые типы файлов.
+* **Трафик**: Скорость не лучшая.
+* **Редактирование ресурсов**: Файл можно редактировать, сохраняя тот же URL.
+
+</Accordion>
+
+<Accordion title="Хостинг изображений" id="image-hosting">
+
+Хостинг изображений — это сервис для загрузки изображений. Существует множество сайтов для бесплатной загрузки изображений, например [imgbb](https://imgbb.com/), [imgix](https://www.imgix.com/), [imgur](https://imgur.com/). В проекте можно использовать ссылку на изображение.
+
+* **Цена**: Полностью бесплатно, но можно платить за дополнительные функции.
+* **Ограничения по объёму**: Без ограничений по объёму, но каждый отдельный файл может иметь максимальный размер.
+* **Типы файлов**: Можно загружать только изображения.
+* **Трафик**: Скорость хорошая.
+* **Редактирование ресурсов**: Файл нельзя редактировать, сохраняя тот же URL.
+
+</Accordion>
+
+<Accordion title="Облачное хранилище" id="Cloud-storage">
+
+Облачное хранилище — это сервис для загрузки онлайн любых типов файлов. Существует множество популярных вариантов, например [Cloudflare R2](https://www.cloudflare.com/developer-platform/r2/), [Firebase Storage](https://firebase.google.com/pricing), [Amazon S3](https://aws.amazon.com/s3/pricing/), [Supabase](https://supabase.io/pricing), [Convex](https://www.convex.dev/pricing).
+
+* **Цена**: Как правило, платно или с бесплатной версией с ограничениями.
+* **Ограничения по объёму**: Ежемесячная стоимость зависит от используемого места (обычно бесплатно при непревышении определённого порога).
+* **Типы файлов**: Можно загружать любые типы файлов.
+* **Трафик**: Скорость хорошая.
+* **Редактирование ресурсов**: Файл можно редактировать, сохраняя тот же URL.
+
+</Accordion>
+
+</Accordions>
+
+Когда ресурсы готовы, необходимо вручную определить, какие из них может использовать игра и как они группируются в бандлы.
+
+:::tip
+
+Настоятельно рекомендуется следовать <DynamicLink href="/start/assets-management">рекомендациям по загрузке ресурсов</DynamicLink>, чтобы минимизировать время загрузки и избежать излишней блокировки игры.
+
+:::
+
+Все шаблоны Pixi’VN включают файл `src/assets/index.ts`, который можно редактировать для регистрации ресурсов:
+
+```ts title="src/assets/index.ts"
+import generatedManifestJson from "@/assets/manifest.gen.json";
+import { AUDIO_BUNDLE_NAME } from "@/constants";
+import { startLabel } from "@/content/labels/start.label";
+import type { FileRouteTypes } from "@/routeTree.gen";
+import type { AssetsManifest } from "@drincs/pixi-vn";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        ...generatedManifestJson.bundles,
+        {
+            name: AUDIO_BUNDLE_NAME,
+            assets: [
+                {
+                    alias: "bgm_cheerful",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/audio/bgm_cheerful.wav",
+                },
+                {
+                    alias: "sfx_whoosh",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/audio/sfx_whoosh.wav",
+                },
+            ],
+        },
+        // screens
+        {
+            // main menu
+            name: "/" as FileRouteTypes["fullPaths"],
+            assets: [
+                {
+                    alias: "background_main_menu",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/main-menu.png",
+                },
+            ],
+        },
+        // labels
+        {
+            name: startLabel.id,
+            assets: [
+                {
+                    alias: "bg01-hallway",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/breakdown/bg01-hallway.webp",
+                },
+            ],
+        },
+        // characters
+        {
+            name: "mc",
+            assets: [
+                {
+                    alias: "mc-neutral",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/characters/mc-neutral.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+## Другие возможности
+
+<Accordions>
+
+<Accordion title="Кэширование ресурсов" id="caching-assets">
+
+:::tip[Шаблоны]
+
+Во всех шаблонах ресурсы, загружаемые с внешних URL, автоматически кэшируются service worker'ом для использования в офлайн-режиме. Это настраивается в файле `vite.config.ts` с помощью плагина `vite-plugin-pwa`.
+
+:::
+
+Для онлайн-игр кэширование внешних ресурсов критически важно: оно исключает повторную загрузку одних и тех же файлов при каждой сессии, снижает задержки и позволяет игре работать даже при временной недоступности соединения.
+
+Это обеспечивается [VitePWA](https://vite-pwa-org.netlify.app/), который преднастроен в шаблонах. Поведение кэширования можно настроить непосредственно в `vite.config.ts`:
+
+* **`CACHED_EXTERNAL_HOSTNAMES`** — список внешних имён хостов, ресурсы которых должны кэшироваться. Добавьте любой CDN или удалённый хост, который вы используете.
+* **`cacheableResponse`** — определяет, какие HTTP-ответы подлежат кэшированию (например, статус `0` для непрозрачных ответов и `200` для успешных).
+* **`expiration`** — управляет сроком хранения кэшированных ресурсов. По умолчанию ресурсы кэшируются на 7 дней (`maxAgeSeconds: 7 * 24 * 60 * 60`).
+
+```ts title="vite.config.ts"
+import { defineConfig } from "vite";
+import { VitePWA } from "vite-plugin-pwa";
+
+/**
+ * List of external hostnames whose responses should be cached by the service worker.
+ * Add any CDN or remote asset host here to enable offline caching for it.
+ * Examples:
+ *   "cdn.jsdelivr.net"
+ *   "your.cdn.domain.com"
+ */
+const CACHED_EXTERNAL_HOSTNAMES: string[] = ["raw.githubusercontent.com"];
+
+export default defineConfig(() => ({
+    plugins: [
+        VitePWA({
+            // ...
+            workbox: {
+                runtimeCaching: [
+                    {
+                        urlPattern: ({ url }) =>
+                            CACHED_EXTERNAL_HOSTNAMES.includes(url.hostname),
+                        handler: "CacheFirst",
+                        options: {
+                            cacheName: "external-assets-v1",
+                            cacheableResponse: {
+                                statuses: [0, 200],
+                            },
+                            expiration: {
+                                maxAgeSeconds: 7 * 24 * 60 * 60,
+                            },
+                        },
+                    },
+                ],
+            },
+        }),
+    ],
+}));
+```
+
+</Accordion>
+
+</Accordions>

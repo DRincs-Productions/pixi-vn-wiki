@@ -1,0 +1,83 @@
+---
+title: Temporary storage
+---
+
+<Callout type="info">
+
+You can read more about temporary variables in ink on the [official documentation](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#4-temporary-variables).
+
+</Callout>
+
+Sometimes a global variable is unwieldy. ***ink*** provides **temporary variables** for quick, local calculations. Unlike global variables (`VAR`), a temporary variable is **discarded as soon as the story leaves the knot or stitch in which it was defined**.
+
+In the ***ink* + Pixi’VN integration**, `temp` variables are equivalent to <DynamicLink href="/start/storage#temporary-storage">temporary variables in storage</DynamicLink>.
+
+## Define
+
+<Callout type="info">
+
+This functionality in Javascript/TypeScript corresponds to <DynamicLink href="/start/storage#temporary-storage">temporary variables in storage</DynamicLink>.
+
+</Callout>
+
+Declare a temporary variable with the `temp` keyword inside a `~` logic line:
+
+```ink title="ink"
+~ temp myTemp = 42
+```
+
+You can use any type that ***ink*** supports: integer, floating point, boolean, or string.
+
+```ink title="ink/start.ink"
+=== near_north_pole ===
+    ~ temp number_of_warm_things = 0
+    { blanket:
+        ~ number_of_warm_things++
+    }
+    { ear_muffs:
+        ~ number_of_warm_things++
+    }
+    { gloves:
+        ~ number_of_warm_things++
+    }
+    { number_of_warm_things > 2:
+        Despite the snow, I felt incorrigibly snug.
+    - else:
+        That night I was colder than I have ever been.
+    }
+```
+
+The variable `number_of_warm_things` is created when the knot is entered and thrown away when it is left.
+
+## Définir
+
+<Callout type="info">
+
+This functionality in Javascript/TypeScript corresponds to <DynamicLink href="/start/storage#set">`storage.set`</DynamicLink>.
+
+</Callout>
+
+After the initial declaration you can reassign a temporary variable with the same `~` syntax (without repeating the `temp` keyword):
+
+```ink title="ink"
+~ temp score = 0
+~ score = score + 10
+~ score++
+```
+
+## Obtenir
+
+To get a temporary variable, use the normal <DynamicLink href="/ink/storage#get">`storage.get` function</DynamicLink>.
+
+Inside ***ink*** itself, you read a temporary variable exactly the same way as any other variable – by using its name in an expression, inline print, or condition:
+
+```ink title="ink"
+~ temp duration = 3
+
+The duration is: {duration}
+{ duration > 2:
+    It's a long scene.
+- else:
+    It's a short scene.
+}
+```

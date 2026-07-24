@@ -1,0 +1,142 @@
+---
+title: Bild (`ImageSprite`)
+description: Anleitung zur Verwendung der ImageSprite-Komponente in Pixi'VN, einschließlich Initialisierung, Laden, Hinzufügen, Anzeigen und Entfernen von Bildern auf der Leinwand.
+---
+
+import { ImageSpriteAdd, ImageSpriteShow } from "@/components/examples";
+
+Die [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite)-Komponente erweitert die [`Sprite`](/jsdoc/pixi-vn/index/classes/Sprite)-Komponente, sodass alle Methoden und Eigenschaften von [`Sprite`](/jsdoc/pixi-vn/index/classes/Sprite) genutzt werden können. Sie wird verwendet, um ein einzelnes Bild auf der Leinwand anzuzeigen.
+
+```ts tab="main.ts"
+import { canvas, ImageSprite } from "@drincs/pixi-vn";
+
+let alien = new ImageSprite(
+    {
+        anchor: { x: 0.5, y: 0.5 },
+        x: 100,
+        y: 100,
+    },
+    "alien",
+);
+
+await alien.load();
+canvas.add("alien", alien);
+```
+
+```json tab="src/assets/manifest.gen.json"
+{
+    "bundles": [
+        {
+            "name": "image",
+            "assets": [
+                {
+                    "alias": "alien",
+                    "src": "./assets/image/eggHead.png"
+                }
+            ]
+        }
+    ]
+}
+```
+
+Im Vergleich zur [`Sprite`](/jsdoc/pixi-vn/index/classes/Sprite)-Komponente fügt [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite) folgende Funktionen hinzu:
+
+* [`load`](/jsdoc/pixi-vn/index/classes/ImageSprite#load): Lädt die Bild-URL und setzt die resultierende Textur der Komponente.
+* Zusätzliche Positionierung: <DynamicLink href="/start/canvas-position">Ausrichten und Positionieren mit Prozentangaben</DynamicLink>.
+
+## Anzeigen
+
+Der einfachste Weg, ein Bild auf der Leinwand anzuzeigen, ist die Verwendung der Funktion [`showImage`](/jsdoc/pixi-vn/index/functions/showImage). Diese Funktion kombiniert [`load`](/jsdoc/pixi-vn/index/classes/ImageSprite#load) und [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add).
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        // Show the images on the canvas
+        let alien1 = await showImage("alien");
+        // Show the image with a different alias and position
+        let alien2 = await showImage("alien2", "alien", {
+            xAlign: 0.5,
+        });
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<ImageSpriteShow />
+
+## Hinzufügen
+
+Um ein Bild zur Leinwand hinzuzufügen, wird die Funktion [`addImage`](/jsdoc/pixi-vn/index/functions/addImage) verwendet. Diese Funktion fügt die Komponente lediglich zur Leinwand hinzu; sie zeigt sie **nicht** an und lädt auch keine Textur. Sie nutzt [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add), um die Komponente zur Leinwand hinzuzufügen.
+
+```ts tab="content/labels/start.label.ts"
+import { addImage, canvas, ImageSprite, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        // Add the images to the canvas
+        let alien1 = addImage("alien");
+        // Add the image with a different alias and position
+        let alien2 = addImage("alien2", "alien", {
+            xAlign: 0.5,
+        });
+    },
+    async () => {
+        let alien1 = canvas.find<ImageSprite>("alien");
+        let alien2 = canvas.find<ImageSprite>("alien2");
+        // Load the textures
+        alien1 && (await alien1.load());
+        alien2 && (await alien2.load());
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<ImageSpriteAdd />
+
+## Entfernen
+
+Wie bei anderen Leinwand-Komponenten kann diese Komponente mit der Funktion [`canvas.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#remove) entfernt werden.

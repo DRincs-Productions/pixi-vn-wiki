@@ -1,0 +1,138 @@
+---
+title: Desktop e dispositivi mobili
+description: Scopri come distribuire il tuo gioco per le piattaforme desktop e mobili, con Tauri e GitHub Actions.
+---
+
+Esistono svariati modi per distribuire il tuo gioco per le piattaforme desktop e mobili. Le scelte più comuni includono [Tauri](https://v2.tauri.app/), [Ionic](https://ionicframework.com/), [Electron](https://www.electronjs.org/), [NW.js](https://nwjs.io/) e [React Native per Windows + Mac](https://microsoft.github.io/react-native-windows/).
+
+Se non desideri gestire un progetto nativo fortemente personalizzato, considera di utilizzare i <DynamicLink href="/start#project-initialization">modelli multi-dispositivo</DynamicLink>. Questi modelli includono Tauri, così puoi sviluppare un'app web, oltre alle app desktop e mobile, dalla stessa base di codice.
+
+![tauri-h2](/tauri.svg)
+
+## Distribuire il tuo gioco con Tauri
+
+<Accordions>
+
+<Accordion title="Cos'è Tauri?" id="what-is-tauri">
+
+Tauri è un framework per creare applicazioni desktop e mobili con le tecnologie web. Sfrutta **Rust** per produrre binari nativi, sicuri, leggeri e veloci, mentre una WebView renderizza i tuoi HTML, CSS e JavaScript.
+
+Scopri di più sul [sito web di Tauri](https://v2.tauri.app/).
+
+</Accordion>
+
+</Accordions>
+
+Creare manualmente le versioni per ogni piattaforma è difficile: richiede l'installazione di molti strumenti, e la creazione di app iOS richiede un Mac. Per questi motivi, la generazione manuale delle versioni è generalmente sconsigliata.
+
+Tauri supporta l'utilizzo di GitHub Actions per automatizzare le build di rilascio. GitHub Actions esegue i processi su macchine virtuali (runner), configurabili con i file del flusso di lavoro YAML. In un flusso di lavoro, definisci gli eventi che innescano la pipeline (ad esempio, l'invio di un tag) e l'elenco dei comandi che il runner dovrebbe eseguire.
+
+<Callout title="Mobile" type="warn">
+
+Al momento, le build mobili tramite GitHub Actions sono sperimentali.
+
+</Callout>
+
+I <DynamicLink href="/start#project-initialization">modelli multi-dispositivo</DynamicLink> includono il file `/.github/workflows/tauri.yml`. Tale flusso di lavoro crea artefatti di rilascio (pacchetti di installazione), per svariati sistemi operativi.
+
+```yml title=".github/workflows/tauri.yml"
+# https://tauri.app/distribute/pipelines/github/
+name: "publish"
+
+on:
+    push:
+        tags:
+            - "v*"
+
+jobs:
+    publish-tauri:
+        permissions:
+            contents: write
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - platform: "macos-latest" # for Arm based macs (M1 and above).
+                      args: "--target aarch64-apple-darwin"
+                    - platform: "macos-latest" # for Intel based macs.
+                      args: "--target x86_64-apple-darwin"
+                    - platform: "ubuntu-22.04"
+                      args: ""
+                    - platform: "windows-latest"
+                      args: ""
+                    - platform: "macos-latest" # iOS
+                      args: "--target x86_64-apple-darwin"
+                      mobile: "ios"
+                    - platform: "ubuntu-22.04" # Android
+                      args: ""
+                      mobile: "android"
+
+        runs-on: ${{ matrix.platform }}
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: install dependencies (ubuntu only)
+              if: matrix.platform == 'ubuntu-22.04' # This must match the platform value defined above.
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+            - name: setup node
+              uses: actions/setup-node@v6
+              with:
+                  node-version: lts/*
+
+            - name: Update Java (only for Android builds)
+              if: matrix.mobile == 'android'
+              uses: actions/setup-java@v5
+              with:
+                  distribution: "temurin"
+                  java-version: "21"
+
+            - name: setup Android SDK (only for Android builds)
+              if: matrix.mobile == 'android'
+              uses: android-actions/setup-android@v3
+
+            - name: install Rust stable
+              uses: dtolnay/rust-toolchain@stable # Set this to dtolnay/rust-toolchain@nightly
+              with:
+                  # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
+                  targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+            - name: install frontend dependencies
+              # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
+              run: yarn install # change this to npm or pnpm depending on which one you use.
+
+            - name: Upload Tauri icons
+              run: npm run tauri icon public/pwa-512x512.png
+
+            - name: Rust cache
+              uses: swatinem/rust-cache@v2
+              with:
+                  workspaces: "./src-tauri -> target"
+
+            - uses: tauri-apps/tauri-action@v0
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
+                  releaseName: "App v__VERSION__"
+                  releaseBody: "See the assets to download this version and install."
+                  releaseDraft: true
+                  prerelease: false
+                  args: ${{ matrix.args }}
+                  mobile: ${{ matrix.mobile || null }}
+```
+
+Per innescare questo flusso di lavoro necessiti di una repository GitHub per il tuo progetto, e di un tag Git che inizi per `v`. Ad esempio:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+Puoi seguire le esecuzioni del flusso di lavoro nella scheda Azioni della repository.
+
+![Sezione Azioni](https://github.com/user-attachments/assets/b39055a9-02a7-472b-930f-daf0a9c6c78b)
+
+Al termine di un'esecuzione andata a buon fine, sarà creata una versione di GitHub. Leggi di più sulle versioni di GitHub [qui](https://docs.github.com/en/repositories/releasing-projects-on-github/viewing-your-repositorys-releases-and-tags).

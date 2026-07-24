@@ -1,0 +1,227 @@
+---
+title: Internacionalización
+description: Esta página explica cómo añadir soporte multilingüe a tu juego Pixi’VN usando i18next, incluyendo estrategias de traducción para la interfaz y la narración. ¿Cómo traducir la novela visual?
+---
+
+En las novelas visuales y juegos similares, es habitual permitir a los jugadores seleccionar su idioma nativo.
+
+Para tu proyecto Pixi’VN, deberías usar una biblioteca externa para gestionar las traducciones. Esto te da la flexibilidad de elegir la implementación que mejor se adapte a tus necesidades.
+
+La biblioteca más popular y ampliamente compatible es **i18next**.
+
+<Accordions>
+
+<Accordion title="¿Qué es i18next?" id="what-is-i18next">
+
+i18next es un framework de internacionalización para JavaScript. Para usarlo, necesitas instalarlo e inicializarlo. Más información en el [sitio web de i18next](https://www.i18next.com/).
+
+</Accordion>
+
+</Accordions>
+
+:::tip[Plantillas]
+
+En todas las plantillas, i18next ya está incluido y configurado. Puedes empezar a traducir tu juego de inmediato.
+
+:::
+
+Las traducciones se almacenan en múltiples archivos JSON (uno por idioma), usando pares clave-valor. La clave es un identificador único para el texto, y el valor es la cadena traducida.
+
+<Accordions>
+
+<Accordion title="Inicializar" id="initialize">
+
+```ts title="lib/i18n.ts"
+import i18n, { type ReadCallback } from "i18next";
+import LanguageDetector from "i18next-browser-languagedetector";
+import ChainedBackend from "i18next-chained-backend";
+import { initReactI18next } from "react-i18next";
+
+class Backend extends ChainedBackend {
+    override async read(lng: string, ns: string, callback: ReadCallback) {
+        try {
+            const object = await getLocalesResource(lng);
+            const result = object[ns];
+            callback(null, result);
+        } catch (error) {
+            callback(error as Error, { data: null });
+        }
+    }
+}
+
+export const useI18n = async () => {
+    if (!i18n.isInitialized) {
+        return await i18n
+            .use(Backend)
+            .use(LanguageDetector)
+            .use(initReactI18next)
+            .init({
+                debug: false,
+                fallbackLng: "en",
+                supportedLngs: ["en"],
+                interpolation: {
+                    escapeValue: false,
+                },
+                load: "currentOnly",
+                detection: {
+                    order: ["localStorage"],
+                    caches: ["localStorage"],
+                },
+                missingInterpolationHandler(_text, value, _options) {
+                    return value[1];
+                },
+            });
+    }
+};
+
+function getLocalesResource(
+    lng: string,
+): Promise<Record<string, Record<string, string>>> {
+    return import(`./../locales/${lng}.json`);
+}
+```
+
+</Accordion>
+
+<Accordion title="Traducir la interfaz" id="translate-ui">
+
+Para traducir la interfaz, usa la función `t` proporcionada por i18next. Pasa la clave de traducción a `t` para obtener el texto correspondiente en el idioma del jugador.
+
+Por ejemplo:
+
+```tsx tab="React"
+import { useTranslation } from "react-i18next";
+
+export default function MyComponent() {
+    const { t } = useTranslation("ui");
+
+    return (
+        <div>
+            <Button>{t("text_speed")}</Button>
+        </div>
+    );
+}
+```
+
+```vue tab="Vue"
+<script setup>
+import { useTranslation } from "i18next-vue";
+const { t } = useTranslation("ui");
+</script>
+
+<template>
+    <div>
+        <button>{{ t("text_speed") }}</button>
+    </div>
+</template>
+```
+
+```svelte tab="Svelte"
+<script>
+    import { useTranslation } from 'svelte-i18n';
+    const { t } = useTranslation("ui");
+</script>
+
+<div>
+    <button>{t('text_speed')}</button>
+</div>
+```
+
+</Accordion>
+
+<Accordion title="Traducir la narración (TypeScript/JavaScript)" id="translate-narration">
+
+:::tip[Plantillas]
+
+En todas las plantillas, la interfaz `StepLabelProps` ya incluye una función `t`. Ver `pixi-vn.d.ts`.
+
+:::
+
+:::tip
+
+Se recomienda usar `t` dentro del <DynamicLink href="/start/labels">label</DynamicLink> en lugar de directamente en la interfaz, para aprovechar la [interpolación i18n](https://i18next.com/translation-function/interpolation).
+
+:::
+
+En los proyectos Pixi’VN, a menudo necesitas traducir texto de narración en <DynamicLink href="/start/labels">`labels`</DynamicLink> TypeScript/JavaScript. Para ello, la función de traducción debe estar en la <DynamicLink href="/start/labels#steplabelprops">interfaz `StepLabelProps`</DynamicLink>.
+
+Se recomienda usar la cadena original como clave de traducción.
+
+```ts tab="content/labels/start.label.ts"
+export const startLabel = newLabel("start", [
+    ({ t }) => {
+        narration.dialogue = {
+            character: liam,
+            text: t("Hello, my name is {{name}}", { name: "Liam" }),
+        };
+    },
+]);
+```
+
+```ts tab="pixi-vn.d.ts"
+import type { TFunction } from "i18next";
+
+declare module "@drincs/pixi-vn" {
+    interface StepLabelProps {
+        /**
+         * Translate a key to a string.
+         * @param key The key to translate.
+         * @returns The translated string.
+         */
+        t: TFunction<[string], undefined>;
+        // ...
+    }
+}
+```
+
+```ts tab="locales/es.json"
+{
+    "narration": {
+        "Hello, my name is {{name}}": "Hola, mi nombre es {{name}}"
+        // ...
+    }
+}
+```
+
+```ts tab="lib/hooks/props-hooks.ts"
+import { useTranslation } from "react-i18next";
+
+export function useGameProps(): StepLabelProps {
+    const { t } = useTranslation(["narration"]);
+
+    return {
+        // ...
+        t,
+    };
+}
+```
+
+</Accordion>
+
+</Accordions>
+
+## Crear
+
+:::tip[*ink*]
+
+Si usas *ink*, puedes extraer automáticamente cadenas del texto *ink* para la traducción. Ver más <DynamicLink href="/ink/translate">aquí</DynamicLink>.
+
+:::
+
+Los archivos JSON de traducción deben crearse manualmente. Se recomienda dividir las traducciones en dos secciones (ver `es.json`):
+
+* Textos de interfaz: para pantallas, ajustes, botones rápidos, etc.—todo lo que no forma parte de la narración.
+* Textos de narración: para diálogos, menús de elección, etc.
+
+```json tab="locales/es.json"
+{
+    "ui": {
+        "text_speed": "Velocidad del texto"
+        // ...
+    },
+    "narration": {
+        "Hello, my name is {{name}}": "Hola, mi nombre es {{name}}"
+        // ...
+    }
+}
+```
