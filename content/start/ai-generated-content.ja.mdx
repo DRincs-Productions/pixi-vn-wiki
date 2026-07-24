@@ -38,40 +38,47 @@ and no server at all.
 To install the AI package in an existing JavaScript project, use one of the following commands:
 
 ```npm
-npm install @drincs/pixi-vn-ai @drincs/pixi-vn ai @mlc-ai/web-llm
+npm install @drincs/pixi-vn-ai
 ```
-
-* `@drincs/pixi-vn` — the visual novel engine this library is built for.
-* `ai` ([AI SDK](https://ai-sdk.dev)) — used to talk to any AI SDK-compatible model.
-* `@mlc-ai/web-llm` — powers the built-in local fallback model, so you never *have* to configure a
-  provider to get started.
 
 Call `ai.init(...)` once, at startup:
 
 ```ts title="main.ts"
+import { Game } from "@drincs/pixi-vn";
 import { ai } from "@drincs/pixi-vn-ai";
-
-await ai.init();
 
 Game.init(body, {
     // ...
+}).then(async () => {
+    await ai.init();
 });
 ```
 
 With no arguments, `ai.init()` downloads and runs a small local WebLLM model
 (`SmolLM2-360M-Instruct`) directly in the browser. This covers `ai.text.generateDialog` out of the
-box, but **WebLLM cannot generate images** — `ai.image.generateBackground`/
-`ai.image.generateElement` always require an external model (an AI SDK provider or ComfyUI).
+box.
+
+:::info
+
+For images, `ai.image.generateBackground`/`ai.image.generateElement` always require an external
+model — an AI SDK provider or ComfyUI. WebLLM cannot generate images.
+
+:::
 
 To use a specific model instead, pass it through the AI SDK:
 
 ```ts title="main.ts"
+import { Game } from "@drincs/pixi-vn";
 import { ai } from "@drincs/pixi-vn-ai";
 import { openai } from "@ai-sdk/openai";
 
-await ai.init({
-    textProvider: openai("gpt-5"),
-    imageProvider: openai.image("gpt-image-1"),
+Game.init(body, {
+    // ...
+}).then(async () => {
+    await ai.init({
+        textProvider: openai("gpt-5"),
+        imageProvider: openai.image("gpt-image-1"),
+    });
 });
 ```
 
@@ -125,18 +132,23 @@ Then pass a [`ComfyUIImageModel`](/jsdoc/pixi-vn-ai/comfyui/classes/ComfyUIImage
 `imageProvider`:
 
 ```ts title="main.ts"
+import { Game } from "@drincs/pixi-vn";
 import { ai } from "@drincs/pixi-vn-ai";
 import { ComfyUIImageModel } from "@drincs/pixi-vn-ai/comfyui";
 import myWorkflow from "./my-workflow-api.json"; // exported from ComfyUI's "Save (API Format)"
 
-await ai.init({
-    imageProvider: new ComfyUIImageModel({
-        apiHost: "127.0.0.1:8188",
-        workflow: myWorkflow,
-        // the node/input in `myWorkflow` that holds the positive prompt (usually a CLIPTextEncode node)
-        promptNodeId: "6",
-        promptInputName: "text", // optional, defaults to "text"
-    }),
+Game.init(body, {
+    // ...
+}).then(async () => {
+    await ai.init({
+        imageProvider: new ComfyUIImageModel({
+            apiHost: "127.0.0.1:8188",
+            workflow: myWorkflow,
+            // the node/input in `myWorkflow` that holds the positive prompt (usually a CLIPTextEncode node)
+            promptNodeId: "6",
+            promptInputName: "text", // optional, defaults to "text"
+        }),
+    });
 });
 ```
 
@@ -144,6 +156,90 @@ Since ComfyUI runs an arbitrary node graph rather than accepting a plain prompt,
 `ComfyUIImageModel` only injects the developer request into the node/input you point it at —
 everything else (checkpoint, sampler, seed, resolution, ...) is whatever your exported workflow
 already specifies.
+
+</Accordion>
+
+<Accordion title="Bundling a ComfyUI server (desktop)" id="comfyui-desktop">
+
+`ComfyUIImageModel` only talks HTTP to `apiHost` — it doesn't start the server for you. The
+simplest setup is to let the player point `apiHost` at a ComfyUI instance they already run
+themselves (locally or on a LAN/remote machine), with no bundling at all.
+
+If instead you want your <DynamicLink href="/start/distribution-desktop-mobile">Tauri</DynamicLink>
+build to ship and launch ComfyUI itself, since ComfyUI is a Python process, Rust doesn't run it
+in-process — it spawns it as a child process. The standard way to do this in Tauri is a
+[sidecar](https://v2.tauri.app/develop/sidecar/) binary via
+[`tauri-plugin-shell`](https://v2.tauri.app/plugin/shell/), pointing at a portable ComfyUI build
+(which bundles its own Python) added to `externalBin`:
+
+```toml title="src-tauri/Cargo.toml"
+[dependencies]
+tauri-plugin-shell = "2"
+```
+
+```json title="src-tauri/tauri.conf.json"
+{
+    "bundle": {
+        "externalBin": ["binaries/comfyui-portable/run_nvidia_gpu"]
+    }
+}
+```
+
+```rust title="src-tauri/src/lib.rs"
+use tauri_plugin_shell::ShellExt;
+
+tauri::Builder::default()
+    .plugin(tauri_plugin_shell::init())
+    .setup(|app| {
+        app.shell().sidecar("comfyui-portable/run_nvidia_gpu")?.spawn()?;
+        Ok(())
+    })
+    // ...
+```
+
+Tauri sidecars must be named with the target's platform triple suffix (e.g.
+`run_nvidia_gpu-x86_64-pc-windows-msvc.exe`) — see the sidecar
+docs for the exact naming and signing requirements per
+platform.
+
+Since ComfyUI takes a few seconds to boot, poll its HTTP API before calling `ai.init`:
+
+```ts title="main.ts"
+import { Game } from "@drincs/pixi-vn";
+import { ai } from "@drincs/pixi-vn-ai";
+import { ComfyUIImageModel } from "@drincs/pixi-vn-ai/comfyui";
+import myWorkflow from "./my-workflow-api.json";
+
+async function waitForComfyUI(apiHost: string, timeoutMs = 30000) {
+    const start = Date.now();
+    while (Date.now() - start < timeoutMs) {
+        try {
+            if ((await fetch(`http://${apiHost}/system_stats`)).ok) return;
+        } catch {
+            // not up yet
+        }
+        await new Promise((r) => setTimeout(r, 500));
+    }
+    throw new Error("ComfyUI did not start in time");
+}
+
+Game.init(body, {
+    // ...
+}).then(async () => {
+    await waitForComfyUI("127.0.0.1:8188");
+    await ai.init({
+        imageProvider: new ComfyUIImageModel({ apiHost: "127.0.0.1:8188", workflow: myWorkflow, promptNodeId: "6" }),
+    });
+});
+```
+
+:::warning
+
+A bundled Python + PyTorch + model environment can add several GB to your installer and needs a
+compatible GPU on the player's machine. Most games only bundle ComfyUI for internal/offline asset
+generation, and ship the "point at an external server" option to end users.
+
+:::
 
 </Accordion>
 
