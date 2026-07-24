@@ -7,6 +7,7 @@ import {
     Album,
     ArrowBigUpDash,
     BookOpenText,
+    Bot,
     Boxes,
     Brain,
     CircleQuestionMark,
@@ -489,6 +490,12 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                 name: t("minigames"),
                 icon: <Gamepad2 />,
                 url: `${preUrl}/start/minigames`,
+            },
+            {
+                type: "page",
+                name: t("ai-generated-content"),
+                icon: <Bot />,
+                url: `${preUrl}/start/ai-generated-content`,
             },
             {
                 type: "page",
