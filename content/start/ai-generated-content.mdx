@@ -228,7 +228,11 @@ Game.init(body, {
 }).then(async () => {
     await waitForComfyUI("127.0.0.1:8188");
     await ai.init({
-        imageProvider: new ComfyUIImageModel({ apiHost: "127.0.0.1:8188", workflow: myWorkflow, promptNodeId: "6" }),
+        imageProvider: new ComfyUIImageModel({
+            apiHost: "127.0.0.1:8188",
+            workflow: myWorkflow,
+            promptNodeId: "6",
+        }),
     });
 });
 ```
@@ -441,6 +445,16 @@ commands. It behaves exactly like Pixi’VN's own `ImageSprite`, but also keeps 
 (a data URI) in its `memory`, so that <DynamicLink href="/start/save">save games</DynamicLink>
 store the generated image itself and restore the exact same image on load, instead of calling the
 AI provider again — which would produce a different image.
+
+:::warning
+
+That same `memory` is also kept in the <DynamicLink href="/start/labels-flow#go-back">go back</DynamicLink>
+step history, as a plain string — a data URI can easily be several hundred KB, so generating many
+`AIImageSprite`s can make that history heavy. It's recommended to lower
+[`stepHistory.stepLimitSaved`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#steplimitsaved)
+so only the last few steps keep their full canvas/storage data in the save file.
+
+:::
 
 ```ts
 import { canvas } from "@drincs/pixi-vn/canvas";
