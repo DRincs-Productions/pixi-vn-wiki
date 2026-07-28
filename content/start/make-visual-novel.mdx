@@ -660,6 +660,19 @@ import { AssetsManifest } from "@drincs/pixi-vn";
 export const manifest: AssetsManifest = {
     ...generatedManifestJson.bundles,
     bundles: [
+        {
+            name: "audio",
+            assets: [
+                {
+                    alias: "bgm_cheerful",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/audio/bgm_cheerful.wav",
+                },
+                {
+                    alias: "sfx_whoosh",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/audio/sfx_whoosh.wav",
+                },
+            ],
+        },
         // screens
         {
             name: "/",
@@ -1033,7 +1046,9 @@ const startLabel = newLabel("start", [
 export default startLabel;
 ```
 
-## Use transitions
+<Accordions>
+
+<Accordion title="Use transitions" id="use-transitions">
 
 To make the visual novel more dynamic, you can use transitions to show or remove canvas components (images, containers, ...) with an animated effect, instead of making them appear or disappear abruptly. Pixi’VN provides several built-in transitions — such as dissolve, fade, move in/out, push in/out, and zoom in/out — and also lets you create your own custom ones.
 
@@ -1104,11 +1119,11 @@ const startLabel = newLabel("start", [
 export default startLabel;
 ```
 
-## Building an animation
+</Accordion>
 
-To make the visual novel more dynamic, you can use animations. For more information about how to use animations, see <DynamicLink href="/start/canvas-animations-effects">here</DynamicLink>.
+<Accordion title="Building an animation" id="building-an-animation">
 
-I recommend using TypeScript if you need to set many properties, as this gives you more control, more functionality, and type feedback.
+To make the visual novel more dynamic, you can use animations. I recommend using TypeScript if you need to set many properties, as this gives you more control, more functionality, and type feedback.
 
 In this example, my animation will take `steph` out of the scene and reinsert her in the next `step`. I'll also mirror her on the x-axis to make sure she's facing the right way.
 
@@ -1116,9 +1131,31 @@ To take `steph` out/in, I will use the `moveOut` and `moveIn` functions. For the
 
 First, I use the `canvas.animate` function to create an animation that sets the `scaleX` property from `-1` (mirrored) to `1`, with `autoplay: false` so it does not start immediately.
 
+Just for explanation purposes, this is what the equivalent would look like in _ink_:
+
+```ink tab="ink"
+# animate steph scaleX 1 options autoplay false completeOnContinue true
+```
+
+```ts tab="Typescript"
+canvas.animate<ImageContainer>(
+    "steph",
+    {
+        scaleX: 1,
+    },
+    { autoplay: false, completeOnContinue: true },
+);
+```
+
 Then, I use the `moveIn` function to move `steph` into the scene, passing the `tickerId` of the animation so it can be resumed after the transition is complete.
 
 I use the `completeOnContinue: true` option to ensure the animation completes before the next `step` is executed. For `moveIn`, being a transition, `completeOnContinue` is true by default.
+
+:::tip
+
+For more information about how to use animations, see <DynamicLink href="/start/canvas-animations-effects">here</DynamicLink>.
+
+:::
 
 Since I use TypeScript for this animation, I created a `label` for it, so it can be called from other languages as well.
 
@@ -1212,57 +1249,15 @@ const startLabel = newLabel("start", [
 export default startLabel;
 ```
 
+</Accordion>
+
+</Accordions>
+
 ## Sounds and music
 
-To add sounds and music to your visual novel, you can use the `sound` utility. You can find more information about how to use it <DynamicLink href="/start/sound">here</DynamicLink>.
+To add sounds and music to your visual novel, you can use the `sound` utility.
 
-The first step is to define the audio assets in the `manifest`. Then, you can load them in the background at the start of the game, so they will be available when needed without blocking the game start.
-
-```ts tab="utils/assets-utility.ts"
-import { Assets, sound } from "@drincs/pixi-vn";
-import manifest from "../assets/manifest";
-
-/**
- * Define all the assets that will be used in the game.
- * This function will be called before the game starts.
- * You can read more about assets management in the documentation: https://pixi-vn.com/start/assets-management.html
- */
-export async function defineAssets() {
-    await Assets.init({ manifest });
-
-    // The audio bundle will be loaded in the background, so it will be available when needed, but it won't block the game start. // [!code focus]
-    sound.backgroundLoadBundle("audio"); // [!code focus]
-}
-```
-
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
-
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
-    bundles: [
-        {
-            name: "audio",
-            assets: [
-                {
-                    alias: "bgm_cheerful",
-                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/audio/bgm_cheerful.wav",
-                },
-                {
-                    alias: "sfx_whoosh",
-                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/audio/sfx_whoosh.wav",
-                },
-            ],
-        },
-    ],
-};
-export default manifest;
-```
-
-You can also define sound channels to manage different types of sounds (e.g., BGM, SFX) and control their volume, pause, resume, etc. It is recommended to define the channels at the start of the game, for example in the `then` callback of the `Game.init` function.
+You can define sound channels to manage different types of sounds (e.g., BGM, SFX) and control their volume, pause, resume, etc. It is recommended to define the channels at the start of the game, for example in the `then` callback of the `Game.init` function.
 
 Into this example, I define two channels: one for the background music (BGM) and one for the sound effects (SFX). I also set the `defaultChannelAlias` to the SFX channel, so if I don't specify a channel when playing a sound, it will be played in the SFX channel by default. To define the background channel, I set the `background` property to `true`, so unlike the other channels the sounds will not be stopped at the end of each narrative `step`, but they will continue until they are paused or stopped.
 
@@ -1280,6 +1275,12 @@ Game.init(body, {
 ```
 
 Finally, you can play the sounds and music in the `labels` using the `sound.play` function. You can also use channels to manage different types of sounds (e.g., BGM, SFX) and control their volume, pause, resume, etc.
+
+:::tip
+
+You can find more information about how to use it <DynamicLink href="/start/sound">here</DynamicLink>.
+
+:::
 
 ```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
 === start ===
