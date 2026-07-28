@@ -59,13 +59,33 @@ npm start
 
 ## Characters creation
 
-Now we will define the characters of this story. To do this, we will define in the `/values/characters.ts` file the characters that we will be using. For more information on how to create and use characters you can consult: <DynamicLink href="/start/character">Characters</DynamicLink>
+Now we will define the characters of this story. To do this, we will define in the `/content/characters.ts` file the characters that we will be using.
 
-What does `mc` mean? `mc` is a common abbreviation for "Main Character". It is a common practice in visual novels to use `mc` as the main character's name.
+<Accordions>
 
-```ts tab="values/characters.ts"
+<Accordion title="What does `mc` mean?" id="what-does-mc-mean">
+
+`mc` is a common abbreviation for "Main Character". It is a common practice in visual novels to use `mc` as the main character's name.
+
+</Accordion>
+
+<Accordion title="Where is the `Character` model defined?" id="where-is-the-character-model-defined">
+
+The `Character` model used below is defined in `models/Character.ts`. You can modify it to your liking, for example to add more properties related to the character (e.g. `surname`, `age`, ...). You can find more information about this file <DynamicLink href="/start/character#custom-class">here</DynamicLink>.
+
+</Accordion>
+
+</Accordions>
+
+:::tip
+
+For more information on how to create and use characters you can consult: <DynamicLink href="/start/character">Characters</DynamicLink>
+
+:::
+
+```ts title="content/characters.ts"
+import Character from "@/models/Character";
 import { RegisteredCharacters } from "@drincs/pixi-vn";
-import Character from "../models/Character";
 
 export const mc = new Character("mc", {
     name: "Me",
@@ -87,15 +107,6 @@ export const sly = new Character("sly", {
 });
 
 RegisteredCharacters.add([mc, james, steph, sly]);
-```
-
-```ts tab="App.tsx"
-// Remember to import the character file at least once into your project. // [!code focus]
-import "./values/characters"; // [!code focus]
-
-export default function App() {
-    return; // ...
-}
 ```
 
 ## First draft of the narrative
@@ -219,6 +230,81 @@ const startLabel = newLabel("start", [
 export default startLabel;
 ```
 
+<Accordions>
+
+<Accordion title="Use the `glue` feature of dialogues" id="use-the-glue-feature-of-dialogues">
+
+In visual novels, it is often useful to paste text into the current dialogue. For example, to pause a conversation and have it continue in a subsequent `step`. To do this, we can use the <DynamicLink href="/start/dialogue#dialogue-glue">glue functionality</DynamicLink>.
+
+This is the example:
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+// ...
+
+james: Ooh, [mc]! Nice, firm handshake!
+<>The last guy always gave me the dead fish.
+<>I already think we're gonna get along fine.
+james: Come on in and...
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    // ...
+    async () =>
+        (narration.dialogue = {
+            character: james,
+            text: `Ooh, ${mc.name}! Nice, firm handshake!`,
+        }),
+    async () => {
+        narration.dialogGlue = true;
+        narration.dialogue = `The last guy always gave me the dead fish.`;
+    },
+    async () => {
+        narration.dialogGlue = true;
+        narration.dialogue = `I already think we're gonna get along fine.`;
+    },
+    async () =>
+        (narration.dialogue = { character: james, text: `Come on in and...` }),
+    // ...
+]);
+export default startLabel;
+```
+
+</Accordion>
+
+<Accordion title="Create a pause effect" id="create-a-pause-effect">
+
+It is also possible to create a "pause" effect, hiding the dialogue card for a moment. In _ink_, you can use <DynamicLink href="/ink/other-narrative-features#pause">`# pause`</DynamicLink>, while in JS/TS you can <DynamicLink href="/start/dialogue#delete">set `narration.dialogue` to `undefined`</DynamicLink>.
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+// ...
+
+# pause
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    // ...
+    async () => {
+        narration.dialogue = undefined;
+    },
+    // ...
+]);
+export default startLabel;
+```
+
+</Accordion>
+
+</Accordions>
+
 ### Split the narrative into `labels`
 
 It is not advisable to create very long `labels` (even for linear visual novels), but it is advisable to create multiple small `labels` and "call" them when needed with the <DynamicLink href="/start/labels-flow">narration flow control features</DynamicLink>.
@@ -306,48 +392,6 @@ const secondPart = newLabel("second_part", [
     },
     // ...
 ]);
-```
-
-### Use the "glue" feature of dialogues
-
-In visual novels, it is often useful to paste text into the current dialogue. For example, to pause a conversation and have it continue in a subsequent `step`. To do this, we can use the <DynamicLink href="/start/dialogue#dialogue-glue">glue functionality</DynamicLink>.
-
-This is the example:
-
-```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
-=== start ===
-// ...
-
-james: Ooh, [mc]! Nice, firm handshake!
-<>The last guy always gave me the dead fish.
-<>I already think we're gonna get along fine.
-james: Come on in and...
-
-// ...
--> DONE
-```
-
-```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
-const startLabel = newLabel("start", [
-    // ...
-    async () =>
-        (narration.dialogue = {
-            character: james,
-            text: `Ooh, ${mc.name}! Nice, firm handshake!`,
-        }),
-    async () => {
-        narration.dialogGlue = true;
-        narration.dialogue = `The last guy always gave me the dead fish.`;
-    },
-    async () => {
-        narration.dialogGlue = true;
-        narration.dialogue = `I already think we're gonna get along fine.`;
-    },
-    async () =>
-        (narration.dialogue = { character: james, text: `Come on in and...` }),
-    // ...
-]);
-export default startLabel;
 ```
 
 ## Choice menus
