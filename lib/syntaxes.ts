@@ -90,12 +90,40 @@ export const inkLanguage: LanguageInput = {
         choices: {
             patterns: [
                 {
-                    name: "keyword.other.choice.ink",
-                    match: "^\\s*([\\*\\+]\\s*)+",
-                },
-                {
-                    name: "keyword.other.brackets.choice.ink",
-                    match: "(?<!\\\\)[\\[\\]]",
+                    begin: "^\\s*((?:[*+]\\s*)+)",
+                    beginCaptures: {
+                        "1": {
+                            name: "keyword.other.choice.ink",
+                        },
+                    },
+                    end: "$",
+                    patterns: [
+                        {
+                            name: "keyword.other.brackets.choice.ink",
+                            match: "(?<!\\\\)[\\[\\]]",
+                        },
+                        {
+                            include: "#conditionalChoices",
+                        },
+                        {
+                            include: "#variableText",
+                        },
+                        {
+                            include: "#printingVariables",
+                        },
+                        {
+                            include: "#knots",
+                        },
+                        {
+                            include: "#glue",
+                        },
+                        {
+                            include: "#tags",
+                        },
+                        {
+                            include: "#comments",
+                        },
+                    ],
                 },
             ],
         },
@@ -103,14 +131,14 @@ export const inkLanguage: LanguageInput = {
             patterns: [
                 {
                     name: "keyword.other.gather.ink",
-                    match: "^\\s*-(?!\\s*>)(\\s*-)*",
+                    match: "^\\s*-(?!\\s*>)(\\s*-(?!\\s*>))*",
                 },
             ],
         },
         labelledGathersChoices: {
             patterns: [
                 {
-                    begin: "^\\s*([-*+])(\\s*[-*+])*\\s*(?=\\()",
+                    begin: "^\\s*(-(?:\\s*-)*)\\s*(?=\\()",
                     beginCaptures: {
                         "1": {
                             name: "keyword.other.gather.ink",
@@ -120,8 +148,18 @@ export const inkLanguage: LanguageInput = {
                     patterns: [
                         {
                             name: "entity.name.function.ink",
-                            begin: "\\(",
-                            end: "\\)",
+                            begin: "(\\()",
+                            beginCaptures: {
+                                "1": {
+                                    name: "keyword.other.operator.round.ink",
+                                },
+                            },
+                            end: "(\\))",
+                            endCaptures: {
+                                "1": {
+                                    name: "keyword.other.operator.round.ink",
+                                },
+                            },
                             patterns: [
                                 {
                                     name: "entity.name.function.ink",
@@ -131,34 +169,101 @@ export const inkLanguage: LanguageInput = {
                         },
                     ],
                 },
+                {
+                    begin: "^\\s*((?:[*+]\\s*)+)(?=\\()",
+                    beginCaptures: {
+                        "1": {
+                            name: "keyword.other.choice.ink",
+                        },
+                    },
+                    end: "$",
+                    patterns: [
+                        {
+                            name: "entity.name.function.ink",
+                            begin: "(\\()",
+                            beginCaptures: {
+                                "1": {
+                                    name: "keyword.other.operator.round.ink",
+                                },
+                            },
+                            end: "(\\))",
+                            endCaptures: {
+                                "1": {
+                                    name: "keyword.other.operator.round.ink",
+                                },
+                            },
+                            patterns: [
+                                {
+                                    name: "entity.name.function.ink",
+                                    match: "[^()]+",
+                                },
+                            ],
+                        },
+                        {
+                            name: "keyword.other.brackets.choice.ink",
+                            match: "(?<!\\\\)[\\[\\]]",
+                        },
+                        {
+                            include: "#conditionalChoices",
+                        },
+                        {
+                            include: "#variableText",
+                        },
+                        {
+                            include: "#printingVariables",
+                        },
+                        {
+                            include: "#knots",
+                        },
+                        {
+                            include: "#glue",
+                        },
+                        {
+                            include: "#tags",
+                        },
+                        {
+                            include: "#comments",
+                        },
+                    ],
+                },
             ],
         },
         knots: {
             patterns: [
                 {
                     name: "keyword.control.return.ink",
-                    match: "(?<=->\\s*)(END|DONE)",
+                    match: "(?<=(?:^|[^\\\\])->\\s*)(END|DONE)",
                 },
                 {
                     name: "keyword.other.divert.ink",
-                    match: "->",
+                    match: "(?<!\\\\)->",
                 },
                 {
                     name: "entity.name.function.divert.ink",
-                    match: "(?<=->\\s*)[a-zA-Z0-9_]+(?:\\.[a-zA-Z0-9_]+)?",
+                    match: "(?<=(?:^|[^\\\\])->\\s*)[a-zA-Z0-9_]+(?:\\.[a-zA-Z0-9_]+)?",
                 },
                 {
                     name: "keyword.other.thread.ink",
-                    match: "<-",
+                    match: "(?<!\\\\)<-",
                 },
                 {
                     name: "entity.name.function.thread.ink",
-                    match: "(?<=<-\\s*)[a-zA-Z0-9_]+(?:\\.[a-zA-Z0-9_]+)?",
+                    match: "(?<=(?:^|[^\\\\])<-\\s*)[a-zA-Z0-9_]+(?:\\.[a-zA-Z0-9_]+)?",
                 },
                 {
                     name: "meta.function.divert.call.ink",
-                    begin: "(?<=->\\s*[a-zA-Z0-9_]+)\\s*\\(",
-                    end: "\\)",
+                    begin: "(?<=(?:^|[^\\\\])->\\s*[a-zA-Z0-9_]+)\\s*(\\()",
+                    beginCaptures: {
+                        "1": {
+                            name: "keyword.other.operator.round.ink",
+                        },
+                    },
+                    end: "(\\))",
+                    endCaptures: {
+                        "1": {
+                            name: "keyword.other.operator.round.ink",
+                        },
+                    },
                     patterns: [
                         {
                             include: "#knots",
@@ -170,8 +275,18 @@ export const inkLanguage: LanguageInput = {
                 },
                 {
                     name: "meta.function.thread.call.ink",
-                    begin: "(?<=<-\\s*[a-zA-Z0-9_]+)\\s*\\(",
-                    end: "\\)",
+                    begin: "(?<=(?:^|[^\\\\])<-\\s*[a-zA-Z0-9_]+)\\s*(\\()",
+                    beginCaptures: {
+                        "1": {
+                            name: "keyword.other.operator.round.ink",
+                        },
+                    },
+                    end: "(\\))",
+                    endCaptures: {
+                        "1": {
+                            name: "keyword.other.operator.round.ink",
+                        },
+                    },
                     patterns: [
                         {
                             include: "#knots",
@@ -206,9 +321,23 @@ export const inkLanguage: LanguageInput = {
                         },
                         {
                             name: "meta.function.parameters.ink",
-                            begin: "\\(",
-                            end: "\\)",
+                            begin: "(\\()",
+                            beginCaptures: {
+                                "1": {
+                                    name: "keyword.other.operator.round.ink",
+                                },
+                            },
+                            end: "(\\))",
+                            endCaptures: {
+                                "1": {
+                                    name: "keyword.other.operator.round.ink",
+                                },
+                            },
                             patterns: [
+                                {
+                                    name: "keyword.other.ref.ink",
+                                    match: "\\bref\\b",
+                                },
                                 {
                                     include: "#knots",
                                 },
@@ -219,6 +348,9 @@ export const inkLanguage: LanguageInput = {
                         },
                         {
                             include: "#comments",
+                        },
+                        {
+                            include: "#tags",
                         },
                     ],
                 },
@@ -245,9 +377,23 @@ export const inkLanguage: LanguageInput = {
                         },
                         {
                             name: "meta.function.parameters.ink",
-                            begin: "\\(",
-                            end: "\\)",
+                            begin: "(\\()",
+                            beginCaptures: {
+                                "1": {
+                                    name: "keyword.other.operator.round.ink",
+                                },
+                            },
+                            end: "(\\))",
+                            endCaptures: {
+                                "1": {
+                                    name: "keyword.other.operator.round.ink",
+                                },
+                            },
                             patterns: [
+                                {
+                                    name: "keyword.other.ref.ink",
+                                    match: "\\bref\\b",
+                                },
                                 {
                                     include: "#knots",
                                 },
@@ -268,7 +414,7 @@ export const inkLanguage: LanguageInput = {
             patterns: [
                 {
                     name: "keyword.other.glue.ink",
-                    match: "<>",
+                    match: "(?<!\\\\)<>",
                 },
             ],
         },
@@ -296,6 +442,24 @@ export const inkLanguage: LanguageInput = {
                         {
                             name: "keyword.other.ink",
                             match: "(?<!\\\\)\\|",
+                        },
+                        {
+                            include: "#multilineBlocks",
+                        },
+                        {
+                            include: "#conditionalBlocks",
+                        },
+                        {
+                            include: "#conditionalChoices",
+                        },
+                        {
+                            include: "#conditionalText",
+                        },
+                        {
+                            include: "#variableText",
+                        },
+                        {
+                            include: "#printingVariables",
                         },
                         {
                             include: "#knots",
@@ -373,6 +537,12 @@ export const inkLanguage: LanguageInput = {
                                 {
                                     name: "keyword.other.alternative.ink",
                                     match: "(?<!\\\\)\\|",
+                                },
+                                {
+                                    include: "#knots",
+                                },
+                                {
+                                    include: "#glue",
                                 },
                                 {
                                     include: "#multilineBlocks",
@@ -467,6 +637,21 @@ export const inkLanguage: LanguageInput = {
                                     include: "#knots",
                                 },
                                 {
+                                    include: "#conditionalBlocks",
+                                },
+                                {
+                                    include: "#conditionalChoices",
+                                },
+                                {
+                                    include: "#conditionalText",
+                                },
+                                {
+                                    include: "#variableText",
+                                },
+                                {
+                                    include: "#printingVariables",
+                                },
+                                {
                                     include: "#glue",
                                 },
                                 {
@@ -474,6 +659,9 @@ export const inkLanguage: LanguageInput = {
                                 },
                                 {
                                     include: "#comments",
+                                },
+                                {
+                                    include: "#tags",
                                 },
                             ],
                         },
@@ -502,6 +690,9 @@ export const inkLanguage: LanguageInput = {
                     },
                     patterns: [
                         {
+                            include: "#multilineBlocks",
+                        },
+                        {
                             name: "meta.multiline.line.ink",
                             begin: "^\\s*-\\s*",
                             beginCaptures: {
@@ -512,10 +703,28 @@ export const inkLanguage: LanguageInput = {
                             end: "$",
                             patterns: [
                                 {
+                                    include: "#multilineBlocks",
+                                },
+                                {
                                     include: "#tildeLogic",
                                 },
                                 {
                                     include: "#knots",
+                                },
+                                {
+                                    include: "#conditionalBlocks",
+                                },
+                                {
+                                    include: "#conditionalChoices",
+                                },
+                                {
+                                    include: "#conditionalText",
+                                },
+                                {
+                                    include: "#variableText",
+                                },
+                                {
+                                    include: "#printingVariables",
                                 },
                                 {
                                     include: "#glue",
@@ -526,10 +735,13 @@ export const inkLanguage: LanguageInput = {
                                 {
                                     include: "#comments",
                                 },
+                                {
+                                    include: "#tags",
+                                },
                             ],
                         },
                         {
-                            match: ".+",
+                            match: "[^}]+",
                             name: "text.plain.ink",
                             patterns: [
                                 {
@@ -539,6 +751,21 @@ export const inkLanguage: LanguageInput = {
                                     include: "#knots",
                                 },
                                 {
+                                    include: "#conditionalBlocks",
+                                },
+                                {
+                                    include: "#conditionalChoices",
+                                },
+                                {
+                                    include: "#conditionalText",
+                                },
+                                {
+                                    include: "#variableText",
+                                },
+                                {
+                                    include: "#printingVariables",
+                                },
+                                {
                                     include: "#glue",
                                 },
                                 {
@@ -546,6 +773,9 @@ export const inkLanguage: LanguageInput = {
                                 },
                                 {
                                     include: "#comments",
+                                },
+                                {
+                                    include: "#tags",
                                 },
                             ],
                         },
@@ -581,6 +811,9 @@ export const inkLanguage: LanguageInput = {
             patterns: [
                 {
                     include: "#comments",
+                },
+                {
+                    include: "#tags",
                 },
                 {
                     include: "#knots",
@@ -643,7 +876,11 @@ export const inkLanguage: LanguageInput = {
                     match: "\\b[a-zA-Z_][a-zA-Z0-9_]*(?=\\s*\\()",
                 },
                 {
-                    name: "variable.other.global.ink",
+                    name: "keyword.other.operator.round.ink",
+                    match: "[()]",
+                },
+                {
+                    name: "variable.other.constant.ink",
                     match: "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b",
                 },
             ],
@@ -669,7 +906,7 @@ export const inkLanguage: LanguageInput = {
                     end: "$",
                     patterns: [
                         {
-                            name: "variable.other.global.ink",
+                            name: "variable.other.constant.ink",
                             match: "(?<=VAR\\s+)[a-zA-Z_][a-zA-Z0-9_]*",
                         },
                         {
@@ -704,7 +941,7 @@ export const inkLanguage: LanguageInput = {
             patterns: [
                 {
                     name: "meta.tilde.logic.ink",
-                    begin: "~",
+                    begin: "(?<=^\\s*)~",
                     beginCaptures: {
                         "0": {
                             name: "keyword.other.tilde.ink",
@@ -743,7 +980,7 @@ export const inkLanguage: LanguageInput = {
             patterns: [
                 {
                     name: "punctuation.definition.tag.ink",
-                    begin: "#",
+                    begin: "(?<!\\\\)#",
                     beginCaptures: {
                         "0": {
                             name: "punctuation.definition.tag.ink",
