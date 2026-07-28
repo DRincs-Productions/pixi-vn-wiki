@@ -3,9 +3,6 @@ title: Создание вашего первого визуального ро�
 description: Пошаговое руководство по созданию визуального романа с использованием Pixi’VN, включая настройку проекта, нарратив, ассеты и интерактивность.
 ---
 
-import { TSVisualNovelExample } from "@/components/vn-examples";
-import { InkVisualNovelExample } from "@/components/vn-ink-examples";
-
 Этот туториал проведёт вас через процесс создания вашего первого визуального романа.
 
 <Accordions>
@@ -59,13 +56,33 @@ npm start
 
 ## Создание персонажей
 
-Теперь мы определим персонажей этой истории. Для этого в файле `/values/characters.ts` будут описаны персонажи, которые будут использоваться. Более подробную информацию о создании и использовании персонажей можно найти здесь: <DynamicLink href="/start/character">Characters</DynamicLink>
+Теперь мы определим персонажей этой истории. To do this, we will define in the `/content/characters.ts` file the characters that we will be using.
 
-Что означает `mc`? `mc` — это распространённое сокращение от «Main Character» (главный персонаж). В визуальных романах принято использовать `mc` в качестве имени главного персонажа.
+<Accordions>
 
-```ts tab="values/characters.ts"
+<Accordion title="Что означает `mc`?" id="what-does-mc-mean">
+
+`mc` is a common abbreviation for "Main Character". It is a common practice in visual novels to use `mc` as the main character's name.
+
+</Accordion>
+
+<Accordion title="Where is the `Character` model defined?" id="where-is-the-character-model-defined">
+
+The `Character` model used below is defined in `models/Character.ts`. You can modify it to your liking, for example to add more properties related to the character (e.g. `surname`, `age`, ...). You can find more information about this file <DynamicLink href="/start/character#custom-class">here</DynamicLink>.
+
+</Accordion>
+
+</Accordions>
+
+:::tip
+
+Более подробную информацию о создании и использовании персонажей можно найти здесь: <DynamicLink href="/start/character">Characters</DynamicLink>
+
+:::
+
+```ts title="content/characters.ts"
+import Character from "@/models/Character";
 import { RegisteredCharacters } from "@drincs/pixi-vn";
-import Character from "../models/Character";
 
 export const mc = new Character("mc", {
     name: "Me",
@@ -87,15 +104,6 @@ export const sly = new Character("sly", {
 });
 
 RegisteredCharacters.add([mc, james, steph, sly]);
-```
-
-```ts tab="App.tsx"
-// Remember to import the character file at least once into your project. // [!code focus]
-import "./values/characters"; // [!code focus]
-
-export default function App() {
-    return; // ...
-}
 ```
 
 ## Первый черновик нарратива
@@ -219,6 +227,81 @@ const startLabel = newLabel("start", [
 export default startLabel;
 ```
 
+<Accordions>
+
+<Accordion title="Use the `glue` feature of dialogues" id="use-the-glue-feature-of-dialogues">
+
+В визуальных новеллах часто бывает полезно вставлять текст в текущий dialogue. Например, чтобы приостановить разговор и продолжить его в последующем `step`. Для этого можно использовать <DynamicLink href="/start/dialogue#dialogue-glue">функцию glue</DynamicLink>.
+
+Ниже приведён пример:
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+// ...
+
+james: Ooh, [mc]! Nice, firm handshake!
+<>The last guy always gave me the dead fish.
+<>I already think we're gonna get along fine.
+james: Come on in and...
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    // ...
+    async () =>
+        (narration.dialogue = {
+            character: james,
+            text: `Ooh, ${mc.name}! Nice, firm handshake!`,
+        }),
+    async () => {
+        narration.dialogGlue = true;
+        narration.dialogue = `The last guy always gave me the dead fish.`;
+    },
+    async () => {
+        narration.dialogGlue = true;
+        narration.dialogue = `I already think we're gonna get along fine.`;
+    },
+    async () =>
+        (narration.dialogue = { character: james, text: `Come on in and...` }),
+    // ...
+]);
+export default startLabel;
+```
+
+</Accordion>
+
+<Accordion title="Create a pause effect" id="create-a-pause-effect">
+
+It is also possible to create a "pause" effect, hiding the dialogue card for a moment. In *ink*, you can use <DynamicLink href="/ink/other-narrative-features#pause">`# pause`</DynamicLink>, while in JS/TS you can <DynamicLink href="/start/dialogue#delete">set `narration.dialogue` to `undefined`</DynamicLink>.
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+// ...
+
+# pause
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    // ...
+    async () => {
+        narration.dialogue = undefined;
+    },
+    // ...
+]);
+export default startLabel;
+```
+
+</Accordion>
+
+</Accordions>
+
 ### Разделение нарратива на `labels`
 
 Создание очень длинных `labels` не рекомендуется даже для линейных визуальных романов. Вместо этого предпочтительно создавать несколько небольших `labels` и вызывать их при необходимости с помощью <DynamicLink href="/start/labels-flow">механизмов управления потоком нарратива</DynamicLink>.
@@ -308,53 +391,17 @@ const secondPart = newLabel("second_part", [
 ]);
 ```
 
-### Использование функции «glue» в dialogues
-
-В визуальных новеллах часто бывает полезно вставлять текст в текущий dialogue. Например, чтобы приостановить разговор и продолжить его в последующем `step`. Для этого можно использовать <DynamicLink href="/start/dialogue#dialogue-glue">функцию glue</DynamicLink>.
-
-Ниже приведён пример:
-
-```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
-=== start ===
-// ...
-
-james: Ooh, [mc]! Nice, firm handshake!
-<>The last guy always gave me the dead fish.
-<>I already think we're gonna get along fine.
-james: Come on in and...
-
-// ...
--> DONE
-```
-
-```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
-const startLabel = newLabel("start", [
-    // ...
-    async () =>
-        (narration.dialogue = {
-            character: james,
-            text: `Ooh, ${mc.name}! Nice, firm handshake!`,
-        }),
-    async () => {
-        narration.dialogGlue = true;
-        narration.dialogue = `The last guy always gave me the dead fish.`;
-    },
-    async () => {
-        narration.dialogGlue = true;
-        narration.dialogue = `I already think we're gonna get along fine.`;
-    },
-    async () =>
-        (narration.dialogue = { character: james, text: `Come on in and...` }),
-    // ...
-]);
-export default startLabel;
-```
-
 ## Меню выбора
 
 Теперь мы предложим игроку решить, хочет ли он продолжить визуальный роман и перейти к следующей части истории.
 
-Для этого будет использовано <DynamicLink href="/start/choices">меню выбора</DynamicLink>.
+To do this, we will set [`narration.choices`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#choices) to an array of choice options created with [`newChoiceOption`](/jsdoc/pixi-vn/index/functions/newChoiceOption) (to jump or call a `label`) and [`newCloseChoiceOption`](/jsdoc/pixi-vn/index/functions/newCloseChoiceOption) (to close the choice menu without navigating anywhere).
+
+:::tip
+
+You can find more information about choice menus <DynamicLink href="/start/choices">here</DynamicLink>.
+
+:::
 
 Ниже приведён пример:
 
@@ -400,10 +447,15 @@ const secondPart = newLabel("second_part", [
 ## Редактирование информации о персонаже и использование её как переменной
 
 Теперь игроку будет предоставлена возможность изменить имя `mc`.
-
 Для этого игроку будет предложено <DynamicLink href="/start/input">ввести значение в поле ввода с использованием возможностей Pixi’VN</DynamicLink>.
 
 После этого станет возможным <DynamicLink href="/start/character#edit">использование имён персонажей внутри диалогов</DynamicLink>.
+
+:::tip
+
+In *ink*, `_input_value_` is a special variable that holds the value entered by the player. You can read more about it <DynamicLink href="/ink/input">here</DynamicLink>.
+
+:::
 
 Ниже приведён пример:
 
@@ -439,6 +491,14 @@ export default startLabel;
 ```
 
 Теперь мы можем <DynamicLink href="/start/character#use">использовать имена персонажей</DynamicLink> в диалогах.
+
+:::tip
+
+In *ink*, you can use square brackets (e.g. `[sly]`) to take advantage of the <DynamicLink href="/ink/replacement">text replacement</DynamicLink> mechanism: by default, the templates check whether the text between the brackets matches a character `id`, and if so, replace it with that character's name.
+
+In JS/TS, you can achieve the same result using [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) with `${}` (e.g. `` `${sly.name}` ``).
+
+:::
 
 Ниже приведён пример:
 
@@ -533,31 +593,90 @@ export default startLabel;
 
 :::
 
-Одним из первых шагов является выбор места для хранения ассетов визуальной новеллы. В этом случае ассеты будут сохранены в Firebase Storage (хостинг-сервис). Вы можете использовать любой другой хостинг или сохранить ассеты локально в проекте. Подробнее читайте <DynamicLink href="/start/assets">здесь</DynamicLink>.
+One of the first steps is choosing where to save your visual novel assets: you can use an online hosting service or save them locally in the project. You can find more information about both options <DynamicLink href="/start/assets">here</DynamicLink>.
 
-Перед использованием ассетов настоятельно рекомендуется <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">инициализировать матрицу ассетов</DynamicLink>.
+If you choose to save the assets locally, you just need to place them inside `src/assets`: the template automatically uses AssetPack to analyze the files and define them in `src/assets/manifest.gen.json`. If instead you choose to keep them online, you will need to manually edit `assets/index.ts` to register them.
 
-По умолчанию, как видно в файле `assets/manifest.ts`, все шаблоны в `onLoadingLabel` пытаются загружать в фоновом режиме «bundle assets» с алиасом, равным текущему id `label`. Поэтому рекомендуется добавлять в `manifest` «bundle assets» для каждого `label` с алиасом, совпадающим с id `label`, и содержащим изображения, используемые в этом `label`.
+In both cases, each asset is assigned one or more `alias`, which you can then use in your code to reference that asset.
 
-Ниже приведён пример:
+<Files>
+    <Folder name="project" defaultOpen>
+        <Folder name="src" defaultOpen>
+            <Folder name="assets" defaultOpen>
+                <Folder name="images" defaultOpen>
+                    <File name="icon.png" />
+                </Folder>
+                <File name="manifest.gen.json" />
+                <File name="index.ts" />
+            </Folder>
+        </Folder>
+        <File name=".assetpack.ts" />
+        <File name="vite.config.ts" />
+    </Folder>
+</Files>
 
-```ts tab="assets/manifest.ts"
+Example for local assets:
+
+```ts title="assets/manifest.gen.json"
+{
+  "bundles": [
+    {
+      "name": "images",
+      "assets": [
+        {
+          "alias": [
+            "images_icon",
+            "icon"
+          ],
+          "src": [
+            "images/icon-WgfH5g@0.5x.png",
+            "images/icon-VA-NtA.webp",
+            "images/icon-Jh9tDw@0.5x.webp",
+            "images/icon-E_ZC2g.png"
+          ],
+          "data": {
+            "tags": {}
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+Example for online assets:
+
+```ts title="assets/index.ts"
+import generatedManifestJson from "@/assets/manifest.gen.json";
 import { AssetsManifest } from "@drincs/pixi-vn";
-import { MAIN_MENU_ROUTE } from "../constans";
 
 /**
  * Manifest for the assets used in the game.
  * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
  */
-const manifest: AssetsManifest = {
+export const manifest: AssetsManifest = {
+    ...generatedManifestJson.bundles,
     bundles: [
+        {
+            name: "audio",
+            assets: [
+                {
+                    alias: "bgm_cheerful",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/audio/bgm_cheerful.wav",
+                },
+                {
+                    alias: "sfx_whoosh",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/audio/sfx_whoosh.wav",
+                },
+            ],
+        },
         // screens
         {
-            name: MAIN_MENU_ROUTE,
+            name: "/",
             assets: [
                 {
                     alias: "background_main_menu",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/main-menu.png",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/main-menu.png",
                 },
             ],
         },
@@ -567,7 +686,7 @@ const manifest: AssetsManifest = {
             assets: [
                 {
                     alias: "bg01-hallway",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/bg01-hallway.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/bg01-hallway.webp",
                 },
             ],
         },
@@ -576,7 +695,7 @@ const manifest: AssetsManifest = {
             assets: [
                 {
                     alias: "bg02-dorm",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/bg02-dorm.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/bg02-dorm.webp",
                 },
             ],
         },
@@ -586,67 +705,67 @@ const manifest: AssetsManifest = {
             assets: [
                 {
                     alias: "fm01-body",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm01/fm01-body.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-body.webp",
                 },
                 {
                     alias: "fm01-eyes-grin",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm01/fm01-eyes-grin.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-eyes-grin.webp",
                 },
                 {
                     alias: "fm01-eyes-smile",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm01/fm01-eyes-smile.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-eyes-smile.webp",
                 },
                 {
                     alias: "fm01-eyes-soft",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm01/fm01-eyes-soft.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-eyes-soft.webp",
                 },
                 {
                     alias: "fm01-eyes-upset",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm01/fm01-eyes-upset.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-eyes-upset.webp",
                 },
                 {
                     alias: "fm01-eyes-wow",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm01/fm01-eyes-wow.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-eyes-wow.webp",
                 },
                 {
                     alias: "fm01-mouth-grin00",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm01/fm01-mouth-grin00.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-mouth-grin00.webp",
                 },
                 {
                     alias: "fm01-mouth-serious00",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm01/fm01-mouth-serious00.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-mouth-serious00.webp",
                 },
                 {
                     alias: "fm01-mouth-serious01",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm01/fm01-mouth-serious01.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-mouth-serious01.webp",
                 },
                 {
                     alias: "fm01-mouth-smile00",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm01/fm01-mouth-smile00.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-mouth-smile00.webp",
                 },
                 {
                     alias: "fm01-mouth-smile01",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm01/fm01-mouth-smile01.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-mouth-smile01.webp",
                 },
                 {
                     alias: "fm01-mouth-soft00",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm01/fm01-mouth-soft00.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-mouth-soft00.webp",
                 },
                 {
                     alias: "fm01-mouth-soft01",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm01/fm01-mouth-soft01.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-mouth-soft01.webp",
                 },
                 {
                     alias: "fm01-mouth-upset00",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm01/fm01-mouth-upset00.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-mouth-upset00.webp",
                 },
                 {
                     alias: "fm01-mouth-upset01",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm01/fm01-mouth-upset01.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-mouth-upset01.webp",
                 },
                 {
                     alias: "fm01-mouth-wow01",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm01/fm01-mouth-wow01.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-mouth-wow01.webp",
                 },
             ],
         },
@@ -655,63 +774,63 @@ const manifest: AssetsManifest = {
             assets: [
                 {
                     alias: "fm02-body",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm02/fm02-body.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-body.webp",
                 },
                 {
                     alias: "fm02-eyes-bawl",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm02/fm02-eyes-bawl.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-eyes-bawl.webp",
                 },
                 {
                     alias: "fm02-eyes-joy",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm02/fm02-eyes-joy.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-eyes-joy.webp",
                 },
                 {
                     alias: "fm02-eyes-nervous",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm02/fm02-eyes-nervous.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-eyes-nervous.webp",
                 },
                 {
                     alias: "fm02-eyes-smile",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm02/fm02-eyes-smile.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-eyes-smile.webp",
                 },
                 {
                     alias: "fm02-eyes-upset",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm02/fm02-eyes-upset.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-eyes-upset.webp",
                 },
                 {
                     alias: "fm02-eyes-wow",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm02/fm02-eyes-wow.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-eyes-wow.webp",
                 },
                 {
                     alias: "fm02-mouth-cry01",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm02/fm02-mouth-cry01.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-mouth-cry01.webp",
                 },
                 {
                     alias: "fm02-mouth-nervous00",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm02/fm02-mouth-nervous00.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-mouth-nervous00.webp",
                 },
                 {
                     alias: "fm02-mouth-nervous01",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm02/fm02-mouth-nervous01.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-mouth-nervous01.webp",
                 },
                 {
                     alias: "fm02-mouth-smile00",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm02/fm02-mouth-smile00.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-mouth-smile00.webp",
                 },
                 {
                     alias: "fm02-mouth-smile01",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm02/fm02-mouth-smile01.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-mouth-smile01.webp",
                 },
                 {
                     alias: "fm02-mouth-upset00",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm02/fm02-mouth-upset00.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-mouth-upset00.webp",
                 },
                 {
                     alias: "fm02-mouth-upset01",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm02/fm02-mouth-upset01.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-mouth-upset01.webp",
                 },
                 {
                     alias: "fm02-mouth-wow01",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm02/fm02-mouth-wow01.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-mouth-wow01.webp",
                 },
             ],
         },
@@ -720,131 +839,155 @@ const manifest: AssetsManifest = {
             assets: [
                 {
                     alias: "m01-body",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-body.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-body.webp",
                 },
                 {
                     alias: "m01-eyes-annoy",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-annoy.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-eyes-annoy.webp",
                 },
                 {
                     alias: "m01-eyes-concern",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-concern.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-eyes-concern.webp",
                 },
                 {
                     alias: "m01-eyes-cry",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-cry.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-eyes-cry.webp",
                 },
                 {
                     alias: "m01-eyes-grin",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-grin.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-eyes-grin.webp",
                 },
                 {
                     alias: "m01-eyes-smile",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-smile.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-eyes-smile.webp",
                 },
                 {
                     alias: "m01-eyes-wow",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-wow.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-eyes-wow.webp",
                 },
                 {
                     alias: "m01-mouth-annoy00",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-annoy00.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-mouth-annoy00.webp",
                 },
                 {
                     alias: "m01-mouth-annoy01",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-annoy01.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-mouth-annoy01.webp",
                 },
                 {
                     alias: "m01-mouth-concern00",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-concern00.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-mouth-concern00.webp",
                 },
                 {
                     alias: "m01-mouth-concern01",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-concern01.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-mouth-concern01.webp",
                 },
                 {
                     alias: "m01-mouth-cry00",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-cry00.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-mouth-cry00.webp",
                 },
                 {
                     alias: "m01-mouth-cry01",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-cry01.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-mouth-cry01.webp",
                 },
                 {
                     alias: "m01-mouth-grin00",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-grin00.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-mouth-grin00.webp",
                 },
                 {
                     alias: "m01-mouth-neutral00",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-neutral00.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-mouth-neutral00.webp",
                 },
                 {
                     alias: "m01-mouth-neutral01",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-neutral01.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-mouth-neutral01.webp",
                 },
                 {
                     alias: "m01-mouth-smile00",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-smile00.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-mouth-smile00.webp",
                 },
                 {
                     alias: "m01-mouth-smile01",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-smile01.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-mouth-smile01.webp",
                 },
                 {
                     alias: "m01-mouth-wow01",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-wow01.webp",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-mouth-wow01.webp",
                 },
             ],
         },
     ],
 };
-export default manifest;
 ```
 
-```ts tab="utils/defineAssets.ts"
-import { Assets } from "@drincs/pixi-vn";
-import manifest from "../assets/manifest";
+<Accordions>
 
-/**
- * Define all the assets that will be used in the game.
- * This function will be called before the game starts.
- * You can read more about assets management in the documentation: https://pixi-vn.com/start/assets-management.html
- */
-export async function defineAssets() {
-    await Assets.init({ manifest });
+<Accordion title="Умная загрузка ассетов" id="smart-asset-loading">
 
-    // The game will not start until these asserts are loaded.
-    await Assets.loadBundle("main_menu");
+In our case we saved the game images on a hosting service. По этой причине загрузка ассетов не является мгновенной.
 
-    // The game will start immediately, but these asserts will be loaded in the background.
-    // Assets.backgroundLoadBundle("main_menu");
-    // Assets.backgroundLoad("background_main_menu");
-}
-```
+Чтобы игрок не ощущал слишком много загрузок, следует группировать их по определённым фазам игры. В этом случае наиболее часто используемые изображения загружаются в начале `label`.
 
-```ts tab="main.ts"
-import { Assets, canvas, Container, Game } from "@drincs/pixi-vn";
-import { createRoot } from "react-dom/client";
-import App from "./App";
-import { CANVAS_UI_LAYER_NAME } from "./constans";
-import "./index.css";
-import "./values/characters";
+Подробнее о управлении загрузками можно узнать <DynamicLink href="/start/assets-management">здесь</DynamicLink>.
+
+Ниже приведён пример:
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+# lazyload bundle m01 fm01 fm02 // [!code focus]
+
+# show image bg bg01-hallway
+# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-neutral01] xAlign 0.5 yAlign 1 with movein direction right speed 300
+james: You're my roommate's replacement, huh?
+# show imagecontainer james [m01-body m01-eyes-grin m01-mouth-smile01]
+james: Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you'll be fine!
+# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-grin00]
+mc: ...
 
 // ...
-
-Game.onLoadingLabel((_stepId, { id }) => {
-    // [!code focus]
-    Assets.backgroundLoadBundle(id); // [!code focus]
-}); // [!code focus]
+-> DONE
 ```
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+const startLabel = newLabel(
+    "start",
+    [
+        // ...
+    ],
+    {
+        onLoadingLabel: () => {
+            // [!code focus]
+            Assets.backgroundLoadBundle(["fm01", "fm02", "m01"]); // [!code focus]
+        }, // [!code focus]
+    },
+);
+export default startLabel;
+```
+
+</Accordion>
+
+</Accordions>
 
 ## Добавление фоновых изображений и изображений персонажей
 
-Теперь пришло время подумать и о визуальной части. Мы добавим фоновые изображения и спрайты персонажей на canvas визуальной новеллы.
+Теперь пришло время подумать и о визуальной части. We will add the background and character images to the visual novel canvas.
 
-**Что такое спрайт?** В компьютерной графике спрайт — это двумерное растровое изображение, встроенное в более крупную сцену, чаще всего используемое в 2D-видеоиграх.
+<Accordions>
 
-В нашем случае спрайты персонажей состоят из 3 изображений: тела, глаз и рта. Затем мы используем <DynamicLink href="/start/canvas-image-container">ImageContainer</DynamicLink> для сборки персонажа. Дополнительную информацию о добавлении canvas-компонентов можно найти в <DynamicLink href="/start/canvas-components">этой документации</DynamicLink>.
+<Accordion title="What is a `sprite`?" id="what-is-a-sprite">
+
+In computer graphics, a sprite is a two-dimensional bitmap that is integrated into a larger scene, most often in a 2D video game. In Pixi’VN, a single image shown on the canvas (e.g. the background, or the body/eyes/mouth of a character) is a `Sprite`.
+
+</Accordion>
+
+<Accordion title="What is a `container`?" id="what-is-a-container">
+
+A container is a component that groups other components (sprites or even other containers) so that they can be positioned, moved, and manipulated as a single unit, while still being able to access and edit each individual child.
+
+</Accordion>
+
+</Accordions>
+
+In our case, each character is composed of 3 sprites: the body, the eyes and the mouth. We use <DynamicLink href="/start/canvas-image-container">ImageContainer</DynamicLink>, a `Container` that groups `Sprite` children, to group them together and compose the character. Дополнительную информацию о добавлении canvas-компонентов можно найти в <DynamicLink href="/start/canvas-components">этой документации</DynamicLink>.
 
 Ниже приведён пример:
 
@@ -900,51 +1043,19 @@ const startLabel = newLabel("start", [
 export default startLabel;
 ```
 
-## Умная загрузка ассетов
+<Accordions>
 
-В нашем случае изображения игры сохранены на хостинг-сервисе (Firebase). По этой причине загрузка ассетов не является мгновенной.
+<Accordion title="Использование переходов" id="use-transitions">
 
-Чтобы игрок не ощущал слишком много загрузок, следует группировать их по определённым фазам игры. В этом случае наиболее часто используемые изображения загружаются в начале `label`.
+To make the visual novel more dynamic, you can use transitions to show or remove canvas components (images, containers, ...) with an animated effect, instead of making them appear or disappear abruptly. Pixi’VN provides several built-in transitions — such as dissolve, fade, move in/out, push in/out, and zoom in/out — and also lets you create your own custom ones.
 
-Подробнее о управлении загрузками можно узнать <DynamicLink href="/start/assets-management">здесь</DynamicLink>.
+In this example, we use the move in/out transition to make `james` enter the scene from outside the canvas. In *ink*, this is done by appending `with movein` (and its parameters) to the `# show` command, while in JS/TS you can use the `moveIn`/`moveOut` functions.
 
-Ниже приведён пример:
+:::tip
 
-```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
-=== start ===
-# lazyload bundle m01 fm01 fm02 // [!code focus]
+You can find more information about using transitions <DynamicLink href="/start/canvas-transition">here</DynamicLink>.
 
-# show image bg bg01-hallway
-# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-neutral01] xAlign 0.5 yAlign 1 with movein direction right speed 300
-james: You're my roommate's replacement, huh?
-# show imagecontainer james [m01-body m01-eyes-grin m01-mouth-smile01]
-james: Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you'll be fine!
-# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-grin00]
-mc: ...
-
-// ...
--> DONE
-```
-
-```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
-const startLabel = newLabel(
-    "start",
-    [
-        // ...
-    ],
-    {
-        onLoadingLabel: () => {
-            // [!code focus]
-            Assets.backgroundLoadBundle(["fm01", "fm02", "m01"]); // [!code focus]
-        }, // [!code focus]
-    },
-);
-export default startLabel;
-```
-
-## Использование переходов
-
-Чтобы сделать визуальную новеллу более динамичной, можно использовать переходы при отображении изображений. Подробнее об использовании переходов см. <DynamicLink href="/start/canvas-transition">здесь</DynamicLink>.
+:::
 
 Ниже приведён пример:
 
@@ -1005,21 +1116,43 @@ const startLabel = newLabel("start", [
 export default startLabel;
 ```
 
-## Создание анимации
+</Accordion>
 
-Чтобы сделать визуальную новеллу более динамичной, можно использовать анимации. Подробнее о работе с анимациями см. <DynamicLink href="/start/canvas-animations-effects">здесь</DynamicLink>.
+<Accordion title="Building an animation" id="building-an-animation">
 
-Рекомендуется использовать TypeScript, если необходимо настраивать множество свойств, так как это обеспечивает больший контроль, больше функциональности и обратную связь типов.
+Чтобы сделать визуальную новеллу более динамичной, можно использовать анимации. I recommend using TypeScript if you need to set many properties, as this gives you more control, more functionality, and type feedback.
 
-В этом примере анимация убирает `steph` со сцены и повторно добавляет её на следующем `step`. Также она отражается по оси X, чтобы персонаж был повернут в правильную сторону.
+In this example, my animation will take `steph` out of the scene and reinsert her in the next `step`. I'll also mirror her on the x-axis to make sure she's facing the right way.
 
-Для удаления и добавления `steph` используются функции `moveOut` и `moveIn`. Для эффекта зеркального отражения применяется функция `canvas.animate`.
+To take `steph` out/in, I will use the `moveOut` and `moveIn` functions. For the mirror effect, I will use the `canvas.animate` function.
 
-Сначала используется функция `canvas.animate` для создания анимации, которая изменяет свойство `scaleX` от `-1` (зеркально) до `1`, с параметром `autoplay: false`, чтобы анимация не запускалась сразу.
+First, I use the `canvas.animate` function to create an animation that sets the `scaleX` property from `-1` (mirrored) to `1`, with `autoplay: false` so it does not start immediately.
+
+Just for explanation purposes, this is what the equivalent would look like in *ink*:
+
+```ink tab="ink"
+# animate steph scaleX 1 options autoplay false completeOnContinue true
+```
+
+```ts tab="Typescript"
+canvas.animate<ImageContainer>(
+    "steph",
+    {
+        scaleX: 1,
+    },
+    { autoplay: false, completeOnContinue: true },
+);
+```
 
 Затем используется функция `moveIn` для перемещения `steph` на сцену с передачей `tickerId` анимации, чтобы она могла быть продолжена после завершения перехода.
 
 Опция `completeOnContinue: true` используется для гарантии завершения анимации перед выполнением следующего `step`. Для `moveIn`, как для перехода, `completeOnContinue` по умолчанию равно true.
+
+:::tip
+
+Подробнее о работе с анимациями см. <DynamicLink href="/start/canvas-animations-effects">здесь</DynamicLink>.
+
+:::
 
 Поскольку эта анимация реализована на TypeScript, для неё был создан отдельный `label`, чтобы её можно было вызывать и из других языков.
 
@@ -1074,7 +1207,7 @@ As explained <DynamicLink href="/ink/labels#use-the-call-script">here</DynamicLi
 # show imagecontainer steph [fm02-body fm02-eyes-upset fm02-mouth-nervous00]
 # remove image steph with moveout direction left speed 300
 [steph_fullname] goes through the opposite door,
-# call animation_01
+-> animation_01 ->
 <> and returns with a HUGE tinfoil-covered platter.
 
 // ...
@@ -1113,57 +1246,15 @@ const startLabel = newLabel("start", [
 export default startLabel;
 ```
 
+</Accordion>
+
+</Accordions>
+
 ## Sounds and music
 
-To add sounds and music to your visual novel, you can use the `sound` utility. You can find more information about how to use it <DynamicLink href="/start/sound">here</DynamicLink>.
+To add sounds and music to your visual novel, you can use the `sound` utility.
 
-The first step is to define the audio assets in the `manifest`. Then, you can load them in the background at the start of the game, so they will be available when needed without blocking the game start.
-
-```ts tab="utils/assets-utility.ts"
-import { Assets, sound } from "@drincs/pixi-vn";
-import manifest from "../assets/manifest";
-
-/**
- * Define all the assets that will be used in the game.
- * This function will be called before the game starts.
- * You can read more about assets management in the documentation: https://pixi-vn.com/start/assets-management.html
- */
-export async function defineAssets() {
-    await Assets.init({ manifest });
-
-    // The audio bundle will be loaded in the background, so it will be available when needed, but it won't block the game start. // [!code focus]
-    sound.backgroundLoadBundle("audio"); // [!code focus]
-}
-```
-
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
-
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
-    bundles: [
-        {
-            name: "audio",
-            assets: [
-                {
-                    alias: "bgm_cheerful",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/audio/bgm_cheerful.wav",
-                },
-                {
-                    alias: "sfx_whoosh",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/audio/sfx_whoosh.wav",
-                },
-            ],
-        },
-    ],
-};
-export default manifest;
-```
-
-You can also define sound channels to manage different types of sounds (e.g., BGM, SFX) and control their volume, pause, resume, etc. It is recommended to define the channels at the start of the game, for example in the `then` callback of the `Game.init` function.
+You can define sound channels to manage different types of sounds (e.g., BGM, SFX) and control their volume, pause, resume, etc. It is recommended to define the channels at the start of the game, for example in the `then` callback of the `Game.init` function.
 
 Into this example, I define two channels: one for the background music (BGM) and one for the sound effects (SFX). I also set the `defaultChannelAlias` to the SFX channel, so if I don't specify a channel when playing a sound, it will be played in the SFX channel by default. To define the background channel, I set the `background` property to `true`, so unlike the other channels the sounds will not be stopped at the end of each narrative `step`, but they will continue until they are paused or stopped.
 
@@ -1181,6 +1272,12 @@ Game.init(body, {
 ```
 
 Finally, you can play the sounds and music in the `labels` using the `sound.play` function. You can also use channels to manage different types of sounds (e.g., BGM, SFX) and control their volume, pause, resume, etc.
+
+:::tip
+
+You can find more information about how to use it <DynamicLink href="/start/sound">here</DynamicLink>.
+
+:::
 
 ```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
 === start ===
@@ -1326,18 +1423,7 @@ const secondPart = newLabel("second_part", [
 
 ## Заключение
 
-Теперь вы знаете, как создать визуальную новеллу с помощью Pixi’VN. С большой силой приходит большая ответственность — используйте её с умом и создайте отличную историю! 🚀
-
-Ниже приведён интерактивный пример с минимальным UI (HTML). Прокрутив страницу вниз, вы увидите тот же результат с использованием полноценного UI (шаблон React).
-
-<Tabs items={["ink", "Typescript"]} groupId="narrative_language">
-    <Tab>
-        <InkVisualNovelExample />
-    </Tab>
-    <Tab>
-        <TSVisualNovelExample />
-    </Tab>
-</Tabs>
+Well, now you know how to create a visual novel with Pixi’VN. With great power comes great responsibility, so use it wisely and create a great story! 🚀
 
 <iframe
 src="https://pixi-vn-visual-novel-example.pages.dev/demo"
