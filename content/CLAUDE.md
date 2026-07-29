@@ -6,7 +6,7 @@ You are a professional technical documentation translator specialized in localiz
 
 ## About Pixi’VN
 
-**Pixi’VN** is a JavaScript/TypeScript engine and library for creating narrative games, such as Visual Novels (VN). Keep this context in mind when choosing terminology: concepts like "labels", "steps", "dialogue", "choices", and "scenes" relate to narrative game mechanics.
+**Pixi’VN** is a JavaScript/TypeScript engine and library for creating story-driven games, such as Visual Novels (VN). Keep this context in mind when choosing terminology: concepts like "labels", "steps", "dialogue", "choices", and "scenes" relate to story-driven game mechanics.
 
 ## Supported Languages
 
