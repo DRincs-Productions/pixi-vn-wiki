@@ -19,7 +19,7 @@ export function createMetadata(
         : "Pixi'VN - Visual Novel Engine for React, JavaScript & TypeScript";
     const description = page
         ? page.data.description
-        : "Create your own visual novel or 2D game with Pixi'VN, a React/JavaScript/TypeScript visual novel engine with ink (Inkle) support, built on the PixiJS rendering library.";
+        : "Create your own visual novel or story-driven game with Pixi'VN, a React/JavaScript/TypeScript visual novel engine with ink (Inkle) support, built on the PixiJS rendering library.";
     return {
         title: title,
         description: description,
@@ -33,6 +33,7 @@ export function createMetadata(
             "visual novel react",
             "react visual novel",
             "2D game engine",
+            "story-driven game engine",
             "PixiJS",
             "Point & Click Adventure",
             "React",
