@@ -1,92 +1,42 @@
 ---
-title: Change UI font and text size
-description: How to change the UI font-family and text sizes in Pixi’VN projects.
+title: Styles & Theming
+description: How to customise the UI look — colors, roundness, fonts, and more — in Pixi’VN templates built with shadcn/ui.
 ---
 
-This page explains how to change the UI font and text size in a Pixi’VN project.
+Pixi’VN templates build the UI with [shadcn/ui](https://ui.shadcn.com/) on top of Tailwind CSS. Unlike a regular component library, shadcn/ui does not ship as a package: the component source is copied into your own project (under `src/components/ui/`).
 
 :::tip[Templates]
 
-Pixi’VN templates use Vite and Tailwind CSS, so the instructions below are tuned for that setup.
+Pixi’VN templates use Vite, Tailwind CSS, and shadcn/ui, so the instructions below are tuned for that setup. See <DynamicLink href="/start/templates">Templates</DynamicLink> for the full project structure.
 
 :::
 
-## Import the font
+The whole theme — colors, roundness, fonts, and more — depends on a single file: `src/styles.css`.
 
-To import a font you can use a service such as [Google Fonts](https://fonts.google.com/) or host fonts locally. For Google Fonts, add an `@import` to your `index.css`.
+## Beyond the base theme builder
 
-Example:
+Rather than editing `styles.css` by hand, you can generate a full theme with a visual tool.
 
-```css title="index.css"
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
+### shadcn/ui theme builder
+
+The [official theme builder](https://ui.shadcn.com/create) is a visual editor: you pick a base color, adjust the palette for light and dark mode, and set the corner radius, with a live preview of real shadcn components (buttons, cards, inputs, etc.) so you can see the result before applying anything. Once you are happy with it, open the **Copy** section of the page: it gives you a ready-to-run command in the form:
+
+```npm
+npx shadcn@latest add <generated-command>
 ```
 
-For local fonts, copy the files to `public/fonts/` and declare an `@font-face` in `index.css`.
+Running this command from the root of your project fetches your generated theme and overwrites the color/radius variables in `styles.css` with it, as described in <DynamicLink href="/start/templates">Templates → Customise the style</DynamicLink>.
 
-Example:
+Once you have that generated code applied to your project, run:
 
-```css title="index.css"
-@font-face {
-    font-family: "MyCustomFont";
-    src:
-        url("/fonts/MyCustomFont-Regular.woff2") format("woff2"),
-        url("/fonts/MyCustomFont-Regular.woff") format("woff");
-    font-weight: 400;
-    font-style: normal;
-}
+```npm
+npm run ui:reinit
 ```
 
-## Set the global font and sizes
+This force-reinstalls every shadcn component already in your project straight from the shadcn registry, using your updated `styles.css` and `components.json`, and reformats the source files afterwards. It keeps all components consistent with the new theme, instead of leaving them on whatever variables they were built with.
 
-In `index.css` (or your global stylesheet) set the font family and — if desired — CSS variables for sizes.
+### tweakcn
 
-Example:
+[tweakcn](https://tweakcn.com/) is a community-made alternative to the official theme builder. It covers the same colors and radius, but adds live editing of fonts and shadows too, and comes with a gallery of ready-made presets you can start from instead of building a palette from scratch. It also exports its result as CSS variables, so you paste the output into `styles.css` the same way, and can follow it with `npm run ui:reinit`.
 
-```css title="index.css"
-@import "tailwindcss";
-@plugin "@tailwindcss/typography";
-@plugin "tailwindcss-motion";
-
-:root {
-    --ui-font-family:
-        "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto; /* [!code ++] */
-    --ui-font-size: 16px; /* [!code ++] */
-}
-
-html,
-body {
-    background-color: #242424;
-    height: 100%;
-}
-
-body {
-    margin: 0;
-    min-height: 100vh;
-    display: flex;
-    overflow: hidden;
-}
-
-@layer base {
-    /* [!code ++] */
-    html {
-        font-size: 16px;
-    } /* [!code ++] */
-    body {
-        font-family: var(--ui-font-family);
-    } /* [!code ++] */
-    .ui-text {
-        font-size: var(--ui-font-size);
-    } /* [!code ++] */
-} /* [!code ++] */
-```
-
-## Use Tailwind utilities in components
-
-Prefer Tailwind classes for consistency.
-
-Example:
-
-- React: `<div className="font-sans text-ui-base">UI text</div>`
-- Vue: `<div class="font-sans text-ui-base">UI text</div>`
-
-For UI parts that need a custom look (dialog box, choice menu) add classes like `font-display text-ui-lg`.
+These two are the theme generators most widely used with shadcn/ui today. If you come across others, the important thing is that they output plain CSS variables (or a shadcn registry command) — anything in that format drops into `styles.css` the same way.
