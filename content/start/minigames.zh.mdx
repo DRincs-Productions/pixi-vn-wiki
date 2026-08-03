@@ -5,34 +5,32 @@ description: 介绍如何在Pixi'VN中集成小游戏，涵盖最佳实践、生
 
 import { SnakeExample } from "@/components/minigame-examples";
 
-<Callout type="info" name="AI">
+:::tip[AI]
 
 点击上方按钮，你还可以用 AI 快速生成属于自己的小游戏原型。
 
-</Callout>
+:::
 
 相比纯文字叙述，互动故事的魅力在于：玩家可以在剧情间隙稍作休息，通过小游戏与故事世界产生更深的互动。
 
-<Callout type="info">
+:::tip
 
 在视觉小说中，小游戏通常作为剧情的延伸被触发。 为了在叙事界面与小游戏界面之间平滑切换，推荐将小游戏绑定到独立路由（例如 /minigame），并在剧情中通过导航跳转进入。 更多路由配置细节请参阅<DynamicLink href="/start/interface-navigate">此处</DynamicLink>。
 
-</Callout>
+:::
 
 这里有一些提示：
 
-* 善用`@drincs/pixi-vn/pixi.js`提供的子模块：如 Graphics、Sprite、Text 等组件，可快速构建游戏画面。 `@drincs/pixi-vn/pixi.js`本质是PixiJS的封装导入，因此你可自由使用 PixiJS 的全部能力。
-* 使用<DynamicLink href="/start/interface#adding-pixijs-ui-layers">PixiJS Layers</DynamicLink>为小游戏创建独立图层。 这样，你就可以将其与视觉小说主界面解耦管理。
-* 通过`Ticker`类控制帧更新，同步处理游戏状态变化。
-* 借助`window.addEventListener`响应键盘、鼠标等交互事件。
-* 使用HTML元素创建UI，如按钮、分数面板、游戏结束提示等。
-* Pixi'VN不会自动保存图层状态，如果使用PixiJS Layers，请自行管理小游戏的状态 将状态保存在变量中，并在小游戏重新启动时恢复。
+* Use PixiJS directly — either the `pixi.js` package itself or the `@drincs/pixi-vn/pixi.js` submodule that re-exports it — with components such as `Graphics`, `Sprite`, and `Text`, combined with <DynamicLink href="/start/interface#adding-pixijs-ui-layers">PixiJS Layers</DynamicLink> to create a separate layer for your minigame, managed independently from the main visual novel interface.
+* Use hotkeys to handle keyboard input for your minigame controls. See <DynamicLink href="/start/hotkeys">Hotkeys</DynamicLink> to learn how to set them up.
+* It is always recommended not to use PixiJS to build the UI (buttons, score displays, game over messages, ...); use a framework such as <DynamicLink href="/start/interface-react">React</DynamicLink> or <DynamicLink href="/start/interface-vue">Vue</DynamicLink> instead.
+* Saving and restoring the minigame's current state is the developer's responsibility.
 
-<Callout title="模板" type="info">
+:::tip[模板]
 
 `useMinigame`是一个自定义钩子，可帮助管理小游戏的生命周期，包括启动、更新和清理资源。 它已存在于所有模板。
 
-</Callout>
+:::
 
 例如：
 
@@ -40,7 +38,7 @@ import { SnakeExample } from "@/components/minigame-examples";
 import { Layer } from "@drincs/pixi-vn";
 import { Graphics, Ticker } from "@drincs/pixi-vn/pixi.js";
 import { useCallback, useMemo, useRef, useState } from "react";
-import useMinigame from "../hooks/useMinigame";
+import useMinigame from "@/lib/hooks/minigame-hooks";
 
 export default function MiniGame() {
     const ticker = useMemo(() => new Ticker(), []);
@@ -120,13 +118,13 @@ export default function MiniGame() {
 }
 ```
 
-```ts tab="hooks/useMinigame.ts"
-import { canvas, Layer } from "@drincs/pixi-vn";
-import { Container } from "@drincs/pixi-vn/pixi.js";
+```ts tab="lib/hooks/minigame-hooks.ts"
+import { CANVAS_MINIGAME_LAYER_NAME } from "@/constants";
+import { canvas, type Layer } from "@drincs/pixi-vn";
+import { Container } from "pixi.js";
 import { useEffect, useRef } from "react";
-import { CANVAS_MINIGAME_LAYER_NAME } from "../constans";
 
-export default function useMinigame(
+export function useMinigame(
     game: (layer: Layer) => void,
     props?: {
         onStart?: () => Promise<void>;
@@ -185,11 +183,11 @@ export default function useMinigame(
 
 以下是一些示例：
 
-<Callout type="info">
+:::tip
 
 The Pixi’VN Team welcomes new proposals and contributions to make this library even more complete. 欢迎在下面的聊天中分享或提出你自己的小游戏实施方案！
 
-</Callout>
+:::
 
 <Accordions>
 
@@ -197,9 +195,9 @@ The Pixi’VN Team welcomes new proposals and contributions to make this library
 
 ```tsx tab="React"
 import { canvas, Layer } from "@drincs/pixi-vn";
-import { Graphics, Ticker } from "@drincs/pixi-vn/pixi.js";
+import { Graphics, Ticker } from "pixi.js";
 import { useCallback, useMemo, useRef, useState } from "react";
-import useMinigame from "../hooks/useMinigame";
+import useMinigame from "@/lib/hooks/minigame-hooks";
 
 export default function SnakeGame() {
     const ticker = useMemo(() => new Ticker(), []);
