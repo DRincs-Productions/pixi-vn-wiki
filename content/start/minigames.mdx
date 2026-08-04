@@ -15,7 +15,7 @@ The beauty of an interactive story compared to normal text is that you can take 
 
 :::tip
 
-Minigames in visual novels are typically launched during the narrative. To switch between the narrative UI and the minigame UI, it is recommended to link the minigame to a route (e.g., "/minigame") and navigate to it from the story. More information is available <DynamicLink href="/start/interface-navigate">here</DynamicLink>.
+Minigames in visual novels are typically launched during the narrative. To switch between the narrative UI and the minigame UI, it is recommended to link the minigame to a route (e.g., "/minigame/snake") and navigate to it from the story. More information is available <DynamicLink href="/start/interface-navigate">here</DynamicLink>.
 
 :::
 
@@ -25,6 +25,53 @@ Here are some tips:
 - Use hotkeys to handle keyboard input for your minigame controls. See <DynamicLink href="/start/hotkeys">Hotkeys</DynamicLink> to learn how to set them up.
 - It is always recommended not to use PixiJS to build the UI (buttons, score displays, game over messages, ...); use a framework such as <DynamicLink href="/start/interface-react">React</DynamicLink> or <DynamicLink href="/start/interface-vue">Vue</DynamicLink> instead.
 - Saving and restoring the minigame's current state is the developer's responsibility.
+- Since a minigame is its own route, a project usually ends up with more than one of them under the same `/minigame` path (e.g. `/minigame/snake`, `/minigame/quiz`); use <DynamicLink href="/start/interface-navigate">TanStack Router</DynamicLink>'s file-based routing to share logic between them instead of duplicating it in every minigame (see below).
+
+<Accordions>
+
+<Accordion title="Sharing menu and logic between multiple minigame routes" id="minigame-routes-layout">
+
+Since a minigame is its own route, a project usually ends up with more than one of them under the
+same `/minigame` path (e.g. `/minigame/snake`, `/minigame/quiz`). With
+
+<DynamicLink href="/start/interface-navigate">TanStack Router</DynamicLink>'s
+file-based routing, you can factor out anything shared by every minigame
+(pausing narration/audio while it's open, common hotkeys, a shared HUD wrapper,
+...) into a single pathless layout route, `src/routes/minigame.tsx`, the same
+way the official templates already do for `/game` (`src/routes/game.tsx` wraps
+every `/game/*` screen with `<Outlet />
+`):
+
+```tsx title="src/routes/minigame.tsx"
+import { createFileRoute, Outlet } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/minigame")({
+    component: MinigameLayout,
+});
+
+function MinigameLayout() {
+    // hooks/providers shared by every minigame go here (e.g. pause narration audio)
+    return <Outlet />;
+}
+```
+
+Each individual minigame then only needs its own file under `src/routes/minigame/`, which
+
+<DynamicLink href="/start/interface-navigate">TanStack Router</DynamicLink>
+turns into the actual route:
+
+```tsx title="src/routes/minigame/snake.tsx"
+import { createFileRoute } from "@tanstack/react-router";
+import SnakeGame from "@/screens/minigames/SnakeGame";
+
+export const Route = createFileRoute("/minigame/snake")({
+    component: SnakeGame,
+});
+```
+
+</Accordion>
+
+</Accordions>
 
 :::tip[Templates]
 
@@ -34,14 +81,19 @@ Here are some tips:
 
 For example:
 
-```tsx tab="React"
+```tsx title="React" tab="src/routes/minigame/example.tsx"
 import { Layer } from "@drincs/pixi-vn";
 import { Graphics, Ticker } from "@drincs/pixi-vn/pixi.js";
+import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 import { useHotkey } from "@tanstack/react-hotkeys";
 import useMinigame from "@/lib/hooks/minigame-hooks";
 
-export default function MiniGame() {
+export const Route = createFileRoute("/minigame/example")({
+    component: MiniGame,
+});
+
+function MiniGame() {
     const [displayScore, setDisplayScore] = useState(0);
     const [gameOver, setGameOver] = useState(false);
 
@@ -201,9 +253,10 @@ The Pixi’VN Team welcomes new proposals and contributions to make this library
 
 <Accordion title="Snake (minigame)" id="snake">
 
-```tsx tab="React"
+```tsx title="React" tab="src/routes/minigame/snake.tsx"
 import { canvas, Layer } from "@drincs/pixi-vn";
 import { Graphics, Ticker } from "pixi.js";
+import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useHotkeys } from "@tanstack/react-hotkeys";
 import useMinigame from "@/lib/hooks/minigame-hooks";
@@ -211,7 +264,11 @@ import useMinigame from "@/lib/hooks/minigame-hooks";
 const gridSize = 20;
 const moveInterval = 150;
 
-export default function SnakeGame() {
+export const Route = createFileRoute("/minigame/snake")({
+    component: SnakeGame,
+});
+
+function SnakeGame() {
     const [displayScore, setDisplayScore] = useState(0);
     const [gameOver, setGameOver] = useState(false);
 
