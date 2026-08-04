@@ -528,4 +528,50 @@ export async function addRefreshSave() {
 
 </Accordion>
 
+<Accordion title="Quick Save" id="quick-save">
+
+Quick save lets players save and restore progress instantly, usually bound to a hotkey (see <DynamicLink href="/start/hotkeys">Hotkeys</DynamicLink>), without opening the save menu.
+
+To keep quick saves separate from regular saves, reserve a fixed range of ids for them (for example, negative ids) and cycle through a limited number of slots: fill the first empty slot, then overwrite the least recently used one once all slots are full.
+
+For example:
+
+```ts title="lib/utils/save-utility.ts"
+const QUICK_SAVE_ID_START = -2;
+const QUICK_SAVE_SLOTS = 6;
+
+function getQuickSaveId(slotIndex: number): number {
+    return QUICK_SAVE_ID_START - slotIndex;
+}
+
+function getQuickSaveIds(): number[] {
+    return Array.from({ length: QUICK_SAVE_SLOTS }, (_, index) =>
+        getQuickSaveId(index),
+    );
+}
+
+export async function quickSaveGameToIndexDB(): Promise<
+    GameSaveData & { id: number }
+> {
+    const ids = getQuickSaveIds();
+    const slots = await Promise.all(ids.map((id) => getSaveFromIndexDB(id)));
+
+    let targetIndex = slots.findIndex((slot) => !slot);
+    if (targetIndex === -1) {
+        targetIndex = 0;
+        for (let index = 1; index < slots.length; index++) {
+            const slot = slots[index];
+            const oldest = slots[targetIndex];
+            if (slot && oldest && new Date(slot.date) < new Date(oldest.date)) {
+                targetIndex = index;
+            }
+        }
+    }
+
+    return saveGameToIndexDB({ id: ids[targetIndex] });
+}
+```
+
+</Accordion>
+
 </Accordions>
