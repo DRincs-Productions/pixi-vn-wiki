@@ -3,31 +3,31 @@ title: 存档与读档
 description: 介绍如何在 Pixi'VN 中实现游戏进度保存与加载，涵盖文件导出、IndexedDB使用，以及网页游戏的自动存档策略。
 ---
 
-<Callout type="info" title="模板">
+存档与读档是视觉小说的核心功能之一——它让玩家能随时保存进度，并在之后继续体验故事。 This is essential for story-driven games, allowing players to resume the story from where they left off.
+
+## 创建存档
+
+:::tip[模板]
 
 所有官方模板均已内置`createGameSave`与`loadSave`函数。 具体实现可参考`utils/save-utility.ts`。
 
-</Callout>
-
-存档与读档是视觉小说的核心功能之一——它让玩家能随时保存进度，并在之后继续体验故事。 对于篇幅较长、分支丰富的作品而言，这一功能几乎是必不可少的。
-
-## 创建存档
+:::
 
 要创建新的存档，使用`Game.exportGameState()`。 该方法会返回一个包含当前游戏状态的对象，你可将其保存为文件或写入数据库。
 
 实用建议：为存档文件添加额外信息，如存档名称、创建时间，以及当前游戏画面的截图，能显著提升玩家的管理体验。
 
-<Callout title="模板" type="info">
+:::tip[模板]
 
 要生成缩略图，使用`canvas.extractImage()`。 它会返回当前画布的 base64 字符串，可直接用作存档预览图。
 
-</Callout>
+:::
 
 例如：
 
-```ts tab="utils/save-utility.ts"
+```ts tab="lib/utils/save-utility.ts"
+import type GameSaveData from "@/models/GameSaveData";
 import { Game } from "@drincs/pixi-vn";
-import GameSaveData from "../models/GameSaveData";
 
 export function createGameSave(options?: {
     image?: string;
@@ -45,7 +45,7 @@ export function createGameSave(options?: {
 ```
 
 ```ts tab="models/GameSaveData.ts"
-import { GameState } from "@drincs/pixi-vn";
+import type { GameState } from "@drincs/pixi-vn";
 
 export default interface GameSaveData {
     saveData: GameState;
@@ -79,7 +79,7 @@ export async function loadSave(
 }
 ```
 
-## FAQ
+## 其他功能
 
 <Accordions>
 
@@ -142,7 +142,7 @@ export function loadGameSaveFromFile(
 
 </Accordion>
 
-<Accordion title="indexeddb" id="indexeddb">
+<Accordion title="IndexedDB" id="indexeddb">
 
 什么是**IndexedDB**？IndexedDB 是一种浏览器原生提供的 API，用于在本地存储大量结构化数据——包括文件、二进制大对象（Blobs）等。借助它，你可以高效地保存与读取游戏状态，无需依赖服务器，特别适合网页游戏的离线存档、进度持久化等场景 。
 
