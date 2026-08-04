@@ -3,9 +3,7 @@ title: Save and load
 description: This page explains how to implement saving and loading game progress in Pixi’VN, including file export, IndexedDB usage, and auto-save strategies for browser games.
 ---
 
-Saving and loading is a core feature that lets players save their progress and continue later. This is essential for story-driven games, allowing players to resume the story from where they left off.
-
-## Create
+Saving and loading progress is a core feature of most games, and it's especially important in story-driven games, where players expect to close the game mid-story and pick it up again exactly where they left off. In Pixi’VN, a save is a plain, serializable snapshot of the whole game state — narration position, canvas, sound, and any custom data you track — so you're free to persist it however suits your project: a downloadable file, a database, or the browser's local storage.
 
 :::tip[Templates]
 
@@ -13,13 +11,17 @@ The `createGameSave` and `loadSave` functions are already implemented in all tem
 
 :::
 
-To create a save, use `Game.exportGameState()`. This returns an object with the game data, which you can store in a file or database.
+<Accordions>
 
-Tip: Add extra info to your save file, such as the save name, creation date, and a screenshot of the current game state.
+<Accordion title="Create" id="create">
+
+To create a save, use `Game.exportGameState()`. It returns an object with the current game state, which you can then store in a file, a database, or any storage of your choice.
+
+Tip: Enrich the save with extra metadata — such as a name, the creation date, and a screenshot of the current game state — so it can be displayed nicely in a save/load menu.
 
 :::tip[Templates]
 
-To generate an image, use `canvas.extractImage()`. This returns a base64 string of the current canvas, which you can use as a screenshot.
+To generate a screenshot, use `canvas.extractImage()`. This returns a base64 string of the current canvas.
 
 :::
 
@@ -56,12 +58,14 @@ export default interface GameSaveData {
 }
 ```
 
-## Load
+</Accordion>
 
-To load a save, use `Game.restoreGameState`. This function has the following parameters:
+<Accordion title="Load" id="load">
 
-- `saveData`: The save data object to restore the game state.
-- `navigate`: <DynamicLink href="/start/interface-navigate">A function to navigate to a specific route</DynamicLink> after loading the save.
+To restore a save, use `Game.restoreGameState()`. It takes the following parameters:
+
+- `saveData`: The save data object to restore the game state from.
+- `navigate`: <DynamicLink href="/start/interface-navigate">A function to navigate to a specific route</DynamicLink>, called after the save has been restored.
 
 For example:
 
@@ -78,6 +82,10 @@ export async function loadSave(
     await Game.restoreGameState(saveData.saveData, navigate);
 }
 ```
+
+</Accordion>
+
+</Accordions>
 
 ## Other features
 
