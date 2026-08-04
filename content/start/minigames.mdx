@@ -42,9 +42,23 @@ import { useHotkey } from "@tanstack/react-hotkeys";
 import useMinigame from "@/lib/hooks/minigame-hooks";
 
 export default function MiniGame() {
-    const ticker = useMemo(() => new Ticker(), []);
     const [displayScore, setDisplayScore] = useState(0);
     const [gameOver, setGameOver] = useState(false);
+
+    const ticker = useMemo(() => {
+        const ticker = new Ticker();
+
+        const endGame = () => {
+            ticker.stop();
+            setGameOver(true);
+        };
+
+        ticker.add(({ deltaMS }) => {
+            // Update game logic here
+        });
+
+        return ticker;
+    }, []);
 
     useHotkey(
         "ArrowUp",
@@ -56,14 +70,6 @@ export default function MiniGame() {
 
     const game = useCallback(
         (layer: Layer) => {
-            const endGame = () => {
-                ticker.stop();
-                setGameOver(true);
-            };
-
-            ticker.add(({ deltaMS }) => {
-                // Update game logic here
-            });
             ticker.start();
         },
         [ticker], // They must not be changed during the game otherwise the game will restart
@@ -202,8 +208,10 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { useHotkeys } from "@tanstack/react-hotkeys";
 import useMinigame from "@/lib/hooks/minigame-hooks";
 
+const gridSize = 20;
+const moveInterval = 150;
+
 export default function SnakeGame() {
-    const ticker = useMemo(() => new Ticker(), []);
     const [displayScore, setDisplayScore] = useState(0);
     const [gameOver, setGameOver] = useState(false);
 
@@ -240,96 +248,111 @@ export default function SnakeGame() {
         },
     ]);
 
+    // Populated by `game(layer)` once the minigame layer is created
+    const layerRef = useRef<Layer>(null!);
+    const snakeRef = useRef<Graphics[]>([]);
+    const appleRef = useRef<Graphics>(null!);
+
+    const placeApple = useCallback(() => {
+        const apple = appleRef.current;
+        const cols = Math.floor(canvas.width / gridSize);
+        const rows = Math.floor(canvas.height / gridSize);
+        apple.x = Math.floor(Math.random() * cols) * gridSize;
+        apple.y = Math.floor(Math.random() * rows) * gridSize;
+
+        // Avoid placing the apple on top of the snake
+        for (let segment of snakeRef.current) {
+            if (segment.x === apple.x && segment.y === apple.y) {
+                placeApple();
+                return;
+            }
+        }
+    }, []);
+
+    const ticker = useMemo(() => {
+        const ticker = new Ticker();
+        let elapsed = 0;
+
+        const endGame = () => {
+            ticker.stop();
+            setGameOver(true);
+        };
+
+        ticker.add(({ deltaMS }) => {
+            const snake = snakeRef.current;
+            const apple = appleRef.current;
+            const head = snake[0];
+
+            elapsed += deltaMS;
+            if (elapsed < moveInterval) return;
+            elapsed = 0;
+
+            // Move the body
+            for (let i = snake.length - 1; i > 0; i--) {
+                snake[i].position.set(snake[i - 1].x, snake[i - 1].y);
+            }
+
+            // Move the head
+            head.x += directionRef.current.x * gridSize;
+            head.y += directionRef.current.y * gridSize;
+
+            // Collision with the wall
+            if (
+                head.x < 0 ||
+                head.y < 0 ||
+                head.x >= canvas.width ||
+                head.y >= canvas.height
+            ) {
+                endGame();
+                return;
+            }
+
+            // Collision with the body
+            for (let i = 1; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) {
+                    endGame();
+                    return;
+                }
+            }
+
+            // Eat the apple
+            if (head.x === apple.x && head.y === apple.y) {
+                const newSegment = new Graphics();
+                newSegment
+                    .rect(0, 0, gridSize, gridSize)
+                    .fill({ color: 0x00ff00 });
+                newSegment.position.set(head.x, head.y);
+                layerRef.current.addChild(newSegment);
+                snake.push(newSegment);
+
+                setDisplayScore((prev) => prev + 1);
+                placeApple();
+            }
+        });
+
+        return ticker;
+    }, [placeApple]);
+
     const game = useCallback(
         (layer: Layer) => {
-            const gridSize = 20;
-            const snake: Graphics[] = [];
-            const moveInterval = 150;
-            let elapsed = 0;
+            layerRef.current = layer;
 
             const head = new Graphics();
             head.rect(0, 0, gridSize, gridSize).fill({ color: 0x00ff00 });
             head.x = 200;
             head.y = 200;
             layer.addChild(head);
-            snake.push(head);
+            snakeRef.current = [head];
 
             const apple = new Graphics();
             apple.rect(0, 0, gridSize, gridSize).fill({ color: 0xff0000 });
             layer.addChild(apple);
-
-            const placeApple = () => {
-                const cols = Math.floor(canvas.width / gridSize);
-                const rows = Math.floor(canvas.height / gridSize);
-                apple.x = Math.floor(Math.random() * cols) * gridSize;
-                apple.y = Math.floor(Math.random() * rows) * gridSize;
-
-                // Avoid placing the apple on top of the snake
-                for (let segment of snake) {
-                    if (segment.x === apple.x && segment.y === apple.y) {
-                        placeApple();
-                        return;
-                    }
-                }
-            };
+            appleRef.current = apple;
             placeApple();
-
-            const endGame = () => {
-                ticker.stop();
-                setGameOver(true);
-            };
-
-            ticker.add(({ deltaMS }) => {
-                elapsed += deltaMS;
-                if (elapsed < moveInterval) return;
-                elapsed = 0;
-
-                // Move the body
-                for (let i = snake.length - 1; i > 0; i--) {
-                    snake[i].position.set(snake[i - 1].x, snake[i - 1].y);
-                }
-
-                // Move the head
-                head.x += directionRef.current.x * gridSize;
-                head.y += directionRef.current.y * gridSize;
-
-                // Collision with the wall
-                if (
-                    head.x < 0 ||
-                    head.y < 0 ||
-                    head.x >= canvas.width ||
-                    head.y >= canvas.height
-                ) {
-                    endGame();
-                    return;
-                }
-
-                // Collision with the body
-                for (let i = 1; i < snake.length; i++) {
-                    if (head.x === snake[i].x && head.y === snake[i].y) {
-                        endGame();
-                        return;
-                    }
-                }
-
-                // Eat the apple
-                if (head.x === apple.x && head.y === apple.y) {
-                    const newSegment = new Graphics();
-                    newSegment
-                        .rect(0, 0, gridSize, gridSize)
-                        .fill({ color: 0x00ff00 });
-                    newSegment.position.set(head.x, head.y);
-                    layer.addChild(newSegment);
-                    snake.push(newSegment);
-
-                    setDisplayScore((prev) => prev + 1);
-                    placeApple();
-                }
-            });
 
             ticker.start();
         },
-        [ticker],
+        [ticker, placeApple], // They must not be changed during the game otherwise the game will restart
     );
 
     const options = useMemo(
