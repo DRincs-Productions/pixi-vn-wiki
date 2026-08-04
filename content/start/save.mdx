@@ -66,7 +66,7 @@ To restore a save, use [`Game.restoreGameState`](/jsdoc/pixi-vn/index/namespaces
 
 For example:
 
-```ts tab="utils/save-utility.ts"
+```ts tab="lib/utils/save-utility.ts"
 import { Game } from "@drincs/pixi-vn";
 import { LOADING_ROUTE } from "../constans";
 import GameSaveData from "../models/GameSaveData";
@@ -94,10 +94,8 @@ You can export the save data to a file for backup or sharing.
 
 For example:
 
-```ts tab="utils/save-utility.ts"
-import { NavigateFunction } from "react-router-dom";
-import { LOADING_ROUTE, NARRATION_ROUTE } from "../constans";
-import GameSaveData from "../models/GameSaveData";
+```ts tab="lib/utils/save-utility.ts"
+import GameSaveData from "@/models/GameSaveData";
 
 const SAVE_FILE_EXTENSION = "json";
 
@@ -113,10 +111,7 @@ export function downloadGameSave(data: GameSaveData = createGameSave()) {
     a.click();
 }
 
-export function loadGameSaveFromFile(
-    navigate: NavigateFunction,
-    afterLoad?: () => void,
-) {
+export function loadGameSaveFromFile(afterLoad?: (error?: Error) => void) {
     // load the save data from a JSON file
     const input = document.createElement("input");
     input.type = "file";
@@ -127,15 +122,14 @@ export function loadGameSaveFromFile(
             const reader = new FileReader();
             reader.onload = (e) => {
                 const jsonString = e.target?.result as string;
-                navigate(LOADING_ROUTE);
-                let data: GameSaveData = JSON.parse(jsonString);
+                const data: GameSaveData = JSON.parse(jsonString);
                 // load the save data from the JSON string
-                loadSave(data, navigate)
+                loadSave(data)
                     .then(() => {
-                        afterLoad && afterLoad();
+                        afterLoad?.();
                     })
-                    .catch(() => {
-                        navigate(NARRATION_ROUTE);
+                    .catch((err) => {
+                        afterLoad?.(err);
                     });
             };
             reader.readAsText(file);
@@ -153,7 +147,7 @@ export function loadGameSaveFromFile(
 
 For example:
 
-```ts tab="utils/save-utility.ts"
+```ts tab="lib/utils/save-utility.ts"
 import { canvas } from "@drincs/pixi-vn";
 import GameSaveData from "../models/GameSaveData";
 import {
@@ -484,7 +478,7 @@ export default function useClosePageDetector() {
 }
 ```
 
-```ts tab="utils/save-utility.ts"
+```ts tab="lib/utils/save-utility.ts"
 import { NavigateFunction } from "react-router-dom";
 import {
     LOADING_ROUTE,
