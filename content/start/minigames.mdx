@@ -37,7 +37,8 @@ For example:
 ```tsx tab="React"
 import { Layer } from "@drincs/pixi-vn";
 import { Graphics, Ticker } from "@drincs/pixi-vn/pixi.js";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { useHotkey } from "@tanstack/react-hotkeys";
 import useMinigame from "@/lib/hooks/minigame-hooks";
 
 export default function MiniGame() {
@@ -45,9 +46,13 @@ export default function MiniGame() {
     const [displayScore, setDisplayScore] = useState(0);
     const [gameOver, setGameOver] = useState(false);
 
-    const onKeyDown = useCallback((e: KeyboardEvent) => {
-        // Handle key down events for game controls
-    }, []);
+    useHotkey(
+        "ArrowUp",
+        () => {
+            // Handle key down events for game controls
+        },
+        { enabled: !gameOver },
+    );
 
     const game = useCallback(
         (layer: Layer) => {
@@ -55,8 +60,6 @@ export default function MiniGame() {
                 ticker.stop();
                 setGameOver(true);
             };
-
-            window.addEventListener("keydown", onKeyDown);
 
             ticker.add(({ deltaMS }) => {
                 // Update game logic here
@@ -71,10 +74,9 @@ export default function MiniGame() {
             onExit() {
                 ticker.stop();
                 ticker.destroy();
-                window.removeEventListener("keydown", onKeyDown);
             },
         }),
-        [ticker, onKeyDown], // They must not be changed during the game otherwise the game will restart
+        [ticker], // They must not be changed during the game otherwise the game will restart
     );
 
     const { loading } = useMinigame(game, options);
@@ -197,6 +199,7 @@ The Pixi’VN Team welcomes new proposals and contributions to make this library
 import { canvas, Layer } from "@drincs/pixi-vn";
 import { Graphics, Ticker } from "pixi.js";
 import { useCallback, useMemo, useRef, useState } from "react";
+import { useHotkeys } from "@tanstack/react-hotkeys";
 import useMinigame from "@/lib/hooks/minigame-hooks";
 
 export default function SnakeGame() {
@@ -214,16 +217,28 @@ export default function SnakeGame() {
         }
     };
 
-    const onKeyDown = useCallback((e: KeyboardEvent) => {
-        if (e.key === "ArrowUp" && directionRef.current.y === 0)
-            setDirection(0, -1);
-        else if (e.key === "ArrowDown" && directionRef.current.y === 0)
-            setDirection(0, 1);
-        else if (e.key === "ArrowLeft" && directionRef.current.x === 0)
-            setDirection(-1, 0);
-        else if (e.key === "ArrowRight" && directionRef.current.x === 0)
-            setDirection(1, 0);
-    }, []);
+    useHotkeys([
+        {
+            hotkey: "ArrowUp",
+            callback: () => setDirection(0, -1),
+            options: { enabled: !gameOver },
+        },
+        {
+            hotkey: "ArrowDown",
+            callback: () => setDirection(0, 1),
+            options: { enabled: !gameOver },
+        },
+        {
+            hotkey: "ArrowLeft",
+            callback: () => setDirection(-1, 0),
+            options: { enabled: !gameOver },
+        },
+        {
+            hotkey: "ArrowRight",
+            callback: () => setDirection(1, 0),
+            options: { enabled: !gameOver },
+        },
+    ]);
 
     const game = useCallback(
         (layer: Layer) => {
@@ -263,8 +278,6 @@ export default function SnakeGame() {
                 ticker.stop();
                 setGameOver(true);
             };
-
-            window.addEventListener("keydown", onKeyDown);
 
             ticker.add(({ deltaMS }) => {
                 elapsed += deltaMS;
@@ -324,10 +337,9 @@ export default function SnakeGame() {
             onExit() {
                 ticker.stop();
                 ticker.destroy();
-                window.removeEventListener("keydown", onKeyDown);
             },
         }),
-        [ticker, onKeyDown],
+        [ticker],
     );
 
     useMinigame(game, options);
