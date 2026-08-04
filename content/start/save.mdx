@@ -214,19 +214,19 @@ export async function getLastSaveFromIndexDB(): Promise<
     );
     const indexedDbSave = list.length > 0 ? list[0] : null;
 
-    const refreshJsonString = localStorage.getItem(
-        REFRESH_SAVE_LOCAL_STORAGE_KEY,
+    const autoExitJsonString = localStorage.getItem(
+        AUTO_EXIT_SAVE_LOCAL_STORAGE_KEY,
     );
-    if (refreshJsonString) {
-        const refreshSave: GameSaveData & { id: number } = {
-            ...(JSON.parse(refreshJsonString) as GameSaveData),
+    if (autoExitJsonString) {
+        const autoExitSave: GameSaveData & { id: number } = {
+            ...(JSON.parse(autoExitJsonString) as GameSaveData),
             id: -1,
         };
         if (
             !indexedDbSave ||
-            new Date(refreshSave.date) > new Date(indexedDbSave.date)
+            new Date(autoExitSave.date) > new Date(indexedDbSave.date)
         ) {
-            return refreshSave;
+            return autoExitSave;
         }
     }
 
@@ -469,7 +469,7 @@ To prevent this, you can generate a save automatically whenever the player leave
 For example:
 
 ```ts tab="lib/hooks/save-hooks.tsx"
-import { addRefreshSave } from "@/lib/utils/save-utility";
+import { addAutoExitSave } from "@/lib/utils/save-utility";
 import type { FileRouteTypes } from "@/routeTree.gen";
 import { useLocation } from "@tanstack/react-router";
 import { useCallback, useEffect } from "react";
@@ -489,7 +489,7 @@ export function useAutoSaveOnPageClose(): void {
         if ((location.pathname as FileRouteTypes["fullPaths"]) === "/") {
             return;
         }
-        addRefreshSave();
+        addAutoExitSave();
     }, [location.pathname]);
 
     useEffect(() => {
@@ -515,13 +515,13 @@ export function useAutoSaveOnPageClose(): void {
 ```
 
 ```ts tab="lib/utils/save-utility.ts"
-const REFRESH_SAVE_LOCAL_STORAGE_KEY = "refresh_save";
+const AUTO_EXIT_SAVE_LOCAL_STORAGE_KEY = "auto_exit_save";
 
-export async function addRefreshSave() {
+export async function addAutoExitSave() {
     const data = createGameSave();
     const jsonString = JSON.stringify(data);
     if (jsonString) {
-        localStorage.setItem(REFRESH_SAVE_LOCAL_STORAGE_KEY, jsonString);
+        localStorage.setItem(AUTO_EXIT_SAVE_LOCAL_STORAGE_KEY, jsonString);
     }
 }
 ```
