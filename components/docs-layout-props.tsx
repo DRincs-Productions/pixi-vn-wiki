@@ -556,7 +556,7 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                         defaultOpen: true,
                         index: {
                             type: "page",
-                            name: t("distribution-website"),
+                            name: t("distribution-desktop-mobile"),
                             url: `${preUrl}/start/distribution-desktop-mobile`,
                         },
                         children: [
