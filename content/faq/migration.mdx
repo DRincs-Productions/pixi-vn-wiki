@@ -4,6 +4,53 @@ title: Migration guide
 
 ## pixi-vn
 
+### Migration from v1.8.x to v1.9.0
+
+In this release, several APIs that had been marked as deprecated for a while (with a documented
+replacement already available) have been removed.
+
+`canvas.addTickersSequence` no longer accepts `Repeat`/`Pause` steps — only `Ticker` instances. If you used them to loop or pause between steps, chain `Ticker`s by duration instead.
+
+```ts
+canvas.addTickersSequence("alien", [
+    new RotateTicker({ speed: 0.1, clockwise: true }, 2),
+    Pause(1), // [!code --]
+    new RotateTicker({ speed: 0.2, clockwise: false }, 2),
+    Repeat, // [!code --]
+]);
+```
+
+`forceCompleteBeforeNext` has been removed from the transition helpers (`showWithDissolve`, `moveIn`, `moveOut`, `zoomIn`, `zoomOut`, `pushIn`, `pushOut`, ...) and from ticker options. Use `completeOnContinue` instead, it is no longer just an alias for it.
+
+```ts
+await showWithDissolve("alice", "alice", {
+    forceCompleteBeforeNext: true, // [!code --]
+    completeOnContinue: true, // [!code ++]
+});
+```
+
+The deprecated `image` field on `AssetMemory` has been removed; use `alias`/`url` instead.
+
+The `navigate` overload of `Game.restoreGameState` has been removed. Configure navigation once via `Game.onNavigate` (or `Game.init({ navigate })`) instead of passing it to every call.
+
+```ts
+Game.restoreGameState(data, navigateTo); // [!code --]
+Game.restoreGameState(data); // [!code ++]
+```
+
+The singular `Game.onError` handler, deprecated since v1.6.0, has been removed. Use `Game.addOnError`/`Game.removeOnError`.
+
+```ts
+Game.onError((type, error, { notify, uiTransition }) => { // [!code --]
+    notify(uiTransition("allert_error_occurred"), { variant: "error" }); // [!code --]
+    console.error(`Error occurred: ${type}`, error); // [!code --]
+}); // [!code --]
+Game.addOnError((error, { notify, uiTransition }) => { // [!code ++]
+    notify(uiTransition("allert_error_occurred"), { variant: "error" }); // [!code ++]
+    console.error(`Error occurred`, error); // [!code ++]
+}); // [!code ++]
+```
+
 ### Migration from v1.7.x to v1.8.0
 
 In this version, it has been decided to migrate from `@pixi/sound` to `Tone.js` as the audio system. This decision was made to improve performance, stability, and flexibility of the audio system, as well as to resolve some known issues with `@pixi/sound`.
