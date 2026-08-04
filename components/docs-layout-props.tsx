@@ -543,6 +543,11 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                                 name: t("distribution-itchio"),
                                 url: `${preUrl}/start/distribution-itchio`,
                             },
+                            {
+                                type: "page",
+                                name: t("distribution-reddit"),
+                                url: `${preUrl}/start/distribution-reddit`,
+                            },
                         ],
                     },
                     {
