@@ -26,8 +26,95 @@ Here are some tips:
 - It is always recommended not to use PixiJS to build the UI (buttons, score displays, game over messages, ...); use a framework such as <DynamicLink href="/start/interface-react">React</DynamicLink> or <DynamicLink href="/start/interface-vue">Vue</DynamicLink> instead.
 - Saving and restoring the minigame's current state is the developer's responsibility.
 - Since a minigame is its own route, a project usually ends up with more than one of them under the same `/minigame` path (e.g. `/minigame/snake`, `/minigame/quiz`); use <DynamicLink href="/start/interface-navigate">TanStack Router</DynamicLink>'s file-based routing to share logic between them instead of duplicating it in every minigame (see below).
+- Starting a minigame is nothing more than navigating to its route from the story; if it needs a parameter (a difficulty, a level id, ...), pass it through that same route (see below).
 
 <Accordions>
+
+<Accordion title="Starting a minigame" id="minigame-start">
+
+Since a minigame lives on its own route (see above), starting it is just a navigation — normally
+triggered from a step, using the `navigate` function already available on
+<DynamicLink href="/start/labels#steplabelprops">`StepLabelProps`</DynamicLink>
+(<DynamicLink href="/start/interface-navigate">set up once</DynamicLink> in every official
+template):
+
+```ts title="content/labels/start.label.ts"
+export const startLabel = newLabel("start", [
+    ({ navigate }) => {
+        navigate({ to: "/minigame/snake" });
+    },
+]);
+```
+
+When the minigame ends, navigate back to the narrative route the same way — typically from the
+`onExit` callback passed to `useMinigame` (see below), or from a button in the minigame's
+game-over UI.
+
+</Accordion>
+
+<Accordion title="Passing parameters to a minigame (e.g. difficulty)" id="minigame-params">
+
+A minigame is often configurable from the story — a difficulty level, a level id, a seed, ... Since
+it's reached by navigating to a route, these are passed exactly like any other route parameter,
+using <DynamicLink href="/start/interface-navigate">TanStack Router</DynamicLink>: as a **search
+param** (query string) for optional/configuration values, or a **path param** when the value is
+really part of the route's identity.
+
+```tsx tab="Search param" title="src/routes/minigame/snake.tsx" groupId="minigame_param_style"
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/minigame/snake")({
+    validateSearch: (search: Record<string, unknown>) => ({
+        difficulty:
+            search.difficulty === "easy" || search.difficulty === "hard"
+                ? search.difficulty
+                : "normal",
+    }),
+    component: SnakeGame,
+});
+
+function SnakeGame() {
+    const { difficulty } = Route.useSearch();
+    // e.g. use `difficulty` to change `moveInterval` or scoring
+    return null;
+}
+```
+
+```tsx tab="Path param" title="src/routes/minigame/snake.$difficulty.tsx" groupId="minigame_param_style"
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/minigame/snake/$difficulty")({
+    component: SnakeGame,
+});
+
+function SnakeGame() {
+    const { difficulty } = Route.useParams();
+    return null;
+}
+```
+
+And from the step that launches the minigame, pass the value the same way:
+
+```ts tab="Search param" title="content/labels/start.label.ts" groupId="minigame_param_style"
+export const startLabel = newLabel("start", [
+    ({ navigate }) => {
+        navigate({ to: "/minigame/snake", search: { difficulty: "hard" } });
+    },
+]);
+```
+
+```ts tab="Path param" title="content/labels/start.label.ts" groupId="minigame_param_style"
+export const startLabel = newLabel("start", [
+    ({ navigate }) => {
+        navigate({
+            to: "/minigame/snake/$difficulty",
+            params: { difficulty: "hard" },
+        });
+    },
+]);
+```
+
+</Accordion>
 
 <Accordion title="Sharing menu and logic between multiple minigame routes" id="minigame-routes-layout">
 
