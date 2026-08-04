@@ -161,7 +161,6 @@ For example:
 import {
     deleteRowFromIndexDB,
     getLastRowFromIndexDB,
-    getListFromIndexDB,
     getRowFromIndexDB,
     INDEXED_DB_SAVE_TABLE,
     putRowIntoIndexDB,
@@ -200,37 +199,6 @@ export async function getSaveFromIndexDB(
     id: number,
 ): Promise<(GameSaveData & { id: number }) | null> {
     return await getRowFromIndexDB(INDEXED_DB_SAVE_TABLE, id);
-}
-
-export async function getLastSaveFromIndexDB(): Promise<
-    (GameSaveData & { id: number }) | null
-> {
-    const list = await getListFromIndexDB<GameSaveData & { id: number }>(
-        INDEXED_DB_SAVE_TABLE,
-        {
-            pagination: { limit: 1, offset: 0 },
-            order: { field: "date", direction: "prev" },
-        },
-    );
-    const indexedDbSave = list.length > 0 ? list[0] : null;
-
-    const autoExitJsonString = localStorage.getItem(
-        AUTO_EXIT_SAVE_LOCAL_STORAGE_KEY,
-    );
-    if (autoExitJsonString) {
-        const autoExitSave: GameSaveData & { id: number } = {
-            ...(JSON.parse(autoExitJsonString) as GameSaveData),
-            id: -1,
-        };
-        if (
-            !indexedDbSave ||
-            new Date(autoExitSave.date) > new Date(indexedDbSave.date)
-        ) {
-            return autoExitSave;
-        }
-    }
-
-    return indexedDbSave;
 }
 
 export async function deleteSaveFromIndexDB(id: number): Promise<void> {
@@ -525,6 +493,51 @@ export async function addAutoExitSave() {
     }
 }
 ```
+
+</Accordion>
+
+<Accordion title="Continue" id="continue">
+
+Most story-driven games show a "Continue" button in the main menu that jumps straight into the most recent save, without going through the load menu. Combined with the auto-exit save described above, this also lets players continue even if they closed the game via the browser instead of saving manually.
+
+To implement it, look up the most recent save — comparing the latest regular save against the auto-exit save, if any — and use it to enable/disable the button and to restore the game when the player clicks it.
+
+For example:
+
+```ts tab="lib/utils/save-utility.ts"
+export async function getLastSaveFromIndexDB(): Promise<
+    (GameSaveData & { id: number }) | null
+> {
+    const list = await getListFromIndexDB<GameSaveData & { id: number }>(
+        INDEXED_DB_SAVE_TABLE,
+        {
+            pagination: { limit: 1, offset: 0 },
+            order: { field: "date", direction: "prev" },
+        },
+    );
+    const indexedDbSave = list.length > 0 ? list[0] : null;
+
+    const autoExitJsonString = localStorage.getItem(
+        AUTO_EXIT_SAVE_LOCAL_STORAGE_KEY,
+    );
+    if (autoExitJsonString) {
+        const autoExitSave: GameSaveData & { id: number } = {
+            ...(JSON.parse(autoExitJsonString) as GameSaveData),
+            id: -1,
+        };
+        if (
+            !indexedDbSave ||
+            new Date(autoExitSave.date) > new Date(indexedDbSave.date)
+        ) {
+            return autoExitSave;
+        }
+    }
+
+    return indexedDbSave;
+}
+```
+
+Use it in the main menu to power a "Continue" button: disable the button when it returns `null`, and pass the result to [`loadSave`](#load) when the player clicks it.
 
 </Accordion>
 
