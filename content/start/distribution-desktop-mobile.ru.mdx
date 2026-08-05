@@ -27,17 +27,12 @@ Creating releases manually for every platform is difficult: it requires many too
 
 Tauri supports using GitHub Actions to automate release builds. GitHub Actions runs jobs on virtual machines (runners) that you configure with YAML workflow files. In a workflow you define the events that trigger the pipeline (for example, pushing a tag) and the list of commands the runner should execute.
 
-<Callout title="Mobile" type="warn">
+<Accordions>
 
-Currently, mobile builds via GitHub Actions are experimental.
+<Accordion title="desktop.yml workflow file" id="desktop-yml">
 
-</Callout>
-
-The <DynamicLink href="/start#project-initialization">multi-device templates</DynamicLink> include the file `/.github/workflows/tauri.yml`. That workflow builds release artifacts (installation packages) for multiple operating systems.
-
-```yml title=".github/workflows/tauri.yml"
-# https://tauri.app/distribute/pipelines/github/
-name: "publish"
+```yml title=".github/workflows/desktop.yml"
+name: "Build & Publish Desktop App"
 
 on:
     push:
@@ -45,84 +40,537 @@ on:
             - "v*"
 
 jobs:
+    # ── Create the release exactly once before the matrix starts ────────────────
+    create-release:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        outputs:
+            release_tag: ${{ github.ref_name }}
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: create release
+              run: |
+                  gh release view "${{ github.ref_name }}" 2>/dev/null || \
+                  gh release create "${{ github.ref_name }}" \
+                    --title "App v$(jq -r '.version' src-tauri/tauri.conf.json)" \
+                    --notes "See the assets to download this version and install." \
+                    2>/dev/null || \
+                  gh release view "${{ github.ref_name }}" > /dev/null
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    # ── Build and upload per platform ───────────────────────────────────────────
     publish-tauri:
+        needs: create-release
         permissions:
             contents: write
         strategy:
             fail-fast: false
             matrix:
                 include:
-                    - platform: "macos-latest" # for Arm based macs (M1 and above).
+                    - platform: "macos-latest"
                       args: "--target aarch64-apple-darwin"
-                    - platform: "macos-latest" # for Intel based macs.
+                      target: "aarch64-apple-darwin"
+                      arch: "aarch64"
+                    - platform: "macos-latest"
                       args: "--target x86_64-apple-darwin"
+                      target: "x86_64-apple-darwin"
+                      arch: "x86_64"
                     - platform: "ubuntu-22.04"
                       args: ""
+                      target: ""
+                      arch: "x64"
                     - platform: "windows-latest"
                       args: ""
-                    - platform: "macos-latest" # iOS
-                      args: "--target x86_64-apple-darwin"
-                      mobile: "ios"
-                    - platform: "ubuntu-22.04" # Android
-                      args: ""
-                      mobile: "android"
+                      target: ""
+                      arch: "x64"
 
         runs-on: ${{ matrix.platform }}
         steps:
             - uses: actions/checkout@v4
-
-            - name: install dependencies (ubuntu only)
-              if: matrix.platform == 'ubuntu-22.04' # This must match the platform value defined above.
-              run: |
-                  sudo apt-get update
-                  sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
             - name: setup node
               uses: actions/setup-node@v6
               with:
                   node-version: lts/*
 
-            - name: Update Java (only for Android builds)
-              if: matrix.mobile == 'android'
-              uses: actions/setup-java@v5
-              with:
-                  distribution: "temurin"
-                  java-version: "21"
-
-            - name: setup Android SDK (only for Android builds)
-              if: matrix.mobile == 'android'
-              uses: android-actions/setup-android@v3
-
             - name: install Rust stable
-              uses: dtolnay/rust-toolchain@stable # Set this to dtolnay/rust-toolchain@nightly
+              uses: dtolnay/rust-toolchain@stable
               with:
-                  # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
                   targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
+            - name: install dependencies (ubuntu only)
+              if: matrix.platform == 'ubuntu-22.04'
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
             - name: install frontend dependencies
-              # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
-              run: yarn install # change this to npm or pnpm depending on which one you use.
+              run: npm i
 
-            - name: Upload Tauri icons
-              run: npm run tauri icon public/pwa-512x512.png
-
-            - name: Rust cache
-              uses: swatinem/rust-cache@v2
-              with:
-                  workspaces: "./src-tauri -> target"
-
-            - uses: tauri-apps/tauri-action@v0
+            - name: build app
+              uses: tauri-apps/tauri-action@v0
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
-                  tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
-                  releaseName: "App v__VERSION__"
-                  releaseBody: "See the assets to download this version and install."
-                  releaseDraft: true
-                  prerelease: false
                   args: ${{ matrix.args }}
-                  mobile: ${{ matrix.mobile || null }}
+
+            # ── Linux: .deb + .AppImage (AppImage is already portable) ─────────────
+            - name: upload artifacts (Linux)
+              if: matrix.platform == 'ubuntu-22.04'
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  TAG: ${{ needs.create-release.outputs.release_tag }}
+              run: |
+                  upload_file() {
+                    local file="$1"
+                    local limit=$((1900 * 1024 * 1024))
+                    local size; size=$(stat -c%s "$file")
+                    if [ "$size" -gt "$limit" ]; then
+                      echo "Splitting $(basename "$file") (${size} bytes) into 1.9 GB parts..."
+                      split -b 1900m "$file" "${file}.part"
+                      for part in "${file}.part"*; do
+                        gh release upload "$TAG" "$part" --clobber
+                      done
+                    else
+                      gh release upload "$TAG" "$file" --clobber
+                    fi
+                  }
+                  find src-tauri/target/release/bundle -type f \
+                    \( -name "*.deb" -o -name "*.AppImage" -o -name "*.rpm" \) |
+                  while IFS= read -r f; do upload_file "$f"; done
+
+            # ── macOS: .dmg installer + portable .app.tar.gz ───────────────────────
+            - name: upload artifacts (macOS)
+              if: matrix.platform == 'macos-latest'
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  TAG: ${{ needs.create-release.outputs.release_tag }}
+              run: |
+                  BIN_NAME=$(grep '^name = ' src-tauri/Cargo.toml | head -1 | cut -d'"' -f2)
+                  VERSION=$(jq -r '.version' src-tauri/tauri.conf.json)
+                  ARCH="${{ matrix.arch }}"
+                  BUNDLE_DIR="src-tauri/target/${{ matrix.target }}/release/bundle"
+
+                  upload_file() {
+                    local file="$1"
+                    local limit=$((1900 * 1024 * 1024))
+                    local size; size=$(stat -f%z "$file")
+                    if [ "$size" -gt "$limit" ]; then
+                      echo "Splitting $(basename "$file") (${size} bytes) into 1.9 GB parts..."
+                      split -b 1900m "$file" "${file}.part"
+                      for part in "${file}.part"*; do
+                        gh release upload "$TAG" "$part" --clobber
+                      done
+                    else
+                      gh release upload "$TAG" "$file" --clobber
+                    fi
+                  }
+
+                  # DMG installer
+                  find "$BUNDLE_DIR/dmg" -name "*.dmg" |
+                  while IFS= read -r f; do upload_file "$f"; done
+
+                  # Portable: bundle .app into a tar.gz
+                  APP_PATH=$(find "$BUNDLE_DIR/macos" -maxdepth 1 -name "*.app" | head -1)
+                  PORTABLE="${BIN_NAME}_${VERSION}_macos_${ARCH}-portable.tar.gz"
+                  tar -czf "$PORTABLE" -C "$(dirname "$APP_PATH")" "$(basename "$APP_PATH")"
+                  upload_file "$PORTABLE"
+
+            # ── Windows: NSIS/.msi installers + portable .zip ──────────────────────
+            - name: upload artifacts (Windows)
+              if: matrix.platform == 'windows-latest'
+              shell: pwsh
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  $tag  = "${{ needs.create-release.outputs.release_tag }}"
+                  $ver  = (Get-Content src-tauri/tauri.conf.json | ConvertFrom-Json).version
+                  $name = (Select-String -Path src-tauri/Cargo.toml `
+                            -Pattern '^name = "(.+)"').Matches[0].Groups[1].Value
+
+                  function Upload-File($Path, $Tag) {
+                    $limitBytes = 1900 * 1MB
+                    $item = Get-Item $Path
+                    if ($item.Length -gt $limitBytes) {
+                      Write-Host "Splitting $($item.Name) ($($item.Length) bytes) into 1.9 GB parts..."
+                      $stream = [System.IO.File]::OpenRead($Path)
+                      $buf    = New-Object byte[] $limitBytes
+                      $i      = 0
+                      while (($n = $stream.Read($buf, 0, $buf.Length)) -gt 0) {
+                        $part = "$Path.part$($i.ToString('D3'))"
+                        $data = if ($n -eq $buf.Length) { $buf } else { $buf[0..($n - 1)] }
+                        [System.IO.File]::WriteAllBytes($part, $data)
+                        gh release upload $Tag $part --clobber
+                        $i++
+                      }
+                      $stream.Dispose()
+                    } else {
+                      gh release upload $Tag $Path --clobber
+                    }
+                  }
+
+                  # NSIS and MSI installers
+                  Get-ChildItem -Recurse src-tauri/target/release/bundle -Include "*.exe","*.msi" |
+                    ForEach-Object { Upload-File $_.FullName $tag }
+
+                  # Portable ZIP (single EXE, no installer)
+                  $zip = "${name}_${ver}_windows_x64-portable.zip"
+                  Compress-Archive -Path "src-tauri/target/release/$name.exe" -DestinationPath $zip
+                  Upload-File $zip $tag
 ```
+
+</Accordion>
+
+<Accordion title="mobile.yml workflow file" id="desktop-yml">
+
+:::tip[Mobile]
+
+Currently, mobile builds via GitHub Actions are experimental.
+
+:::
+
+```yml title=".github/workflows/mobile.yml"
+name: "Build Mobile App (Debug)"
+
+on:
+    push:
+        tags:
+            - "v*"
+    workflow_dispatch:
+
+jobs:
+    # ── Create the release exactly once before the builds start ──────────────────
+    create-release:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        outputs:
+            release_tag: ${{ github.ref_name }}
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: create release
+              run: |
+                  gh release view "${{ github.ref_name }}" 2>/dev/null || \
+                  gh release create "${{ github.ref_name }}" \
+                    --title "App v$(jq -r '.version' src-tauri/tauri.conf.json)" \
+                    --notes "See the assets to download this version and install." \
+                    2>/dev/null || \
+                  gh release view "${{ github.ref_name }}" > /dev/null
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    # ---------------------------------------------------------------------------
+    # Android debug — unsigned APK uploaded to the release
+    # ---------------------------------------------------------------------------
+    build-android:
+        needs: create-release
+        runs-on: ubuntu-22.04
+        permissions:
+            contents: write
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: setup node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: lts/*
+
+            - name: setup Java 17
+              uses: actions/setup-java@v4
+              with:
+                  distribution: "zulu"
+                  java-version: "17"
+
+            - name: setup Android SDK
+              uses: android-actions/setup-android@v3
+
+            - name: install Android NDK r27
+              run: sdkmanager "ndk;27.0.12077973"
+
+            - name: install Rust stable + Android targets
+              uses: dtolnay/rust-toolchain@stable
+              with:
+                  targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
+
+            - name: install Linux dependencies
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+            - name: install frontend dependencies
+              run: npm i
+
+            - name: init Tauri Android project
+              run: npx tauri android init
+              env:
+                  NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.12077973
+
+            - name: patch Android manifest (landscape + fullscreen)
+              run: |
+                  python3 << 'PYEOF'
+                  import glob, re
+
+                  manifest = glob.glob('src-tauri/gen/android/app/src/main/AndroidManifest.xml')[0]
+                  with open(manifest) as f:
+                      content = f.read()
+                  # Remove any pre-existing screenOrientation to avoid duplicates
+                  content = re.sub(r'\s+android:screenOrientation="[^"]*"', '', content)
+                  # Insert screenOrientation directly on the first <activity tag (robust, independent
+                  # of which other attributes Tauri generates)
+                  patched, n = re.subn(
+                      r'(<activity\b)',
+                      r'\1\n            android:screenOrientation="sensorLandscape"',
+                      content,
+                      count=1
+                  )
+                  if n == 0:
+                      print('WARNING: <activity> tag not found in manifest — orientation NOT patched')
+                  else:
+                      content = patched
+                      print(f'Patched {manifest} (screenOrientation=sensorLandscape)')
+                  with open(manifest, 'w') as f:
+                      f.write(content)
+
+                  # Tauri may generate styles.xml or themes.xml, and both a light (values/)
+                  # and dark (values-night/) variant — patch every variant we find so the
+                  # fullscreen flag doesn't silently no-op when the device is in dark mode.
+                  styles_candidates = (
+                      glob.glob('src-tauri/gen/android/app/src/main/res/values*/styles.xml') +
+                      glob.glob('src-tauri/gen/android/app/src/main/res/values*/themes.xml')
+                  )
+                  if not styles_candidates:
+                      print('Warning: no styles.xml/themes.xml found, skipping fullscreen patch')
+                  else:
+                      for styles in styles_candidates:
+                          with open(styles) as f:
+                              content = f.read()
+                          # Hide status bar (fullscreen) — kept as a best-effort theme hint,
+                          # but on targetSdk 35+ (edge-to-edge is enforced by the OS) this
+                          # alone has no effect; the real fix is the MainActivity.kt patch below.
+                          content = content.replace(
+                              '</style>',
+                              '    <item name="android:windowFullscreen">true</item>\n    </style>',
+                              1
+                          )
+                          with open(styles, 'w') as f:
+                              f.write(content)
+                          print(f'Patched {styles}')
+
+                  # Since this project's Android template targets SDK 35+, edge-to-edge display
+                  # is enforced by the OS and the theme-based windowFullscreen flag above no
+                  # longer hides the status bar (it's always drawn, transparent, over the
+                  # content). The only reliable way to hide it is to hide the system bars at
+                  # runtime via WindowInsetsControllerCompat in MainActivity.kt.
+                  activity_candidates = glob.glob(
+                      'src-tauri/gen/android/app/src/main/**/MainActivity.kt', recursive=True
+                  )
+                  if not activity_candidates:
+                      print('WARNING: MainActivity.kt not found — status bar hiding NOT patched')
+                  else:
+                      activity = activity_candidates[0]
+                      with open(activity) as f:
+                          content = f.read()
+
+                      new_imports = [
+                          'androidx.core.view.WindowCompat',
+                          'androidx.core.view.WindowInsetsCompat',
+                          'androidx.core.view.WindowInsetsControllerCompat',
+                      ]
+                      import_lines = list(re.finditer(r'^import .+$', content, re.MULTILINE))
+                      if import_lines:
+                          insert_at = import_lines[-1].end()
+                          addition = ''.join(
+                              f'\nimport {imp}' for imp in new_imports if imp not in content
+                          )
+                          content = content[:insert_at] + addition + content[insert_at:]
+
+                      if 'hideSystemBars' not in content:
+                          content = content.replace(
+                              'super.onCreate(savedInstanceState)',
+                              'super.onCreate(savedInstanceState)\n    hideSystemBars()',
+                              1
+                          )
+                          content = re.sub(
+                              r'\n}\s*$',
+                              '\n\n'
+                              '  override fun onWindowFocusChanged(hasFocus: Boolean) {\n'
+                              '    super.onWindowFocusChanged(hasFocus)\n'
+                              '    if (hasFocus) {\n'
+                              '      hideSystemBars()\n'
+                              '    }\n'
+                              '  }\n'
+                              '\n'
+                              '  private fun hideSystemBars() {\n'
+                              '    WindowCompat.setDecorFitsSystemWindows(window, false)\n'
+                              '    val controller = WindowInsetsControllerCompat(window, window.decorView)\n'
+                              '    controller.hide(WindowInsetsCompat.Type.systemBars())\n'
+                              '    controller.systemBarsBehavior =\n'
+                              '      WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE\n'
+                              '  }\n'
+                              '}\n',
+                              content,
+                              count=1
+                          )
+                      with open(activity, 'w') as f:
+                          f.write(content)
+                      print(f'Patched {activity} (hide system bars at runtime)')
+                  PYEOF
+
+            - name: build Android app
+              run: npx tauri android build --debug
+              env:
+                  NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.12077973
+
+            - name: upload APK to release
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  TAG: ${{ needs.create-release.outputs.release_tag }}
+              run: |
+                  find src-tauri/gen/android -name "*.apk" | while IFS= read -r f; do
+                    gh release upload "$TAG" "$f" --clobber
+                  done
+
+    # ---------------------------------------------------------------------------
+    # iOS debug — unsigned build uploaded to the release (best-effort)
+    # ---------------------------------------------------------------------------
+    build-ios:
+        needs: create-release
+        runs-on: macos-latest
+        permissions:
+            contents: write
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: setup node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: lts/*
+
+            - name: install Rust stable + iOS targets
+              uses: dtolnay/rust-toolchain@stable
+              with:
+                  targets: aarch64-apple-ios,aarch64-apple-ios-sim,x86_64-apple-ios
+
+            - name: install frontend dependencies
+              run: npm i
+
+            - name: init Tauri iOS project
+              run: npx tauri ios init
+
+            - name: disable code signing in Xcode project
+              run: |
+                  python3 << 'PYEOF'
+                  import glob, re
+                  pbxproj = glob.glob('src-tauri/gen/apple/*.xcodeproj/project.pbxproj')[0]
+                  with open(pbxproj) as f:
+                      content = f.read()
+                  sign_off = (
+                      '\n\t\t\t\tCODE_SIGN_IDENTITY = "";'
+                      '\n\t\t\t\tCODE_SIGNING_REQUIRED = NO;'
+                      '\n\t\t\t\tCODE_SIGNING_ALLOWED = NO;'
+                      '\n\t\t\t\tDEVELOPMENT_TEAM = "";'
+                  )
+                  content = re.sub(r'(buildSettings = \{)', r'\1' + sign_off, content)
+                  with open(pbxproj, 'w') as f:
+                      f.write(content)
+                  print(f'Patched {pbxproj}')
+                  PYEOF
+
+            - name: patch iOS Info.plist (landscape + hide status bar)
+              run: |
+                  python3 << 'PYEOF'
+                  import glob, re
+
+                  plists = glob.glob('src-tauri/gen/apple/*/Info.plist')
+                  if not plists:
+                      plists = glob.glob('src-tauri/gen/apple/*/*/Info.plist')
+                  for plist in plists:
+                      with open(plist) as f:
+                          content = f.read()
+
+                      # Remove any existing orientation / status bar keys so we can replace them
+                      for key in [
+                          'UISupportedInterfaceOrientations',
+                          'UISupportedInterfaceOrientations~ipad',
+                          'UIStatusBarHidden',
+                          'UIViewControllerBasedStatusBarAppearance',
+                      ]:
+                          content = re.sub(
+                              rf'\s*<key>{re.escape(key)}</key>\s*(<(true|false)/>|<array>.*?</array>)',
+                              '', content, flags=re.DOTALL
+                          )
+
+                      additions = (
+                          '\t<key>UIStatusBarHidden</key>\n'
+                          '\t<true/>\n'
+                          '\t<key>UIViewControllerBasedStatusBarAppearance</key>\n'
+                          '\t<false/>\n'
+                          '\t<key>UISupportedInterfaceOrientations</key>\n'
+                          '\t<array>\n'
+                          '\t\t<string>UIInterfaceOrientationLandscapeLeft</string>\n'
+                          '\t\t<string>UIInterfaceOrientationLandscapeRight</string>\n'
+                          '\t</array>\n'
+                          '\t<key>UISupportedInterfaceOrientations~ipad</key>\n'
+                          '\t<array>\n'
+                          '\t\t<string>UIInterfaceOrientationLandscapeLeft</string>\n'
+                          '\t\t<string>UIInterfaceOrientationLandscapeRight</string>\n'
+                          '\t</array>\n'
+                      )
+                      new_content, n = re.subn(
+                          r'</dict>\s*</plist>\s*$',
+                          additions + '</dict>\n</plist>\n',
+                          content.rstrip(),
+                          flags=re.DOTALL
+                      )
+                      if n == 0:
+                          print(f'WARNING: </dict></plist> not found in {plist} — orientation NOT patched')
+                      else:
+                          content = new_content
+                          print(f'Patched {plist}')
+                      with open(plist, 'w') as f:
+                          f.write(content)
+                  PYEOF
+
+            - name: build iOS app
+              run: npx tauri ios build --debug
+              # Export step fails without a signing team; archive still succeeds.
+              # We extract the .app from the .xcarchive below instead.
+              continue-on-error: true
+
+            - name: package and upload iOS app from archive
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  TAG: ${{ needs.create-release.outputs.release_tag }}
+              run: |
+                  BIN_NAME=$(grep '^name = ' src-tauri/Cargo.toml | head -1 | cut -d'"' -f2)
+                  VERSION=$(jq -r '.version' src-tauri/tauri.conf.json)
+
+                  ARCHIVE=$(find src-tauri/gen/apple/build -name "*.xcarchive" 2>/dev/null | head -1)
+                  if [ -z "$ARCHIVE" ]; then
+                    echo "No .xcarchive found — build may have failed before archiving"
+                    exit 1
+                  fi
+
+                  APP=$(find "$ARCHIVE/Products/Applications" -name "*.app" | head -1)
+                  if [ -z "$APP" ]; then
+                    echo "No .app found inside archive $ARCHIVE"
+                    exit 1
+                  fi
+
+                  mkdir Payload
+                  cp -r "$APP" Payload/
+                  IPA="${BIN_NAME}_${VERSION}_ios-debug.ipa"
+                  zip -r "$IPA" Payload/
+                  gh release upload "$TAG" "$IPA" --clobber
+```
+
+</Accordion>
+
+</Accordions>
 
 To trigger this workflow you need a GitHub repository for your project and a Git tag that starts with `v`. Например:
 
