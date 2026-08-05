@@ -25,45 +25,45 @@ This guide uses Cloudflare Pages as an example for hosting, deploying automatica
 name: Deploy to Cloudflare Pages
 
 on:
-  push:
-    branches: [deploy]
+    push:
+        branches: [deploy]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-      - name: Install and build
-        run: |
-          npm install
-          npm run build
-      - name: Archive Build
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: dist
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Use Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 20
+            - name: Install and build
+              run: |
+                  npm install
+                  npm run build
+            - name: Archive Build
+              uses: actions/upload-artifact@v4
+              with:
+                  name: dist
+                  path: dist
 
-  deploy:
-    name: Deploy
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Download Build
-        uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist
-      - name: Deploy
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=your-project-name --branch=main
+    deploy:
+        name: Deploy
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Download Build
+              uses: actions/download-artifact@v4
+              with:
+                  name: dist
+                  path: dist
+            - name: Deploy
+              uses: cloudflare/wrangler-action@v3
+              with:
+                  apiToken: ${{ secrets.CF_API_TOKEN }}
+                  accountId: ${{ secrets.CF_ACCOUNT_ID }}
+                  command: pages deploy dist --project-name=your-project-name --branch=main
 ```
 
 Replace `your-project-name` with your Cloudflare Pages project name, then push to the `deploy` branch to trigger your first deployment.
@@ -82,9 +82,31 @@ Replace `your-project-name` with your Cloudflare Pages project name, then push t
 
 Enabling installation as a "browser application" allows users to use your game as a standalone app on their device.
 
-If you use [Vite js](https://vitejs.dev/) as your build tool, you can add the [PWA Vite Plugin](https://vite-pwa-org.netlify.app/). See this [example](https://vite-pwa-org.netlify.app/guide/pwa-minimal-requirements.html#web-app-manifest).
+If you use [Vite js](https://vitejs.dev/) as your build tool, you can add the [PWA Vite Plugin](https://vite-pwa-org.netlify.app/).
 
-Otherwise, create a `manifest.json` file according to your framework's requirements.
+```ts title="vite.config.ts"
+import { defineConfig } from "vite";
+import { VitePWA } from "vite-plugin-pwa";
+
+export default defineConfig(() => ({
+    plugins: [
+        VitePWA({
+            manifest: {
+                name: "my-app-project-name",
+                short_name: "my-app-package-name",
+                description: "my-app-description",
+                theme_color: "#ffffff",
+                start_url: "/",
+                display: "fullscreen",
+                orientation: "landscape",
+                icons: [
+                    // ...
+                ],
+            },
+        }),
+    ],
+}));
+```
 
 </Accordion>
 
