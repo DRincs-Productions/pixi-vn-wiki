@@ -5,15 +5,38 @@ description: |
 ---
 
 import {
-    NativeJumpExample,
-    NativeCallExample,
-    JumpExample,
     CallExample,
+    JumpExample,
+    NativeCallExample,
+    NativeJumpExample,
 } from "@/components/ink-examples";
 
-What is a **`knot`**? As explained in the [official documentation](https://www.inklestudios.com/ink/web-tutorial/), the story is comprised of multiple linked sections which we call `knots` in ***ink* terminology**. The start of a `knot` is indicated in ***ink*** using at least two equals signs the left hand side `knot`'s name, and optionally on the right too (so for example `=== london ===`).
+<Accordions>
 
-Are there differences between `label` and `knot`? No, they are the same thing. In Pixi’VN, when you create a `knot` with ***ink***, a `label` will be created internally and saved in the registry.
+<Accordion title="What is a `knot`?" id="what-is-a-knot">
+
+As explained in the [official documentation](https://www.inklestudios.com/ink/web-tutorial/), the story is comprised of multiple linked sections which we call `knots` in ***ink* terminology**. The start of a `knot` is indicated in ***ink*** using at least two equals signs on the left hand side of the `knot`'s name, and optionally on the right too.
+
+```ink tab="ink"
+=== london ===
+```
+
+```txt tab="CLI"
+=== <knot_name> ===
+
+where:
+    knot_name = the name of the knot
+```
+
+</Accordion>
+
+<Accordion title="Are there differences between `label` and `knot`?" id="label-vs-knot">
+
+No, they are the same thing. In Pixi’VN, when you create a `knot` with ***ink***, a `label` will be created internally and saved in the registry.
+
+</Accordion>
+
+</Accordions>
 
 ## Run a knot
 
@@ -25,12 +48,23 @@ To run a `knot` you can use the following methods:
 
 You can execute a `knot` using the Divert operator, which is represented by the `-> start` syntax. It corresponds to the <DynamicLink href="/start/labels#jump-to-a-label">`jump` functionality</DynamicLink> in the Pixi’VN library.
 
-Write the `->` symbol followed by the name of the `knot`, for example:
+```ink tab="ink"
+-> after
+```
+
+```txt tab="CLI"
+-> <knot_name>
+
+where:
+    knot_name = the name of the knot to jump to
+```
+
+Например:
 
 ```ink title="ink/start.ink"
 === start ===
 Start
--> after // [!code focus]
+-> after
 
 === after ===
 After
@@ -44,21 +78,45 @@ End
 
 <Accordion title="Tunnels `-> start ->` or Threads `<- start`  (call a `label`)" id="call">
 
-<Callout type="info" title="Threads">
+You can execute a `knot` using the Tunnels operator, which is represented by the `-> start ->` syntax. It corresponds to the <DynamicLink href="/start/labels#call-to-a-label">`call` functionality</DynamicLink> in the Pixi’VN library.
+
+```ink tab="ink"
+-> guard_dialogue ->
+```
+
+```txt tab="CLI"
+-> <knot_name> ->
+
+where:
+    knot_name = the name of the knot to call
+```
+
+Or, using the Threads syntax, write the `\<-` symbol followed by the name of the `knot`:
+
+```ink tab="ink"
+<- guard_dialogue
+```
+
+```txt tab="CLI"
+<- <knot_name>
+
+where:
+    knot_name = the name of the knot to call
+```
+
+:::\[Threads]
 
 Unlike **native ink**, in **ink + Pixi’VN integration** "Threads" are not supported, so the `\<-` symbol corresponds to calling a `knot` instead of being a "Thread" operator.
 
-</Callout>
+:::
 
-<Callout type="info">
+:::tip
 
 For simplicity, in **ink + Pixi’VN integration**, `->->` and `-> DONE` will correctly close the `label`, so they are equivalent.
 
-</Callout>
+:::
 
-You can execute a `knot` using the Tunnels operator, which is represented by the `-> start ->` syntax. It corresponds to the <DynamicLink href="/start/labels#call-to-a-label">`call` functionality</DynamicLink> in the Pixi’VN library.
-
-Write the `->` symbol followed by the name of the `knot` and then the `->` symbol again, for example:
+Например:
 
 ```ink title="ink/start.ink"
 VAR reputation = 0
@@ -102,7 +160,7 @@ The guard looks at you.
 
 <Accordions>
 
-<Accordion title="parameters" id="parameters">
+<Accordion title="Параметры" id="parameters">
 
 A particularly useful form of temporary variable is a **parameter**. Any knot or stitch can receive a value as a parameter, which is treated as a local temporary variable inside that knot:
 
@@ -123,7 +181,9 @@ A particularly useful form of temporary variable is a **parameter**. Any knot or
 
 Parameters are the correct way to pass a temporary value from one knot or stitch into another, because ordinary `temp` variables are not accessible outside the stitch where they were declared.
 
-### Recursive knots with parameters
+</Accordion>
+
+<Accordion title="Recursive knots with parameters" id="recursive-knots-with-parameters">
 
 Temporary variables (including parameters) are safe to use in recursive knots:
 
@@ -143,7 +203,9 @@ Temporary variables (including parameters) are safe to use in recursive knots:
     -> END
 ```
 
-### Sending divert targets as parameters
+</Accordion>
+
+<Accordion title="Sending divert targets as parameters" id="sending-divert-targets-as-parameters">
 
 Knot addresses can also be passed as parameters. Use `->` to indicate that a parameter is a divert target:
 
