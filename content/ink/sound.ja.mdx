@@ -4,24 +4,7 @@ title: サウンドと音楽
 
 import { SoundExample } from "@/components/ink-examples";
 
-The ***ink* + Pixi’VN integration** introduces a "# script" that allows you to use the <DynamicLink href="/start/sound">sounds and music</DynamicLink>. To do this, you need to use the following syntax:
-
-```ink title="ink"
-# {operation} {component type} {alias} {parameters}
-```
-
-* `#`: is the hashtag symbol to identify a hashtag command.
-* `operation`: the operation to perform. Currently supported:
-  * `play`: Play a sound. (Read more [here](#play))
-  * `pause`: Pause a sound. (Read more [here](#pause-and-resume))
-  * `resume`: Resume a sound. (Read more [here](#pause-and-resume))
-  * `stop`: Stop a sound. (Read more [here](#stop))
-  * `edit`: Edit a sound. (Read more [here](#edit))
-* `component type`: the component type. Available types:
-  * `sound`: to play, pause, resume, stop or edit a sound.
-  * `channel`: to run an operation on a channel.
-* `alias`: The alias to identify the sound. Use double quotes if the alias contains spaces.
-* `parameters` (Optional): a space-separated list of property/value pairs. If a value contains spaces, wrap it in double quotes. If a value is a object, pass valid JSON and escape the braces for ***ink*** (e.g. `\{ "placeholder": "Enter your name", "maxLength": 20 \}`).
+The ***ink* + Pixi’VN integration** introduces a "# script" that allows you to use the <DynamicLink href="/start/sound">sounds and music</DynamicLink>.
 
 ```ink tab="ink/start.ink"
 # play sound sfx_whoosh delay 0.1
@@ -33,15 +16,13 @@ I'm paused, but I can be resumed.
 I'm back!
 ```
 
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
+```ts tab="src/assets/index.ts"
+import generatedManifestJson from "@/assets/manifest.gen.json";
+import type { AssetsManifest } from "@drincs/pixi-vn";
 
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
+export const manifest: AssetsManifest = {
     bundles: [
+        ...generatedManifestJson.bundles,
         {
             name: "audio",
             assets: [
@@ -57,7 +38,6 @@ const manifest: AssetsManifest = {
         },
     ],
 };
-export default manifest;
 ```
 
 <SoundExample />
@@ -66,11 +46,20 @@ export default manifest;
 
 You can use the `play` to <DynamicLink href="/start/sound#play">play</DynamicLink> a sound in ***ink***. To do this, you need to use the following syntax:
 
-```ink title="ink"
-# play sound {alias} {source} {parameters}
+```ink tab="ink"
+# play sound sfx_whoosh volume 100
 ```
 
-* `[parameters] (Optional)`: In the `parameters` you must include the properties of `SoundPlayOptions` that you want to set. The `parameters` must be set as follows: `parameterName` + `SPACE` + `value`. If the `value` is a string and includes spaces, you must use double quotes.
+```txt tab="CLI"
+# play sound <alias> [<source>] [<parameters>]
+
+where:
+    alias = the alias to identify the sound. Use double quotes if it contains spaces.
+    source (Optional) = the alias or URL of the asset to use as the sound source. If not set, `alias` will be used as the source.
+    parameters (Optional) = a space-separated list of property/value pairs. If a value is a string and includes spaces, you must use double quotes.
+```
+
+Available `parameters` (all Optional) are the properties of [`PixiVNJsonSoundPlayProps`](/jsdoc/pixi-vn-json/index/type-aliases/PixiVNJsonSoundPlayProps).
 
 ```ink tab="ink/start.ink"
 # play sound sfx_whoosh
@@ -79,15 +68,13 @@ Now the sfx_whoosh is singing.
 Now the sfx_whoosh is singing louder.
 ```
 
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
+```ts tab="src/assets/index.ts"
+import generatedManifestJson from "@/assets/manifest.gen.json";
+import type { AssetsManifest } from "@drincs/pixi-vn";
 
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
+export const manifest: AssetsManifest = {
     bundles: [
+        ...generatedManifestJson.bundles,
         {
             name: "audio",
             assets: [
@@ -103,21 +90,36 @@ const manifest: AssetsManifest = {
         },
     ],
 };
-export default manifest;
 ```
 
 ## 一時停止と再開
 
 To <DynamicLink href="/start/sound#pause-and-resume">pause</DynamicLink> a sound or a channel in ***ink***, you can use the `pause` operation. To do this, you need to use the following syntax:
 
-```ink title="ink"
-# pause {component type} {alias}
+```ink tab="ink"
+# pause sound bgm_cheerful
+```
+
+```txt tab="CLI"
+# pause <component type> <alias>
+
+where:
+    component type = the component type to pause. Available types: `sound`, `channel`.
+    alias = the alias to identify the sound or channel to pause. Use double quotes if it contains spaces.
 ```
 
 To <DynamicLink href="/start/sound#pause-and-resume">resume</DynamicLink> a sound or a channel in ***ink***, you can use the `resume` operation. To do this, you need to use the following syntax:
 
-```ink title="ink"
-# resume {component type} {alias}
+```ink tab="ink"
+# resume sound bgm_cheerful
+```
+
+```txt tab="CLI"
+# resume <component type> <alias>
+
+where:
+    component type = the component type to resume. Available types: `sound`, `channel`.
+    alias = the alias to identify the sound or channel to resume. Use double quotes if it contains spaces.
 ```
 
 To pause or resume all sounds, you can use the following syntax:
@@ -131,9 +133,19 @@ To pause or resume all sounds, you can use the following syntax:
 
 To <DynamicLink href="/start/sound#edit">edit</DynamicLink> a sound in ***ink***, you can use the `edit` operation. To do this, you need to use the following syntax:
 
-```ink title="ink"
-# edit sound {alias} {parameters}
+```ink tab="ink"
+# edit sound bgm_cheerful volume 50
 ```
+
+```txt tab="CLI"
+# edit sound <alias> [<parameters>]
+
+where:
+    alias = the alias to identify the sound to edit. Use double quotes if it contains spaces.
+    parameters (Optional) = a space-separated list of property/value pairs. If a value is a string and includes spaces, you must use double quotes.
+```
+
+Available `parameters` (all Optional) are the properties of [`PixiVNJsonSoundEditProps`](/jsdoc/pixi-vn-json/index/type-aliases/PixiVNJsonSoundEditProps).
 
 ```ink title="ink"
 # edit sound bgm_cheerful volume 50
@@ -144,12 +156,15 @@ To <DynamicLink href="/start/sound#edit">edit</DynamicLink> a sound in ***ink***
 
 To <DynamicLink href="/start/sound#stop">stop</DynamicLink> a sound in ***ink***, you can use the `stop` operation. To do this, you need to use the following syntax:
 
-```ink title="ink"
-# stop sound {alias}
+```ink tab="ink"
+# stop sound bgm_cheerful
 ```
 
-```ink title="ink"
-# stop sound bgm_cheerful
+```txt tab="CLI"
+# stop sound <alias>
+
+where:
+    alias = the alias to identify the sound to stop. Use double quotes if it contains spaces.
 ```
 
 To stop all sounds, you can use the following syntax:
