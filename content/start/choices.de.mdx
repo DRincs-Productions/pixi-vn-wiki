@@ -1,0 +1,225 @@
+---
+title: Auswahlmenüs
+description: Erklärt, wie interaktive Auswahlmenüs in Pixi’VN implementiert und angepasst werden können, sodass Spieler Entscheidungen treffen können, die die Geschichte beeinflussen.
+---
+
+import { ChoiceMenus, ChoicesAlreadyMade } from "@/components/examples";
+
+:::tip[UI-Bildschirm]
+
+Ein Beispiel des Auswahlmenü-UI-Bildschirms finden Sie im Abschnitt <DynamicLink href="/start/interface-examples#choice-menu">Schnittstellenbeispiele</DynamicLink>.
+
+:::
+
+:::tip[*ink*]
+
+Sie können diese Methode mit der *ink*-Syntax verwenden. Mehr erfahren Sie <DynamicLink href="/ink/choices">hier</DynamicLink>.
+
+:::
+
+In Visual Novels ermöglichen Auswahlmenüs dem Spieler, Entscheidungen zu treffen, die die Geschichte beeinflussen.
+
+In Pixi’VN können Sie den Spieler auffordern, eine Wahl zu treffen. Jede Wahl kann entweder ein `label` starten oder das Auswahlmenü schließen.
+
+## Den Spieler zu einer Wahl auffordern
+
+Um den Spieler zu einer Wahl zu zwingen, setzen Sie [`narration.choices`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#choices) auf ein Array von [`StoredChoiceInterface`](/jsdoc/pixi-vn/index/type-aliases/StoredChoiceInterface). Um ein [`StoredChoiceInterface`](/jsdoc/pixi-vn/index/type-aliases/StoredChoiceInterface)-Objekt zu erstellen, verwenden Sie:
+
+* [`newChoiceOption`](/jsdoc/pixi-vn/index/functions/newChoiceOption)
+* [`newCloseChoiceOption`](/jsdoc/pixi-vn/index/functions/newCloseChoiceOption)
+
+```ts title="content/labels/start.label.ts"
+import {
+    newChoiceOption,
+    newCloseChoiceOption,
+    narration,
+    newLabel,
+} from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        narration.dialogue = "Choose a fruit:";
+        narration.choices = [
+            // [!code focus]
+            newChoiceOption("Orange", orangeLabel, {}), // by default, the label will be called with "call" // [!code focus]
+            newChoiceOption("Banana", bananaLabel, {}, { type: "jump" }), // [!code focus]
+            newChoiceOption(
+                // [!code focus]
+                "Apple", // [!code focus]
+                appleLabel, // [!code focus]
+                { quantity: 5 }, // [!code focus]
+                { type: "call" }, // [!code focus]
+            ), // [!code focus]
+            newCloseChoiceOption("Cancel"), // [!code focus]
+        ]; // [!code focus]
+    },
+    () => {
+        narration.dialogue = "Restart";
+    },
+    async (props) => await narration.jump("start", props),
+]);
+```
+
+<ChoiceMenus />
+
+## Abrufen
+
+Um das aktuelle Auswahlmenü abzurufen, verwenden Sie [`narration.choices`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#choices). Dies gibt ein Array von [`StoredChoiceInterface`](/jsdoc/pixi-vn/index/type-aliases/StoredChoiceInterface) zurück.
+
+```ts
+const menuOptions: StoredChoiceInterface[] = narration.choices;
+```
+
+## Anfragen
+
+Um eine Wahl auszuwählen, verwenden Sie [`narration.selectChoice`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#selectchoice).
+
+```ts
+const item = narration.choices![0]; // get the first item
+
+narration
+    .selectChoice(item, {
+        // Add StepLabelProps here
+        navigate: navigate, // example
+        // And the props to pass to the label
+        ...item.props,
+    })
+    .then(() => {
+        // ...
+    })
+    .catch((e) => {
+        // ...
+    });
+```
+
+## Entfernen
+
+Um die Auswahloptionen zu löschen, setzen Sie `narration.choices = undefined`.
+
+```ts
+narration.choices = undefined;
+```
+
+## Weitere Funktionen
+
+<Accordions>
+
+<Accordion title="Bereits getroffene Entscheidungen" id="choices-already-made">
+
+Um die bereits im aktuellen `step` getroffenen Entscheidungen abzurufen, verwenden Sie [`narration.alreadyCurrentStepMadeChoices`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#alreadycurrentstepmadechoices).
+
+```ts tab="hooks/useQueryInterface.ts"
+import { INTERFACE_DATA_USE_QUERY_KEY } from "@/constants";
+import { narration } from "@drincs/pixi-vn";
+import { useQuery } from "@tanstack/react-query";
+
+const CHOICE_MENU_OPTIONS_USE_QUERY_KEY = "choice_menu_options_use_query_key";
+export function useQueryChoiceMenuOptions() {
+    return useQuery({
+        queryKey: [
+            INTERFACE_DATA_USE_QUERY_KEY,
+            CHOICE_MENU_OPTIONS_USE_QUERY_KEY,
+        ],
+        queryFn: async () =>
+            narration.choices?.map((option) => ({
+                ...option,
+                text:
+                    typeof option.text === "string"
+                        ? option.text
+                        : option.text.map((text) => text).join(" "),
+                alreadyChosen: // [!code ++]
+                    narration.alreadyCurrentStepMadeChoices?.find( // [!code ++]
+                        (index) => index === option.choiceIndex, // [!code ++]
+                    ) !== undefined, // [!code ++]
+            })) || [],
+    });
+}
+```
+
+```tsx tab="components/menus/choice-menus.tsx"
+import { Button } from "@/components/ui/button";
+import { useNarrationFunctions } from "@/lib/hooks/narration-hooks";
+import { useQueryChoiceMenuOptions } from "@/lib/query/narration-query";
+import { CornerDownLeft } from "lucide-react";
+
+export function ChoiceMenu() {
+    const { data: menu = [] } = useQueryChoiceMenuOptions();
+    const { selectChoice } = useNarrationFunctions();
+
+    return (
+        <div
+            className="flex flex-col items-center justify-center gap-2 w-full h-full overflow-auto"
+            role="menu"
+        >
+            {menu.map((item) => (
+                <div key={`choice-${item.choiceIndex}`}>
+                    <Button onClick={() => selectChoice(item)}>
+                        {item.alreadyChosen ? "✓ " : ""} // [!code ++]
+                        {item.type === "close" && <CornerDownLeft />}
+                        {item.text}
+                    </Button>
+                </div>
+            ))}
+        </div>
+    );
+}
+```
+
+<ChoicesAlreadyMade />
+
+</Accordion>
+
+<Accordion title="Benutzerdefinierte Klasse" id="custom-class">
+
+Sie können eine Auswahlmenüoption anpassen, indem Sie der [`ChoiceInterface`](/jsdoc/pixi-vn/index/interfaces/ChoiceInterface)-Schnittstelle Eigenschaften hinzufügen. Fügen Sie zum Beispiel eine `icon`-Eigenschaft hinzu, um ein Symbol anzuzeigen.
+
+Überschreiben Sie die [`ChoiceInterface`](/jsdoc/pixi-vn/index/interfaces/ChoiceInterface)-Schnittstelle in Ihrer `.d.ts`-Datei:
+
+```ts tab="pixi-vn.d.ts"
+declare module "@drincs/pixi-vn" {
+    interface ChoiceInterface {
+        icon?: string;
+    }
+}
+```
+
+```ts tab="content/labels/start.label.ts"
+narration.choices = [
+    newChoiceOption("Orange", orangeLabel, {}, { icon: "orange.png" }),
+    newChoiceOption("Banana", bananaLabel, {}, { icon: "banana.png" }),
+    newChoiceOption("Apple", appleLabel, {}, { icon: "apple.png" }),
+];
+```
+
+```tsx tab="components/menus/choice-menus.tsx"
+import { Button } from "@/components/ui/button";
+import { useNarrationFunctions } from "@/lib/hooks/narration-hooks";
+import { useQueryChoiceMenuOptions } from "@/lib/query/narration-query";
+import { CornerDownLeft } from "lucide-react";
+
+export function ChoiceMenu() {
+    const { data: menu = [] } = useQueryChoiceMenuOptions();
+    const { selectChoice } = useNarrationFunctions();
+
+    return (
+        <div
+            className="flex flex-col items-center justify-center gap-2 w-full h-full overflow-auto"
+            role="menu"
+        >
+            {menu.map((item) => (
+                <div key={`choice-${item.choiceIndex}`}>
+                    {choice.icon && <img src={choice.icon} alt={choice.text} />} // [!code ++]
+                    <Button onClick={() => selectChoice(item)}>
+                        {item.type === "close" && <CornerDownLeft />}
+                        {item.text}
+                    </Button>
+                </div>
+            ))}
+        </div>
+    );
+}
+```
+
+</Accordion>
+
+</Accordions>

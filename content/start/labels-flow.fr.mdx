@@ -1,0 +1,385 @@
+---
+title: Gérer le flux narratif avec les labels
+description: Décrit comment contrôler le flux narratif dans Pixi'VN à l'aide des labels, notamment les fonctions call, jump et fermer les labels.
+---
+
+Le flux narratif est géré par des fonctions telles que `call`, `jump`, `continue`, `back` et `closeLabel`, toutes disponibles dans l'objet `narration`.
+
+## Exécuter un label
+
+:::tip[*ink*]
+
+Vous pouvez utiliser cette méthode avec la syntaxe *ink*. Voir plus <DynamicLink href="/ink/labels#run-a-knot">ici</DynamicLink>.
+
+:::
+
+<Accordions>
+
+<Accordion title="`call` un `label`" id="call-a-label">
+
+Pour appeler un `label`, utilisez la fonction [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call).
+
+```ts
+import { narration } from "@drincs/pixi-vn";
+
+narration.call(startLabel, {});
+```
+
+Lorsque vous appelez un `label`, le premier `step` de ce `label` est exécuté. Si un autre `label` était en cours d'exécution avant l'appel, les `steps` restants de ce `label` précédent reprendront après la fin du `label` appelé.
+
+Par exemple, si le jeu exécute le `step` 5 du `label` A et que vous **appelez** le `label` B, après l'exécution de tous les `steps` du `label` B, le jeu continue avec le `step` 6 du `label` A.
+
+[`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) retourne le <DynamicLink href="/start/labels#step-results">résultat</DynamicLink> du premier `step` du `label` appelé.
+
+---
+
+Si vous exécutez [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) à l'intérieur d'un `step`, vous devez retourner le résultat de [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) et utiliser `await`. Cela garantit que l'historique est géré correctement.
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async (props) => {
+        return await narration.call(TestLabel, props);
+    },
+    async (props) => await narration.call(TestLabel, props),
+]);
+```
+
+</Accordion>
+
+<Accordion title="`jump` vers un `label`" id="jump-to-a-label">
+
+Pour sauter vers un `label`, utilisez la fonction [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump).
+
+```ts
+import { narration } from "@drincs/pixi-vn";
+
+narration.jump(startLabel, {});
+```
+
+Lorsque vous sautez vers un `label`, les `steps` du `label` actuel sont arrêtés et les `steps` du nouveau `label` commencent.
+
+Par exemple, si le jeu exécute le `step` 5 du `label` A et que vous **appelez** le `label` B, puis **sautez** vers le `label` C, après la fin du `label` C, le jeu continue avec le `step` 6 du `label` A. Lorsque vous sautez vers le `label` C, le `label` B est fermé.
+
+[`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) retourne le <DynamicLink href="/start/labels#all-steps-result">résultat du premier `step` du `label` appelé</DynamicLink>.
+
+---
+
+Si vous exécutez [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) à l'intérieur d'un `step`, vous devez retourner le résultat de [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) et utiliser `await`. Cela garantit que le premier `step` du nouveau `label` est attendu.
+
+```ts title="content/labels/start.label.ts"
+import { narration } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async (props) => {
+        return await narration.jump(TestLabel, props);
+    },
+    async (props) => await narration.jump(TestLabel, props),
+]);
+```
+
+</Accordion>
+
+<Accordion title="Démarrer le jeu" id="start-game">
+
+Pour démarrer le jeu, utilisez la fonction [`Game.start`](/jsdoc/pixi-vn/index/namespaces/Game/functions/start). Cette fonction est équivalente à appeler un `label`, mais il est recommandé de l'utiliser pour un démarrage plus propre.
+
+```ts title="content/labels/start.label.ts"
+import { Game } from "@drincs/pixi-vn";
+
+Game.start(startLabel, gameProps);
+```
+
+</Accordion>
+
+</Accordions>
+
+## Continuer et revenir en arrière dans les steps
+
+### Continuer
+
+:::tip[Interface UI]
+
+Vous pouvez trouver l'exemple du bouton "continuer" dans la section <DynamicLink href="/start/interface-examples#go-next">exemples d'interface</DynamicLink>.
+
+:::
+
+Pour exécuter le `step` suivant, utilisez la fonction [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue).
+
+```ts
+import { narration } from "@drincs/pixi-vn";
+
+await narration.continue({});
+```
+
+[`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) est asynchrone, vous pouvez donc utiliser `.then` pour, par exemple, désactiver un bouton "Suivant" jusqu'à la fin du `step`.
+
+```ts
+import { narration } from "@drincs/pixi-vn";
+
+// disable next button
+narration.continue({}).then((result) => {
+    // enable next button
+});
+```
+
+<Accordions>
+
+<Accordion title="Exécuter continue à l'intérieur d'un `step`" id="call-continue-inside-a-step">
+
+Si vous appelez [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) à l'intérieur d'un `step`, la requête "continue" sera mise en file d'attente et exécutée lorsque la file d'attente sera vide.
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async (props) => {
+        narration.continue(props);
+    },
+]);
+```
+
+Voici un exemple pour illustrer le fonctionnement de la file d'attente :
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async (props) => {
+        await narration.call(label2, props);
+        console.log(1);
+    },
+    () => {
+        console.log(3);
+    },
+]);
+
+const label2 = newLabel("label_02", [
+    async (props) => {
+        await narration.continue(props);
+        console.log(2);
+    },
+]);
+```
+
+Dans cet exemple, la sortie sera `2`, `1`, `3`. Les étapes sont :
+
+1. `await narration.call(label2, props)` appelle label2 et attend son premier `step`. (1 élément dans la file d'attente)
+2. Le premier `step` de label2 exécute `await narration.continue(props)`, mais la requête continue est mise en file d'attente car la file d'attente n'est pas vide. (2 éléments dans la file d'attente)
+3. `console.log(2)` s'exécute, terminant le premier `step` de label2. (1 élément dans la file d'attente)
+4. `console.log(1)` s'exécute, terminant le premier `step` de startLabel. (0 élément dans la file d'attente)
+5. La requête continue est maintenant exécutée, et le deuxième `step` de startLabel s'exécute. (1 élément dans la file d'attente)
+6. `console.log(3)` s'exécute, terminant le deuxième `step` de startLabel. (0 élément dans la file d'attente)
+
+</Accordion>
+
+<Accordion title="Vérifier si l'on peut passer au `step` suivant" id="can-go-next">
+
+Vous pouvez utiliser la propriété [`narration.canContinue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#cancontinue) pour vérifier si le `step` suivant peut être exécuté.
+
+[`narration.canContinue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#cancontinue) est `false` lorsque :
+
+* Un `step` est en cours d'exécution
+* Le joueur doit <DynamicLink href="/start/choices">faire un choix</DynamicLink>
+* Le joueur doit <DynamicLink href="/start/input">saisir une valeur</DynamicLink>
+
+```tsx title="components/NextButton.tsx"
+import { narration } from "@drincs/pixi-vn";
+
+function NextButton() {
+    return (
+        <button
+            disabled={!narration.canContinue}
+            onClick={() => {
+                narration.continue({});
+            }}
+        >
+            Next
+        </button>
+    );
+}
+```
+
+</Accordion>
+
+</Accordions>
+
+### Revenir en arrière
+
+:::tip[Interface UI]
+
+Vous pouvez trouver l'exemple du bouton retour dans la section <DynamicLink href="/start/interface-examples#go-back">exemples d'interface</DynamicLink>.
+
+:::
+
+À chaque `step`, le système sauvegarde l'état actuel du jeu. Pour revenir au `step` précédent, utilisez la fonction [`stepHistory.back`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#back).
+
+<Accordions>
+
+<Accordion title="Vérifier si l'on peut revenir en arrière" id="can-go-back">
+
+Vous pouvez utiliser la propriété [`stepHistory.canGoBack`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#cangoback) pour vérifier si le retour en arrière est possible.
+
+[`stepHistory.canGoBack`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#cangoback) est `false` lorsqu'il n'y a aucun `step` dans l'historique à restaurer.
+
+```ts
+import { stepHistory } from "@drincs/pixi-vn";
+
+if (stepHistory.canGoBack) {
+    stepHistory.back();
+}
+```
+
+</Accordion>
+
+<Accordion title="Bloquer la possibilité de revenir en arrière" id="block-the-possibility-of-going-back">
+
+Vous pouvez bloquer le "retour en arrière" en appelant [`stepHistory.blockGoBack`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#blockgoback).
+
+```typescript
+import { stepHistory } from "@drincs/pixi-vn";
+
+stepHistory.blockGoBack();
+```
+
+</Accordion>
+
+</Accordions>
+
+## Fermer les labels
+
+<Accordions>
+
+<Accordion title="Fermer le `label` actuel" id="close-current-label">
+
+Pour fermer le `label` actuel, utilisez la fonction [`narration.closeCurrentLabel`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#closecurrentlabel).
+
+```typescript
+import { narration } from "@drincs/pixi-vn";
+
+narration.closeCurrentLabel();
+```
+
+</Accordion>
+
+<Accordion title="Fermer tous les `labels`" id="close-all-labels">
+
+Pour fermer tous les `labels`, utilisez la fonction [`narration.closeAllLabels`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#closealllabels). **Si vous appelez cette fonction sans appeler aucun `label` ensuite, le jeu se terminera**
+
+```typescript
+import { narration } from "@drincs/pixi-vn";
+
+narration.closeAllLabels();
+```
+
+</Accordion>
+
+</Accordions>
+
+## Autres fonctionnalités
+
+<Accordions>
+
+<Accordion title="Autres fonctionnalités" id="rollback-rollforward">
+
+:::tip[Modèles]
+
+Dans tous les templates, cette implémentation est déjà incluse.
+
+:::
+
+Si vous exécutez plusieurs requêtes [`stepHistory.back`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#back) et [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) de manière synchrone, le système les mettra en file d'attente en interne et calculera le delta pour n'exécuter que les processus nécessaires.
+
+Vous pouvez donc implémenter des fonctionnalités de rollback et de rollforward en utilisant les fonctions [`stepHistory.back`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#back) et [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue).
+
+```tsx title="lib/hooks/quick-tools-hooks.ts"
+import { HTML_CANVAS_LAYER_NAME, HTML_UI_LAYER_NAME } from "@/constans";
+import { useGameProps } from "@/lib/hooks/props-hooks";
+import { GameStatus } from "@/lib/stores/game-status-store";
+import { hasScrollableParent } from "@/lib/utils/scroll-utils";
+import { type StepLabelProps, stepHistory } from "@drincs/pixi-vn";
+import { narration } from "@drincs/pixi-vn/narration";
+import { useThrottler } from "@tanstack/react-pacer";
+import { useEffect, useRef } from "react";
+
+function isInsideRoot(target: EventTarget | null, selector: string): boolean {
+    if (!(target instanceof HTMLElement)) return false;
+    return target.closest(`#${selector}`) !== null;
+}
+
+export function useWheelActions({
+    throttleMs = 300,
+    minDelta = 20,
+}: {
+    throttleMs?: number;
+    minDelta?: number;
+} = {}) {
+    const pendingAsync = useRef(0);
+    const gameProps = useGameProps();
+
+    const runAsync = async (
+        fn: (props: StepLabelProps) => Promise<unknown>,
+    ) => {
+        try {
+            pendingAsync.current += 1;
+            GameStatus.setLoading(pendingAsync.current > 0);
+            await fn(gameProps);
+        } finally {
+            pendingAsync.current -= 1;
+            GameStatus.setLoading(pendingAsync.current > 0);
+            if (pendingAsync.current === 0) {
+                gameProps.invalidateInterfaceData();
+            }
+        }
+    };
+
+    const handleWheel = useThrottler(
+        async (event: WheelEvent) => {
+            if (
+                !(
+                    isInsideRoot(event.target, HTML_UI_LAYER_NAME) ||
+                    isInsideRoot(event.target, HTML_CANVAS_LAYER_NAME)
+                )
+            )
+                return;
+            if (hasScrollableParent(event.target)) return;
+
+            // blocca lo scroll nativo
+            event.preventDefault();
+
+            const { deltaY } = event;
+
+            // ignora micro-movimenti del trackpad
+            if (Math.abs(deltaY) < minDelta) return;
+
+            if (deltaY < 0) {
+                // ⬆️ Scroll up
+                await runAsync(narration.continue.bind(narration));
+            }
+
+            if (deltaY > 0) {
+                // ⬇️ Scroll down
+                await runAsync(stepHistory.back.bind(stepHistory));
+            }
+        },
+        { wait: throttleMs },
+    );
+
+    useEffect(() => {
+        window.addEventListener("wheel", handleWheel.maybeExecute, {
+            passive: false,
+        });
+
+        return () => {
+            window.removeEventListener("wheel", handleWheel.maybeExecute);
+        };
+    }, [handleWheel.maybeExecute]);
+
+    return null;
+}
+```
+
+</Accordion>
+
+</Accordions>

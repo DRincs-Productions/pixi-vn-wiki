@@ -1,0 +1,225 @@
+---
+title: 선택 메뉴
+description: Pixi’VN에서 인터랙티브 선택 메뉴를 구현하고 커스터마이즈하는 방법을 설명합니다. 플레이어가 스토리에 영향을 미치는 결정을 내릴 수 있게 합니다.
+---
+
+import { ChoiceMenus, ChoicesAlreadyMade } from "@/components/examples";
+
+:::tip[UI 화면]
+
+선택 메뉴 UI 화면의 예시는 <DynamicLink href="/start/interface-examples#choice-menu">인터페이스 예시</DynamicLink> 섹션에서 찾을 수 있습니다.
+
+:::
+
+:::tip[*ink*]
+
+이 메서드는 *ink* 문법과 함께 사용할 수 있습니다. <DynamicLink href="/ink/choices">여기</DynamicLink>에서 더 알아보세요.
+
+:::
+
+비주얼 노벨에서 선택 메뉴는 플레이어가 스토리에 영향을 미치는 결정을 내릴 수 있게 합니다.
+
+Pixi’VN에서 플레이어에게 선택을 요청할 수 있습니다. 각 선택은 내러티브 노드 (`label`)를 시작하거나 선택 메뉴를 닫을 수 있습니다.
+
+## 플레이어에게 선택 요구하기
+
+플레이어에게 선택을 요구하려면 [`narration.choices`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#choices)를 [`StoredChoiceInterface`](/jsdoc/pixi-vn/index/type-aliases/StoredChoiceInterface) 배열로 설정하세요. [`StoredChoiceInterface`](/jsdoc/pixi-vn/index/type-aliases/StoredChoiceInterface) 객체를 생성하려면 다음을 사용하세요:
+
+* [`newChoiceOption`](/jsdoc/pixi-vn/index/functions/newChoiceOption)
+* [`newCloseChoiceOption`](/jsdoc/pixi-vn/index/functions/newCloseChoiceOption)
+
+```ts title="content/labels/start.label.ts"
+import {
+    newChoiceOption,
+    newCloseChoiceOption,
+    narration,
+    newLabel,
+} from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        narration.dialogue = "Choose a fruit:";
+        narration.choices = [
+            // [!code focus]
+            newChoiceOption("Orange", orangeLabel, {}), // by default, the label will be called with "call" // [!code focus]
+            newChoiceOption("Banana", bananaLabel, {}, { type: "jump" }), // [!code focus]
+            newChoiceOption(
+                // [!code focus]
+                "Apple", // [!code focus]
+                appleLabel, // [!code focus]
+                { quantity: 5 }, // [!code focus]
+                { type: "call" }, // [!code focus]
+            ), // [!code focus]
+            newCloseChoiceOption("Cancel"), // [!code focus]
+        ]; // [!code focus]
+    },
+    () => {
+        narration.dialogue = "Restart";
+    },
+    async (props) => await narration.jump("start", props),
+]);
+```
+
+<ChoiceMenus />
+
+## 가져오기
+
+현재 선택 메뉴를 가져오려면 [`narration.choices`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#choices)를 사용하세요. [`StoredChoiceInterface`](/jsdoc/pixi-vn/index/type-aliases/StoredChoiceInterface) 배열을 반환합니다.
+
+```ts
+const menuOptions: StoredChoiceInterface[] = narration.choices;
+```
+
+## 요청
+
+선택을 선택하려면 [`narration.selectChoice`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#selectchoice)를 사용하세요.
+
+```ts
+const item = narration.choices![0]; // get the first item
+
+narration
+    .selectChoice(item, {
+        // Add StepLabelProps here
+        navigate: navigate, // example
+        // And the props to pass to the label
+        ...item.props,
+    })
+    .then(() => {
+        // ...
+    })
+    .catch((e) => {
+        // ...
+    });
+```
+
+## 제거
+
+선택 옵션을 지우려면 `narration.choices = undefined`로 설정하세요.
+
+```ts
+narration.choices = undefined;
+```
+
+## 기타 기능
+
+<Accordions>
+
+<Accordion title="이미 한 선택" id="choices-already-made">
+
+현재 내러티브 단계 (`step`)에서 이미 한 선택을 가져오려면 [`narration.alreadyCurrentStepMadeChoices`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#alreadycurrentstepmadechoices)를 사용하세요.
+
+```ts tab="hooks/useQueryInterface.ts"
+import { INTERFACE_DATA_USE_QUERY_KEY } from "@/constants";
+import { narration } from "@drincs/pixi-vn";
+import { useQuery } from "@tanstack/react-query";
+
+const CHOICE_MENU_OPTIONS_USE_QUERY_KEY = "choice_menu_options_use_query_key";
+export function useQueryChoiceMenuOptions() {
+    return useQuery({
+        queryKey: [
+            INTERFACE_DATA_USE_QUERY_KEY,
+            CHOICE_MENU_OPTIONS_USE_QUERY_KEY,
+        ],
+        queryFn: async () =>
+            narration.choices?.map((option) => ({
+                ...option,
+                text:
+                    typeof option.text === "string"
+                        ? option.text
+                        : option.text.map((text) => text).join(" "),
+                alreadyChosen: // [!code ++]
+                    narration.alreadyCurrentStepMadeChoices?.find( // [!code ++]
+                        (index) => index === option.choiceIndex, // [!code ++]
+                    ) !== undefined, // [!code ++]
+            })) || [],
+    });
+}
+```
+
+```tsx tab="components/menus/choice-menus.tsx"
+import { Button } from "@/components/ui/button";
+import { useNarrationFunctions } from "@/lib/hooks/narration-hooks";
+import { useQueryChoiceMenuOptions } from "@/lib/query/narration-query";
+import { CornerDownLeft } from "lucide-react";
+
+export function ChoiceMenu() {
+    const { data: menu = [] } = useQueryChoiceMenuOptions();
+    const { selectChoice } = useNarrationFunctions();
+
+    return (
+        <div
+            className="flex flex-col items-center justify-center gap-2 w-full h-full overflow-auto"
+            role="menu"
+        >
+            {menu.map((item) => (
+                <div key={`choice-${item.choiceIndex}`}>
+                    <Button onClick={() => selectChoice(item)}>
+                        {item.alreadyChosen ? "✓ " : ""} // [!code ++]
+                        {item.type === "close" && <CornerDownLeft />}
+                        {item.text}
+                    </Button>
+                </div>
+            ))}
+        </div>
+    );
+}
+```
+
+<ChoicesAlreadyMade />
+
+</Accordion>
+
+<Accordion title="커스텀 클래스" id="custom-class">
+
+[`ChoiceInterface`](/jsdoc/pixi-vn/index/interfaces/ChoiceInterface) 인터페이스에 속성을 추가하여 선택 메뉴 옵션을 커스터마이즈할 수 있습니다. 예를 들어, 아이콘을 표시하기 위해 `icon` 속성을 추가하세요.
+
+`.d.ts` 파일에서 [`ChoiceInterface`](/jsdoc/pixi-vn/index/interfaces/ChoiceInterface) 인터페이스를 재정의하세요:
+
+```ts tab="pixi-vn.d.ts"
+declare module "@drincs/pixi-vn" {
+    interface ChoiceInterface {
+        icon?: string;
+    }
+}
+```
+
+```ts tab="content/labels/start.label.ts"
+narration.choices = [
+    newChoiceOption("Orange", orangeLabel, {}, { icon: "orange.png" }),
+    newChoiceOption("Banana", bananaLabel, {}, { icon: "banana.png" }),
+    newChoiceOption("Apple", appleLabel, {}, { icon: "apple.png" }),
+];
+```
+
+```tsx tab="components/menus/choice-menus.tsx"
+import { Button } from "@/components/ui/button";
+import { useNarrationFunctions } from "@/lib/hooks/narration-hooks";
+import { useQueryChoiceMenuOptions } from "@/lib/query/narration-query";
+import { CornerDownLeft } from "lucide-react";
+
+export function ChoiceMenu() {
+    const { data: menu = [] } = useQueryChoiceMenuOptions();
+    const { selectChoice } = useNarrationFunctions();
+
+    return (
+        <div
+            className="flex flex-col items-center justify-center gap-2 w-full h-full overflow-auto"
+            role="menu"
+        >
+            {menu.map((item) => (
+                <div key={`choice-${item.choiceIndex}`}>
+                    {choice.icon && <img src={choice.icon} alt={choice.text} />} // [!code ++]
+                    <Button onClick={() => selectChoice(item)}>
+                        {item.type === "close" && <CornerDownLeft />}
+                        {item.text}
+                    </Button>
+                </div>
+            ))}
+        </div>
+    );
+}
+```
+
+</Accordion>
+
+</Accordions>

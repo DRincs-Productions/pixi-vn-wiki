@@ -1,0 +1,142 @@
+---
+title: 图像 (`ImageSprite`)
+description: 在 Pixi'VN 中使用 ImageSprite 组件的指南，包括在画布上初始化、加载、添加、显示和移除图像。
+---
+
+import { ImageSpriteAdd, ImageSpriteShow } from "@/components/examples";
+
+[`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite) 组件继承自 [`Sprite`](/jsdoc/pixi-vn/index/classes/Sprite) 组件，因此你可以使用 [`Sprite`](/jsdoc/pixi-vn/index/classes/Sprite) 的所有方法和属性。 它用于在画布上显示单张图像。
+
+```ts tab="main.ts"
+import { canvas, ImageSprite } from "@drincs/pixi-vn";
+
+let alien = new ImageSprite(
+    {
+        anchor: { x: 0.5, y: 0.5 },
+        x: 100,
+        y: 100,
+    },
+    "alien",
+);
+
+await alien.load();
+canvas.add("alien", alien);
+```
+
+```json tab="src/assets/manifest.gen.json"
+{
+    "bundles": [
+        {
+            "name": "image",
+            "assets": [
+                {
+                    "alias": "alien",
+                    "src": "./assets/image/eggHead.png"
+                }
+            ]
+        }
+    ]
+}
+```
+
+与 [`Sprite`](/jsdoc/pixi-vn/index/classes/Sprite) 组件相比，[`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite) 新增了以下功能：
+
+* [`load`](/jsdoc/pixi-vn/index/classes/ImageSprite#load)：加载图像 URL 并将生成的纹理设置到该组件。
+* 额外定位功能：<DynamicLink href="/start/canvas-position">按百分比对齐和定位</DynamicLink>。
+
+## 显示
+
+在画布上显示图像最简单的方式是使用 [`showImage`](/jsdoc/pixi-vn/index/functions/showImage) 函数。 该函数将 [`load`](/jsdoc/pixi-vn/index/classes/ImageSprite#load) 和 [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add) 合并为一步。
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        // Show the images on the canvas
+        let alien1 = await showImage("alien");
+        // Show the image with a different alias and position
+        let alien2 = await showImage("alien2", "alien", {
+            xAlign: 0.5,
+        });
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<ImageSpriteShow />
+
+## 添加
+
+若要将图像添加到画布，请使用 [`addImage`](/jsdoc/pixi-vn/index/functions/addImage) 函数。 该函数仅将组件添加到画布，**不会**显示它或加载其纹理。 它通过 [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add) 将组件添加到画布。
+
+```ts tab="content/labels/start.label.ts"
+import { addImage, canvas, ImageSprite, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        // Add the images to the canvas
+        let alien1 = addImage("alien");
+        // Add the image with a different alias and position
+        let alien2 = addImage("alien2", "alien", {
+            xAlign: 0.5,
+        });
+    },
+    async () => {
+        let alien1 = canvas.find<ImageSprite>("alien");
+        let alien2 = canvas.find<ImageSprite>("alien2");
+        // Load the textures
+        alien1 && (await alien1.load());
+        alien2 && (await alien2.load());
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<ImageSpriteAdd />
+
+## 移除
+
+与其他画布组件一样，你可以使用 [`canvas.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#remove) 函数移除该组件。

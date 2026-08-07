@@ -1,0 +1,65 @@
+---
+title: Hotkeys
+description: How to create keyboard shortcuts (hotkeys) in Pixi’VN using TanStack Hotkeys, with examples for quick save/load and minigame controls.
+---
+
+Hotkeys let players trigger actions directly from the keyboard, such as quick saving, skipping dialogue, or controlling a <DynamicLink href="/start/minigames">minigame</DynamicLink>. Rather than managing `window.addEventListener("keydown", ...)` calls yourself, it is recommended to use [TanStack Hotkeys](https://tanstack.com/hotkeys/latest), a library that turns keyboard input into a typed command system with scopes, sequences, held keys, and conflict detection.
+
+:::tip
+
+A list of hotkeys commonly used in visual novels (quick save, quick load, history, settings, ...) is available in the <DynamicLink href="/faq#hotkeys">FAQ</DynamicLink>.
+
+:::
+
+<Accordions>
+
+<Accordion title="Installation" id="installation">
+
+:::tip[Vorlagen]
+
+In all templates, the TanStack Hotkeys package is already installed.
+
+:::
+
+TanStack Hotkeys ships a separate package for each framework. For a React project, install:
+
+```npm
+npm install @tanstack/react-hotkeys
+```
+
+Vue, Angular, and Lit adapters are also available — swap `@tanstack/react-hotkeys` for the package of your framework.
+
+</Accordion>
+
+</Accordions>
+
+## Verwendung
+
+Register a hotkey with the `useHotkey` hook:
+
+```tsx
+import { useHotkey } from "@tanstack/react-hotkeys";
+
+useHotkey("Mod+S", () => {
+    quickSave();
+});
+```
+
+The `Mod` modifier automatically resolves to `Meta` (Cmd) on macOS and `Control` on Windows/Linux, so the same code works across platforms.
+
+## Scoping and enabling conditionally
+
+`useHotkey` is a hook, so it registers the shortcut when the component mounts and cleans it up automatically when the component unmounts — you don't need to remove the listener yourself, unlike a manual `window.addEventListener`.
+
+Use the `target` option to limit a hotkey to a specific element, and `enabled` to turn it on or off based on your game state, for example while a minigame is running:
+
+```tsx
+const panelRef = useRef<HTMLDivElement>(null);
+
+useHotkey("Escape", () => closePanel(), { target: panelRef });
+useHotkey("ArrowUp", () => setDirection(0, -1), { enabled: !gameOver });
+```
+
+## Learn more
+
+TanStack Hotkeys also supports key sequences (e.g. "G then D"), held keys, conflict detection, and a devtools panel. See the [official documentation](https://tanstack.com/hotkeys/latest) for the full feature set.

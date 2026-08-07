@@ -1,0 +1,121 @@
+---
+title: Altre caratteristiche narrative
+description: Copre ulteriori funzionalità narrative di Pixi’VN, tra cui la gestione della fine del gioco, la gestione degli errori e la generazione di numeri casuali.
+---
+
+<Accordions>
+
+<Accordion title="Managing the end of the game" id="managing-the-end-of-the-game">
+
+Quando tutti i `passaggi` di tutte le `etichette` saranno stati eseguiti, il gioco si fermerà. Lo sviluppatore è responsabile della gestione del finale del gioco, poiché le visual novel possono avere diverse strategie di conclusione:
+
+* Il gioco termina quando tutti gli `steps` sono stati eseguiti.
+* Il gioco non ha fine; se tutti i passaggi vengono completati, verrà avviata un'altra `label` oppure il giocatore dovrà interagire con un'interfaccia che potenzialmente può avviare un'altra `label`.
+* Il gioco termina quando il giocatore raggiunge un punto specifico, ad esempio a causa di game over.
+
+To manage the end of the game, set [`Game.onEnd`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onEnd). Questa funzione viene chiamata al termine del gioco e ha la stessa firma di un `step`.
+
+Ad esempio, per terminare il gioco e passare alla schermata finale:
+
+```ts title="main.ts"
+import { Game } from "@drincs/pixi-vn";
+
+Game.onEnd(async (props) => {
+    props.navigate("/end");
+});
+```
+
+Se il gioco non ha fine e deve riavviarsi o andare in loop:
+
+```ts title="content/labels/start.label.ts"
+export const startLabel = newLabel("start", () => {
+    return [
+        // ...
+    ];
+});
+```
+
+```ts title="main.ts"
+import { Game } from "@drincs/pixi-vn";
+
+Game.onEnd(async (props) => {
+    narration.call(startLabel, props);
+});
+```
+
+</Accordion>
+
+<Accordion title="Random number generation" id="random-number-generation">
+
+Pixi’VN includes a built-in function to generate random numbers, use [`narration.getRandomNumber`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#getrandomnumber).
+
+</Accordion>
+
+<Accordion title="Check if the label has already been completed" id="check-if-the-label-has-already-been-completed">
+
+To check if a `label` has already been completed, use the [`narration.isLabelAlreadyCompleted`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#islabelalreadycompleted) function.
+
+```typescript
+const isLabelCompleted = narration.isLabelAlreadyCompleted(startLabel);
+const isLabelCompleted = narration.isLabelAlreadyCompleted("labelid");
+```
+
+</Accordion>
+
+<Accordion title="Check if current step has already been opened" id="check-if-current-step-is-already-been-opened">
+
+To check if the current `step` has already been opened, use [`narration.isCurrentStepAlreadyOpened`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#iscurrentstepalreadyopened).
+
+```typescript
+const isCurrentStepOpened = narration.isCurrentStepAlreadyOpened;
+```
+
+</Accordion>
+
+<Accordion title="Counter of execution times of the current step" id="counter-of-execution-times-of-the-current-step">
+
+To get the execution count for the current `step`, use [`narration.currentStepTimesCounter`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#currentsteptimescounter). **Important:** The counter is only incremented if [`narration.currentStepTimesCounter`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#currentsteptimescounter) is executed.
+
+```ts title="content/labels/start.label.ts"
+export const label = newLabel("id", () => {
+    if (narration.currentStepTimesCounter === 0) {
+        // ✅ will be incremented
+        // ...
+    } else {
+        // ...
+    }
+});
+```
+
+```ts title="content/labels/start.label.ts"
+export const label = newLabel("id", () => {
+    if (narration.currentStepTimesCounter === 0) {
+        // ✅ will be incremented
+        // ...
+    } else if (narration.currentStepTimesCounter === 1) {
+        // ✅ Not incremented again in this step
+        // ...
+    }
+});
+```
+
+```ts title="content/labels/start.label.ts"
+export const label = newLabel("id", () => {
+    if (flag) {
+        if (narration.currentStepTimesCounter === 1) {
+            // ❌ Only incremented if "flag" is true
+            // ...
+        }
+    }
+});
+```
+
+To reset the execution counter for the current `step`, set [`narration.currentStepTimesCounter`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#currentsteptimescounter) to `0`.
+
+```ts
+narration.currentStepTimesCounter = 0;
+```
+
+</Accordion>
+
+</Accordions>

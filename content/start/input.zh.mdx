@@ -1,0 +1,83 @@
+---
+title: 输入提示
+description: 说明如何在 Pixi’VN 中提示玩家输入内容，包括输入请求的使用方式、获取与移除。
+---
+
+import { InputPrompt } from "@/components/examples";
+
+:::tip[UI 界面]
+
+您可以在 <DynamicLink href="/start/interface-examples#input-prompt">界面示例</DynamicLink> 部分找到输入提示对话框 UI 的示例。
+
+:::
+
+:::tip[*ink*]
+
+你可以在 *ink* 语法中使用此方法。 请参阅 <DynamicLink href="/ink/input">此处</DynamicLink> 了解更多信息。
+
+:::
+
+在视觉小说中，您可能需要要求玩家输入文本、数字、日期或其他值。
+
+Pixi’VN 提供了处理输入提示的函数。 开发者可以要求玩家输入一个值（游戏将在提供值之前不会继续），而 <DynamicLink href="/start/interface">UI</DynamicLink> 负责显示提示。
+
+## 请求
+
+要提示玩家进行输入，请使用 [`narration.requestInput`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#requestinput) 函数。
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        narration.dialogue = "Hello";
+    },
+    () => {
+        narration.dialogue = "What is your name?";
+        narration.requestInput({ type: "string" });
+    },
+    () => {
+        narration.dialogue = `My name is ${narration.inputValue}`;
+    },
+    () => {
+        narration.dialogue = "How old are you?";
+        narration.requestInput({ type: "number" }, 18);
+    },
+    () => {
+        narration.dialogue = `I am ${narration.inputValue} years old`;
+    },
+    () => {
+        narration.dialogue = "Describe who you are:";
+        narration.requestInput({ type: "html textarea" });
+    },
+    () => {
+        narration.dialogue = `${narration.inputValue}`;
+    },
+    () => {
+        narration.dialogue = "Restart";
+    },
+]);
+```
+
+<InputPrompt />
+
+## 获取
+
+要获取输入提示信息，请使用：
+
+* [`narration.isRequiredInput`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#isrequiredinput)
+* [`narration.inputType`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#inputtype)
+
+```ts
+if (narration.isRequiredInput) {
+    openInputModal(narration.inputType);
+}
+```
+
+## 移除
+
+要移除输入提示请求，请使用 [`narration.removeInputRequest`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#removeinputrequest)。
+
+```ts
+narration.removeInputRequest();
+```

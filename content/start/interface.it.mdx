@@ -1,0 +1,140 @@
+---
+title: Interfaccia utente (UI)
+description: Come creare e integrare schermate dell'interfaccia utente in Pixi'VN utilizzando framework JavaScript esterni come React, Vue e PixiJS.
+---
+
+<Accordions>
+
+<Accordion title="What is UI?" id="what-is-ui">
+
+UI stands for User Interface. Si riferisce agli elementi visivi e ai componenti interattivi attraverso i quali un utente interagisce con un dispositivo digitale, un'applicazione o un sito web. L'interfaccia utente include tutto ciò con cui gli utenti interagiscono, come pulsanti, menu, icone, campi di testo e layout. L'obiettivo della progettazione dell'interfaccia utente è creare un'interfaccia che sia al tempo stesso esteticamente gradevole e funzionale, offrendo agli utenti un'esperienza fluida e intuitiva.
+
+</Accordion>
+
+</Accordions>
+
+Pixi’VN does not provide built-in components to create the game UI, and it does not reinvent what already exists in the JavaScript ecosystem. Instead of locking you into a specific framework, it lets you use any external JavaScript framework you prefer to build your UI, so you can leverage systems such as React, Vue, etc., to create complex and high-performance **UI screens**.
+
+This flexibility also makes Pixi’VN a great fit for AI-assisted development: because the UI is built with standard, widely-used frameworks rather than a proprietary system, AI coding assistants already know these tools well and can generate, understand, and modify UI code very effectively.
+
+* <DynamicLink href="/start/interface-react">React</DynamicLink>
+* <DynamicLink href="/start/interface-vue">Vue</DynamicLink>
+* <DynamicLink href="/start/interface-pixijs">PixiJS</DynamicLink>
+
+Pixi’VN offre funzionalità per migliorare la compatibilità con altri framework JavaScript:
+
+<Accordions>
+
+<Accordion title="Aggiungere livelli UI HTML" id="adding-html-ui-layers">
+
+**Cos'è un HTML UI Layer?** Un HTML UI Layer è un elemento HTML che viene aggiunto sopra il canvas di PixiJS e ha le stesse dimensioni del canvas. Ciò consente di creare un'interfaccia utente con un framework JavaScript come React o Vue.
+
+To add an HTML UI Layer, you can use the [`canvas.addHtmlLayer`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#addhtmllayer) function.
+
+```ts tab="main.ts"
+const root = document.getElementById("root");
+if (!root) {
+    throw new Error("root element not found");
+}
+const htmlLayer = canvas.addHtmlLayer("ui", root, {
+    position: "absolute",
+    pointerEvents: "none",
+    userSelect: "none",
+});
+```
+
+```html tab="index.html"
+<!doctype html>
+<html lang="en">
+    <body>
+        <div id="root"></div>
+        <script type="module" src="/src/main.ts"></script>
+    </body>
+</html>
+```
+
+To get the HTML element of the layer, you can use the [`canvas.getHtmlLayer`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#gethtmllayer) function.
+
+To remove an HTML UI Layer, you can use the [`canvas.removeHtmlLayer`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#removehtmllayer) function.
+
+</Accordion>
+
+<Accordion title="Come abilitare l'interazione con l'UI HTML?" id="how-to-enable-ui-interaction">
+
+Per impostazione predefinita, tutti gli elementi HTML dei HTML UI Layers hanno lo stile `pointer-events: none`. Ciò significa che gli elementi HTML non intercetteranno alcun evento del mouse o del tocco, consentendo al canvas di PixiJS di ricevere tutti gli eventi. Questa funzionalità è utile quando si desidera visualizzare un'immagine o un video nell'area di lavoro e non si desidera che l'interfaccia utente interferisca con essi.
+
+Quindi devi impostare lo stile `pointer-events: auto` solo per il componente con cui vuoi che l'utente interagisca.
+
+Ad esempio:
+
+```css tab="Shadcn - Tailwind CSS" title="styles.css"
+@layer components {
+    [data-slot="button"],
+    [data-slot="card"],
+    [data-slot="resizable-handle"],
+    [data-slot="scroll-area"],
+    [data-slot="scroll-area-scrollbar"],
+    [data-slot="toggle"] {
+        pointer-events: auto;
+    }
+}
+```
+
+```tsx tab="React"
+export default function NextButton() {
+    return (
+        <button
+            style={{
+                pointerEvents: "auto",
+            }}
+        >
+            Next
+        </button>
+    );
+}
+```
+
+```vue tab="Vue"
+<template>
+    <button style="pointer-events: auto;">Next</button>
+</template>
+```
+
+</Accordion>
+
+<Accordion title="Aggiungere livelli UI di PixiJS" id="adding-pixijs-ui-layers">
+
+**Cos'è un PixiJS UI Layer?** È un PixiJS Container. A differenza del Container principale dedicato solo alle funzionalità di Pixi'VN:
+
+* Lo stato attuale dell'Ul non verrà incluso nei salvataggi.
+* Ha prestazioni migliori. Pixi’VN non effettuerà alcun controllo.
+* Non puoi utilizzare le funzionalità di Pixi'VN.
+* Essendo un componente base di PixiJS, puoi aggiungere tutti i componenti compatibili con PixiJS.
+
+To add a PixiJS UI Layer, you can use the [`canvas.addLayer`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#addlayer) function.
+
+Ad esempio:
+
+```ts title="src/main.ts"
+const container = canvas.addLayer("ui");
+```
+
+To get the PixiJS Container of the layer, you can use the [`canvas.getLayer`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#getlayer) function.
+
+To remove a PixiJS UI Layer, you can use the [`canvas.removeLayer`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#removelayer) function.
+
+</Accordion>
+
+</Accordions>
+
+{/* ![Architecture](/arch.png) */}
+
+## Differenze tra l'interfaccia utente e il canvas
+
+Così come è stato progettato e concepito Pixi’VN, l’interfaccia utente e la tela sono due elementi distinti e indipendenti. L'interfaccia utente si trova sopra la tela e viene utilizzata per creare pulsanti, moduli, ecc. La tela viene utilizzata per visualizzare immagini, video, ecc.
+
+Tutte le informazioni sullo stato attuale del canvas sono incluse nel salvataggio ed è possibile ripristinare lo stato di un passaggio precedente. Lo stato attuale dell'interfaccia utente non verrà inclusa nei salvataggi. Quindi devi <DynamicLink href="/start/interface-connect-storage">gestirlo tu stesso salvando le informazioni</DynamicLink> di cui hai bisogno nella <DynamicLink href="/start/storage">memoria di gioco</DynamicLink> o nella memoria del browser.
+
+Nel canvas è possibile aggiungere componenti durante ogni step. Nell'interfaccia utente non è possibile farlo, è possibile creare diverse <DynamicLink href="/start/interface-connect-storage">"schermate" e navigare tra di esse</DynamicLink>.
+
+Nella canvas è possibile aggiungere solo componenti Pixi'VN. Nell'interfaccia utente è possibile aggiungere qualsiasi componente HTML/PixiJS o utilizzare qualsiasi libreria di componenti UI, in modo da creare interfacce molto più complesse.

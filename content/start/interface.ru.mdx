@@ -1,0 +1,140 @@
+---
+title: Пользовательский интерфейс (UI)
+description: Как создавать и интегрировать экраны интерфейса (UI) в Pixi’VN с помощью внешних JavaScript-фреймворков, таких как React, Vue и PixiJS.
+---
+
+<Accordions>
+
+<Accordion title="Что такое интерфейс (UI)?" id="what-is-ui">
+
+UI — это аббревиатура от User Interface (пользовательский интерфейс). Она обозначает визуальные элементы и интерактивные компоненты, через которые пользователь взаимодействует с цифровым устройством, приложением или сайтом. Интерфейс (UI) включает всё, с чем взаимодействуют пользователи: кнопки, меню, значки, текстовые поля и макет. Цель дизайна интерфейса (UI) — создать интерфейс, который одновременно эстетически привлекателен и функционален, обеспечивая пользователям плавный и интуитивно понятный опыт.
+
+</Accordion>
+
+</Accordions>
+
+Pixi’VN не предоставляет встроенных компонентов для создания игрового интерфейса (UI) и не изобретает заново то, что уже существует в экосистеме JavaScript. Вместо того чтобы привязывать вас к конкретному фреймворку, он позволяет использовать любой внешний JavaScript-фреймворк, который вы предпочитаете, для создания интерфейса, так что вы можете использовать такие системы, как React, Vue и т. д., чтобы создавать сложные и высокопроизводительные **экраны интерфейса (UI)**.
+
+Эта гибкость также делает Pixi’VN отличным выбором для разработки с помощью ИИ: поскольку интерфейс (UI) создаётся с использованием стандартных, широко используемых фреймворков, а не проприетарной системы, ИИ-ассистенты для программирования уже хорошо знают эти инструменты и могут очень эффективно генерировать, понимать и изменять код интерфейса.
+
+* <DynamicLink href="/start/interface-react">React</DynamicLink>
+* <DynamicLink href="/start/interface-vue">Vue</DynamicLink>
+* <DynamicLink href="/start/interface-pixijs">PixiJS</DynamicLink>
+
+Pixi’VN предлагает функции для улучшения совместимости с другими JavaScript-фреймворками:
+
+<Accordions>
+
+<Accordion title="Добавление HTML-слоёв интерфейса" id="adding-html-ui-layers">
+
+**Что такое HTML-слой интерфейса?** HTML-слой интерфейса — это HTML-элемент, который добавляется над канвасом (canvas) PixiJS и имеет те же размеры, что и канвас. Это позволяет создавать интерфейс с помощью JavaScript-фреймворка, такого как React или Vue.
+
+Чтобы добавить HTML-слой интерфейса, вы можете использовать функцию [`canvas.addHtmlLayer`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#addhtmllayer).
+
+```ts tab="main.ts"
+const root = document.getElementById("root");
+if (!root) {
+    throw new Error("root element not found");
+}
+const htmlLayer = canvas.addHtmlLayer("ui", root, {
+    position: "absolute",
+    pointerEvents: "none",
+    userSelect: "none",
+});
+```
+
+```html tab="index.html"
+<!doctype html>
+<html lang="en">
+    <body>
+        <div id="root"></div>
+        <script type="module" src="/src/main.ts"></script>
+    </body>
+</html>
+```
+
+Чтобы получить HTML-элемент слоя, вы можете использовать функцию [`canvas.getHtmlLayer`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#gethtmllayer).
+
+Чтобы удалить HTML-слой интерфейса, вы можете использовать функцию [`canvas.removeHtmlLayer`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#removehtmllayer).
+
+</Accordion>
+
+<Accordion title="Как включить взаимодействие с HTML-интерфейсом?" id="how-to-enable-ui-interaction">
+
+По умолчанию у всех HTML-элементов HTML-слоёв интерфейса задан стиль `pointer-events: none`. Это означает, что HTML-элементы не будут перехватывать события мыши или касания, позволяя канвасу PixiJS получать все события. Это полезно, когда вы хотите отобразить изображение или видео на канвасе и не хотите, чтобы интерфейс мешал этому.
+
+Поэтому вы должны задать стиль `pointer-events: auto` только для того компонента, с которым должен взаимодействовать пользователь.
+
+Например:
+
+```css tab="Shadcn - Tailwind CSS" title="styles.css"
+@layer components {
+    [data-slot="button"],
+    [data-slot="card"],
+    [data-slot="resizable-handle"],
+    [data-slot="scroll-area"],
+    [data-slot="scroll-area-scrollbar"],
+    [data-slot="toggle"] {
+        pointer-events: auto;
+    }
+}
+```
+
+```tsx tab="React"
+export default function NextButton() {
+    return (
+        <button
+            style={{
+                pointerEvents: "auto",
+            }}
+        >
+            Next
+        </button>
+    );
+}
+```
+
+```vue tab="Vue"
+<template>
+    <button style="pointer-events: auto;">Next</button>
+</template>
+```
+
+</Accordion>
+
+<Accordion title="Добавление слоёв интерфейса PixiJS" id="adding-pixijs-ui-layers">
+
+**Что такое слой интерфейса PixiJS?** Это Container PixiJS. В отличие от основного Container, предназначенного исключительно для функций Pixi’VN:
+
+* Текущее состояние интерфейса не будет включено в сохранения.
+* У него лучшая производительность. Pixi’VN не будет выполнять на нём никаких проверок.
+* Вы не можете использовать функции Pixi’VN.
+* Будучи основным компонентом PixiJS, вы можете добавлять любые компоненты, совместимые с PixiJS.
+
+Чтобы добавить слой интерфейса PixiJS, вы можете использовать функцию [`canvas.addLayer`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#addlayer).
+
+Например:
+
+```ts title="src/main.ts"
+const container = canvas.addLayer("ui");
+```
+
+Чтобы получить Container PixiJS этого слоя, вы можете использовать функцию [`canvas.getLayer`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#getlayer).
+
+Чтобы удалить слой интерфейса PixiJS, вы можете использовать функцию [`canvas.removeLayer`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#removelayer).
+
+</Accordion>
+
+</Accordions>
+
+{/* ![Architecture](/arch.png) */}
+
+## Различия между интерфейсом (UI) и канвасом
+
+По замыслу и в соответствии с архитектурой Pixi’VN, интерфейс (UI) и канвас — это два отдельных и независимых элемента. Интерфейс находится над канвасом и используется для создания кнопок, форм и т. д. Канвас используется для отображения изображений, видео и т. д.
+
+Вся информация о текущем состоянии канваса включается в сохранение, и можно восстановить состояние предыдущего шага (step). Текущее состояние интерфейса не будет включено в сохранения. Поэтому вам нужно <DynamicLink href="/start/interface-connect-storage">управлять этим самостоятельно, сохраняя нужную информацию</DynamicLink> в <DynamicLink href="/start/storage">хранилище игры (game storage)</DynamicLink> или в хранилище браузера.
+
+В канвасе вы можете добавлять компоненты на каждом шаге (step). В интерфейсе так сделать нельзя — вместо этого можно создавать несколько <DynamicLink href="/start/interface-connect-storage">«экранов» и переключаться между ними</DynamicLink>.
+
+В канвасе можно добавлять только компоненты Pixi’VN. В интерфейсе можно добавлять любые компоненты HTML/PixiJS или использовать любую библиотеку UI-компонентов, что позволяет создавать гораздо более сложные интерфейсы.

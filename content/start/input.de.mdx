@@ -1,0 +1,83 @@
+---
+title: Eingabeaufforderung
+description: Erklärt, wie man in Pixi’VN eine Eingabeaufforderung für den Spieler anzeigt, einschließlich Verwendung, Abruf und Entfernung von Eingabeanforderungen.
+---
+
+import { InputPrompt } from "@/components/examples";
+
+:::tip[UI-Bildschirm]
+
+Ein Beispiel für die Benutzeroberfläche des Eingabeaufforderungs-Dialogs findest du im Abschnitt <DynamicLink href="/start/interface-examples#input-prompt">Interface-Beispiele</DynamicLink>.
+
+:::
+
+:::tip[*ink*]
+
+Sie können diese Methode mit der *ink*-Syntax verwenden. Mehr dazu <DynamicLink href="/ink/input">hier</DynamicLink>.
+
+:::
+
+In Visual Novels kann es erforderlich sein, den Spieler zur Eingabe von Text, Zahlen, Datumsangaben oder anderen Werten aufzufordern.
+
+Pixi’VN stellt Funktionen zur Verarbeitung von Eingabeaufforderungen bereit. Der Entwickler kann verlangen, dass der Spieler einen Wert eingibt (das Spiel wird erst fortgesetzt, wenn ein Wert angegeben wurde), während die <DynamicLink href="/start/interface">UI</DynamicLink> für die Anzeige der Aufforderung zuständig ist.
+
+## Anfragen
+
+Um den Spieler zur Eingabe aufzufordern, verwende die Funktion [`narration.requestInput`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#requestinput).
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        narration.dialogue = "Hello";
+    },
+    () => {
+        narration.dialogue = "What is your name?";
+        narration.requestInput({ type: "string" });
+    },
+    () => {
+        narration.dialogue = `My name is ${narration.inputValue}`;
+    },
+    () => {
+        narration.dialogue = "How old are you?";
+        narration.requestInput({ type: "number" }, 18);
+    },
+    () => {
+        narration.dialogue = `I am ${narration.inputValue} years old`;
+    },
+    () => {
+        narration.dialogue = "Describe who you are:";
+        narration.requestInput({ type: "html textarea" });
+    },
+    () => {
+        narration.dialogue = `${narration.inputValue}`;
+    },
+    () => {
+        narration.dialogue = "Restart";
+    },
+]);
+```
+
+<InputPrompt />
+
+## Abrufen
+
+Um Informationen zur Eingabeaufforderung abzurufen, verwende:
+
+* [`narration.isRequiredInput`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#isrequiredinput)
+* [`narration.inputType`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#inputtype)
+
+```ts
+if (narration.isRequiredInput) {
+    openInputModal(narration.inputType);
+}
+```
+
+## Entfernen
+
+Um die Eingabeanforderung zu entfernen, verwende [`narration.removeInputRequest`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#removeinputrequest).
+
+```ts
+narration.removeInputRequest();
+```

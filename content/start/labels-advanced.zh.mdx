@@ -1,0 +1,158 @@
+---
+title: 高级标签功能
+description: 解释 Pixi'VN 中的高级标签选项，例如 onLoadingLabel、onStepStart、onStepEnd 和动态步骤列表。
+---
+
+import { ReturningDifferentStepLists } from "@/components/examples";
+
+本节涵盖高级<DynamicLink href="/start/labels">叙事节点</DynamicLink>功能。 这些功能不是创建基本游戏所必需的，但可以帮助您构建更复杂、更具交互性的体验。
+
+<Accordions>
+
+<Accordion title="`onLoadingLabel`" id="onloadinglabel">
+
+[`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) 是一个在 [`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart) 中执行的函数，当叙事步骤（`step`）索引为 0 时执行，也在用户加载存档文件时执行。
+
+加载存档文件时，[`narration.openedLabels`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#openedlabels) 的所有 [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) 函数（当前叙事节点（`label`）以及堆栈中的所有叙事节点（`labels`））都会被执行。
+
+例如，这对于确保在叙事节点（`label`）开始之前缓存其中使用的所有图像非常有用。
+
+您可以通过将该函数传递给叙事节点（`label`）选项中的 [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) 属性来设置此函数。
+
+```ts title="content/labels/start.label.ts"
+const startLabel = newLabel(
+    "start",
+    [
+        async () => {
+            await showImage("image1", "path/to/image1.png");
+            await showImage("image2", "path/to/image2.png");
+        },
+    ],
+    {
+        onLoadingLabel: async (stepIndex, label) => { // [!code focus]
+            await Assets.load("path/to/image1.png"); // [!code focus]
+            await Assets.load("path/to/image2.png"); // [!code focus]
+        }, // [!code focus]
+    },
+);
+```
+
+您也可以使用 [`Game.onLoadingLabel`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onLoadingLabel) 来全局拦截所有叙事节点（`labels`）的加载。
+
+```ts
+import { Game } from "@drincs/pixi-vn";
+
+Game.onLoadingLabel((_stepId, label) => { // [!code focus]
+    Assets.backgroundLoadBundle(label.id); // [!code focus]
+}); // [!code focus]
+```
+
+</Accordion>
+
+<Accordion title="`onStepStart`" id="onstepstart">
+
+[`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart) 是一个在叙事节点（`label`）的每个叙事步骤（`step`）之前执行的函数。 通过叙事节点（`label`）选项中的 [`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart) 属性来设置它。
+
+```ts title="content/labels/start.label.ts"
+const startLabel = newLabel(
+    "start",
+    [
+        () => {
+            narration.dialogue = "Step 1";
+        },
+        () => {
+            narration.dialogue = "Step 2";
+        },
+    ],
+    {
+        onStepStart: (stepIndex, label) => { // [!code focus]
+            console.log(`Step ${stepIndex} started`); // [!code focus]
+        }, // [!code focus]
+    },
+);
+```
+
+您也可以使用 [`Game.onStepStart`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onStepStart) 来拦截任意叙事节点（`label`）中任意叙事步骤（`step`）的开始。
+
+```ts
+import { Game } from "@drincs/pixi-vn";
+
+Game.onStepStart((stepIndex, label) => { // [!code focus]
+    console.log(`Step ${stepIndex} started`); // [!code focus]
+}); // [!code focus]
+```
+
+</Accordion>
+
+<Accordion title="`onStepEnd`" id="onstepend">
+
+[`onStepEnd`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepend) 是一个在叙事节点（`label`）的每个叙事步骤（`step`）之后执行的函数。 通过叙事节点（`label`）选项中的 [`onStepEnd`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepend) 属性来设置它。
+
+```ts title="content/labels/start.label.ts"
+const startLabel = newLabel(
+    "start",
+    [
+        () => {
+            narration.dialogue = "Step 1";
+        },
+        () => {
+            narration.dialogue = "Step 2";
+        },
+    ],
+    {
+        onStepEnd: (stepIndex, label) => { // [!code focus]
+            console.log(`Step ${stepIndex} ended`); // [!code focus]
+        }, // [!code focus]
+    },
+);
+```
+
+您也可以使用 [`Game.onStepEnd`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onStepEnd) 来拦截任意叙事节点（`label`）中任意叙事步骤（`step`）的结束。
+
+```ts
+import { Game } from "@drincs/pixi-vn";
+
+Game.onStepEnd((stepIndex, label) => { // [!code focus]
+    console.log(`Step ${stepIndex} ended`); // [!code focus]
+}); // [!code focus]
+```
+
+</Accordion>
+
+<Accordion title="动态 `step` 列表" id="dynamic-step-list">
+
+创建新的叙事节点（`label`）时，您可以传入一个返回该叙事节点（`label`）叙事步骤（`steps`）的函数。 这使您可以根据条件动态更改叙事步骤（`step`）列表。
+
+```ts title="content/labels/start.label.ts"
+import { storage, narration, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", () => {
+    let condition = storage.getFlag("condition");
+    if (condition) {
+        return [
+            () => {
+                narration.dialogue = "Step 2";
+            },
+            () => {
+                narration.dialogue = "Restart";
+            },
+        ];
+    } else {
+        return [
+            () => {
+                narration.dialogue = "Step 1";
+            },
+            async (props, { labelId }) => {
+                storage.setFlag("condition", true);
+                return await narration.jump(labelId, props);
+            },
+        ];
+    }
+});
+```
+
+<ReturningDifferentStepLists />
+
+</Accordion>
+
+</Accordions>

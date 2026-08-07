@@ -1,0 +1,142 @@
+---
+title: Изображение (`ImageSprite`)
+description: Руководство по использованию компонента ImageSprite в Pixi'VN, включая инициализацию, загрузку, добавление, отображение и удаление изображений на холсте.
+---
+
+import { ImageSpriteAdd, ImageSpriteShow } from "@/components/examples";
+
+Компонент [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite) расширяет компонент [`Sprite`](/jsdoc/pixi-vn/index/classes/Sprite), поэтому вы можете использовать все методы и свойства [`Sprite`](/jsdoc/pixi-vn/index/classes/Sprite). Он используется для отображения одного изображения на холсте.
+
+```ts tab="main.ts"
+import { canvas, ImageSprite } from "@drincs/pixi-vn";
+
+let alien = new ImageSprite(
+    {
+        anchor: { x: 0.5, y: 0.5 },
+        x: 100,
+        y: 100,
+    },
+    "alien",
+);
+
+await alien.load();
+canvas.add("alien", alien);
+```
+
+```json tab="src/assets/manifest.gen.json"
+{
+    "bundles": [
+        {
+            "name": "image",
+            "assets": [
+                {
+                    "alias": "alien",
+                    "src": "./assets/image/eggHead.png"
+                }
+            ]
+        }
+    ]
+}
+```
+
+По сравнению с компонентом [`Sprite`](/jsdoc/pixi-vn/index/classes/Sprite), [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite) добавляет следующие возможности:
+
+* [`load`](/jsdoc/pixi-vn/index/classes/ImageSprite#load): Загружает URL изображения и устанавливает полученную текстуру в компонент.
+* Дополнительное позиционирование: <DynamicLink href="/start/canvas-position">выравнивание и позиционирование в процентах</DynamicLink>.
+
+## Отображение
+
+Простейший способ показать изображение на холсте — использовать функцию [`showImage`](/jsdoc/pixi-vn/index/functions/showImage). Эта функция объединяет [`load`](/jsdoc/pixi-vn/index/classes/ImageSprite#load) и [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add).
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        // Show the images on the canvas
+        let alien1 = await showImage("alien");
+        // Show the image with a different alias and position
+        let alien2 = await showImage("alien2", "alien", {
+            xAlign: 0.5,
+        });
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<ImageSpriteShow />
+
+## Добавление
+
+Для добавления изображения на холст используйте функцию [`addImage`](/jsdoc/pixi-vn/index/functions/addImage). Эта функция только добавляет компонент на холст; она **не** отображает его и не загружает его текстуру. Для добавления компонента на холст она использует [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add).
+
+```ts tab="content/labels/start.label.ts"
+import { addImage, canvas, ImageSprite, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        // Add the images to the canvas
+        let alien1 = addImage("alien");
+        // Add the image with a different alias and position
+        let alien2 = addImage("alien2", "alien", {
+            xAlign: 0.5,
+        });
+    },
+    async () => {
+        let alien1 = canvas.find<ImageSprite>("alien");
+        let alien2 = canvas.find<ImageSprite>("alien2");
+        // Load the textures
+        alien1 && (await alien1.load());
+        alien2 && (await alien2.load());
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<ImageSpriteAdd />
+
+## Удалить
+
+Как и другие компоненты холста, данный компонент можно удалить с помощью функции [`canvas.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#remove).

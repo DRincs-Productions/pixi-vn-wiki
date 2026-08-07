@@ -1,0 +1,83 @@
+---
+title: Запрос ввода
+description: Объясняет, как запрашивать ввод у игрока в Pixi’VN, включая использование, получение и удаление запросов ввода.
+---
+
+import { InputPrompt } from "@/components/examples";
+
+:::tip[Экран UI]
+
+Пример диалогового интерфейса для ввода данных можно найти в разделе <DynamicLink href="/start/interface-examples#input-prompt">примеров интерфейса</DynamicLink>.
+
+:::
+
+:::tip[*ink*]
+
+Этот метод можно использовать с синтаксисом *ink*. Подробнее <DynamicLink href="/ink/input">здесь</DynamicLink>.
+
+:::
+
+В визуальных новеллах может потребоваться попросить игрока ввести текст, числа, даты или другие значения.
+
+Pixi’VN предоставляет функции для обработки запросов ввода. Разработчик может потребовать от игрока ввести значение (игра не продолжится, пока значение не будет предоставлено), тогда как <DynamicLink href="/start/interface">UI</DynamicLink> отвечает за отображение запроса.
+
+## Запрос
+
+Чтобы запросить ввод у игрока, используйте функцию [`narration.requestInput`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#requestinput).
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        narration.dialogue = "Hello";
+    },
+    () => {
+        narration.dialogue = "What is your name?";
+        narration.requestInput({ type: "string" });
+    },
+    () => {
+        narration.dialogue = `My name is ${narration.inputValue}`;
+    },
+    () => {
+        narration.dialogue = "How old are you?";
+        narration.requestInput({ type: "number" }, 18);
+    },
+    () => {
+        narration.dialogue = `I am ${narration.inputValue} years old`;
+    },
+    () => {
+        narration.dialogue = "Describe who you are:";
+        narration.requestInput({ type: "html textarea" });
+    },
+    () => {
+        narration.dialogue = `${narration.inputValue}`;
+    },
+    () => {
+        narration.dialogue = "Restart";
+    },
+]);
+```
+
+<InputPrompt />
+
+## Получить
+
+Чтобы получить информацию о запросе ввода, используйте:
+
+* [`narration.isRequiredInput`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#isrequiredinput)
+* [`narration.inputType`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#inputtype)
+
+```ts
+if (narration.isRequiredInput) {
+    openInputModal(narration.inputType);
+}
+```
+
+## Удалить
+
+Чтобы удалить запрос ввода, используйте [`narration.removeInputRequest`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#removeinputrequest).
+
+```ts
+narration.removeInputRequest();
+```

@@ -1,0 +1,364 @@
+---
+title: Assets laden
+description: Erfahren Sie, wie Sie Assets in Pixi’VN mit Aliasen, Bundles und verschiedenen Ladestrategien laden und verwalten, um das Spiel flüssig zu halten.
+---
+
+Besonders bei Spielen mit Online-Assets ist es wichtig, gute Ladepraktiken zu befolgen, um lange Wartezeiten zu vermeiden und das Erlebnis für den Spieler reibungslos zu gestalten.
+
+Um Assets (Bilder, GIFs, Videos usw.) zu laden und zu verarbeiten, müssen Sie `Assets` verwenden. `Assets` ist eine Klasse mit vielen Funktionen und stammt aus der PixiJS-Bibliothek. Weitere Informationen finden Sie [hier](https://pixijs.com/8.x/guides/components/assets).
+
+## Aliase zum Laden von Assets verwenden
+
+Um ein Asset zu laden, verwenden Sie immer seinen **Alias** — den eindeutigen Bezeichner, der im Manifest oder bei der Registrierung des Assets definiert wurde. Die direkte Verwendung des `src`-Pfades wird ausdrücklich nicht empfohlen: Sie koppelt Ihren Code an den Speicherort der Datei, was ihn bei Pfad- oder Hosting-Änderungen fehleranfällig macht.
+
+```ts title="main.ts"
+import { Assets } from "@drincs/pixi-vn";
+
+const texture = await Assets.load("eggHead");
+```
+
+```json title="assets/manifest.gen.json"
+{
+    "bundles": [
+        {
+            "name": "default",
+            "assets": [
+                {
+                    "alias": "eggHead",
+                    "src": "./assets/eggHead.png"
+                }
+            ]
+        }
+    ]
+}
+```
+
+## Assets in Bundles organisieren
+
+Eine bewährte Vorgehensweise ist es, Assets in **Bundles** zu gruppieren, anstatt sie einzeln zu registrieren. Mit Bundles können Sie einen ganzen Satz von Assets mit einem einzigen Aufruf laden und das Laden verzögern, bis die Assets tatsächlich benötigt werden.
+
+:::tip
+
+Bei lokalen Assets ist die Benennung von Bundles anhand des Verwendungsorts weniger entscheidend — da lokale Dateien sofort geladen werden, bringt eine Aufteilung nach Bildschirm oder `label` keinen echten Vorteil. Diese Konvention ist am wertvollsten bei Online-Assets, wo gezieltes Laden die Wartezeiten direkt reduziert.
+
+:::
+
+Es wird empfohlen, jedes Bundle nach dem Ort zu benennen, **an dem es verwendet wird**. Zum Beispiel:
+
+* Verwenden Sie die ID des `label` (z. B. `startLabel.id`) als Bundle-Name für Assets, die in diesem bestimmten `label` verwendet werden
+* Verwenden Sie den Routenpfad (z. B. `"/"`) als Bundle-Name für Assets, die im entsprechenden Bildschirm verwendet werden, z. B. im Hauptmenü
+
+Auf diese Weise können Sie genau die richtigen Assets zum richtigen Zeitpunkt laden, ohne mehr als nötig zu laden.
+
+```ts title="assets/index.ts"
+import { startLabel } from "@/content/labels/start.label";
+import type { FileRouteTypes } from "@/routeTree.gen";
+import type { AssetsManifest } from "@drincs/pixi-vn";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        // screens
+        {
+            // main menu
+            name: "/" as FileRouteTypes["fullPaths"],
+            assets: [
+                {
+                    alias: "background_main_menu",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/main-menu.png",
+                },
+            ],
+        },
+        // labels
+        {
+            name: startLabel.id,
+            assets: [
+                {
+                    alias: "bg01-hallway",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/breakdown/bg01-hallway.webp",
+                },
+            ],
+        },
+    ],
+};
+```
+
+## Wann Assets geladen werden sollen
+
+Standardmäßig werden Assets bei Bedarf geladen — nur wenn sie tatsächlich benötigt werden. Das Laden im letzten Moment kann jedoch während des Spiels zu spürbaren Pausen führen.
+
+Hier sind die häufigsten und empfohlenen Zeitpunkte, um Assets im Voraus zu laden:
+
+<Accordions>
+
+<Accordion title="Assets beim Projektstart laden" id="load-assets-at-project-start">
+
+Es ist möglich, Assets beim Projektstart zu laden, bevor der Spieler mit dem Projekt interagieren kann, beispielsweise während des Startladebildschirms. Es wird empfohlen, dieses Verfahren nur für Assets zu verwenden, die auf der Hauptseite oder häufig verwendet werden, und 100 MB nicht zu überschreiten.
+
+Dazu müssen Sie die Funktion `Assets.load` verwenden und beim Projektstart auf deren Abschluss warten (mit `await`).
+
+```ts tab="lib/utils/assets-utility.ts"
+import { manifest } from "@/assets";
+import { Assets, sound } from "@drincs/pixi-vn";
+
+let assetsInitialized = false;
+
+/**
+ * Define all the assets that will be used in the game.
+ * This function will be called before the game starts.
+ */
+export async function defineAssets() {
+    if (!assetsInitialized) {
+        await Assets.init({ manifest });
+        assetsInitialized = true;
+    }
+
+    // The game will not start until these asserts are loaded.
+    await Assets.loadBundle("base");
+}
+```
+
+```ts tab="assets/index.ts"
+import type { AssetsManifest } from "@drincs/pixi-vn";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "base",
+            assets: [
+                {
+                    alias: "eggHead",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flowerTop",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+</Accordion>
+
+<Accordion title="Assets beim Projektstart im Hintergrund laden" id="load-assets-in-the-background-at-project-start">
+
+Es ist möglich, Assets im Hintergrund zu laden, wenn das Projekt startet, wodurch die Ladezeiten beim Start des Projekts reduziert werden. Es wird empfohlen, 2 GB nicht zu überschreiten.
+
+Dazu können Sie die Funktion `Assets.backgroundLoad` beim Projektstart verwenden. Weitere Informationen zur Funktion `Assets.backgroundLoad` finden Sie [hier](https://pixijs.com/8.x/guides/components/assets).
+
+```ts tab="lib/utils/assets-utility.ts"
+import { manifest } from "@/assets";
+import { Assets, sound } from "@drincs/pixi-vn";
+
+let assetsInitialized = false;
+
+/**
+ * Define all the assets that will be used in the game.
+ * This function will be called before the game starts.
+ */
+export async function defineAssets() {
+    if (!assetsInitialized) {
+        await Assets.init({ manifest });
+        assetsInitialized = true;
+    }
+
+    // The game will start immediately, but these assets will be loaded in the background.
+    Assets.backgroundLoadBundle(["audio"]);
+}
+```
+
+```ts tab="assets/index.ts"
+import type { AssetsManifest } from "@drincs/pixi-vn";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "audio",
+            assets: [
+                {
+                    alias: "bgm",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/audio/bgm.mp3",
+                },
+            ],
+        },
+    ],
+};
+```
+
+</Accordion>
+
+<Accordion title="Assets beim Start eines Labels laden" id="load-assets-at-label-start">
+
+:::tip[*ink*]
+
+Sie können diese Methode mit der *ink*-Syntax verwenden. Weitere Informationen finden Sie <DynamicLink href="/ink/assets">hier</DynamicLink>.
+
+:::
+
+Um die Ladevorgänge von einem `step` zum nächsten innerhalb eines `label` zu einem einzigen Ladevorgang zusammenzufassen, ist es möglich, alle oder einen Teil der vom `label` verwendeten Assets zu laden, bevor es startet. Da dies die Wartezeiten für den Spieler nicht reduziert, sondern sie zu einem einzigen Ladevorgang zusammenfasst, wird empfohlen, [sie im Hintergrund zu laden](#load-assets-in-the-background-at-label-start).
+
+Dazu müssen Sie die Funktion `Assets.load` verwenden und beim Start des `label` auf deren Abschluss warten (mit `await`). Sie verwenden dabei die Funktion <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink>.
+
+Für saubereren Code wird empfohlen, in Ihrem Manifest ein Bundle mit der ID zu definieren, die der `label`-ID entspricht, und darin die Assets zu definieren, die in diesem `label` verwendet werden.
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
+
+const startLabel = newLabel(
+    "start",
+    [
+        () => {
+            await showImage("eggHead");
+        },
+        () => {
+            await showImage("flowerTop");
+        },
+    ],
+    {
+        onLoadingLabel: async (_stepId, label) => {
+            // The label will not start until these assets are loaded.
+            await Assets.loadBundle(label.id);
+    },
+);
+export default startLabel;
+```
+
+```ts tab="assets/index.ts"
+import type { AssetsManifest } from "@drincs/pixi-vn";
+import startLabel from "@/content/labels/start.label";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: startLabel.id,
+            assets: [
+                {
+                    alias: "eggHead",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flowerTop",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+</Accordion>
+
+<Accordion title="Assets beim Start eines Labels im Hintergrund laden" id="load-assets-in-the-background-at-label-start">
+
+:::tip[Vorlagen]
+
+In allen Templates wird beim Start eines `label` das Hintergrundladen des Bundles (falls vorhanden) mit der dem `label` entsprechenden ID gestartet. Es genügt daher, **ein Manifest mit einem Bundle für jedes `label` zu erstellen**.
+
+:::
+
+Um das Spiel flüssiger zu gestalten und Ladezeiten zwischen einem `step` und dem nächsten zu vermeiden, ist es möglich, zu Beginn eines `label` eine "Ladegruppe" zu starten. Dadurch ist es möglich, dass Sie insbesondere in den späteren `steps` des `label` keinerlei Ladezeiten bemerken.
+
+Dazu können Sie die Funktion `Assets.backgroundLoad` beim Start des `label` verwenden. Weitere Informationen zur Funktion `Assets.backgroundLoad` finden Sie [hier](https://pixijs.com/8.x/guides/components/assets). Außerdem verwenden Sie die Funktion <DynamicLink href="/start/labels-advanced#onloadinglabel">`onLoadingLabel`</DynamicLink>.
+
+Für saubereren Code wird empfohlen, in Ihrem Manifest ein Bundle mit der ID zu definieren, die der `label`-ID entspricht, und darin die Assets zu definieren, die in diesem `label` verwendet werden.
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showImage, Assets } from "@drincs/pixi-vn";
+
+const startLabel = newLabel(
+    "start",
+    [
+        () => {
+            await showImage("eggHead");
+        },
+        () => {
+            await showImage("flowerTop");
+        },
+    ],
+    {
+        onLoadingLabel: async (_stepId, label) => {
+            // The label will start immediately, but these assets will be loaded in the background.
+            Assets.backgroundLoadBundle(label.id);
+        },
+    },
+);
+export default startLabel;
+```
+
+```ts tab="assets/index.ts"
+import type { AssetsManifest } from "@drincs/pixi-vn";
+import startLabel from "@/content/labels/start.label";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: startLabel.id,
+            assets: [
+                {
+                    alias: "eggHead",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flowerTop",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+</Accordion>
+
+<Accordion title="Assets laden, bevor ein Bildschirm angezeigt wird" id="load-assets-before-screen">
+
+Es ist möglich, Assets zu laden, bevor ein Bildschirm angezeigt wird. Dies ist nützlich, wenn ein Bildschirm Bilder oder andere Ressourcen verwendet, die bereit sein müssen, bevor die Komponente gerendert wird.
+
+In diesem Beispiel wird TanStack Router verwendet, der bereits in allen Templates enthalten ist. Weitere Informationen dazu finden Sie <DynamicLink href="/start/interface-navigate">hier</DynamicLink>.
+
+Die Funktion `loader` wird ausgeführt, bevor die Routenkomponente eingehängt wird. Sie können `Assets.loadBundle` innerhalb von `loader` aufrufen, um das Bundle vorab zu laden, das dieser Route zugeordnet ist.
+
+Zusätzlich können Sie `pendingComponent` verwenden, um einen Ladeindikator anzuzeigen, während die Assets abgerufen werden, sodass der Benutzer einen sinnvollen Übergang anstelle eines leeren Bildschirms sieht.
+
+```tsx tab="routes/game/narration.tsx"
+import { NarrationPendingComponent } from "@/components/loading";
+import { NarrationScreen } from "@/components/screens/narration";
+import { Assets } from "@drincs/pixi-vn";
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/game/narration")({
+    component: NarrationElement,
+    pendingComponent: NarrationPendingComponent,
+    loader: async () => {
+        await Assets.loadBundle("/game/narration");
+    },
+});
+
+function NarrationElement() {
+    return <NarrationScreen />;
+}
+```
+
+```ts tab="assets/index.ts"
+import type { AssetsManifest } from "@drincs/pixi-vn";
+import startLabel from "@/content/labels/start.label";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "/game/narration",
+            assets: [
+                {
+                    alias: "next-button",
+                    src: "https://raw.githubusercontent.com/user/project/refs/heads/main/assets/next-button.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+</Accordion>
+
+</Accordions>

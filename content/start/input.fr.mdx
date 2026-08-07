@@ -1,0 +1,83 @@
+---
+title: Invite de saisie
+description: Explique comment demander une saisie au joueur dans Pixi’VN, notamment l'utilisation, la récupération et la suppression des demandes de saisie.
+---
+
+import { InputPrompt } from "@/components/examples";
+
+:::tip[Interface UI]
+
+Vous pouvez trouver un exemple d'interface de dialogue de saisie dans la section <DynamicLink href="/start/interface-examples#input-prompt">exemples d'interface</DynamicLink>.
+
+:::
+
+:::tip[*ink*]
+
+Vous pouvez utiliser cette méthode avec la syntaxe *ink*. Voir plus <DynamicLink href="/ink/input">ici</DynamicLink>.
+
+:::
+
+Dans les romans visuels, vous pouvez avoir besoin de demander au joueur de saisir du texte, des nombres, des dates ou d'autres valeurs.
+
+Pixi’VN fournit des fonctions pour gérer les demandes de saisie. Le développeur peut exiger que le joueur entre une valeur (le jeu ne continuera pas tant qu'une valeur n'est pas fournie), tandis que l'<DynamicLink href="/start/interface">UI</DynamicLink> est responsable de l'affichage de la demande.
+
+## Requête
+
+Pour demander une saisie au joueur, utilisez la fonction [`narration.requestInput`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#requestinput).
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        narration.dialogue = "Hello";
+    },
+    () => {
+        narration.dialogue = "What is your name?";
+        narration.requestInput({ type: "string" });
+    },
+    () => {
+        narration.dialogue = `My name is ${narration.inputValue}`;
+    },
+    () => {
+        narration.dialogue = "How old are you?";
+        narration.requestInput({ type: "number" }, 18);
+    },
+    () => {
+        narration.dialogue = `I am ${narration.inputValue} years old`;
+    },
+    () => {
+        narration.dialogue = "Describe who you are:";
+        narration.requestInput({ type: "html textarea" });
+    },
+    () => {
+        narration.dialogue = `${narration.inputValue}`;
+    },
+    () => {
+        narration.dialogue = "Restart";
+    },
+]);
+```
+
+<InputPrompt />
+
+## Obtenir
+
+Pour obtenir les informations sur la demande de saisie, utilisez :
+
+* [`narration.isRequiredInput`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#isrequiredinput)
+* [`narration.inputType`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#inputtype)
+
+```ts
+if (narration.isRequiredInput) {
+    openInputModal(narration.inputType);
+}
+```
+
+## Supprimer
+
+Pour supprimer la demande de saisie, utilisez [`narration.removeInputRequest`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#removeinputrequest).
+
+```ts
+narration.removeInputRequest();
+```

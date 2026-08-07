@@ -1,0 +1,123 @@
+---
+title: 对话
+description: 如何在 Pixi’VN 中使用、自定义和管理对话对象，包括"グルー"（glue）和 UI 集成。
+---
+
+import {
+    CurrentDialogueExample,
+    DialogueGlueExample,
+} from "@/components/examples";
+
+:::tip[UI 界面]
+
+您可以在 <DynamicLink href="/start/interface-examples#narrative-dialogue">界面示例</DynamicLink> 部分找到叙事对话 UI 界面的示例。
+
+:::
+
+**什么是对话？** 一种书面作品，其中两个或多个角色被描述为正在交谈。
+
+在 Pixi’VN 中，`dialogue` 是一个包含当前*谁*在说以及说了*什么*的信息的对象。 其功能可以更广泛，因为它也可以用于其他目的，例如独白、自言自语，或向玩家显示消息。 因此，将其视为可以与<DynamicLink href="/start/character#use-characters-in-the-game">角色</DynamicLink>关联的文本更为恰当。
+
+## 设置
+
+要设置当前对话，可以使用 [`narration.dialogue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#dialogue)。
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+import { eggHead } from "@/content/characters";
+
+export const startLabel = newLabel("start", [
+    // A simple dialogue with only text, without a character // [!code focus]
+    () => (narration.dialogue = "Hello, world!"), // [!code focus]
+    // A dialogue with a character // [!code focus]
+    () => {
+        narration.dialogue = { // [!code focus]
+            character: eggHead, // [!code focus]
+            text: "My name is ${eggHead.name}!", // [!code focus]
+        }; // [!code focus]
+    },
+    // A dialogue with a character, but the character is not defined in the characters list // [!code focus]
+    () => {
+        narration.dialogue = { // [!code focus]
+            character: "Narrator", // [!code focus]
+            text: "This is a narration without a character.", // [!code focus]
+        }; // [!code focus]
+    },
+]);
+```
+
+<CurrentDialogueExample />
+
+## 获取
+
+要获取当前对话，使用 [`narration.dialogue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#dialogue)。 返回值是一个 [`DialogueInterface`](/jsdoc/pixi-vn/index/interfaces/DialogueInterface)。
+
+```ts
+const currentDialogue: DialogueInterface = narration.dialogue;
+```
+
+## 删除
+
+要清除当前对话，将 [`narration.dialogue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#dialogue) 设置为 `undefined`。
+
+```ts
+narration.dialogue = undefined;
+```
+
+## 其他功能
+
+<Accordions>
+
+<Accordion title="グルー（Glue）" id="dialogue-glue">
+
+:::tip
+
+"グルー"（glue）是最初为 ***ink*** 创建的功能，后来也引入到了 Pixi’VN 中。
+
+:::
+
+启用"グルー"（glue）后，下一段对话将附加在当前对话之后。 您可以通过将 [`narration.dialogGlue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#dialogglue) 设置为 `true` 来启用"グルー"（glue）。
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+
+const startLabel = newLabel("start", [
+    () => {
+        narration.dialogue = `Hello, my name is Alice and ...`; // [!code focus]
+    },
+    () => {
+        narration.dialogGlue = true; // [!code focus]
+        narration.dialogue = `I am a character in this game.`; // [!code focus]
+    },
+]);
+```
+
+<DialogueGlueExample />
+
+</Accordion>
+
+<Accordion title="其他功能" id="custom-class">
+
+您可以通过向 [`DialogueInterface`](/jsdoc/pixi-vn/index/interfaces/DialogueInterface) 添加额外属性来自定义对话接口。 例如，可以添加 `color` 属性来更改文本颜色。
+
+为此，请在您的 `.d.ts` 文件中"覆盖" [`DialogueInterface`](/jsdoc/pixi-vn/index/interfaces/DialogueInterface) 接口：
+
+```ts tab="pixi-vn.d.ts"
+declare module "@drincs/pixi-vn" {
+    interface DialogueInterface {
+        color?: string;
+    }
+}
+```
+
+```ts tab="content/labels/startLabel.ts"
+narration.dialogue = {
+    character: "Alice",
+    text: "Hello, world!",
+    color: "#ff0000",
+};
+```
+
+</Accordion>
+
+</Accordions>

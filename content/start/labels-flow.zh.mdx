@@ -1,0 +1,386 @@
+---
+title: 使用叙事节点管理叙事流程
+description: 描述如何在 Pixi'VN 中使用叙事节点（label）控制叙事流程，包括 call、jump 和关闭叙事节点（label）等功能。
+---
+
+叙事流程通过 `call`、`jump`、`continue`、`back` 和 `closeLabel` 等函数管理，所有这些函数均可在 `narration` 对象中使用。
+
+## 运行叙事节点
+
+:::tip[*ink*]
+
+你可以在 *ink* 语法中使用此方法。 详见 <DynamicLink href="/ink/labels#run-a-knot">此处</DynamicLink>。
+
+:::
+
+<Accordions>
+
+<Accordion title="`call` 一个叙事节点（`label`）" id="call-a-label">
+
+要调用叙事节点（`label`），请使用 [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) 函数。
+
+```ts
+import { narration } from "@drincs/pixi-vn";
+
+narration.call(startLabel, {});
+```
+
+当您调用叙事节点（`label`）时，该叙事节点（`label`）的第一个叙事步骤（`step`）会被执行。 如果在调用之前有另一个叙事节点（`label`）正在运行，则在被调用的叙事节点（`label`）完成后，前一个叙事节点（`label`）剩余的叙事步骤（`steps`）将恢复执行。
+
+例如，如果游戏正在运行叙事节点（`label`）A 的第 5 个叙事步骤（`step`），而您**调用**叙事节点（`label`）B，则在叙事节点（`label`）B 的所有叙事步骤（`steps`）执行完毕后，游戏将继续执行叙事节点（`label`）A 的第 6 个叙事步骤（`step`）。
+
+[`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) 返回被调用的叙事节点（`label`）第一个叙事步骤（`step`）的 <DynamicLink href="/start/labels#step-results">结果</DynamicLink>。
+
+---
+
+如果您在叙事步骤（`step`）内执行 [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call)，您应该返回 [`narration.call`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#call) 的结果并使用 `await`。 这可以确保历史记录被正确管理。
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async (props) => {
+        return await narration.call(TestLabel, props);
+    },
+    async (props) => await narration.call(TestLabel, props),
+]);
+```
+
+</Accordion>
+
+<Accordion title="`jump` 到一个叙事节点（`label`）" id="jump-to-a-label">
+
+要跳转到叙事节点（`label`），请使用 [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) 函数。
+
+```ts
+import { narration } from "@drincs/pixi-vn";
+
+narration.jump(startLabel, {});
+```
+
+当您跳转到叙事节点（`label`）时，当前叙事节点（`label`）的叙事步骤（`steps`）将停止，新叙事节点（`label`）的叙事步骤（`steps`）开始执行。
+
+例如，如果游戏正在运行叙事节点（`label`）A 的第 5 个叙事步骤（`step`），而您**调用**叙事节点（`label`）B，但随后**跳转**到叙事节点（`label`）C，则在叙事节点（`label`）C 完成后，游戏将继续执行叙事节点（`label`）A 的第 6 个叙事步骤（`step`）。当您跳转到叙事节点（`label`）C 时，叙事节点（`label`）B 会被关闭。
+
+[`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) 返回被调用叙事节点（`label`）<DynamicLink href="/start/labels#all-steps-result">第一个叙事步骤（`step`）的结果</DynamicLink>。
+
+---
+
+如果您在叙事步骤（`step`）内执行 [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump)，您应该返回 [`narration.jump`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#jump) 的结果并使用 `await`。 这可以确保新叙事节点（`label`）的第一个叙事步骤（`step`）被等待。
+
+```ts title="content/labels/start.label.ts"
+import { narration } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async (props) => {
+        return await narration.jump(TestLabel, props);
+    },
+    async (props) => await narration.jump(TestLabel, props),
+]);
+```
+
+</Accordion>
+
+<Accordion title="启动游戏" id="start-game">
+
+要启动游戏，请使用 [`Game.start`](/jsdoc/pixi-vn/index/namespaces/Game/functions/start) 函数。 此函数等同于调用叙事节点（`label`），但建议使用它以获得更简洁的启动流程。
+
+```ts title="content/labels/start.label.ts"
+import { Game } from "@drincs/pixi-vn";
+
+Game.start(startLabel, gameProps);
+```
+
+</Accordion>
+
+</Accordions>
+
+## 在叙事步骤中继续和返回
+
+### 继续
+
+:::tip[UI 界面]
+
+您可以在 <DynamicLink href="/start/interface-examples#go-next">界面示例</DynamicLink> 部分找到"继续"按钮的示例。
+
+:::
+
+要执行下一个叙事步骤（`step`），请使用 [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) 函数。
+
+```ts
+import { narration } from "@drincs/pixi-vn";
+
+await narration.continue({});
+```
+
+[`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) 是异步的，因此您可以使用 `.then` 来，例如，在叙事步骤（`step`）完成之前禁用"下一步"按钮。
+
+```ts
+import { narration } from "@drincs/pixi-vn";
+
+// disable next button
+narration.continue({}).then((result) => {
+    // enable next button
+});
+```
+
+<Accordions>
+
+<Accordion title="在叙事步骤（`step`）内执行 continue" id="call-continue-inside-a-step">
+
+如果您在叙事步骤（`step`）内调用 [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue)，"continue" 请求将被加入队列，并在队列为空时执行。
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async (props) => {
+        narration.continue(props);
+    },
+]);
+```
+
+以下是一个说明队列工作原理的示例：
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async (props) => {
+        await narration.call(label2, props);
+        console.log(1);
+    },
+    () => {
+        console.log(3);
+    },
+]);
+
+const label2 = newLabel("label_02", [
+    async (props) => {
+        await narration.continue(props);
+        console.log(2);
+    },
+]);
+```
+
+在此示例中，输出将为 `2`、`1`、`3`。 步骤如下：
+
+1. `await narration.call(label2, props)` 调用 label2 并等待其第一个叙事步骤（`step`）。 （队列中有 1 项）
+2. label2 的第一个叙事步骤（`step`）执行 `await narration.continue(props)`，但由于队列不为空，continue 请求被加入队列。 （队列中有 2 项）
+3. `console.log(2)` 运行，完成 label2 的第一个叙事步骤（`step`）。 （队列中有 1 项）
+4. `console.log(1)` 运行，完成 startLabel 的第一个叙事步骤（`step`）。 （队列中有 0 项）
+5. 现在 continue 请求被执行，startLabel 的第二个叙事步骤（`step`）运行。
+   （队列中有 1 项）
+6. `console.log(3)` 运行，完成 startLabel 的第二个叙事步骤（`step`）。 （队列中有 0 项）
+
+</Accordion>
+
+<Accordion title="检查是否可以进入下一个叙事步骤（`step`）" id="can-go-next">
+
+您可以使用 [`narration.canContinue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#cancontinue) 属性来检查是否可以执行下一个叙事步骤（`step`）。
+
+当以下情况时，[`narration.canContinue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#cancontinue) 为 `false`：
+
+* 叙事步骤（`step`）正在运行
+* 玩家必须 <DynamicLink href="/start/choices">做出选择</DynamicLink>
+* 玩家必须 <DynamicLink href="/start/input">输入值</DynamicLink>
+
+```tsx title="components/NextButton.tsx"
+import { narration } from "@drincs/pixi-vn";
+
+function NextButton() {
+    return (
+        <button
+            disabled={!narration.canContinue}
+            onClick={() => {
+                narration.continue({});
+            }}
+        >
+            Next
+        </button>
+    );
+}
+```
+
+</Accordion>
+
+</Accordions>
+
+### 返回
+
+:::tip[UI 界面]
+
+您可以在 <DynamicLink href="/start/interface-examples#go-back">界面示例</DynamicLink> 部分找到返回按钮的示例。
+
+:::
+
+在每个叙事步骤（`step`），系统都会保存游戏的当前状态。 要返回上一个叙事步骤（`step`），请使用 [`stepHistory.back`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#back) 函数。
+
+<Accordions>
+
+<Accordion title="检查是否可以返回" id="can-go-back">
+
+您可以使用 [`stepHistory.canGoBack`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#cangoback) 属性来检查是否可以返回。
+
+当历史记录中没有可恢复的叙事步骤（`steps`）时，[`stepHistory.canGoBack`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#cangoback) 为 `false`。
+
+```ts
+import { stepHistory } from "@drincs/pixi-vn";
+
+if (stepHistory.canGoBack) {
+    stepHistory.back();
+}
+```
+
+</Accordion>
+
+<Accordion title="阻止返回的可能性" id="block-the-possibility-of-going-back">
+
+您可以通过调用 [`stepHistory.blockGoBack`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#blockgoback) 来阻止"返回"操作。
+
+```typescript
+import { stepHistory } from "@drincs/pixi-vn";
+
+stepHistory.blockGoBack();
+```
+
+</Accordion>
+
+</Accordions>
+
+## 关闭叙事节点
+
+<Accordions>
+
+<Accordion title="关闭当前叙事节点（`label`）" id="close-current-label">
+
+要关闭当前叙事节点（`label`），请使用 [`narration.closeCurrentLabel`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#closecurrentlabel) 函数。
+
+```typescript
+import { narration } from "@drincs/pixi-vn";
+
+narration.closeCurrentLabel();
+```
+
+</Accordion>
+
+<Accordion title="关闭所有叙事节点（`labels`）" id="close-all-labels">
+
+要关闭所有叙事节点（`labels`），请使用 [`narration.closeAllLabels`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#closealllabels) 函数。 **如果您调用此函数后不调用任何叙事节点（`label`），游戏将结束**
+
+```typescript
+import { narration } from "@drincs/pixi-vn";
+
+narration.closeAllLabels();
+```
+
+</Accordion>
+
+</Accordions>
+
+## 其他功能
+
+<Accordions>
+
+<Accordion title="回滚与前进" id="rollback-rollforward">
+
+:::tip[模板]
+
+在所有模板中，此实现已包含在内。
+
+:::
+
+如果您同步执行多个 [`stepHistory.back`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#back) 和 [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) 请求，系统将在内部将它们加入队列，并计算增量以仅执行必要的进程。
+
+因此，您可以使用 [`stepHistory.back`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#back) 和 [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) 函数实现回滚和前进功能。
+
+```tsx title="lib/hooks/quick-tools-hooks.ts"
+import { HTML_CANVAS_LAYER_NAME, HTML_UI_LAYER_NAME } from "@/constans";
+import { useGameProps } from "@/lib/hooks/props-hooks";
+import { GameStatus } from "@/lib/stores/game-status-store";
+import { hasScrollableParent } from "@/lib/utils/scroll-utils";
+import { type StepLabelProps, stepHistory } from "@drincs/pixi-vn";
+import { narration } from "@drincs/pixi-vn/narration";
+import { useThrottler } from "@tanstack/react-pacer";
+import { useEffect, useRef } from "react";
+
+function isInsideRoot(target: EventTarget | null, selector: string): boolean {
+    if (!(target instanceof HTMLElement)) return false;
+    return target.closest(`#${selector}`) !== null;
+}
+
+export function useWheelActions({
+    throttleMs = 300,
+    minDelta = 20,
+}: {
+    throttleMs?: number;
+    minDelta?: number;
+} = {}) {
+    const pendingAsync = useRef(0);
+    const gameProps = useGameProps();
+
+    const runAsync = async (
+        fn: (props: StepLabelProps) => Promise<unknown>,
+    ) => {
+        try {
+            pendingAsync.current += 1;
+            GameStatus.setLoading(pendingAsync.current > 0);
+            await fn(gameProps);
+        } finally {
+            pendingAsync.current -= 1;
+            GameStatus.setLoading(pendingAsync.current > 0);
+            if (pendingAsync.current === 0) {
+                gameProps.invalidateInterfaceData();
+            }
+        }
+    };
+
+    const handleWheel = useThrottler(
+        async (event: WheelEvent) => {
+            if (
+                !(
+                    isInsideRoot(event.target, HTML_UI_LAYER_NAME) ||
+                    isInsideRoot(event.target, HTML_CANVAS_LAYER_NAME)
+                )
+            )
+                return;
+            if (hasScrollableParent(event.target)) return;
+
+            // blocca lo scroll nativo
+            event.preventDefault();
+
+            const { deltaY } = event;
+
+            // ignora micro-movimenti del trackpad
+            if (Math.abs(deltaY) < minDelta) return;
+
+            if (deltaY < 0) {
+                // ⬆️ Scroll up
+                await runAsync(narration.continue.bind(narration));
+            }
+
+            if (deltaY > 0) {
+                // ⬇️ Scroll down
+                await runAsync(stepHistory.back.bind(stepHistory));
+            }
+        },
+        { wait: throttleMs },
+    );
+
+    useEffect(() => {
+        window.addEventListener("wheel", handleWheel.maybeExecute, {
+            passive: false,
+        });
+
+        return () => {
+            window.removeEventListener("wheel", handleWheel.maybeExecute);
+        };
+    }, [handleWheel.maybeExecute]);
+
+    return null;
+}
+```
+
+</Accordion>
+
+</Accordions>
