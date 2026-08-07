@@ -703,12 +703,6 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
                 children: [
                     {
                         type: "page",
-                        name: t("functions"),
-                        url: `${preUrl}/ink/functions`,
-                        icon: <FunctionSquare />,
-                    },
-                    {
-                        type: "page",
                         name: "Text replacement",
                         url: `${preUrl}/ink/replacement`,
                         icon: <Replace />,
@@ -718,6 +712,12 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
                         name: "Custom hashtag command",
                         url: `${preUrl}/ink/hashtag`,
                         icon: <Hash />,
+                    },
+                    {
+                        type: "page",
+                        name: t("functions"),
+                        url: `${preUrl}/ink/functions`,
+                        icon: <FunctionSquare />,
                     },
                 ],
             },
