@@ -149,54 +149,9 @@ declare module "*.ink" {
 
 </Accordion>
 
-<Accordion title="Import all .ink files from a folder" id="import-ink-folder">
-
-:::tip
-
-This guide uses [Vite](https://vitejs.dev/), but the same logic applies elsewhere.
-
-:::
-
-To import multiple `.ink` files, use `import.meta.glob`:
-
-```ts tab="utils/ink-utility.ts"
-import { convertInkText, importInkText } from "@drincs/pixi-vn-ink";
-
-async function getInkText() {
-    const files = import.meta.glob<string>("../ink/*.ink", {
-        query: "?raw",
-        import: "default",
-    });
-    return await Promise.all(
-        Object.values(files).map(async (importFile) => {
-            return await importFile();
-        }),
-    );
-}
-
-export async function importAllInkLabels() {
-    let fileEntries = await getInkText();
-    await importInkText(fileEntries);
-}
-
-export async function convertInkToJson() {
-    let fileEntries = await getInkText();
-    return await Promise.all(fileEntries.map((data) => convertInkText(data)));
-}
-```
-
-```ts tab="vite.config.ts"
-export default defineConfig({
-    // ...
-    assetsInclude: ["**/*.ink"],
-});
-```
-
-</Accordion>
-
 <Accordion title="Vite.js 플러그인" id="vite-plugin">
 
-For a better developer experience, use the Vite plugin:
+For a better developer experience, use the [`vitePluginInk`](https://pixi-vn.com/jsdoc/pixi-vn-ink/vite/functions/vitePluginInk):
 
 ```ts tab="vite.config.ts"
 import { defineConfig } from "vite";
