@@ -7,18 +7,35 @@ As explained in more detail <DynamicLink href="/start/assets-management">here</D
 
 In ***ink*** you have less control than in JavaScript/TypeScript over how and when to load assets. Pixi’VN provides a single ***ink*** command that <DynamicLink href="/start/assets-management#load-assets-before-a-label-starts">loads assets before a `label` starts</DynamicLink>. Use the following syntax:
 
-```ink title="ink"
-# {operation} {assets or bundle} {list of URL/path of the image}
+To load the assets or bundle with await, use the `load` operation:
+
+```ink tab="ink"
+# load assets eggHead flowerTop
 ```
 
-* `#`: is the hashtag symbol to identify a hashtag command.
-* `operation`: the operation to perform. Currently supported:
-  * `load`: It loads with await the assets or bundle (`Assets.load` or `Assets.loadBundle`).
-  * `lazyload`: It loads the assets or bundle in the background (`Assets.backgroundLoad` or `Assets.backgroundLoadBundle`).
-* `assets or bundle`: The type of asset to load. Available types are:
-  * `assets`: It loads the assets.
-  * `bundle`: It loads the bundle.
-* `list of URL/path of the image`: The list of URLs/paths of the images (or other assets) you want to load. If you initialized the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink>, you can use an asset alias instead of a URL. Note: to write `https://` in ***ink*** you must escape the slashes as `https:\/\/` because `//` is treated as a comment in ***ink***.
+```txt tab="CLI"
+# load <assets or bundle> <list of URL/path/alias>
+
+where:
+    assets or bundle = the type to load. `assets` loads with `Assets.load`, `bundle` loads with `Assets.loadBundle`.
+    list of URL/path/alias = the list of URLs/paths of the images (or other assets), or of the bundle names, you want to load. If you initialized the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink>, you can use an asset alias instead of a URL. Note: to write `https://` in ***ink*** you must escape the slashes as `https:\/\/` because `//` is treated as a comment in ***ink***.
+```
+
+To load the assets or bundle in the background, use the `lazyload` operation:
+
+```ink tab="ink"
+# lazyload bundle main_menu
+```
+
+```txt tab="CLI"
+# lazyload <assets or bundle> <list of URL/path/alias>
+
+where:
+    assets or bundle = the type to load. `assets` loads with `Assets.backgroundLoad`, `bundle` loads with `Assets.backgroundLoadBundle`.
+    list of URL/path/alias = the list of URLs/paths of the images (or other assets), or of the bundle names, you want to load. If you initialized the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink>, you can use an asset alias instead of a URL. Note: to write `https://` in ***ink*** you must escape the slashes as `https:\/\/` because `//` is treated as a comment in ***ink***.
+```
+
+Например:
 
 ```ink tab="ink/start.ink"
 === start ===
@@ -31,29 +48,13 @@ In ***ink*** you have less control than in JavaScript/TypeScript over how and wh
 -> start
 ```
 
-```ts tab="utils/defineAssets.ts"
-import { Assets } from "@drincs/pixi-vn"
+```ts tab="src/assets/index.ts"
+import generatedManifestJson from "@/assets/manifest.gen.json";
+import type { AssetsManifest } from "@drincs/pixi-vn";
 
-export async function defineAssets() {
-    // manifest
-    await Assets.init({ manifest });
-    // single asset
-    Assets.add({ alias: 'eggHead', src: "https://pixijs.com/assets/eggHead.png" })
-    Assets.add({ alias: 'flowerTop', src: "https://pixijs.com/assets/flowerTop.png" })
-    Assets.add({ alias: "my_video", src: "https://pixijs.com/assets/video.mp4" });
-}
-```
-
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
-
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
+export const manifest: AssetsManifest = {
     bundles: [
-        // screens
+        ...generatedManifestJson.bundles,
         {
             name: "main_menu",
             assets: [
@@ -63,7 +64,6 @@ const manifest: AssetsManifest = {
                 },
             ],
         },
-        // labels
         {
             name: "start",
             assets: [
@@ -73,7 +73,19 @@ const manifest: AssetsManifest = {
                 },
             ],
         },
+        {
+            name: "images",
+            assets: [
+                {
+                    alias: "eggHead",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/images/eggHead.png",
+                },
+                {
+                    alias: "flowerTop",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/images/flowerTop.png",
+                },
+            ],
+        },
     ],
 };
-export default manifest;
 ```
