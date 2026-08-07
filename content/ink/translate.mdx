@@ -2,18 +2,22 @@
 title: Internalization
 ---
 
-As explained in more detail <DynamicLink href="/start/translate">here</DynamicLink>, Pixi’VN gives the possibility to translate the game text using a library, such as [i18next](https://www.i18next.com/). Also in ***ink* + Pixi’VN integration** you can use a library to translate the text of the ***ink***.
+As explained in more detail <DynamicLink href="/start/translate">here</DynamicLink>, Pixi’VN gives the possibility to translate the game text using a library, such as [i18next](https://www.i18next.com/). Also in **_ink_ + Pixi’VN integration** you can use a library to translate the text of the **_ink_**.
 
 Pixi’VN gives the developer the ability to intercept the translation event with the `onInkTranslate` function.
 
-The `onInkTranslate` function has as a parameter a callback function takes as parameter the text to translate and returns the translated text.
-
-```ts tab="index.ts"
+```ts tab="lib/hooks/ink-hooks.tsx"
 import { onInkTranslate } from "@drincs/pixi-vn-ink";
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
-export function initializeInk(options: { t: (key: string) => string }) {
-    const { t } = options;
-    onInkTranslate(t);
+export default function useInkInitialization() {
+    const { t } = useTranslation(["narration"]);
+    useEffect(() => {
+        onInkTranslate(t);
+    }, [t]);
+
+    return null;
 }
 ```
 
@@ -23,10 +27,10 @@ Hello, my name is [joe]
 -> DONE
 ```
 
-```json tab="locales/strings_es.json"
+```json tab="locales/es.json"
 {
     "narration": {
-        "Hello, my name is [joe]": "Hola, mi nombre es [joe]"
+        "Hello, my name is [joe]": "Hola, mi nombre es {{joe}}"
         // ...
     }
 }
