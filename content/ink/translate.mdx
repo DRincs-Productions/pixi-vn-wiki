@@ -4,7 +4,7 @@ title: Internalization
 
 As explained in more detail <DynamicLink href="/start/translate">here</DynamicLink>, Pixi’VN gives the possibility to translate the game text using a library, such as [i18next](https://www.i18next.com/). Also in **_ink_ + Pixi’VN integration** you can use a library to translate the text of the **_ink_**.
 
-Pixi’VN gives the developer the ability to intercept the translation event with the `onInkTranslate` function.
+Pixi’VN gives the developer the ability to intercept the translation event with the [`onInkTranslate`](/jsdoc/pixi-vn-ink/index/functions/onInkTranslate) function.
 
 ```ts tab="lib/hooks/ink-hooks.tsx"
 import { onInkTranslate } from "@drincs/pixi-vn-ink";
@@ -45,15 +45,17 @@ In all templates, you can use the following button in the settings to automatica
 
 </Callout>
 
-To facilitate the creation of the translation files, you can use the `generateJsonInkTranslation` function to automatically generate the JSON structure from the ink text.
+To facilitate the creation of the translation files, you can use the [`generateJsonInkTranslation`](/jsdoc/pixi-vn-ink/index/functions/generateJsonInkTranslation) function to automatically generate the JSON structure from the ink text.
 
-```ts
+```ts title="lib/i18n.ts"
 import { generateJsonInkTranslation } from "@drincs/pixi-vn-ink";
 import i18n from "i18next";
 import { convertInkToJson } from "./utils/ink-utility";
 
-function getLocalesResource(lng: string): Promise<any> {
-    return import(`./locales/strings_${lng}.json`);
+function getLocalesResource(
+    lng: string,
+): Promise<Record<string, Record<string, string>>> {
+    return import(`./../locales/${lng}.json`);
 }
 
 async function generateResourceToTranslate(lng: string): Promise<any> {
@@ -68,9 +70,11 @@ async function generateResourceToTranslate(lng: string): Promise<any> {
     if (res.default) {
         delete res.default;
     }
-    (await convertInkToJson()).forEach((element) => {
-        element && generateJsonInkTranslation(element, res.narration);
-    });
+    const manifest = await import("@/assets/ink-manifest.gen.json");
+    for (const path of manifest.default) {
+        const element = await fetch(path).then((r) => r.json());
+        element && (await generateJsonInkTranslation(element, res.narration));
+    }
     return res;
 }
 
