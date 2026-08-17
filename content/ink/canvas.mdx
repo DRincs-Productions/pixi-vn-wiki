@@ -149,7 +149,7 @@ where:
     transition parameters (Optional) = a space-separated list of property/value pairs corresponding to the transition options. If a value is a string and includes spaces, you must use double quotes.
 ```
 
-Available `parameters` (all optional) are the properties of [`PixiVNJsonMediaTransiotions`](/jsdoc/pixi-vn-json/index/type-aliases/PixiVNJsonMediaTransiotions).
+Available `transition parameters` (all optional) are the properties of [`PixiVNJsonMediaTransiotions`](/jsdoc/pixi-vn-json/index/type-aliases/PixiVNJsonMediaTransiotions).
 
 </Accordion>
 
@@ -197,19 +197,7 @@ where:
 
 If you want to remove the canvas component with a <DynamicLink href="/start/canvas-transition">transition</DynamicLink>, you can add after the alias of the canvas component `with {transition type}`.
 
-```ink title="ink"
-# remove {component type} {alias} with {transition type} {transition parameters}
-```
-
-- `transition type` (Optional): the available transitions are:
-    - `dissolve`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#dissolve-transition">dissolve transition</DynamicLink>.
-    - `fade`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#fade-transition">fade transition</DynamicLink>.
-    - `movein`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#move-inout-transition">movein transition</DynamicLink>.
-    - `zoomin`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#zoom-inout-transition">zoomin transition</DynamicLink>.
-    - `pushin`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#push-inout-transition">pushin transition</DynamicLink>.
-- `transition parameters` (Optional): a space-separated list of property/value pairs. Corresponds to the `options` parameter of their Javascript counterpart. If a value contains spaces, wrap it in double quotes. If a value is a object, pass valid JSON and escape the braces for **_ink_** (e.g. `\{ "placeholder": "Enter your name", "maxLength": 20 \}`). You can add all the [`motion` options](https://motion.dev/docs/animate#options) and additional parameters you would use in JS/TS.
-
-```ink title="ink"
+```ink tab="ink"
 # remove image bg with dissolve duration 3
 temp durationVar = 3
 # remove image bg with fade duration {durationVar}
@@ -217,6 +205,18 @@ temp durationVar = 3
 # remove image bg with zoomout
 # remove image bg with pushout
 ```
+
+```txt tab="CLI"
+# remove <component type> <alias> with <transition type> [<transition parameters>]
+
+where:
+    component type = the component type to remove. Available types: `image`, `imagecontainer`, `video`, `text`.
+    alias = the alias to identify the component. Use double quotes if it contains spaces.
+    transition type = the transition to use. Available types: `dissolve`, `fade`, `moveout`, `zoomout`, `pushout`.
+    transition parameters (Optional) = a space-separated list of property/value pairs corresponding to the transition options. If a value is a string and includes spaces, you must use double quotes.
+```
+
+Available `transition parameters` (all optional) are the properties of [`PixiVNJsonMediaTransiotions`](/jsdoc/pixi-vn-json/index/type-aliases/PixiVNJsonMediaTransiotions).
 
 </Accordion>
 
@@ -236,47 +236,22 @@ Video resumed
 -> DONE
 ```
 
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
-
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
-    bundles: [
-        {
-            name: "start",
-            assets: [
-                {
-                    alias: "my_video",
-                    src: "https://pixijs.com/assets/video.mp4",
-                },
-            ],
-        },
-    ],
-};
-export default manifest;
-```
-
-<Sandbox
-    template="p3qgjq"
-    entry="/src/ink/start.ink,/src/utils/assets-utility.ts"
-/>
-
 <Accordions>
 
 <Accordion title="pause" id="pause">
 
 To pause a video in **_ink_**, you can use `pause`. To do this, you need to use the following syntax:
 
-```ink title="ink"
-# pause video {alias}
-```
-
-```ink title="ink"
+```ink tab="ink"
 # pause video bg
 # pause video "bg 2"
+```
+
+```txt tab="CLI"
+# pause video <alias>
+
+where:
+    alias = the alias to identify the video to pause. Use double quotes if it contains spaces.
 ```
 
 </Accordion>
@@ -285,13 +260,16 @@ To pause a video in **_ink_**, you can use `pause`. To do this, you need to use 
 
 To resume a video in **_ink_**, you can use `resume`. To do this, you need to use the following syntax:
 
-```ink title="ink"
-# resume video {alias}
-```
-
-```ink title="ink"
+```ink tab="ink"
 # resume video bg
 # resume video "bg 2"
+```
+
+```txt tab="CLI"
+# resume video <alias>
+
+where:
+    alias = the alias to identify the video to resume. Use double quotes if it contains spaces.
 ```
 
 </Accordion>
@@ -306,7 +284,6 @@ You can use the `animate` to use the <DynamicLink href="/start/canvas-motion">an
 # animate {alias} {keyframes} options {parameters}
 ```
 
-- `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> to identify the component. Use double quotes if the alias contains spaces.
 - `keyframes`: a space-separated list of property/value pairs representing the properties to animate and the values to reach. If a value contains spaces, wrap it in double quotes. If a value is a object, pass valid JSON and escape the braces for **_ink_** (e.g. `\{ "placeholder": "Enter your name", "maxLength": 20 \}`). Valid parameters vary by component:
     - `image` and `video`: [`PixiJS.Sprite`](https://pixijs.com/8.x/guides/components/sprites) and <DynamicLink href="/start/canvas-position">`properties for positioning`</DynamicLink> properties.
     - `text`: [`PixiJS.Text`](https://pixijs.com/8.x/guides/components/text) and <DynamicLink href="/start/canvas-position">`properties for positioning`</DynamicLink> properties.
@@ -319,7 +296,7 @@ Here are some examples:
 
 <Accordion title="Move" id="move">
 
-```ink tab="ink/start.ink"
+```ink title="ink/start.ink"
 === start ===
 # show image alien
 # animate alien xAlign 1 yAlign 0 options ease "easeOut"
@@ -333,34 +310,11 @@ Here are some examples:
 -> DONE
 ```
 
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
-
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
-    bundles: [
-        {
-            name: "start",
-            assets: [
-                {
-                    alias: "alien",
-                    src: "https://pixijs.com/assets/eggHead.png",
-                },
-            ],
-        },
-    ],
-};
-export default manifest;
-```
-
 </Accordion>
 
 <Accordion title="Rotate" id="rotate">
 
-```ink tab="ink/start.ink"
+```ink title="ink/start.ink"
 === start ===
 # show alien
 # animate alien angle 360 options duration 1 type "spring" repeat Infinity repeatDelay 0.2
@@ -368,34 +322,11 @@ export default manifest;
 -> DONE
 ```
 
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
-
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
-    bundles: [
-        {
-            name: "start",
-            assets: [
-                {
-                    alias: "alien",
-                    src: "https://pixijs.com/assets/eggHead.png",
-                },
-            ],
-        },
-    ],
-};
-export default manifest;
-```
-
 </Accordion>
 
 <Accordion title="Fade" id="fade">
 
-```ink tab="ink/start.ink"
+```ink title="ink/start.ink"
 === start ===
 # show alien
 # animate alien alpha 0 options ease "linear" duration 1
@@ -403,34 +334,11 @@ export default manifest;
 -> DONE
 ```
 
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
-
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
-    bundles: [
-        {
-            name: "start",
-            assets: [
-                {
-                    alias: "alien",
-                    src: "https://pixijs.com/assets/eggHead.png",
-                },
-            ],
-        },
-    ],
-};
-export default manifest;
-```
-
 </Accordion>
 
 <Accordion title="Zoom" id="zoom">
 
-```ink tab="ink/start.ink"
+```ink title="ink/start.ink"
 === start ===
 # show alien
 # animate alien scaleX 0 scaleY 0 options ease "circInOut" duration 1
@@ -438,34 +346,11 @@ export default manifest;
 -> DONE
 ```
 
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
-
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
-    bundles: [
-        {
-            name: "start",
-            assets: [
-                {
-                    alias: "alien",
-                    src: "https://pixijs.com/assets/eggHead.png",
-                },
-            ],
-        },
-    ],
-};
-export default manifest;
-```
-
 </Accordion>
 
 <Accordion title="Mirror" id="mirror">
 
-```ink tab="ink/start.ink"
+```ink title="ink/start.ink"
 === start ===
 # show alien
 # animate alien scaleX -1 options duration 1
@@ -473,29 +358,6 @@ export default manifest;
 # animate alien scaleX 1 options duration 1
 # pause
 -> DONE
-```
-
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
-
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
-    bundles: [
-        {
-            name: "start",
-            assets: [
-                {
-                    alias: "alien",
-                    src: "https://pixijs.com/assets/eggHead.png",
-                },
-            ],
-        },
-    ],
-};
-export default manifest;
 ```
 
 </Accordion>
