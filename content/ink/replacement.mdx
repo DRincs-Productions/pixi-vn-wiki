@@ -6,73 +6,49 @@ In **native *ink*** it is possible to inject variables in the text as in the fol
 
 In **Pixi’VN *ink*** you can use the following syntax to replace the text:
 
-```ink title="ink"
+```ink tab="ink"
 What do you want, [alice]?
 * Talk to \[bob\]
 ```
 
-In this case Pixi’VN checks if there is a value linked to the keys `alice` and `bob`. If there is a value linked to the key `alice`, the text `[alice]` will be replaced by the value, same for the key `bob`.
+```ts tab="content/ink/text-replaces.ts"
+import { TextReplaces } from '@drincs/pixi-vn-ink'
 
-To assign a value to a key you can use the following 2 methods:
-
-## Replace after translation
-
-You can override the function `onReplaceTextAfterTranslation` to assign a value to a key. This function is called after the <DynamicLink href="/ink/translate">translation</DynamicLink> of the text and have how parameter the key to replace and return the value to replace or `undefined` if the key does not need to be replaced (so the key will be displayed with the brackets `[key]`).
-
-```ts
-import { onReplaceTextAfterTranslation } from '@drincs/pixi-vn-ink'
-import { getCharacterById } from "@drincs/pixi-vn";
-
-onReplaceTextAfterTranslation((key) => {
-    if (key === 'bob') {
-        return 'Bob'
-    }
-
-    let character = getCharacterById(key)
-    if (character) {
-        return character.name
-    }
-
-    // if return undefined, the system will not replace the character id
-    return undefined
-})
-```
-
-## Replace before translation
-
-You can override the function `onReplaceTextBeforeTranslation` to add a script that can be interpreted by the <DynamicLink href="/ink/translate">translation library</DynamicLink> used (for example [i18next](https://www.i18next.com/)).
-
-```ts
-import { onReplaceTextBeforeTranslation, onInkTranslate } from '@drincs/pixi-vn-ink'
-import { useTranslation } from "react-i18next";
-import { bob } from "../values/characters"
-
-const { t } = useTranslation(["narration"]);
-
-onInkTranslate((text) => {
-    return t(text)
-})
-
-onReplaceTextBeforeTranslation((key) => {
-    return `{{${key}}}`
-})
-
-i18n.init({
-    debug: false,
-    fallbackLng: 'en',
-    // ...
-    missingInterpolationHandler(_text, value, _options) {
-        let key = value[1]
-        if (key === 'bob') {
-            return 'Bob'
-        }
-
-        let character = getCharacterById(key)
-        if (character) {
-            return character.name
-        }
-
-        return `[${key}]`
-    },
+TextReplaces.add(() => "Alice", {
+    name: "Replace Alice",
+    validation: /alice/,
+    type: "after-translation",
+    i18nInterpolation: true,
+    description:
+        "Replaces the placeholder 'alice' with the name of the character Alice.",
+});
+TextReplaces.add(() => "Bob", {
+    name: "Replace Bob",
+    validation: /bob/,
+    type: "after-translation",
+    i18nInterpolation: true,
+    description:
+        "Replaces the placeholder 'bob' with the name of the character Bob.",
 });
 ```
+
+In this case Pixi’VN checks if there is a value linked to the keys `alice` and `bob`. If there is a value linked to the key `alice`, the text `[alice]` will be replaced by the value, same for the key `bob`.
+
+To assign a value to a key you can use the [`TextReplaces.add`](/jsdoc/pixi-vn-ink/index/namespaces/TextReplaces/functions/add) function. For example:
+
+```ts title="content/ink/text-replaces.ts"
+import { TextReplaces } from '@drincs/pixi-vn-ink'
+
+TextReplaces.add(() => "Stephanie", {
+    name: "Replace Stephanie",
+    validation: /steph_fullname/,
+    type: "after-translation",
+    i18nInterpolation: true,
+    description:
+        "Replaces the placeholder 'steph_fullname' with the full name of the character Stephanie.",
+});
+```
+
+The `validation` option is a regular expression that Pixi’VN checks against the key found inside the brackets (e.g. `[steph_fullname]`): when the key matches the pattern, this handler is used to compute the replacement value.
+
+The first argument, `() => "Stephanie"`, is the function that returns the value to use as the replacement. It can contain any logic you need, as long as it returns the string to display in place of the key.
