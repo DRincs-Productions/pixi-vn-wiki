@@ -144,7 +144,7 @@ export const manifest: AssetsManifest = {
 
 </Accordions>
 
-게임 초기화 직후 `channels`를 정의하는 것도 권장됩니다. 이를 위해 [`sound.addChannel`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#addchannel) 함수를 사용할 수 있습니다.
+게임 초기화 직후 `channels`를 정의하는 것도 권장됩니다. To do this, you can use the [`sound.channels.add`](/jsdoc/pixi-vn/index/interfaces/SoundChannelsInterface#add) function.
 
 ```ts title="main.ts"
 import { Game, sound } from "@drincs/pixi-vn";
@@ -152,8 +152,8 @@ import { Game, sound } from "@drincs/pixi-vn";
 Game.init(body, {
     // ...
 }).then(() => {
-    sound.addChannel("bgm", { background: true });
-    sound.addChannel("sfx");
+    sound.channels.add("bgm", { background: true });
+    sound.channels.add("sfx");
     sound.defaultChannelAlias = "sfx";
 });
 ```
@@ -177,8 +177,8 @@ Game.init(body, {
 ```ts
 import { sound } from "@drincs/pixi-vn";
 
-await sound.findChannel("sfx").play("sfx_whoosh", { delay: 0.1 });
-await sound.findChannel("bgm").play("bgm", "bgm_cheerful", { loop: true });
+await sound.channels.find("sfx").play("sfx_whoosh", { delay: 0.1 });
+await sound.channels.find("bgm").play("bgm", "bgm_cheerful", { loop: true });
 ```
 
 </Accordion>
@@ -251,8 +251,8 @@ if (bgmMedia) bgmMedia.paused = false;
 ```ts
 import { sound } from "@drincs/pixi-vn";
 
-sound.findChannel("sfx").pauseAll();
-sound.findChannel("sfx").resumeAll();
+sound.channels.find("sfx").pauseAll();
+sound.channels.find("sfx").resumeAll();
 ```
 
 </Accordion>
@@ -307,7 +307,7 @@ if (bgmMedia) bgmMedia.volume.value = 90;
 ```ts
 import { sound } from "@drincs/pixi-vn";
 
-sound.findChannel("sfx").volume = 90;
+sound.channels.find("sfx").volume = 90;
 ```
 
 </Accordion>
@@ -350,7 +350,7 @@ sound.find("bgm_cheerful")?.stop();
 
 ```ts
 import { sound } from "@drincs/pixi-vn";
-sound.findChannel("sfx").stopAll();
+sound.channels.find("sfx").stopAll();
 ```
 
 </Accordion>
@@ -395,12 +395,12 @@ await sound.play("sfx_whoosh", { filters: [new filters.ReverbFilter()] });
 
 <Accordion title="channel" id="channel-edit">
 
-`filters`를 [`sound.addChannel`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#addchannel)에 전달하면 해당 `channel`에서 시작된 모든 `media`에 적용됩니다.
+Passing `filters` to [`sound.channels.add`](/jsdoc/pixi-vn/index/interfaces/SoundChannelsInterface#add) applies them to every `media` started on that `channel`.
 
 ```ts
 import { sound, filters } from "@drincs/pixi-vn";
 
-sound.addChannel("bgm", {
+sound.channels.add("bgm", {
     filters: [new filters.ReverbFilter()],
 });
 ```
@@ -419,9 +419,9 @@ sound.addChannel("bgm", {
 
 이 함수들로 이루어진 모든 변경 사항은 게임 세이브에 저장되지 않으므로, 세이브를 불러오면 사운드는 이 함수들에 의해 수정되기 전의 상태로 돌아갑니다.
 
-[`sound.pauseUnsavedAll`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#pauseunsavedall)과 [`sound.resumeUnsavedAll`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#resumeunsavedall) 함수는 설정 화면과 같은 메뉴를 열고 닫을 때 사용하도록 의도되었습니다. 첫 번째 함수는 아직 일시정지되지 않은 모든 사운드를 일시정지하며, 두 번째 함수는 첫 번째 함수에 의해 일시정지된 모든 사운드를 재개합니다.
+The [`sound.unsaved.pauseAll`](/jsdoc/pixi-vn/index/interfaces/SoundUnsavedInterface#pauseall) and [`sound.unsaved.resumeAll`](/jsdoc/pixi-vn/index/interfaces/SoundUnsavedInterface#resumeall) functions are intended to be used when opening and closing a menu, such as the settings. 첫 번째 함수는 아직 일시정지되지 않은 모든 사운드를 일시정지하며, 두 번째 함수는 첫 번째 함수에 의해 일시정지된 모든 사운드를 재개합니다.
 
-한편, [`sound.playTransient`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#playtransient)와 [`stopTransientAll`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#stoptransientall) 함수는 사용자 인터페이스 (UI) 상호작용 사운드와 같은 일시적인 사운드를 위한 것입니다. 첫 번째 함수는 게임 세이브에 저장되지 않는 사운드를 재생하며, 두 번째 함수는 첫 번째 함수로 시작된 모든 사운드를 정지합니다.
+Meanwhile, the [`sound.unsaved.playTransient`](/jsdoc/pixi-vn/index/interfaces/SoundUnsavedInterface#playtransient) and [`sound.unsaved.stopTransientAll`](/jsdoc/pixi-vn/index/interfaces/SoundUnsavedInterface#stoptransientall) functions are intended for temporary sounds, such as UI interaction sounds. 첫 번째 함수는 게임 세이브에 저장되지 않는 사운드를 재생하며, 두 번째 함수는 첫 번째 함수로 시작된 모든 사운드를 정지합니다.
 
 </Accordion>
 
