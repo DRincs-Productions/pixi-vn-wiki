@@ -13,7 +13,7 @@ import { ReturningDifferentStepLists } from "@/components/examples";
 
 [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) — это функция, выполняемая в [`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart), если индекс нарративного шага (`step`) равен 0, а также при загрузке пользователем файла сохранения.
 
-При загрузке файла сохранения выполняются все функции [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) из [`narration.openedLabels`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#openedlabels) (текущий нарративный узел (`label`) и все нарративные узлы (`labels`) в стеке).
+When a save file is loaded, all [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) functions of the [`narration.labels.opened`](/jsdoc/pixi-vn/index/interfaces/NarrationLabelsInterface#opened) (the current `label` and all `labels` in the stack) are executed.
 
 Это полезно, например, для того чтобы убедиться, что все изображения, используемые в нарративном узле (`label`), закешированы до его запуска.
 
@@ -127,7 +127,7 @@ Game.onStepEnd((stepIndex, label) => { // [!code focus]
 import { storage, narration, newLabel } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start", () => {
-    let condition = storage.getFlag("condition");
+    let condition = storage.flags.get("condition");
     if (condition) {
         return [
             () => {
@@ -143,7 +143,7 @@ export const startLabel = newLabel("start", () => {
                 narration.dialogue = "Step 1";
             },
             async (props, { labelId }) => {
-                storage.setFlag("condition", true);
+                storage.flags.set("condition", true);
                 return await narration.jump(labelId, props);
             },
         ];
