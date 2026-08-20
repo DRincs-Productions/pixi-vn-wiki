@@ -1,0 +1,142 @@
+---
+title: Imagen (`ImageSprite`)
+description: Guía para usar el componente ImageSprite en Pixi'VN, incluyendo la inicialización, carga, adición, visualización y eliminación de imágenes en el lienzo.
+---
+
+import { ImageSpriteAdd, ImageSpriteShow } from "@/components/examples";
+
+El componente [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite) extiende el componente [`Sprite`](/jsdoc/pixi-vn/index/classes/Sprite), por lo que puedes usar todos los métodos y propiedades de [`Sprite`](/jsdoc/pixi-vn/index/classes/Sprite). Se utiliza para mostrar una sola imagen en el lienzo.
+
+```ts tab="main.ts"
+import { canvas, ImageSprite } from "@drincs/pixi-vn";
+
+let alien = new ImageSprite(
+    {
+        anchor: { x: 0.5, y: 0.5 },
+        x: 100,
+        y: 100,
+    },
+    "alien",
+);
+
+await alien.load();
+canvas.add("alien", alien);
+```
+
+```json tab="src/assets/manifest.gen.json"
+{
+    "bundles": [
+        {
+            "name": "image",
+            "assets": [
+                {
+                    "alias": "alien",
+                    "src": "./assets/image/eggHead.png"
+                }
+            ]
+        }
+    ]
+}
+```
+
+En comparación con el componente [`Sprite`](/jsdoc/pixi-vn/index/classes/Sprite), [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite) añade las siguientes funcionalidades:
+
+* [`load`](/jsdoc/pixi-vn/index/classes/ImageSprite#load): Carga la URL de la imagen y asigna la textura resultante al componente.
+* Posicionamiento adicional: <DynamicLink href="/start/canvas-position">alineación y posición con porcentaje</DynamicLink>.
+
+## Mostrar
+
+La forma más sencilla de mostrar una imagen en el lienzo es usar la función [`showImage`](/jsdoc/pixi-vn/index/functions/showImage). Esta función combina [`load`](/jsdoc/pixi-vn/index/classes/ImageSprite#load) y [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add).
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        // Show the images on the canvas
+        let alien1 = await showImage("alien");
+        // Show the image with a different alias and position
+        let alien2 = await showImage("alien2", "alien", {
+            xAlign: 0.5,
+        });
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<ImageSpriteShow />
+
+## Agregar
+
+Para añadir una imagen al lienzo, usa la función [`addImage`](/jsdoc/pixi-vn/index/functions/addImage). Esta función solo añade el componente al lienzo; **no** lo muestra ni carga su textura. Utiliza [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add) para agregar el componente al lienzo.
+
+```ts tab="content/labels/start.label.ts"
+import { addImage, canvas, ImageSprite, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        // Add the images to the canvas
+        let alien1 = addImage("alien");
+        // Add the image with a different alias and position
+        let alien2 = addImage("alien2", "alien", {
+            xAlign: 0.5,
+        });
+    },
+    async () => {
+        let alien1 = canvas.find<ImageSprite>("alien");
+        let alien2 = canvas.find<ImageSprite>("alien2");
+        // Load the textures
+        alien1 && (await alien1.load());
+        alien2 && (await alien2.load());
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<ImageSpriteAdd />
+
+## Eliminar
+
+Al igual que con otros componentes del lienzo, puedes eliminar este componente usando la función [`canvas.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#remove).

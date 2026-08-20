@@ -1,0 +1,189 @@
+---
+title: コンテナ（`ImageContainer`）
+description: Pixi’VN において複数の画像を1つのキャンバスコンポーネントとしてグループ化・操作するための ImageContainer コンポーネントの使い方と機能。
+---
+
+import {
+    AddImageContainerExample,
+    ShowImageContainerExample,
+} from "@/components/examples";
+
+[`ImageContainer`](/jsdoc/pixi-vn/index/classes/ImageContainer) コンポーネントは [`Container`](/jsdoc/pixi-vn/index/classes/Container) コンポーネントを継承しているため、[`Container`](/jsdoc/pixi-vn/index/classes/Container) のすべてのメソッドとプロパティを使用できます。 複数の画像を1つのコンポーネントにグループ化し、まとめて操作することができます。
+
+[`ImageContainer`](/jsdoc/pixi-vn/index/classes/ImageContainer) の子要素は [`ImageSprite`](/jsdoc/pixi-vn/index/classes/ImageSprite) コンポーネントです。
+
+```ts tab="main.ts"
+import { canvas, ImageContainer } from "@drincs/pixi-vn";
+
+let james = new ImageContainer(
+    {
+        anchor: { x: 0.5, y: 0.5 },
+        x: 100,
+        y: 100,
+    },
+    ["m01-body", "m01-eyes", "m01-mouth"],
+);
+
+await james.load();
+canvas.add("james", james);
+```
+
+```json tab="src/assets/manifest.gen.json"
+{
+    "bundles": [
+        {
+            "name": "m01",
+            "assets": [
+                {
+                    "alias": "m01-body",
+                    "src": "./assets/m01/m01-body.png"
+                },
+                {
+                    "alias": "m01-head",
+                    "src": "./assets/m01/m01-head.png"
+                },
+                {
+                    "alias": "m01-eyes",
+                    "src": "./assets/m01/m01-eyes.png"
+                }
+            ]
+        }
+    ]
+}
+```
+
+[`Container`](/jsdoc/pixi-vn/index/classes/Container) コンポーネントと比較して、[`ImageContainer`](/jsdoc/pixi-vn/index/classes/ImageContainer) は以下の機能を追加しています：
+
+* [`load`](/jsdoc/pixi-vn/index/classes/ImageContainer#load)：すべての画像 URL を読み込み、生成されたテクスチャを子要素に設定します。
+* 追加の位置指定: <DynamicLink href="/start/canvas-position">パーセンテージによる整列と配置</DynamicLink>。
+
+## 表示
+
+キャンバスに画像グループを表示する最もシンプルな方法は、[`showImageContainer`](/jsdoc/pixi-vn/index/functions/showImageContainer) 関数を使用することです。 この関数は [`load`](/jsdoc/pixi-vn/index/classes/ImageContainer#load) と [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add) を組み合わせたものです。
+
+```ts tab="content/labels/start.label.ts"
+import {
+    canvas,
+    ImageContainer,
+    newLabel,
+    showImageContainer,
+} from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        let james = await showImageContainer(
+            "james",
+            ["m01-body", "m01-eyes", "m01-mouth"],
+            {
+                xAlign: 0.5,
+                yAlign: 1,
+            },
+        );
+    },
+    () => {
+        canvas.removeAllTickers();
+        let tickerId = canvas.animate<ImageContainer>("james", {
+            xAlign: 0,
+            yAlign: 1,
+        });
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "m01-body",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-body.webp",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-smile.webp",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-smile00.webp",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<ShowImageContainerExample />
+
+## 追加
+
+画像グループをキャンバスに追加するには、[`addImageCointainer`](/jsdoc/pixi-vn/index/functions/addImageCointainer) 関数を使用します。 この関数はコンポーネントをキャンバスに追加するだけで、表示やテクスチャの読み込みは**行いません**。 コンポーネントをキャンバスに追加するために [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add) を使用します。
+
+```ts tab="content/labels/start.label.ts"
+import {
+    addImageCointainer,
+    canvas,
+    ImageContainer,
+    newLabel,
+} from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        let james = await addImageCointainer(
+            "james",
+            ["m01-body", "m01-eyes", "m01-mouth"],
+            {
+                xAlign: 0.5,
+                yAlign: 1,
+            },
+        );
+    },
+    async () => {
+        let james = canvas.find<ImageContainer>("james");
+        james && (await james.load());
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "m01-body",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-body.webp",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-smile.webp",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-smile00.webp",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<AddImageContainerExample />
+
+## 削除
+
+他のキャンバスコンポーネントと同様に、[`canvas.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#remove) 関数を使用してこのコンポーネントを削除できます。

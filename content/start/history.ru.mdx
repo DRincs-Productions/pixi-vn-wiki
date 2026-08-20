@@ -1,0 +1,71 @@
+---
+title: История
+description: Описывает, как Pixi’VN отслеживает и управляет нарративной историей, включая диалоги, выборы, счётчики нарративных шагов и лимиты сохранений.
+---
+
+:::tip[Экран UI]
+
+Пример экрана интерфейса истории можно найти в разделе <DynamicLink href="/start/interface-examples#history">примеры интерфейсов</DynamicLink>.
+
+:::
+
+:::tip[Терминология]
+
+В этой документации термин «нарративная история» обозначает список всех диалогов, выборов и прочего, что было показано игроку.
+
+:::
+
+Pixi’VN сохраняет все диалоги, выборы, ответы и прочее при каждом выполненном нарративном шаге (`step`) во время игры. Это позволяет возвращаться к предыдущим шагам, давая игроку возможность просматривать прошлые события или повторно обращаться к более ранним выборам.
+
+## Получить
+
+Для получения нарративной истории используйте [`stepHistory.narrativeHistory`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#narrativehistory).
+
+```ts
+const dialogues: NarrativeHistory[] = stepHistory.narrativeHistory;
+```
+
+## Удалить
+
+Для удаления всей нарративной истории используйте [`stepHistory.removeNarrativeHistory`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#removenarrativehistory).
+
+```ts
+stepHistory.removeNarrativeHistory();
+```
+
+Для удаления части нарративной истории передайте число, чтобы удалить первые N элементов:
+
+```ts
+// Delete the first 2 elements
+stepHistory.removeNarrativeHistory(2);
+```
+
+## Другие возможности
+
+<Accordions>
+
+<Accordion title="Лимит сохраняемых нарративных шагов (`steps`)" id="limit-saved-steps">
+
+При каждом нарративном шаге (`step`) сохраняется вся информация о текущем состоянии игры.
+
+Чтобы предотвратить чрезмерный рост файла сохранения, существует ограничение на количество сохраняемых нарративных шагов (`steps`). По умолчанию сохраняются только последние 20 нарративных шагов (`steps`), но вы можете увеличить этот лимит (например, до 100). При достижении лимита сохраняется только необходимая информация из более старых нарративных шагов (`steps`). Это позволяет отображать полную <DynamicLink href="/start/history">нарративную историю</DynamicLink>, однако <DynamicLink href="/start/labels-flow#go-back">вернуться</DynamicLink> к конкретному нарративному шагу (`step`), выходящему за пределы лимита, не получится.
+
+Вы можете изменить лимит сохранения нарративных шагов (`step`), задав свойство [`stepHistory.stepLimitSaved`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#steplimitsaved).
+
+```ts
+import { stepHistory } from "@drincs/pixi-vn";
+
+stepHistory.stepLimitSaved = 100;
+```
+
+Чтобы отключить лимит сохранения нарративных шагов (`step`), установите [`stepHistory.stepLimitSaved`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#steplimitsaved) в `Infinity`.
+
+```ts
+import { stepHistory } from "@drincs/pixi-vn";
+
+stepHistory.stepLimitSaved = Infinity;
+```
+
+</Accordion>
+
+</Accordions>

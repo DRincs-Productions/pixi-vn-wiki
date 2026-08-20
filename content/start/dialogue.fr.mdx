@@ -1,0 +1,123 @@
+---
+title: Dialogue
+description: Comment utiliser, personnaliser et gérer les objets dialogue dans Pixi’VN, y compris le glue et l'intégration UI.
+---
+
+import {
+    CurrentDialogueExample,
+    DialogueGlueExample,
+} from "@/components/examples";
+
+:::tip[Interface UI]
+
+Vous pouvez trouver l'exemple de l'écran UI de dialogue narratif dans la section <DynamicLink href="/start/interface-examples#narrative-dialogue">exemples d'interface</DynamicLink>.
+
+:::
+
+**Qu'est-ce qu'un dialogue ?** Une composition écrite dans laquelle deux personnages ou plus sont représentés en train de converser.
+
+Dans Pixi’VN, `dialogue` est un objet qui contient des informations sur *qui* parle et *ce qui* est dit actuellement. Sa fonctionnalité peut être plus large, car il peut également être utilisé à d'autres fins, comme les monologues, les soliloques, ou pour afficher un message au joueur. Pour cette raison, il est plus approprié de le considérer comme un texte pouvant être lié à un <DynamicLink href="/start/character#use-characters-in-the-game">personnage</DynamicLink>.
+
+## Définir
+
+Pour définir le dialogue actuel, vous pouvez utiliser [`narration.dialogue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#dialogue).
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+import { eggHead } from "@/content/characters";
+
+export const startLabel = newLabel("start", [
+    // A simple dialogue with only text, without a character // [!code focus]
+    () => (narration.dialogue = "Hello, world!"), // [!code focus]
+    // A dialogue with a character // [!code focus]
+    () => {
+        narration.dialogue = { // [!code focus]
+            character: eggHead, // [!code focus]
+            text: "My name is ${eggHead.name}!", // [!code focus]
+        }; // [!code focus]
+    },
+    // A dialogue with a character, but the character is not defined in the characters list // [!code focus]
+    () => {
+        narration.dialogue = { // [!code focus]
+            character: "Narrator", // [!code focus]
+            text: "This is a narration without a character.", // [!code focus]
+        }; // [!code focus]
+    },
+]);
+```
+
+<CurrentDialogueExample />
+
+## Obtenir
+
+Pour obtenir le dialogue actuel, utilisez [`narration.dialogue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#dialogue). La valeur retournée est un [`DialogueInterface`](/jsdoc/pixi-vn/index/interfaces/DialogueInterface).
+
+```ts
+const currentDialogue: DialogueInterface = narration.dialogue;
+```
+
+## Supprimer
+
+Pour effacer le dialogue actuel, définissez [`narration.dialogue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#dialogue) sur `undefined`.
+
+```ts
+narration.dialogue = undefined;
+```
+
+## Autres fonctionnalités
+
+<Accordions>
+
+<Accordion title="Glue" id="dialogue-glue">
+
+:::tip
+
+Le "glue" est une fonctionnalité créée à l'origine pour ***ink***, qui a également été introduite dans Pixi’VN.
+
+:::
+
+Lorsque le « glue » est activé, le prochain dialogue sera ajouté à la suite du dialogue actuel. Vous pouvez activer le glue en définissant [`narration.dialogGlue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#dialogglue) sur `true`.
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+
+const startLabel = newLabel("start", [
+    () => {
+        narration.dialogue = `Hello, my name is Alice and ...`; // [!code focus]
+    },
+    () => {
+        narration.dialogGlue = true; // [!code focus]
+        narration.dialogue = `I am a character in this game.`; // [!code focus]
+    },
+]);
+```
+
+<DialogueGlueExample />
+
+</Accordion>
+
+<Accordion title="Classe personnalisée" id="custom-class">
+
+Vous pouvez personnaliser l'interface dialogue en ajoutant des propriétés supplémentaires à [`DialogueInterface`](/jsdoc/pixi-vn/index/interfaces/DialogueInterface). Par exemple, vous pouvez ajouter une propriété `color` pour changer la couleur du texte.
+
+Pour ce faire, « surchargez » l'interface [`DialogueInterface`](/jsdoc/pixi-vn/index/interfaces/DialogueInterface) dans votre fichier `.d.ts` :
+
+```ts tab="pixi-vn.d.ts"
+declare module "@drincs/pixi-vn" {
+    interface DialogueInterface {
+        color?: string;
+    }
+}
+```
+
+```ts tab="content/labels/startLabel.ts"
+narration.dialogue = {
+    character: "Alice",
+    text: "Hello, world!",
+    color: "#ff0000",
+};
+```
+
+</Accordion>
+
+</Accordions>

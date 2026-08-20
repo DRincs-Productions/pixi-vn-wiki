@@ -1,0 +1,227 @@
+---
+title: Eigenschaften zur Positionierung
+description: Übersicht über die Positionierungseigenschaften in Pixi’VN, einschließlich Pixel, Prozent, Ankerpunkt (anchor), Drehpunkt (pivot) und Ausrichtung (align).
+---
+
+import {
+    AlignExample,
+    PositionwithpercentageExample,
+} from "@/components/examples";
+
+:::tip[Referenzen und Zitate]
+
+Die meisten Texte und Bilder auf dieser Seite wurden von Position Properties – [Pos and Anchor](https://feniksdev.com/renpy-position-properties-pos-and-anchor/) und [align, xycenter, and offset](https://feniksdev.com/renpy-position-properties-align-xycenter-and-offset/) übernommen. Feniks hat auf diesen beiden Seiten die Positionierungseigenschaften von Ren'Py sehr gut erklärt, die vielen anderen Canvases gemeinsam sind, einschließlich Pixi’VN.
+
+:::
+
+Bevor wir uns mit den verschiedenen Positionierungseigenschaften befassen, beachten Sie, dass Pixi’VN den Standardwert für alle Positionseigenschaften als `{ x: 0, y: 0 }` betrachtet, was der oberen linken Ecke des Elements entspricht, das Sie positionieren.
+
+Positive Zahlen bewegen das Element nach rechts und unten. Etwas, das sich an der Position `{ x: 200, y: 300 }` im Spiel befindet, ist also 200 Pixel vom linken Bildschirmrand und 300 Pixel vom oberen Bildschirmrand entfernt. Negative Zahlen bewegen das Element relativ zu seiner Ausgangsposition nach links und oben.
+
+[Position](#position-pixel) und [Ankerpunkt (anchor)](#anchor-and-pivot) sind die wichtigsten Eigenschaften, mit denen Sie Elemente auf dem Bildschirm bewegen. Es ist wichtig zu verstehen, wie sie funktionieren, da die meisten anderen Positionierungseigenschaften als eine Kombination dieser beiden wirken.
+
+## Position (Pixel)
+
+Position wird verwendet, um die Komponente in Pixeleinheiten zu positionieren.
+
+Sie können sie mit diesen Eigenschaften ändern:
+
+* `x`: bewegt die Komponente von links nach rechts (entlang der x-Achse)
+* `y`: bewegt die Komponente von oben nach unten (entlang der y-Achse)
+* `position`: ein Objekt `{ x: number, y: number }`. Sie können x und y auch auf denselben Wert setzen, z. B. `component.position = 200`.
+
+## Ankerpunkt (anchor) und Drehpunkt (pivot)
+
+Der Drehpunkt ist ein Versatz, ausgedrückt in Pixeln, von der oberen linken Ecke der Komponente. Wenn Sie eine Komponente haben, deren Textur 100px x 50px groß ist, und den Drehpunkt in die Mitte des Bildes setzen möchten, würden Sie Ihren Drehpunkt auf (50, 25) setzen - die Hälfte der Breite und die Hälfte der Höhe.
+
+Ankerpunkte werden in Prozent angegeben, von 0.0 bis 1.0, in jeder Dimension. Sie haben denselben Nutzen wie der Drehpunkt, aber um den Punkt zu ermitteln, an dem sie sich befinden, wird der Prozentsatz der Höhe und Breite der Textur berechnet. Um sich beispielsweise um den Mittelpunkt einer Textur mithilfe von Ankerpunkten zu drehen, würden Sie den Ankerpunkt Ihrer Komponente auf (0.5, 0.5) setzen - 50% in Breite und Höhe. Ankerpunkte sind im Vergleich zum Drehpunkt einfacher zu verwenden.
+
+Sie können sie mit diesen Eigenschaften ändern:
+
+* Ankerpunkt (`anchor`): ein Objekt `{ x: number, y: number }`. Sie können x und y auch auf denselben Wert setzen, z. B. `conponent.anchor = 0.5`.
+* Drehpunkt (`pivot`): ist ein Objekt, das `{ x: number, y: number }` entspricht.
+
+<Accordions>
+
+<Accordion title="Was genau ist Ankerpunkt/Drehpunkt?" id="what-exactly-is-anchor-pivot">
+
+Denken wir in Begriffen von etwas, das Ihnen vielleicht vertrauter ist. Anstatt ein Element auf einem Bildschirm zu positionieren, versuchen Sie, ein Foto an einer Korkwand zu befestigen. Sie haben drei Dinge:
+
+* eine Korkwand
+* eine Pinnnadel
+* eine Fotografie
+
+Nehmen wir an, dass 1mm 1 Pixel auf einem Computerbildschirm entspricht.
+
+![17351596389764883495402859713640](/anchor-pivot1.png)
+
+* Die Korkwand ist der Bildschirm oder der Container, in dem Sie das Element positionieren möchten.
+* Die Fotografie ist das Element.
+* Wo Sie die Nadel auf dem Foto anbringen, ist der Ankerpunkt/Drehpunkt der Fotografie.
+* Wo Sie die Nadel in die Korkwand stecken, ist die Position der Fotografie.
+
+Standardmäßig beginnt die Pinnnadel in Pixi’VN sozusagen immer in der oberen linken Ecke des Fotos. Wenn Sie möchten, dass die obere linke Ecke des Fotos 200mm von der linken Seite der Korkwand entfernt ist, setzen Sie sie auf x 200. Wenn Sie außerdem möchten, dass die obere linke Ecke 300mm von der Oberseite der Wand entfernt ist, setzen Sie sie auf y 300.
+
+![17351597056618553068745888144175](/anchor-pivot2.png)
+
+Was, wenn Sie die Mitte des Fotos bei 200mm x 300mm haben möchten?
+
+Das bedeutet, dass Sie die Position der Nadel relativ zum Foto ändern müssen. Die Nadel bleibt am Punkt (200, 300) auf der Korkwand - Sie müssen nur das Foto ebenfalls um diesen Punkt zentrieren. Das bedeutet, dass Sie den Ankerpunkt/Drehpunkt des Fotos ändern müssen.
+
+Um den Ankerpunkt des Fotos auf die Mitte des Fotos zu setzen, können Sie Ankerpunkt (0.5, 0.5) oder Drehpunkt (100, 150) verwenden
+
+</Accordion>
+
+</Accordions>
+
+## Position mit Prozentangabe
+
+Pixi’VN führt die Möglichkeit ein, eine Komponente prozentual zu positionieren. Ihre Funktionsweise ähnelt sehr der von html.
+
+In der Praxis wird der Prozentsatz mit der Höhe oder Breite der übergeordneten Komponente multipliziert, um die Position in Pixeln zu berechnen.
+
+Sie können sie mit diesen Eigenschaften ändern:
+
+* `percentageX`: zum Bewegen von Elementen von links nach rechts (entlang der x-Achse)
+* `percentageY`: zum Bewegen von Elementen von oben nach unten (entlang der y-Achse).
+* `percentagePosition`: ein Objekt `{ x: number, y: number }`. Sie können x und y auch auf denselben Wert setzen, z. B. `conponent.align = 0.5`.
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("egg_head", "egg_head", {
+            percentagePosition: 0.5,
+            anchor: 0.5,
+        });
+        await showImage("flower_top", "flower_top", {
+            percentagePosition: 0,
+        });
+        await showImage("panda", "panda", {
+            percentageX: 1,
+            percentageY: 0,
+            anchor: { x: 1, y: 0 },
+        });
+        await showImage("skully", "skully", {
+            percentageX: 0,
+            percentageY: 1,
+            anchor: { x: 0, y: 1 },
+        });
+        await showImage("helmlok", "helmlok", {
+            percentagePosition: 1,
+            anchor: 1,
+        });
+        await showImage("bunny", "bunny", {
+            percentageX: 0.5,
+            percentageY: 1,
+            anchor: { x: 0.5, y: 1 },
+        });
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                { alias: "panda", src: "https://pixijs.com/assets/panda.png" },
+                {
+                    alias: "skully",
+                    src: "https://pixijs.com/assets/skully.png",
+                },
+                {
+                    alias: "helmlok",
+                    src: "https://pixijs.com/assets/helmlok.png",
+                },
+                { alias: "bunny", src: "https://pixijs.com/assets/bunny.png" },
+            ],
+        },
+    ],
+};
+```
+
+<PositionwithpercentageExample />
+
+## Ausrichtung (align)
+
+Bisher haben wir Positionierungsmethoden gesehen, die von [Ankerpunkt/Drehpunkt](#anchor-and-pivot) beeinflusst werden. Der Nachteil dieser Methoden ist, dass Sie beispielsweise, wenn Sie Ihre Komponente in der Mitte des Bildschirms hinzufügen möchten, zunächst den Ankerpunkt auf 0.5 setzen und dann die Position auf die Hälfte der Breite und Höhe des Bildschirms setzen müssen. Hier kommt die Ausrichtungseigenschaft ins Spiel.
+
+Die Ausrichtung ist eine Funktion, die ursprünglich für ***Ren'Py*** entwickelt wurde und die auch in Pixi’VN eingeführt wurde. Die Ausrichtung kombiniert [Position](#position-pixel) und [Ankerpunkt/Drehpunkt](#anchor-and-pivot), um Ihnen eine intuitivere Möglichkeit zu bieten, Ihre Komponenten am Anfang, in der Mitte oder am Ende des Bildschirms zu positionieren.
+
+Die Ausrichtung wird in Prozent angegeben, von 0.0 bis 1.0, in jeder Dimension. Wenn Sie beispielsweise 0.25 als Prozentsatz verwenden, wird Ihre Komponente bei 25% des Bildschirms mit einem Ankerpunkt von 0.25 positioniert.
+
+Sie können sie mit diesen Eigenschaften ändern:
+
+* `xAlign`: zum Bewegen von Elementen von links nach rechts (entlang der x-Achse)
+* `yAlign`: zum Bewegen von Elementen von oben nach unten (entlang der y-Achse).
+* Ausrichtung (`align`): ein Objekt `{ x: number, y: number }`. Sie können x und y auch auf denselben Wert setzen, z. B. `conponent.align = 0.5`.
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("egg_head", "egg_head", { align: 0.5 });
+        await showImage("flower_top", "flower_top", { align: 0 });
+        await showImage("panda", "panda", { xAlign: 1, yAlign: 0 });
+        await showImage("skully", "skully", { xAlign: 0, yAlign: 1 });
+        await showImage("helmlok", "helmlok", { align: 1 });
+        await showImage("bunny", "bunny", { xAlign: 0.5, yAlign: 1 });
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                { alias: "panda", src: "https://pixijs.com/assets/panda.png" },
+                {
+                    alias: "skully",
+                    src: "https://pixijs.com/assets/skully.png",
+                },
+                {
+                    alias: "helmlok",
+                    src: "https://pixijs.com/assets/helmlok.png",
+                },
+                { alias: "bunny", src: "https://pixijs.com/assets/bunny.png" },
+            ],
+        },
+    ],
+};
+```
+
+<AlignExample />

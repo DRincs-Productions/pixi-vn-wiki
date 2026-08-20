@@ -1,0 +1,1437 @@
+---
+title: 첫 번째 Visual Novel 만들기
+description: 프로젝트 설정, 내러티브, 에셋, 상호작용을 다루는 Pixi’VN으로 비주얼 노벨을 만드는 단계별 가이드.
+---
+
+이 튜토리얼에서는 첫 번째 Visual Novel을 만드는 과정을 안내합니다.
+
+<Accordions>
+
+<Accordion title="Visual Novel이란 무엇인가요?" id="what-is-a-visual-novel">
+
+비주얼 노벨(VN)은 디지털 인터랙티브 픽션의 한 형태입니다. 비주얼 노벨은 흔히 비디오 게임이라는 매체와 연관되지만, 항상 그 자체로 그렇게 분류되는 것은 아닙니다. 텍스트 내러티브와 정적 또는 애니메이션 일러스트를 결합하며, 상호작용의 정도는 다양합니다. 이 형식은 노벨 게임(novel game)이라고도 드물게 불리는데, 이는 일본에서 더 자주 쓰이는 와세이에이고(wasei-eigo) 용어인 노베루 게무(ノベルゲーム)를 재음역한 것입니다.
+
+</Accordion>
+
+</Accordions>
+
+이 가이드에서는 테스트 목적으로 Pixi’VN을 사용하여 비주얼 노벨 [Breakdown](https://joshpowlison.itch.io/breakdown)을 재현해 볼 것입니다. Breakdown은 비주얼 노벨이 갖춰야 할 모든 기능을 갖춘 짧은 이야기입니다. Breakdown의 제작자인 Josh Powlison은 교육 목적으로 그의 내러티브를 사용할 수 있도록 허락해 주었습니다❤️.
+
+:::tip
+
+Pixi’VN은 하나 이상의 <DynamicLink href="/start/narration">사용 가능한 내러티브 언어</DynamicLink>를 선택하여 자신만의 내러티브를 작성할 수 있는 기능을 제공하므로, 개발 단계마다 현재 사용 가능한 각 언어에 대한 예시가 제시됩니다.
+
+:::
+
+## 새 프로젝트 만들기
+
+시작하기 전에 <DynamicLink href="/start#prerequisites">사전 준비물</DynamicLink>을 설치했는지 확인하세요.
+
+첫 번째 단계는 새 프로젝트를 만드는 것입니다. 다음을 실행하여 만들 수 있습니다.
+
+```npm
+npm create pixi-vn@latest
+```
+
+그리고 `Visual Novel` 템플릿을 선택합니다.
+
+:::tip[VS Code]
+
+VS Code로 프로젝트를 열면, 일부 작업 공간 작업(workspace task)을 실행하는 것과 프로젝트에 권장되는 확장 프로그램을 설치하는 것에 동의하라는 요청을 받게 됩니다. 두 가지 모두 수락하는 것을 강력히 권장합니다.
+
+:::
+
+템플릿, 작업(task), 확장 프로그램에 대한 자세한 정보는 <DynamicLink href="/start/templates">여기</DynamicLink>에서 확인할 수 있습니다.
+
+<Accordions>
+
+<Accordion title="수동 명령어" id="manual-commands">
+
+VS Code 작업을 사용하고 싶지 않다면, 프로젝트의 루트에서 다음 명령어를 실행하여 동일한 결과를 얻을 수 있습니다.
+
+```npm
+npm install
+npm start
+```
+
+</Accordion>
+
+</Accordions>
+
+## 캐릭터 생성
+
+이제 이 이야기의 캐릭터를 정의하겠습니다. 이를 위해 `/content/characters.ts` 파일에 사용할 캐릭터를 정의합니다.
+
+<Accordions>
+
+<Accordion title="`mc`는 무엇을 의미하나요?" id="what-does-mc-mean">
+
+`mc`는 "Main Character(주인공)"의 일반적인 약어입니다. 비주얼 노벨에서 주인공의 이름으로 `mc`를 사용하는 것은 일반적인 관행입니다.
+
+</Accordion>
+
+<Accordion title="`Character` 모델은 어디에 정의되어 있나요?" id="where-is-the-character-model-defined">
+
+아래에서 사용된 `Character` 모델은 `models/Character.ts`에 정의되어 있습니다. 원하는 대로 수정할 수 있으며, 예를 들어 캐릭터와 관련된 속성(예: `surname`, `age` 등)을 추가할 수 있습니다. 이 파일에 대한 자세한 정보는 <DynamicLink href="/start/character#custom-class">여기</DynamicLink>에서 확인할 수 있습니다.
+
+</Accordion>
+
+</Accordions>
+
+:::tip
+
+캐릭터를 만들고 사용하는 방법에 대한 자세한 정보는 다음을 참고하세요: <DynamicLink href="/start/character">Characters</DynamicLink>
+
+:::
+
+```ts title="content/characters.ts"
+import Character from "@/models/Character";
+import { RegisteredCharacters } from "@drincs/pixi-vn";
+
+export const mc = new Character("mc", {
+    name: "Me",
+});
+
+export const james = new Character("james", {
+    name: "James",
+    color: "#0084ac",
+});
+
+export const steph = new Character("steph", {
+    name: "Steph",
+    color: "#ac5900",
+});
+
+export const sly = new Character("sly", {
+    name: "Sly",
+    color: "#6d00ac",
+});
+
+RegisteredCharacters.add([mc, james, steph, sly]);
+```
+
+## 내러티브 초안 작성
+
+:::tip[Markup]
+
+모든 템플릿은 <DynamicLink href="/start/markup-markdown">Markdown</DynamicLink>과 <DynamicLink href="/start/markup-tailwindcss">Tailwind CSS</DynamicLink>를 지원하므로, 우리는 내러티브 작성에 이를 사용할 것입니다.
+
+:::
+
+이제 비주얼 노벨의 <DynamicLink href="/start/narration">내러티브</DynamicLink> "초안"을 작성해 보겠습니다.
+게임의 시작이 될 `start`라는 이름의 첫 번째 <DynamicLink href="/start/labels">내러티브 노드 (`label`)</DynamicLink>를 만들 것입니다. 그 다음 비주얼 노벨에서 이어질 <DynamicLink href="/start/dialogue">대사</DynamicLink>를 작성할 수 있습니다.
+
+다음은 그 예시입니다.
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+james: You're my roommate's replacement, huh?
+james: Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you' fine!
+mc: ...
+
+He thrusts out his hand.
+
+james: James!
+mc: ...Peter.
+
+I take his hand and shake.
+
+james: Ooh, Peter! Nice, firm handshake! The last quy always gave me the dead fish. I already think we'r gonna get along fine.
+james: Come on in and...
+james: ...
+james: I know you're both watching, come on out already!
+
+sly: I just wanted to see what the new guy was like. Hey, you, Peter- be nice to our little brother, or you'll have to deal with *us*.
+mc: ...
+james: Peter, this is Sly. Yes, that is her real name.
+
+I put out my hand.
+
+sly: I'm not shakin' your hand until I decide you're an all-right dude. Sorry, policy.
+mc: Fair enough, I'm a pretty scary guy, or so l've been told.
+james: The redhead behind her is Stephanie.
+// Example of using Tailwind CSS
+steph: <span class="inline-block motion-translate-y-loop-25">Hey</span>! Everyone calls me Steph. I'll shake your hand.
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    () =>
+        (narration.dialogue = {
+            character: james,
+            text: `You're my roommate's replacement, huh?`,
+        }),
+    () =>
+        (narration.dialogue = {
+            character: james,
+            text: `Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you' fine!`,
+        }),
+    () => (narration.dialogue = { character: mc, text: `...` }),
+    () => {
+        narration.dialogue = "He thrusts out his hand.";
+    },
+    () => (narration.dialogue = { character: james, text: `James!` }),
+    () => (narration.dialogue = { character: mc, text: `...Peter.` }),
+    () => {
+        narration.dialogue = "I take his hand and shake.";
+    },
+    () =>
+        (narration.dialogue = {
+            character: james,
+            text: `Ooh, Peter! Nice, firm handshake! The last quy always gave me the dead fish. I already think we'r gonna get along fine.`,
+        }),
+    () =>
+        (narration.dialogue = { character: james, text: `Come on in and...` }),
+    () => (narration.dialogue = { character: james, text: `...` }),
+    () =>
+        (narration.dialogue = {
+            character: james,
+            text: `I know you're both watching, come on out already!`,
+        }),
+    () =>
+        (narration.dialogue = {
+            character: james,
+            text: `I just wanted to see what the new guy was like. Hey, you, Peter- be nice to our little brother, or you'll have to deal with *us*.`,
+        }),
+    () => (narration.dialogue = { character: mc, text: `...` }),
+    () =>
+        (narration.dialogue = {
+            character: james,
+            text: `Peter, this is Sly. Yes, that is her real name.`,
+        }),
+    () => {
+        narration.dialogue = "I put out my hand.";
+    },
+    () =>
+        (narration.dialogue = {
+            character: james,
+            text: `I'm not shakin' your hand until I decide you're an all-right dude. Sorry, policy.`,
+        }),
+    () =>
+        (narration.dialogue = {
+            character: mc,
+            text: `Fair enough, I'm a pretty scary guy, or so l've been told.`,
+        }),
+    () =>
+        (narration.dialogue = {
+            character: james,
+            text: `The redhead behind her is Stephanie.`,
+        }),
+    // Example of using Tailwind CSS
+    () =>
+        (narration.dialogue = {
+            character: steph,
+            text: `<span class="inline-block motion-translate-y-loop-25">Hey</span>! Everyone calls me Steph. I'll shake your hand.`,
+        }),
+    // ...
+]);
+export default startLabel;
+```
+
+<Accordions>
+
+<Accordion title="대사의 `glue` 기능 사용하기" id="use-the-glue-feature-of-dialogues">
+
+비주얼 노벨에서는 현재 대사에 텍스트를 이어 붙이는 것이 유용한 경우가 많습니다. 예를 들어, 대화를 잠시 멈췄다가 이후의 내러티브 단계 (`step`)에서 이어가는 경우입니다. 이를 위해 <DynamicLink href="/start/dialogue#dialogue-glue">글루 기능</DynamicLink>을 사용할 수 있습니다.
+
+다음은 그 예시입니다.
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+// ...
+
+james: Ooh, [mc]! Nice, firm handshake!
+<>The last guy always gave me the dead fish.
+<>I already think we're gonna get along fine.
+james: Come on in and...
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    // ...
+    async () =>
+        (narration.dialogue = {
+            character: james,
+            text: `Ooh, ${mc.name}! Nice, firm handshake!`,
+        }),
+    async () => {
+        narration.dialogGlue = true;
+        narration.dialogue = `The last guy always gave me the dead fish.`;
+    },
+    async () => {
+        narration.dialogGlue = true;
+        narration.dialogue = `I already think we're gonna get along fine.`;
+    },
+    async () =>
+        (narration.dialogue = { character: james, text: `Come on in and...` }),
+    // ...
+]);
+export default startLabel;
+```
+
+</Accordion>
+
+<Accordion title="일시정지 효과 만들기" id="create-a-pause-effect">
+
+대사 카드를 잠시 숨기는 "일시정지" 효과를 만드는 것도 가능합니다. _ink_에서는 <DynamicLink href="/ink/other-narrative-features#pause">`# pause`</DynamicLink>를 사용할 수 있고, JS/TS에서는 <DynamicLink href="/start/dialogue#delete">`narration.dialogue`를 `undefined`로 설정</DynamicLink>할 수 있습니다.
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+// ...
+
+# pause
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    // ...
+    async () => {
+        narration.dialogue = undefined;
+    },
+    // ...
+]);
+export default startLabel;
+```
+
+</Accordion>
+
+</Accordions>
+
+### 내러티브를 내러티브 노드 (`label`)로 나누기
+
+(선형적인 비주얼 노벨이라 하더라도) 매우 긴 내러티브 노드 (`label`)를 만드는 것은 권장되지 않으며, 대신 여러 개의 작은 내러티브 노드 (`label`)를 만들고 필요할 때 <DynamicLink href="/start/labels-flow">내러티브 흐름 제어 기능</DynamicLink>으로 "호출"하는 것이 권장됩니다.
+
+이러한 이유로, 우리의 이야기가 선형적이라 하더라도 두 개의 내러티브 노드 (`label`)로 나눌 것입니다. 첫 번째는 방금 만든 것(`start`)이고, 두 번째는 `second_part`라고 부를 것입니다.
+
+다음은 그 예시입니다.
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+james: You're my roommate's replacement, huh?
+james: Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you' fine!
+mc: ...
+
+He thrusts out his hand.
+
+james: James!
+mc: ...Peter.
+
+// ...
+-> second_part
+
+=== second_part ===
+
+She enters my room before I'VE even had a chance to. \\n\\n...I could've just come back and gotten the platter later...
+She sets it on a desk. I throw my two paper bags down beside the empty bed.
+
+steph: They got you a new mattress, right? That last guy was a druggie, did James tell you that?
+sly: *We're* the reason he got expelled!
+steph: Sly! If word gets out about that... well, actually, it wouldn't matter, *he's* the one who shot himself up.
+
+I'm fumbling for a new subject.
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    () =>
+        (narration.dialogue = {
+            character: james,
+            text: `You're my roommate's replacement, huh?`,
+        }),
+    () =>
+        (narration.dialogue = {
+            character: james,
+            text: `Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you' fine!`,
+        }),
+    () => (narration.dialogue = { character: mc, text: `...` }),
+    () => {
+        narration.dialogue = "He thrusts out his hand.";
+    },
+    () => (narration.dialogue = { character: james, text: `James!` }),
+    () => (narration.dialogue = { character: mc, text: `...Peter.` }),
+    // ...
+    async (props) => await narration.jump(secondPart, props),
+]);
+export default startLabel;
+
+const secondPart = newLabel("second_part", [
+    () => {
+        narration.dialogue = `She enters my room before I'VE even had a chance to. \n\n...I could've just come back and gotten the platter later...`;
+    },
+    () => {
+        narration.dialogue = `She sets it on a desk. I throw my two paper bags down beside the empty bed.`;
+    },
+    () =>
+        (narration.dialogue = {
+            character: steph,
+            text: `They got you a new mattress, right? That last guy was a druggie, did James tell you that?`,
+        }),
+    () =>
+        (narration.dialogue = {
+            character: sly,
+            text: `*We're* the reason he got expelled!`,
+        }),
+    () =>
+        (narration.dialogue = {
+            character: steph,
+            text: `Sly! If word gets out about that... well, actually, it wouldn't matter, *he's* the one who shot himself up.`,
+        }),
+    () => {
+        narration.dialogue = `I'm fumbling for a new subject.`;
+    },
+    // ...
+]);
+```
+
+## 선택 메뉴
+
+이제 플레이어에게 비주얼 노벨의 두 번째 부분을 계속할 것인지 물어보겠습니다.
+
+To do this, we will set [`narration.choices`](/jsdoc/pixi-vn/index/interfaces/NarrationChoicesInterface#list) to an array of choice options created with [`newChoiceOption`](/jsdoc/pixi-vn/index/functions/newChoiceOption) (to jump or call a `label`) and [`newCloseChoiceOption`](/jsdoc/pixi-vn/index/functions/newCloseChoiceOption) (to close the choice menu without navigating anywhere).
+
+:::tip
+
+선택지 메뉴에 대한 자세한 정보는 <DynamicLink href="/start/choices">여기</DynamicLink>에서 확인할 수 있습니다.
+
+:::
+
+다음은 그 예시입니다.
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+// ...
+
+You want continue to the next part?
+* Yes, I want to continue
+-> second_part
+* No, I want to stop here
+-> END
+
+=== second_part ===
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    // ...
+    async () => {
+        narration.dialogue = `You want continue to the next part?`;
+        narration.choices = [
+            newChoiceOption(
+                "Yes, I want to continue",
+                secondPart,
+                {},
+                { type: "jump" },
+            ),
+            newCloseChoiceOption("No, I want to stop here"),
+        ];
+    },
+]);
+export default startLabel;
+
+const secondPart = newLabel("second_part", [
+    // ...
+]);
+```
+
+## 캐릭터 정보를 편집하고 변수로 사용하기
+
+이제 플레이어가 `mc`의 이름을 변경할 수 있는 기능을 제공하겠습니다.
+이를 위해 플레이어에게 <DynamicLink href="/start/input">Pixi’VN의 기능을 사용하여 입력 상자를 완성</DynamicLink>하도록 요청하겠습니다.
+
+입력값을 받은 후에는 얻은 값을 사용하여 <DynamicLink href="/start/character#edit">캐릭터 이름을 설정</DynamicLink>할 수 있습니다.
+
+:::tip
+
+_ink_에서 `_input_value_`는 플레이어가 입력한 값을 담고 있는 특수 변수입니다. 이에 대한 자세한 내용은 <DynamicLink href="/ink/input">여기</DynamicLink>에서 확인할 수 있습니다.
+
+:::
+
+다음은 그 예시입니다.
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+// ...
+
+He thrusts out his hand.
+# request input type string default Peter
+What is your name?
+# rename mc { _input_value_ }
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    // ...
+    () => {
+        narration.dialogue = `He thrusts out his hand.`;
+    },
+    () => {
+        narration.input.request({ type: "string" }, "Peter");
+        narration.dialogue = `What is your name?`;
+    },
+    () => {
+        mc.name = narration.input.value as string;
+    },
+    // ...
+]);
+export default startLabel;
+```
+
+이제 대사 안에서 <DynamicLink href="/start/character#use">캐릭터 이름을 사용</DynamicLink>할 수 있습니다.
+
+:::tip
+
+_ink_에서는 대괄호(예: `[sly]`)를 사용하여 <DynamicLink href="/ink/replacement">텍스트 치환</DynamicLink> 메커니즘을 활용할 수 있습니다. 기본적으로 템플릿은 대괄호 안의 텍스트가 캐릭터 `id`와 일치하는지 확인하고, 일치하면 해당 캐릭터의 이름으로 치환합니다.
+
+JS/TS에서는 `${}`를 사용한 [템플릿 리터럴](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals)로 동일한 결과를 얻을 수 있습니다(예: `` `${sly.name}` ``).
+
+:::
+
+다음은 그 예시입니다.
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+VAR steph_fullname = "Stephanie"
+
+=== start ===
+// ...
+
+sly: I just wanted to see what the new guy was like. Hey, you, [mc]- be nice to our little brother, or you'll have to deal with *us*.
+mc: ...
+james: [mc], this is [sly]. Yes, that is her real name.
+
+I put out my hand.
+
+sly: I'm not shakin' your hand until I decide you're an all-right dude. Sorry, policy.
+mc: Fair enough, I'm a pretty scary guy, or so l've been told.
+james: The redhead behind her is [steph_fullname].
+steph: Hey! Everyone calls me [steph]. I'll shake your hand.
+
+She puts out her hand, and I take it.
+
+mc: Thanks, good to meet you, [steph_fullname].
+steph: WOW, that is, like, the most perfect handshake I've ever had! Firm, but also gentle. [sly], you *gotta* shake his hand!
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+const steph_fullname = "Stephanie";
+
+const startLabel = newLabel("start", [
+    // ...
+    () =>
+        (narration.dialogue = {
+            character: sly,
+            text: `I just wanted to see what the new guy was like. Hey, you, ${mc.name}- be nice to our little brother, or you'll have to deal with *us*.`,
+        }),
+    () => (narration.dialogue = { character: mc, text: `...` }),
+    () =>
+        (narration.dialogue = {
+            character: james,
+            text: `${mc.name}, this is ${sly.name}. Yes, that is her real name.`,
+        }),
+    () => {
+        narration.dialogue = `I put out my hand.`;
+    },
+    () =>
+        (narration.dialogue = {
+            character: sly,
+            text: `I'm not shakin' your hand until I decide you're an all-right dude. Sorry, policy.`,
+        }),
+    () =>
+        (narration.dialogue = {
+            character: mc,
+            text: `Fair enough, I'm a pretty scary guy, or so I've been told.`,
+        }),
+    () =>
+        (narration.dialogue = {
+            character: james,
+            text: `The redhead behind her is ${steph_fullname}.`,
+        }),
+    () =>
+        (narration.dialogue = {
+            character: steph,
+            text: `Hey! Everyone calls me ${steph.name}. I'll shake your hand.`,
+        }),
+    () => {
+        narration.dialogue = `She puts out her hand, and I take it.`;
+    },
+    () =>
+        (narration.dialogue = {
+            character: mc,
+            text: `Thanks, good to meet you, ${steph_fullname}.`,
+        }),
+    () =>
+        (narration.dialogue = {
+            character: steph,
+            text: `WOW, that is, like, the most perfect handshake I've ever had! Firm, but also gentle. ${sly.name}, you *gotta* shake his hand!`,
+        }),
+    // ...
+]);
+export default startLabel;
+```
+
+## 에셋 정의 및 로드
+
+:::tip
+
+에셋(이미지, GIF, 동영상 등) 을 로드하고 조작하려면 `Assets`를 사용해야 합니다. `Assets`는 다양한 기능을 갖춘 클래스로 PixiJS 라이브러리에서 제공됩니다. 자세한 정보를 원하시면 [여기](https://pixijs.com/8.x/guides/components/assets)를 읽어보세요.
+
+:::
+
+첫 번째 단계 중 하나는 비주얼 노벨 에셋을 저장할 위치를 선택하는 것입니다. 온라인 호스팅 서비스를 사용하거나 프로젝트 내에 로컬로 저장할 수 있습니다. 두 옵션에 대한 자세한 정보는 <DynamicLink href="/start/assets">여기</DynamicLink>에서 확인할 수 있습니다.
+
+에셋을 로컬에 저장하기로 했다면, `src/assets` 안에 배치하기만 하면 됩니다. 템플릿은 AssetPack을 사용하여 파일을 자동으로 분석하고 `src/assets/manifest.gen.json`에 정의합니다. 대신 온라인에 보관하기로 했다면, `assets/index.ts`를 수동으로 편집하여 등록해야 합니다.
+
+두 경우 모두, 각 에셋에는 하나 이상의 별칭 (`alias`)이 할당되며, 이후 코드에서 이를 사용하여 해당 에셋을 참조할 수 있습니다.
+
+<Files>
+    <Folder name="project" defaultOpen>
+        <Folder name="src" defaultOpen>
+            <Folder name="assets" defaultOpen>
+                <Folder name="images" defaultOpen>
+                    <File name="icon.png" />
+                </Folder>
+                <File name="manifest.gen.json" />
+                <File name="index.ts" />
+            </Folder>
+        </Folder>
+    </Folder>
+</Files>
+
+```ts tab="Local assets" title="assets/manifest.gen.json"
+{
+  "bundles": [
+    {
+      "name": "images",
+      "assets": [
+        {
+          "alias": [
+            "images_icon",
+            "icon"
+          ],
+          "src": [
+            "images/icon-WgfH5g@0.5x.png",
+            "images/icon-VA-NtA.webp",
+            "images/icon-Jh9tDw@0.5x.webp",
+            "images/icon-E_ZC2g.png"
+          ],
+          "data": {
+            "tags": {}
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+```ts tab="Assets hosting" title="assets/index.ts"
+import generatedManifestJson from "@/assets/manifest.gen.json";
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    ...generatedManifestJson.bundles,
+    bundles: [
+        {
+            name: "audio",
+            assets: [
+                {
+                    alias: "bgm_cheerful",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/audio/bgm_cheerful.wav",
+                },
+                {
+                    alias: "sfx_whoosh",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/audio/sfx_whoosh.wav",
+                },
+            ],
+        },
+        // screens
+        {
+            name: "/",
+            assets: [
+                {
+                    alias: "background_main_menu",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/main-menu.png",
+                },
+            ],
+        },
+        // labels
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "bg01-hallway",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/bg01-hallway.webp",
+                },
+            ],
+        },
+        {
+            name: "second_part",
+            assets: [
+                {
+                    alias: "bg02-dorm",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/bg02-dorm.webp",
+                },
+            ],
+        },
+        // characters
+        {
+            name: "fm01",
+            assets: [
+                {
+                    alias: "fm01-body",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-body.webp",
+                },
+                {
+                    alias: "fm01-eyes-grin",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-eyes-grin.webp",
+                },
+                {
+                    alias: "fm01-eyes-smile",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-eyes-smile.webp",
+                },
+                {
+                    alias: "fm01-eyes-soft",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-eyes-soft.webp",
+                },
+                {
+                    alias: "fm01-eyes-upset",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-eyes-upset.webp",
+                },
+                {
+                    alias: "fm01-eyes-wow",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-eyes-wow.webp",
+                },
+                {
+                    alias: "fm01-mouth-grin00",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-mouth-grin00.webp",
+                },
+                {
+                    alias: "fm01-mouth-serious00",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-mouth-serious00.webp",
+                },
+                {
+                    alias: "fm01-mouth-serious01",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-mouth-serious01.webp",
+                },
+                {
+                    alias: "fm01-mouth-smile00",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-mouth-smile00.webp",
+                },
+                {
+                    alias: "fm01-mouth-smile01",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-mouth-smile01.webp",
+                },
+                {
+                    alias: "fm01-mouth-soft00",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-mouth-soft00.webp",
+                },
+                {
+                    alias: "fm01-mouth-soft01",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-mouth-soft01.webp",
+                },
+                {
+                    alias: "fm01-mouth-upset00",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-mouth-upset00.webp",
+                },
+                {
+                    alias: "fm01-mouth-upset01",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-mouth-upset01.webp",
+                },
+                {
+                    alias: "fm01-mouth-wow01",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm01/fm01-mouth-wow01.webp",
+                },
+            ],
+        },
+        {
+            name: "fm02",
+            assets: [
+                {
+                    alias: "fm02-body",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-body.webp",
+                },
+                {
+                    alias: "fm02-eyes-bawl",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-eyes-bawl.webp",
+                },
+                {
+                    alias: "fm02-eyes-joy",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-eyes-joy.webp",
+                },
+                {
+                    alias: "fm02-eyes-nervous",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-eyes-nervous.webp",
+                },
+                {
+                    alias: "fm02-eyes-smile",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-eyes-smile.webp",
+                },
+                {
+                    alias: "fm02-eyes-upset",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-eyes-upset.webp",
+                },
+                {
+                    alias: "fm02-eyes-wow",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-eyes-wow.webp",
+                },
+                {
+                    alias: "fm02-mouth-cry01",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-mouth-cry01.webp",
+                },
+                {
+                    alias: "fm02-mouth-nervous00",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-mouth-nervous00.webp",
+                },
+                {
+                    alias: "fm02-mouth-nervous01",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-mouth-nervous01.webp",
+                },
+                {
+                    alias: "fm02-mouth-smile00",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-mouth-smile00.webp",
+                },
+                {
+                    alias: "fm02-mouth-smile01",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-mouth-smile01.webp",
+                },
+                {
+                    alias: "fm02-mouth-upset00",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-mouth-upset00.webp",
+                },
+                {
+                    alias: "fm02-mouth-upset01",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-mouth-upset01.webp",
+                },
+                {
+                    alias: "fm02-mouth-wow01",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/fm02/fm02-mouth-wow01.webp",
+                },
+            ],
+        },
+        {
+            name: "m01",
+            assets: [
+                {
+                    alias: "m01-body",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-body.webp",
+                },
+                {
+                    alias: "m01-eyes-annoy",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-eyes-annoy.webp",
+                },
+                {
+                    alias: "m01-eyes-concern",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-eyes-concern.webp",
+                },
+                {
+                    alias: "m01-eyes-cry",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-eyes-cry.webp",
+                },
+                {
+                    alias: "m01-eyes-grin",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-eyes-grin.webp",
+                },
+                {
+                    alias: "m01-eyes-smile",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-eyes-smile.webp",
+                },
+                {
+                    alias: "m01-eyes-wow",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-eyes-wow.webp",
+                },
+                {
+                    alias: "m01-mouth-annoy00",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-mouth-annoy00.webp",
+                },
+                {
+                    alias: "m01-mouth-annoy01",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-mouth-annoy01.webp",
+                },
+                {
+                    alias: "m01-mouth-concern00",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-mouth-concern00.webp",
+                },
+                {
+                    alias: "m01-mouth-concern01",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-mouth-concern01.webp",
+                },
+                {
+                    alias: "m01-mouth-cry00",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-mouth-cry00.webp",
+                },
+                {
+                    alias: "m01-mouth-cry01",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-mouth-cry01.webp",
+                },
+                {
+                    alias: "m01-mouth-grin00",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-mouth-grin00.webp",
+                },
+                {
+                    alias: "m01-mouth-neutral00",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-mouth-neutral00.webp",
+                },
+                {
+                    alias: "m01-mouth-neutral01",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-mouth-neutral01.webp",
+                },
+                {
+                    alias: "m01-mouth-smile00",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-mouth-smile00.webp",
+                },
+                {
+                    alias: "m01-mouth-smile01",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-mouth-smile01.webp",
+                },
+                {
+                    alias: "m01-mouth-wow01",
+                    src: "https://pub-72ff059a2c6642fb9eab15df80fb3b45.r2.dev/breakdown/m01/m01-mouth-wow01.webp",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<Accordions>
+
+<Accordion title="스마트 에셋 로딩" id="smart-asset-loading">
+
+이번 예시에서는 게임 이미지를 호스팅 서비스에 저장했습니다. 이 때문에 에셋 로딩이 즉각적이지 않습니다.
+
+플레이어가 너무 많은 로딩을 느끼지 않도록, 게임의 특정 단계에서 로딩을 묶어서 처리해야 합니다. 제 경우에는 내러티브 노드 (`label`) 시작 시 가장 많이 사용되는 이미지를 로드하겠습니다.
+
+로딩 관리 방법에 대한 자세한 정보는 <DynamicLink href="/start/assets-management">여기</DynamicLink>에서 확인할 수 있습니다.
+
+다음은 그 예시입니다.
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+# lazyload bundle m01 fm01 fm02 // [!code focus]
+
+# show image bg bg01-hallway
+# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-neutral01] xAlign 0.5 yAlign 1 with movein direction right speed 300
+james: You're my roommate's replacement, huh?
+# show imagecontainer james [m01-body m01-eyes-grin m01-mouth-smile01]
+james: Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you'll be fine!
+# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-grin00]
+mc: ...
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+const startLabel = newLabel(
+    "start",
+    [
+        // ...
+    ],
+    {
+        onLoadingLabel: () => {
+            // [!code focus]
+            Assets.backgroundLoadBundle(["fm01", "fm02", "m01"]); // [!code focus]
+        }, // [!code focus]
+    },
+);
+export default startLabel;
+```
+
+</Accordion>
+
+</Accordions>
+
+## 배경 및 캐릭터 이미지 추가하기
+
+이제 비주얼 요소에 대해서도 생각해 볼 차례입니다. 배경과 캐릭터 이미지를 비주얼 노벨 캔버스에 추가하겠습니다.
+
+<Accordions>
+
+<Accordion title="`sprite`란 무엇인가요?" id="what-is-a-sprite">
+
+컴퓨터 그래픽에서 스프라이트는 더 큰 장면에 통합되는 2차원 비트맵으로, 대개 2D 비디오 게임에서 사용됩니다. Pixi’VN에서 캔버스에 표시되는 단일 이미지(예: 배경, 또는 캐릭터의 몸/눈/입)는 `Sprite`입니다.
+
+</Accordion>
+
+<Accordion title="`container`란 무엇인가요?" id="what-is-a-container">
+
+컨테이너는 다른 컴포넌트(스프라이트 또는 다른 컨테이너까지)를 그룹화하는 컴포넌트로, 이를 통해 개별 자식 요소에 접근하고 편집할 수 있으면서도 하나의 단위로 위치를 지정하고 이동시키고 조작할 수 있습니다.
+
+</Accordion>
+
+</Accordions>
+
+이 경우, 각 캐릭터는 몸, 눈, 입이라는 3개의 스프라이트로 구성됩니다. `Sprite` 자식들을 그룹화하는 `Container`인 <DynamicLink href="/start/canvas-image-container">ImageContainer</DynamicLink>를 사용하여 이들을 함께 묶어 캐릭터를 구성합니다. 캔버스 컴포넌트를 추가하는 방법에 대한 자세한 정보는 <DynamicLink href="/start/canvas-components">이 문서</DynamicLink>에서 확인할 수 있습니다.
+
+다음은 그 예시입니다.
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+# show image bg bg01-hallway
+# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-neutral01] xAlign 0.5 yAlign 1
+james: You're my roommate's replacement, huh?
+# show imagecontainer james [m01-body m01-eyes-grin m01-mouth-smile01]
+james: Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you'll be fine!
+# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-grin00]
+mc: ...
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    async () => {
+        await showImage("bg", "bg01-hallway");
+        await showImageContainer(
+            "james",
+            ["m01-body", "m01-eyes-smile", "m01-mouth-neutral01"],
+            { xAlign: 0.5, yAlign: 1 },
+        );
+        narration.dialogue = {
+            character: james,
+            text: `You're my roommate's replacement, huh?`,
+        };
+    },
+    async () => {
+        await showImageContainer("james", [
+            "m01-body",
+            "m01-eyes-grin",
+            "m01-mouth-smile01",
+        ]);
+        narration.dialogue = {
+            character: james,
+            text: `Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you'll be fine!`,
+        };
+    },
+    async () => {
+        await showImageContainer("james", [
+            "m01-body",
+            "m01-eyes-smile",
+            "m01-mouth-grin00",
+        ]);
+        narration.dialogue = { character: mc, text: `...` };
+    },
+    // ...
+]);
+export default startLabel;
+```
+
+<Accordions>
+
+<Accordion title="트랜지션 사용하기" id="use-transitions">
+
+비주얼 노벨을 더 역동적으로 만들기 위해, 캔버스 컴포넌트(이미지, 컨테이너 등) 를 갑자기 나타나거나 사라지게 하는 대신 애니메이션 효과로 표시하거나 제거하는 트랜지션을 사용할 수 있습니다. Pixi’VN은 디졸브, 페이드, 이동 인/아웃, 푸시 인/아웃, 줌 인/아웃과 같은 여러 내장 트랜지션을 제공하며, 자신만의 커스텀 트랜지션을 만들 수도 있습니다.
+
+이 예시에서는 이동 인/아웃 트랜지션을 사용하여 `james`가 캔버스 외부에서 장면 안으로 들어오도록 합니다. _ink_에서는 `# show` 명령어에 `with movein`(및 그 매개변수)을 추가하여 이를 수행하며, JS/TS에서는 `moveIn`/`moveOut` 함수를 사용할 수 있습니다.
+
+:::tip
+
+트랜지션 사용에 대한 자세한 정보는 <DynamicLink href="/start/canvas-transition">여기</DynamicLink>에서 확인할 수 있습니다.
+
+:::
+
+다음은 그 예시입니다.
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+// ...
+
+# show image bg bg01-hallway
+# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-neutral01] xAlign 0.5 yAlign 1 with movein direction right speed 300
+james: You're my roommate's replacement, huh?
+# show imagecontainer james [m01-body m01-eyes-grin m01-mouth-smile01]
+james: Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you'll be fine!
+# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-grin00]
+mc: ...
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    async () => {
+        await showImage("bg", "bg01-hallway");
+        await moveIn(
+            "james",
+            {
+                value: ["m01-body", "m01-eyes-smile", "m01-mouth-neutral01"],
+                options: { xAlign: 0.5, yAlign: 1 },
+            },
+            { direction: "right", ease: "circInOut", type: "spring" },
+        );
+        narration.dialogue = {
+            character: james,
+            text: `You're my roommate's replacement, huh?`,
+        };
+    },
+    async () => {
+        await showImageContainer("james", [
+            "m01-body",
+            "m01-eyes-grin",
+            "m01-mouth-smile01",
+        ]);
+        narration.dialogue = {
+            character: james,
+            text: `Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you'll be fine!`,
+        };
+    },
+    async () => {
+        await showImageContainer("james", [
+            "m01-body",
+            "m01-eyes-smile",
+            "m01-mouth-grin00",
+        ]);
+        narration.dialogue = { character: mc, text: `...` };
+    },
+    // ...
+]);
+export default startLabel;
+```
+
+</Accordion>
+
+<Accordion title="애니메이션 만들기" id="building-an-animation">
+
+비주얼 노벨을 더 역동적으로 만들기 위해 애니메이션을 사용할 수 있습니다. 많은 속성을 설정해야 한다면 TypeScript를 사용하는 것을 권장합니다. 더 많은 제어, 더 많은 기능, 그리고 타입 피드백을 제공하기 때문입니다.
+
+이 예시에서, 제 애니메이션은 `steph`를 장면 밖으로 내보냈다가 다음 내러티브 단계 (`step`)에서 다시 등장시킵니다. 또한 그녀가 올바른 방향을 향하도록 x축 기준으로 좌우 반전(mirror)시키겠습니다.
+
+`steph`를 밖으로/안으로 이동시키기 위해 `moveOut`과 `moveIn` 함수를 사용하겠습니다. 미러 효과를 위해서는 `canvas.animate` 함수를 사용하겠습니다.
+
+먼저, `canvas.animate` 함수를 사용하여 `scaleX` 속성을 `-1`(반전됨)에서 `1`로 설정하는 애니메이션을 만들되, 즉시 시작되지 않도록 `autoplay: false`를 설정합니다.
+
+설명을 위해서, _ink_에서는 이와 동등한 것이 다음과 같이 보일 것입니다.
+
+```ink tab="ink"
+# animate steph scaleX 1 options autoplay false completeOnContinue true
+```
+
+```ts tab="Typescript"
+canvas.animate<ImageContainer>(
+    "steph",
+    {
+        scaleX: 1,
+    },
+    { autoplay: false, completeOnContinue: true },
+);
+```
+
+그 다음, `moveIn` 함수를 사용하여 `steph`를 장면으로 이동시키며, 트랜지션이 끝난 후 재개할 수 있도록 애니메이션의 `tickerId`를 전달합니다.
+
+다음 내러티브 단계 (`step`)가 실행되기 전에 애니메이션이 완료되도록 `completeOnContinue: true` 옵션을 사용합니다. `moveIn`은 트랜지션이므로 `completeOnContinue`는 기본적으로 true입니다.
+
+:::tip
+
+애니메이션 사용 방법에 대한 자세한 정보는 <DynamicLink href="/start/canvas-animations-effects">여기</DynamicLink>를 참조하세요.
+
+:::
+
+이 애니메이션에는 TypeScript를 사용했으므로, 다른 언어에서도 호출할 수 있도록 이를 위한 내러티브 노드 (`label`)를 만들었습니다.
+
+```ts title="labels/animation01.ts"
+import { canvas, ImageContainer, moveIn, newLabel } from "@drincs/pixi-vn";
+
+export const animation01 = newLabel("animation_01", [
+    async () => {
+        let tickerId = canvas.animate<ImageContainer>(
+            "steph",
+            {
+                scaleX: 1,
+            },
+            { autoplay: false, completeOnContinue: true },
+        );
+
+        await moveIn(
+            "steph",
+            {
+                value: ["fm02-body", "fm02-eyes-joy", "fm02-mouth-smile01"],
+                options: {
+                    xAlign: 0.8,
+                    yAlign: 1,
+                    scale: { y: 1, x: -1 },
+                    anchor: 0.5,
+                },
+            },
+            {
+                direction: "right",
+                ease: "easeInOut",
+                tickerIdToResume: tickerId,
+            },
+        );
+    },
+]);
+```
+
+:::tip[*ink*]
+
+<DynamicLink href="/ink/labels#use-the-call-script">여기</DynamicLink>에서 설명한 것처럼, _ink_에서 JS/TS로 작성된 내러티브 노드 (`label`)를 호출할 수 있으며, 그 반대도 가능합니다.
+
+:::
+
+이제 메인 내러티브 노드 (`label`, `start`)에서 이 내러티브 노드 (`label`, `animation_01`)를 호출할 수 있습니다.
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+// ...
+
+# show imagecontainer james [m01-body m01-eyes-grin m01-mouth-grin00]
+# show imagecontainer sly [fm01-body fm01-eyes-smile fm01-mouth-smile00]
+# show imagecontainer steph [fm02-body fm02-eyes-upset fm02-mouth-nervous00]
+# remove image steph with moveout direction left speed 300
+[steph_fullname] goes through the opposite door,
+-> animation_01 ->
+<> and returns with a HUGE tinfoil-covered platter.
+
+// ...
+-> DONE
+```
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    // ...
+    async () => {
+        await showImageContainer("james", [
+            "m01-body",
+            "m01-eyes-grin",
+            "m01-mouth-grin00",
+        ]);
+        await showImageContainer("sly", [
+            "fm01-body",
+            "fm01-eyes-smile",
+            "fm01-mouth-smile00",
+        ]);
+        await showImageContainer("steph", [
+            "fm02-body",
+            "fm02-eyes-upset",
+            "fm02-mouth-nervous00",
+        ]);
+        moveOut("steph", { direction: "left", speed: 300 });
+        narration.dialogue = `${steph_fullname} goes through the opposite door,`;
+    },
+    async (props) => {
+        narration.dialogGlue = true;
+        narration.dialogue = ` and returns with a HUGE tinfoil-covered platter.`;
+        await narration.call(animation01, props);
+    },
+    // ...
+]);
+export default startLabel;
+```
+
+</Accordion>
+
+</Accordions>
+
+## 사운드와 음악
+
+비주얼 노벨에 사운드와 음악을 추가하려면 `sound` 유틸리티를 사용할 수 있습니다.
+
+다양한 유형의 사운드(예: BGM, SFX)를 관리하고 볼륨, 일시정지, 재개 등을 제어하기 위해 사운드 채널을 정의할 수 있습니다. 채널은 게임 시작 시, 예를 들어 `Game.init` 함수의 `then` 콜백에서 정의하는 것이 권장됩니다.
+
+이 예시에서는 두 개의 채널을 정의합니다. 하나는 배경 음악(BGM)용이고, 다른 하나는 효과음(SFX)용입니다. 또한 `defaultChannelAlias`를 SFX 채널로 설정하여, 사운드를 재생할 때 채널을 지정하지 않으면 기본적으로 SFX 채널에서 재생되도록 합니다. 배경 채널을 정의하기 위해 `background` 속성을 `true`로 설정합니다. 이렇게 하면 다른 채널과 달리 각 내러티브 단계 (`step`)가 끝날 때 사운드가 정지되지 않고, 일시정지되거나 정지될 때까지 계속됩니다.
+
+```ts title="main.ts"
+import { Game, sound } from "@drincs/pixi-vn";
+import { BGM_CHANNEL_NAME, SFX_CHANNEL_NAME } from "@/constans";
+
+Game.init(body, {
+    // ...
+}).then(() => {
+    sound.channels.add(BGM_CHANNEL_NAME, { background: true });
+    sound.channels.add(SFX_CHANNEL_NAME);
+    sound.defaultChannelAlias = SFX_CHANNEL_NAME;
+});
+```
+
+마지막으로, 내러티브 노드 (`label`) 안에서 `sound.play` 함수를 사용하여 사운드와 음악을 재생할 수 있습니다. 또한 채널을 사용하여 다양한 유형의 사운드(예: BGM, SFX)를 관리하고 볼륨, 일시정지, 재개 등을 제어할 수 있습니다.
+
+:::tip
+
+사용 방법에 대한 자세한 정보는 <DynamicLink href="/start/sound">여기</DynamicLink>에서 확인할 수 있습니다.
+
+:::
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+# show image bg bg01-hallway
+# play sound sfx_whoosh delay 0.1
+# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-neutral01] xAlign 0.5 yAlign 1 with movein direction right ease circInOut type spring
+james: You're my roommate's replacement, huh?
+# play sound sfx_whoosh channel bgm loop true
+# show imagecontainer james [m01-body m01-eyes-grin m01-mouth-smile01]
+james: Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you'll be fine!
+# show imagecontainer james [m01-body m01-eyes-smile m01-mouth-grin00]
+mc: ...
+
+// ...
+
+# pause all sounds
+# show imagecontainer steph [fm02-body fm02-eyes-smile fm02-mouth-smile00]
+# play sound sfx_whoosh delay 0.1
+# remove image james with moveout direction right ease circInOut type spring duration 0.5 delay 0.05
+# remove image sly with moveout direction right ease anticipate duration 0.5
+# remove image steph with moveout direction left ease easeInOut duration 0.5 delay 0.1
+
+You want continue to the next part?<># continue
+* Yes, I want to continue
+-> second_part
+* No, I want to stop here
+-> END
+
+=== second_part ===
+# show text bg "(A few minutes later...)" style { fontFamily: "Arial", dropShadow: { alpha: 0.8, angle: 2.1, blur: 4, color: "0x111111", distance: 10, }, fill: "\#ffffff", stroke: { color: "\#004620", width: 12, join: "round" }, fontSize: 60, fontWeight: "lighter" } with fade
+# edit text bg align 0.5
+# pause
+
+# resume all sounds
+# show image bg bg02-dorm align 0 with fade
+# play sound sfx_whoosh delay 0.4
+// ...
+She enters my room before I'VE even had a chance to.
+
+// ...
+
+-> DONE
+
+```
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+const startLabel = newLabel("start", [
+    async () => {
+        await showImage("bg", "bg01-hallway");
+        await sound.play("sfx_whoosh", { delay: 0.1 });
+        await moveIn("james", {
+            value: ["m01-body", "m01-eyes-smile", "m01-mouth-neutral01"],
+            options: { xAlign: 0.5, yAlign: 1 },
+        });
+        narration.dialogue = {
+            character: james,
+            text: `You're my roommate's replacement, huh?`,
+        };
+    },
+    async () => {
+        await sound.play("bgm_cheerful", {
+            channel: BGM_CHANNEL_NAME,
+            loop: true,
+        });
+        await showImageContainer("james", [
+            "m01-body",
+            "m01-eyes-grin",
+            "m01-mouth-smile01",
+        ]);
+        narration.dialogue = {
+            character: james,
+            text: `Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you'll be fine!`,
+        };
+    },
+    async () => {
+        await showImageContainer("james", [
+            "m01-body",
+            "m01-eyes-smile",
+            "m01-mouth-grin00",
+        ]);
+        narration.dialogue = { character: mc, text: `...` };
+    },
+    // ...
+    async () => {
+        sound.pauseAll();
+        await showImageContainer("steph", [
+            "fm02-body",
+            "fm02-eyes-smile",
+            "fm02-mouth-smile00",
+        ]);
+        await sound.play("sfx_whoosh", { delay: 0.1 });
+        moveOut("james", {
+            direction: "right",
+            ease: "circInOut",
+            type: "spring",
+            duration: 0.5,
+            delay: 0.05,
+        });
+        moveOut("sly", {
+            direction: "right",
+            ease: "anticipate",
+            duration: 0.5,
+        });
+        moveOut("steph", {
+            direction: "left",
+            ease: "easeInOut",
+            duration: 0.5,
+            delay: 0.1,
+        });
+        narration.dialogue = `You want continue to the next part?`;
+        narration.choices = [
+            newChoiceOption(
+                "Yes, I want to continue",
+                secondPart,
+                {},
+                { type: "jump" },
+            ),
+            newCloseChoiceOption("No, I want to stop here"),
+        ];
+    },
+]);
+export default startLabel;
+
+const secondPart = newLabel("second_part", [
+    async ({ t }) => {
+        narration.dialogue = undefined;
+        const text = new Text({
+            text: t(`(A few minutes later...)`),
+        });
+        await showWithFade("bg", text);
+        text.align = 0.5;
+    },
+    async () => {
+        sound.resumeAll();
+        await showWithFade("bg", "bg02-dorm");
+        await sound.play("sfx_whoosh", { delay: 0.4 });
+        // ...
+        narration.dialogue = `She enters my room before I'VE even had a chance to.`;
+    },
+    // ...
+]);
+```
+
+## 결론
+
+자, 이제 Pixi’VN으로 비주얼 노벨을 만드는 방법을 알게 되었습니다. 큰 힘에는 큰 책임이 따르는 법이니, 현명하게 사용하여 멋진 이야기를 만들어보세요! 🚀
+
+<iframe
+src="https://pixi-vn-visual-novel-example.pages.dev/demo"
+title="Visual Novel Demo"
+style={{
+      width: "100%",
+      height: "400px",
+      border: "0",
+      borderRadius: "4px",
+      overflow: "hidden",
+  }}
+allowFullScreen={true}
+/>

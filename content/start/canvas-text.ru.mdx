@@ -1,0 +1,83 @@
+---
+title: Текст (`Text`)
+description: |
+  Как отображать и стилизовать текст на canvas с помощью компонента `Text`. Рассматриваются `showText`, `TextStyle`, удаление и функции позиционирования.
+---
+
+import { TextCanvas, TextCanvasStyle } from "@/components/examples";
+
+Компонент [`Text`](/jsdoc/pixi-vn/index/classes/Text) расширяет компонент [`PixiJS.Text`](https://pixijs.com/8.x/guides/components/scene-objects/text), поэтому вы можете использовать все методы и свойства [`PixiJS.Text`](https://pixijs.com/8.x/guides/components/scene-objects/text). Он используется для отображения текста на canvas.
+
+```ts title="main.ts"
+import { canvas, Text } from "@drincs/pixi-vn";
+
+const basicText = new Text({ text: "Basic text in pixi", align: 0.5 });
+
+canvas.add("text", basicText);
+```
+
+По сравнению с компонентом [`PixiJS.Text`](https://pixijs.com/8.x/guides/components/scene-objects/text), [`Text`](/jsdoc/pixi-vn/index/classes/Text) добавляет следующие возможности:
+
+* Дополнительное позиционирование: <DynamicLink href="/start/canvas-position">выравнивание и позиционирование в процентах</DynamicLink>.
+
+## Отображение
+
+Самый простой способ отобразить текст на canvas — использовать функцию [`showText`](/jsdoc/pixi-vn/index/functions/showText).
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showText } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        let text = await showText("text", "Hello World!", {
+            xAlign: 0.5,
+            yAlign: 0.5,
+        });
+        text.style.fontSize = 30;
+    },
+]);
+```
+
+<TextCanvas />
+
+## Удалить
+
+Как и другие компоненты холста, данный компонент можно удалить с помощью функции [`canvas.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#remove).
+
+## Стиль
+
+Для стилизации текста используйте [`TextStyle`](/jsdoc/pixi-vn/index/variables/TextStyle). Этот класс позволяет настраивать семейство шрифтов, размер, цвет, обводку, тень и многое другое.
+
+```ts tab="content/labels/start.label.ts"
+import { canvas, newLabel, Text, TextStyle } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        const skewStyle = new TextStyle({
+            fontFamily: "Arial",
+            dropShadow: {
+                alpha: 0.8,
+                angle: 2.1,
+                blur: 4,
+                color: "0x111111",
+                distance: 10,
+            },
+            fill: "#ffffff",
+            stroke: { color: "#004620", width: 12, join: "round" },
+            fontSize: 60,
+            fontWeight: "lighter",
+        });
+
+        const skewText = new Text({
+            text: "SKEW IS COOL",
+            style: skewStyle,
+            align: 0.5,
+            skew: { x: 0.65, y: -0.3 },
+        });
+
+        canvas.add("text", skewText);
+    },
+]);
+```
+
+<TextCanvasStyle />

@@ -1,0 +1,83 @@
+---
+title: Texto (`Text`)
+description: |
+  Cómo mostrar y dar estilo al texto en el canvas usando el componente `Text`. Cubre `showText`, `TextStyle`, la eliminación y las funciones de posicionamiento.
+---
+
+import { TextCanvas, TextCanvasStyle } from "@/components/examples";
+
+El componente [`Text`](/jsdoc/pixi-vn/index/classes/Text) extiende el componente [`PixiJS.Text`](https://pixijs.com/8.x/guides/components/scene-objects/text), por lo que puedes usar todos los métodos y propiedades de [`PixiJS.Text`](https://pixijs.com/8.x/guides/components/scene-objects/text). Se utiliza para mostrar texto en el canvas.
+
+```ts title="main.ts"
+import { canvas, Text } from "@drincs/pixi-vn";
+
+const basicText = new Text({ text: "Basic text in pixi", align: 0.5 });
+
+canvas.add("text", basicText);
+```
+
+En comparación con el componente [`PixiJS.Text`](https://pixijs.com/8.x/guides/components/scene-objects/text), [`Text`](/jsdoc/pixi-vn/index/classes/Text) añade las siguientes funcionalidades:
+
+* Posicionamiento adicional: <DynamicLink href="/start/canvas-position">alineación y posición con porcentaje</DynamicLink>.
+
+## Mostrar
+
+La forma más sencilla de mostrar texto en el canvas es usar la función [`showText`](/jsdoc/pixi-vn/index/functions/showText).
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showText } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        let text = await showText("text", "Hello World!", {
+            xAlign: 0.5,
+            yAlign: 0.5,
+        });
+        text.style.fontSize = 30;
+    },
+]);
+```
+
+<TextCanvas />
+
+## Eliminar
+
+Al igual que con otros componentes del lienzo, puedes eliminar este componente usando la función [`canvas.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#remove).
+
+## Estilo
+
+Para estilizar el texto, usa [`TextStyle`](/jsdoc/pixi-vn/index/variables/TextStyle). Esta clase te permite personalizar la familia tipográfica, el tamaño, el color, el contorno, la sombra y mucho más.
+
+```ts tab="content/labels/start.label.ts"
+import { canvas, newLabel, Text, TextStyle } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        const skewStyle = new TextStyle({
+            fontFamily: "Arial",
+            dropShadow: {
+                alpha: 0.8,
+                angle: 2.1,
+                blur: 4,
+                color: "0x111111",
+                distance: 10,
+            },
+            fill: "#ffffff",
+            stroke: { color: "#004620", width: 12, join: "round" },
+            fontSize: 60,
+            fontWeight: "lighter",
+        });
+
+        const skewText = new Text({
+            text: "SKEW IS COOL",
+            style: skewStyle,
+            align: 0.5,
+            skew: { x: 0.65, y: -0.3 },
+        });
+
+        canvas.add("text", skewText);
+    },
+]);
+```
+
+<TextCanvasStyle />

@@ -1,0 +1,46 @@
+---
+title: Custom hashtag command
+description: Learn how to define custom hashtag (#) commands in ink and intercept them with HashtagCommands.add to add custom functionality to your Pixi’VN scripts.
+---
+
+***ink*** gives the ability to use the `#` character to define custom hashtag commands (or *tags*).
+The developer can manage and add these `#` command interactions as they like, by linking them to custom functions. This is done through the [`HashtagCommands.add`](/jsdoc/pixi-vn-ink/index/namespaces/HashtagCommands/functions/add) function.
+
+```ts tab="content/ink/hashtag-commands.ts"
+import { HashtagCommands } from "@drincs/pixi-vn-ink";
+import zod from "zod";
+
+HashtagCommands.add(
+    async (script, { navigate }) => {
+        await navigate({ to: script[1] });
+        return true;
+    },
+    {
+        name: "navigate",
+        description: `Navigates to a specified route within the game.
+
+\`\`\`ink
+# navigate <route>
+\`\`\``,
+        validation: zod.tuple([zod.literal("navigate"), zod.string()]),
+    },
+);
+```
+
+```ink tab="ink/start.ink"
+=== start ===
+# navigate /game
+-> DONE
+```
+
+The `validation` option determines which hashtag commands this handler applies to. You can use either a regular expression or a [Zod](https://zod.dev) schema.
+
+To use Zod, install it first:
+
+```bash
+npm install zod
+```
+
+`validation` accepts a `zod.tuple`, i.e. a tuple that validates the array of strings passed to the callback. The most useful sub-schemas are `zod.literal`, to match an exact string (typically the command name), and `zod.string`, to accept any string (typically a parameter value).
+
+The callback function receives the parsed command as an array of strings, for example `["navigate", "/game"]`, so `script[1]` is the value after the command name.

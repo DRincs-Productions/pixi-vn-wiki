@@ -1,0 +1,341 @@
+---
+title: 模板
+description: 了解如何从模板生成 Pixi’VN 项目、在 IDE 中进行设置、运行和自定义项目，以及理解其项目结构。
+---
+
+你可以通过运行以下命令，从模板生成一个新项目：
+
+```npm
+npm create pixi-vn@latest
+```
+
+## 交互式演示
+
+<Accordions>
+
+<Accordion title="视觉小说" id="visual-novel">
+
+<iframe
+src="https://pixi-vn-visual-novel-example.pages.dev/demo"
+title="视觉小说"
+style={{
+      width: "100%",
+      height: "400px",
+      border: "0",
+      borderRadius: "4px",
+      overflow: "hidden",
+  }}
+allowFullScreen={true}
+/>
+
+</Accordion>
+
+<Accordion title="点击式" id="point-click-adventure">
+
+<iframe
+src="https://pixi-vn-point-and-click-example.pages.dev/demo"
+title="点击式"
+style={{
+      width: "100%",
+      height: "400px",
+      border: "0",
+      borderRadius: "4px",
+      overflow: "hidden",
+  }}
+allowFullScreen={true}
+/>
+
+</Accordion>
+
+</Accordions>
+
+## 如何使用模板
+
+如果你正在阅读本页，说明你可能已经有了一个由模板生成的项目。 以下小节将引导你完成让它启动运行所需的最初几步。
+
+### 初始设置
+
+用你的 IDE 打开项目文件夹。 下面的示例使用的是 [Visual Studio Code](https://code.visualstudio.com/)。
+
+项目打开后，VS Code 会自动提示以下几件事：
+
+* **安装推荐的扩展** — 会出现一条通知，要求你安装工作区推荐的扩展。 强烈建议你接受安装。 如果没有出现该通知，你也可以在扩展面板中通过筛选 [推荐的扩展](https://code.visualstudio.com/docs/editor/extension-marketplace#_recommended-extensions) 来手动安装它们。
+* **运行启动任务** — VS Code 可能会提示你运行已配置好的启动任务，用来安装所有项目依赖。 如果你更喜欢手动操作，可以运行：
+
+```npm
+npm install
+```
+
+:::warning[多平台]
+
+如果你选择的模板面向桌面或移动平台，你需要安装 [Tauri](https://v2.tauri.app/start/prerequisites/) 所需的额外依赖（Rust 工具链和特定平台的构建工具）。
+由于 Tauri 与系统环境的集成非常深入，你可能需要**重启 VS Code 一次或多次**，之后才能将项目作为桌面应用启动。
+
+:::
+
+<Accordions>
+
+<Accordion title="安装 Rust" id="installing-rust">
+
+在任何平台上安装 Rust 最简单的方法是使用 [rustup](https://rustup.rs/)，即官方的 Rust 工具链安装程序。
+
+<Tabs items={["Windows", "macOS", "Linux"]} groupId="os">
+    <Tab>
+
+    下载并运行 [`rustup-init.exe`](https://win.rustup.rs/)，或者通过终端使用 `winget` 安装：
+
+    ```powershell
+    winget install --id Rustlang.Rustup
+    ```
+
+    安装完成后，重启您的终端（以及 VS Code），以便 `cargo` 命令在 `PATH` 中可用。
+
+    </Tab>
+    <Tab>
+
+    打开终端并运行：
+
+    ```bash
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    ```
+
+    按照屏幕上的说明操作，然后重启您的终端（以及 VS Code），以便 `cargo` 命令在 `PATH` 中可用。 您还需要安装 Xcode 命令行工具：
+
+    ```bash
+    xcode-select --install
+    ```
+
+    </Tab>
+    <Tab>
+
+    打开终端并运行：
+
+    ```bash
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    ```
+
+    按照屏幕上的说明操作，然后重启您的终端（以及 VS Code），以便 `cargo` 命令在 `PATH` 中可用。 根据您的发行版，您可能还需要安装 Tauri 所需的其他系统软件包（例如 `webkit2gtk`、`build-essential`、`libssl-dev`）——有关适用于您发行版的确切软件包，请参阅 [Tauri Linux 前提条件](https://v2.tauri.app/start/prerequisites/#linux)。
+
+    </Tab>
+
+</Tabs>
+
+安装完成后，运行以下命令进行验证：
+
+```bash
+rustc --version
+```
+
+</Accordion>
+
+</Accordions>
+
+### 运行项目
+
+该模板包含一组为 VS Code 预先配置好的**启动配置**。 如果你不熟悉它们：启动配置是一些快捷方式，用来告诉 VS Code 如何启动你的项目（并可选地附加调试器），这样你就不需要每次都在终端中输入命令。 你可以从**运行和调试**面板（左侧边栏中的播放按钮图标，或按 `F5`）访问它们。 在面板顶部的下拉列表中选择你想要的配置，然后按绿色的播放按钮。
+
+![Run-and-Debug-panel](/launch-configuration-dropdown.png)
+
+以下配置可供使用：
+
+* **Debug Game**：这是你在开发过程中最常使用的配置——每次保存文件时，浏览器都会自动刷新。 请注意，在此模式下动画可能不够流畅，资源加载速度也可能比最终发布的版本慢。
+* **Debug Game Preview**：它能更贴近地模拟游戏发布后的实际表现：动画流畅，加载时间真实，并启用了各项优化。 在发布之前，如果你想确认一切看起来和感觉都正确，可以使用此配置。
+* **Run as Desktop App (Dev)**：它会编译 Rust/Tauri 后端，并以原生桌面窗口的形式启动游戏。 如果你的模板不面向桌面或移动平台，则不会出现此配置。
+
+<Accordions>
+
+<Accordion title="命令行" id="command-line">
+
+所有命令都必须在项目根目录下运行。
+
+**开发**
+
+| 命令                          | 说明                                  |
+| --------------------------- | ----------------------------------- |
+| `npm run dev`               | 启动 Vite 开发服务器，并在浏览器中打开游戏。           |
+| `npm run tauri:dev`         | 将游戏作为**桌面**应用启动（需要多平台模板并已安装 Tauri）。 |
+| `npm run tauri:android:dev` | 在已连接的 Android 设备或模拟器上启动游戏。          |
+| `npm run tauri:ios:dev`     | 在已连接的 iOS 设备或模拟器上启动游戏。              |
+
+**构建与预览**
+
+| 命令                   | 说明                                        |
+| -------------------- | ----------------------------------------- |
+| `npm run build:fast` | 仅构建网页应用（不含 Tauri）。 速度快，适合网页发布。            |
+| `npm run build`      | 完整构建：编译 TypeScript、构建网页应用，并打包 Tauri 桌面应用。 |
+| `npm run preview`    | 运行 `build:fast`，然后在本地提供服务——模拟已发布的网页游戏。    |
+
+**资源与图标**
+
+| 命令             | 说明                                                     |
+| -------------- | ------------------------------------------------------ |
+| `npm run icon` | 根据 `public/icon.png` 生成所有图标变体（PWA、桌面、移动端）。 替换图标后运行此命令。 |
+
+**界面（UI）**
+
+| 命令                  | 说明                                                                   |
+| ------------------- | -------------------------------------------------------------------- |
+| `npm run ui:reinit` | 从零重新初始化 [shadcn/ui](https://ui.shadcn.com/)（强制重新安装所有组件），并随后重新格式化源文件。 |
+
+**代码质量**
+
+| 命令               | 说明                                         |
+| ---------------- | ------------------------------------------ |
+| `npm run lint`   | 使用 [Biome](https://biomejs.dev/) 检查代码中的错误。 |
+| `npm run check`  | 运行所有 Biome 检查（lint 加格式校验）。                 |
+| `npm run format` | 自动格式化所有源文件。                                |
+
+</Accordion>
+
+</Accordions>
+
+### 自定义样式
+
+该模板的界面（UI）完全基于 [shadcn/ui](https://ui.shadcn.com/) 构建，这意味着你可以自定义颜色主题，而无需修改任何组件代码。
+
+打开 [shadcn/ui 主题构建器](https://ui.shadcn.com/create?template=vite\&base=base\&preset=b1s9eyGkS)，按你的喜好调整颜色，然后导航到页面的**复制**部分，复制生成的 CSS 命令。 在你的项目根目录下运行该命令：
+
+```npm
+npx shadcn@latest add <paste-the-generated-command-here>
+```
+
+应用之后，建议重新格式化源文件：
+
+```npm
+npm run format
+```
+
+关于更多自定义内容——字体、全局样式等——请参阅 <DynamicLink href="/start/interface-font">样式与字体</DynamicLink>。
+
+### 项目结构
+
+<Files>
+    <Folder name="project" defaultOpen>
+        <Folder name="ink" defaultOpen>
+            <File name="start.ink" />
+        </Folder>
+        <Folder name="public" defaultOpen>
+            <File name="icon.png" />
+        </Folder>
+        <Folder name="src" defaultOpen>
+            <Folder name="assets">
+                <File name="manifest.gen.json" />
+                <File name="ink-manifest.gen.json" />
+                <File name="index.ts" />
+            </Folder>
+            <Folder name="components" />
+            <Folder name="content" defaultOpen>
+                <Folder name="ink">
+                    <File name="hashtag-commands.ts" />
+                    <File name="text-replaces.ts" />
+                </Folder>
+                <Folder name="labels">
+                    <File name="start.label.ts" />
+                </Folder>
+                <File name="characters.ts" />
+                <File name="index.ts" />
+            </Folder>
+            <Folder name="lib">
+                <Folder name="hooks" />
+                <Folder name="query" />
+                <Folder name="stores" />
+                <Folder name="utils" />
+                <File name="i18n.ts" />
+                <File name="steam.ts" />
+            </Folder>
+            <Folder name="locales">
+                <File name="en.json" />
+            </Folder>
+            <Folder name="models">
+                <File name="Character.ts" />
+                <File name="GameSaveData.ts" />
+            </Folder>
+            <Folder name="routes">
+                <Folder name="game">
+                    <File name="narration.tsx" />
+                </Folder>
+                <File name="__root.tsx" />
+                <File name="game.tsx" />
+                <File name="index.tsx" />
+            </Folder>
+            <File name="constants.ts" />
+            <File name="main.tsx" />
+            <File name="pixi-vn.keys.gen.ts" />
+            <File name="pixi-vn.d.ts" />
+            <File name="styles.css" />
+        </Folder>
+        <Folder name="src-tauri" />
+    </Folder>
+</Files>
+
+<Accordions>
+
+<Accordion title="叙事" id="project-structure-narration">
+
+* `ink/` — 在这里用 ***ink*** 脚本编写你的故事。 模板中包含一个示例 `start.ink`，帮助你入手。
+* `src/content/` — 启动时自动导入；在这里定义所有游戏元素：
+  * `ink/hashtag-commands.ts` — 来自 ***ink*** 脚本的自定义 hashtag 命令。 参见 <DynamicLink href="/ink/hashtag">***ink*** hashtag 命令</DynamicLink>。
+  * `ink/text-replaces.ts` — ***ink*** 对话的文本替换。 参见 <DynamicLink href="/ink/replacement">***ink*** 文本替换</DynamicLink>。
+  * `labels/` — 定义游戏流程和场景的叙事节点（`label`）（使用 `.label.ts` 命名约定）。
+  * `characters.ts` — 角色定义。
+
+</Accordion>
+
+<Accordion title="资源文件" id="project-structure-assets">
+
+* `src/assets/` — 游戏资源源文件（图片、音频、字体等）。 由 [Pixi Asset Pack](https://pixijs.io/assetpack/) 自动分析。
+* `public/assets/` — 项目在运行时使用的、自动生成的经过优化的资源。
+* `public/icon.png` — 图标源文件。 替换它并运行 `npm run icon`，以重新生成所有 PWA/桌面/移动端变体。
+* `src/assets/index.ts` — 为引擎重新导出自动生成的资源清单。
+
+</Accordion>
+
+<Accordion title="界面（UI）" id="project-structure-ui">
+
+* `src/components/` — React 用户界面（UI）组件（屏幕、菜单、对话框等）。
+* `src/routes/` — [TanStack Router](https://tanstack.com/router) 路由定义。 参见 <DynamicLink href="/start/interface-navigate">导航</DynamicLink>。
+* `src/styles.css` — 全局样式表（[shadcn/ui](https://ui.shadcn.com/)）。 参见 <DynamicLink href="/start/interface-font">字体与样式</DynamicLink>。
+
+</Accordion>
+
+<Accordion title="翻译" id="project-structure-translations">
+
+* `src/lib/i18n.ts` — 国际化设置。 参见 <DynamicLink href="/start/translate">翻译</DynamicLink>。
+* `src/locales/` — 每种语言对应一个翻译 JSON 文件（例如 `en.json`）。 参见 <DynamicLink href="/start/translate">翻译</DynamicLink>。
+
+</Accordion>
+
+<Accordion title="初始设置" id="project-structure-initial-setup">
+
+* `src/models/` — 自定义类和 TypeScript 类型。
+* `src/main.tsx` — application entry point; initialises Pixi’VN.
+* `src/pixi-vn.keys.gen.ts` — auto-generated file with TypeScript types for all keys in the Pixi’VN API (e.g. `PixivnCharacterIds`, `PixivnLabelIds`, etc.). 在使用该引擎时用于类型安全和自动补全。
+* `src/pixi-vn.d.ts` — 针对 `@drincs/pixi-vn` 的 TypeScript 声明覆盖。
+
+</Accordion>
+
+<Accordion title="多平台" id="project-structure-multi-platform">
+
+* `src-tauri/` — Rust/Tauri 源代码（仅限多平台模板）；用于启用原生桌面和移动端构建。
+
+</Accordion>
+
+<Accordion title="其他" id="project-structure-other">
+
+* `src/lib/` — 工具函数和内部实现：
+  * `steam.ts` — Steam API（成就、云存档）。 参见 <DynamicLink href="/start/distribution-steam">Steam 分发</DynamicLink>。
+* `src/constants.ts` — 项目范围的常量（屏幕尺寸、配置值等）。
+
+</Accordion>
+
+</Accordions>
+
+### 模板屏幕
+
+该模板附带一组预先构建好的屏幕，涵盖了视觉小说的基本组成部分。 每个屏幕都是一个 React 组件，并连接到由 TanStack Router 管理的路由。
+
+* **主菜单**（`/`）— 玩家启动游戏时看到的第一个屏幕。 它提供了开始新游戏、继续已保存的游戏，以及打开设置的入口。
+* **叙事屏幕**（`/game/narration`）— 展示故事的核心游玩屏幕。 它渲染对话、角色立绘、背景和选项。
+* **设置**——设置面板没有自己专属的路由。 相反，它使用 [Search Params](https://tanstack.com/router/latest/docs/framework/react/guide/search-params) 将自身覆盖显示在当前活动的任何屏幕之上。 这种方式让 URL 保持简洁，同时仍允许玩家在游戏中的任何位置打开设置，并在设置的各个板块（音频、显示、语言等） 之间导航，而不会丢失自己原来所在的位置。
+* * **导航屏幕**（`/game/navigation`）— 仅限 *Point & Click*（点击式冒险）。 它让玩家在房间之间导航，并执行当前位置可用的各种操作。
+* **地图屏幕**（`/game/map`）— 仅限 *Point & Click*（点击式冒险）。 它显示地图，并让玩家从一个位置移动到另一个位置。 它还支持管理多个地图。

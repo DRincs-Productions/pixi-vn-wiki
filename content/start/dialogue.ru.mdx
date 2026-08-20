@@ -1,0 +1,123 @@
+---
+title: Диалог
+description: Как использовать, настраивать и управлять объектами диалога в Pixi’VN, включая "клей"（glue）и интеграцию с UI.
+---
+
+import {
+    CurrentDialogueExample,
+    DialogueGlueExample,
+} from "@/components/examples";
+
+:::tip[Экран UI]
+
+Пример экрана UI нарративного диалога можно найти в разделе <DynamicLink href="/start/interface-examples#narrative-dialogue">примеры интерфейса</DynamicLink>.
+
+:::
+
+**Что такое диалог?** Письменное произведение, в котором два или более персонажа представлены в процессе разговора.
+
+В Pixi’VN `dialogue` — это объект, содержащий информацию о том, *кто* и *что* говорится в данный момент. Его функциональность может быть шире: он также может использоваться для других целей, таких как монологи, рассуждения вслух или отображение сообщений для игрока. По этой причине точнее рассматривать его как текст, который может быть связан с <DynamicLink href="/start/character#use-characters-in-the-game">персонажем</DynamicLink>.
+
+## Установка
+
+Для установки текущего диалога используйте [`narration.dialogue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#dialogue).
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+import { eggHead } from "@/content/characters";
+
+export const startLabel = newLabel("start", [
+    // A simple dialogue with only text, without a character // [!code focus]
+    () => (narration.dialogue = "Hello, world!"), // [!code focus]
+    // A dialogue with a character // [!code focus]
+    () => {
+        narration.dialogue = { // [!code focus]
+            character: eggHead, // [!code focus]
+            text: "My name is ${eggHead.name}!", // [!code focus]
+        }; // [!code focus]
+    },
+    // A dialogue with a character, but the character is not defined in the characters list // [!code focus]
+    () => {
+        narration.dialogue = { // [!code focus]
+            character: "Narrator", // [!code focus]
+            text: "This is a narration without a character.", // [!code focus]
+        }; // [!code focus]
+    },
+]);
+```
+
+<CurrentDialogueExample />
+
+## Получение
+
+Для получения текущего диалога используйте [`narration.dialogue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#dialogue). Возвращаемое значение — [`DialogueInterface`](/jsdoc/pixi-vn/index/interfaces/DialogueInterface).
+
+```ts
+const currentDialogue: DialogueInterface = narration.dialogue;
+```
+
+## Удаление
+
+Чтобы очистить текущий диалог, установите [`narration.dialogue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#dialogue) в `undefined`.
+
+```ts
+narration.dialogue = undefined;
+```
+
+## Другие возможности
+
+<Accordions>
+
+<Accordion title="клей（glue）" id="dialogue-glue">
+
+:::tip
+
+"клей"（glue）— это функция, изначально созданная для ***ink***, которая также была реализована в Pixi’VN.
+
+:::
+
+Когда "клей"（glue）включён, следующий диалог будет добавлен после текущего. Включить "клей"（glue）можно, установив [`narration.dialogGlue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#dialogglue) в `true`.
+
+```ts title="content/labels/start.label.ts"
+import { narration, newLabel } from "@drincs/pixi-vn";
+
+const startLabel = newLabel("start", [
+    () => {
+        narration.dialogue = `Hello, my name is Alice and ...`; // [!code focus]
+    },
+    () => {
+        narration.dialogGlue = true; // [!code focus]
+        narration.dialogue = `I am a character in this game.`; // [!code focus]
+    },
+]);
+```
+
+<DialogueGlueExample />
+
+</Accordion>
+
+<Accordion title="Пользовательский класс" id="custom-class">
+
+Вы можете настроить интерфейс диалога, добавив дополнительные свойства в [`DialogueInterface`](/jsdoc/pixi-vn/index/interfaces/DialogueInterface). Например, можно добавить свойство `color` для изменения цвета текста.
+
+Для этого «переопределите» интерфейс [`DialogueInterface`](/jsdoc/pixi-vn/index/interfaces/DialogueInterface) в файле `.d.ts`:
+
+```ts tab="pixi-vn.d.ts"
+declare module "@drincs/pixi-vn" {
+    interface DialogueInterface {
+        color?: string;
+    }
+}
+```
+
+```ts tab="content/labels/startLabel.ts"
+narration.dialogue = {
+    character: "Alice",
+    text: "Hello, world!",
+    color: "#ff0000",
+};
+```
+
+</Accordion>
+
+</Accordions>

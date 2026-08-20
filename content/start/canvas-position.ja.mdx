@@ -1,0 +1,227 @@
+---
+title: 位置決めのためのプロパティ
+description: Pixi’VN における位置決めプロパティの概要。ピクセル、パーセンテージ、アンカー（anchor）、ピボット（pivot）、配置（align）を含みます。
+---
+
+import {
+    AlignExample,
+    PositionwithpercentageExample,
+} from "@/components/examples";
+
+:::tip[参考資料と引用]
+
+このページのテキストと画像の大部分は、Position Properties – [Pos and Anchor](https://feniksdev.com/renpy-position-properties-pos-and-anchor/) と [align, xycenter, and offset](https://feniksdev.com/renpy-position-properties-align-xycenter-and-offset/) からコピーされたものです。 Feniks はこれら 2 つのページで、Ren'Py の位置決めプロパティ（Pixi’VN を含む他の多くのキャンバスに共通するもの）について非常に分かりやすく説明しています。
+
+:::
+
+さまざまな位置決めプロパティについて説明する前に、Pixi’VN ではすべての位置プロパティのデフォルト値が `{ x: 0, y: 0 }` であることに注意してください。これは、位置決めしようとしている要素の左上に対応します。
+
+正の数値は要素を右と下に移動させます。 したがって、ゲーム内で `{ x: 200, y: 300 }` の位置にあるものは、画面の左端から 200 ピクセル、画面の上端から 300 ピクセルの位置になります。 負の数値は、要素をその開始位置に対して左と上に移動させます。
+
+[位置](#position-pixel) と [アンカー（anchor）](#anchor-and-pivot) は、画面上で要素を移動させるために使用する主要なプロパティです。 他のほとんどの位置決めプロパティは、これら 2 つの何らかの組み合わせとして機能するため、これらの動作を理解することが重要です。
+
+## 位置（ピクセル）
+
+位置は、ピクセル単位でコンポーネントを位置決めするために使用されます。
+
+以下のプロパティで変更できます。
+
+* `x`：コンポーネントを左から右へ移動させます（x 軸に沿って）
+* `y`：コンポーネントを上から下へ移動させます（y 軸に沿って）
+* `position`：オブジェクト `{ x: number, y: number }`。 x と y の両方を同じ値に設定することもできます。例：`component.position = 200`。
+
+## アンカー（anchor）とピボット（pivot）
+
+ピボットは、コンポーネントの左上隅からのオフセットで、ピクセルで表されます。 テクスチャが 100px x 50px のコンポーネントがあり、ピボットポイントを画像の中心に設定したい場合、ピボットを (50, 25) に設定します。これは幅と高さのそれぞれ半分に相当します。
+
+アンカーは、各次元において 0.0 から 1.0 までのパーセンテージで指定されます。 これはピボットと同じ役割を持ちますが、その位置を導き出す際には、テクスチャの高さと幅のパーセンテージを計算します。 例えば、アンカーを使ってテクスチャの中心点を軸に回転させたい場合、コンポーネントのアンカーを (0.5, 0.5) —— 幅と高さの 50% に設定します。 ピボットと比較すると、アンカーの方が使いやすいです。
+
+以下のプロパティで変更できます。
+
+* アンカー（`anchor`）：オブジェクト `{ x: number, y: number }`。 x と y の両方を同じ値に設定することもできます。例：`conponent.anchor = 0.5`。
+* ピボット（`pivot`）：`{ x: number, y: number }` に対応するオブジェクトです。
+
+<Accordions>
+
+<Accordion title="アンカー/ピボットとは、正確には何ですか？" id="what-exactly-is-anchor-pivot">
+
+もっと馴染みのある例で考えてみましょう。 画面上で要素を位置決めする代わりに、コルクボードに写真をピン留めしようとしていると想像してください。 次の 3 つのものがあります。
+
+* コルクボード
+* 押しピン
+* 写真
+
+1mm がコンピューター画面上の 1 ピクセルに相当すると仮定しましょう。
+
+![17351596389764883495402859713640](/anchor-pivot1.png)
+
+* コルクボードは画面、つまり要素を位置決めしようとしているコンテナです。
+* 写真は要素です。
+* 写真のどこにピンを刺すかが、その写真のアンカー/ピボットです。
+* コルクボードのどこにピンを押し込むかが、その写真の位置です。
+
+Pixi’VN では、デフォルトで押しピンは常に写真の左上隅から始まります、と言ってもいいでしょう。 写真の左上隅をコルクボードの左端から 200mm の位置にしたい場合は、x を 200 に設定します。 また、左上隅をボードの上端から 300mm 下にしたい場合は、y を 300 に設定します。
+
+![17351597056618553068745888144175](/anchor-pivot2.png)
+
+写真の中心を 200mm x 300mm の位置にしたい場合はどうでしょうか？
+
+これは、ピンが写真に対してどこにあるかを移動させる必要があることを意味します。 ピンはコルクボード上の (200, 300) の点にとどまりますが、その点を中心にして写真を配置する必要があります。 つまり、写真のアンカー/ピボットを変更する必要があるということです。
+
+写真のアンカーポイントを写真の中心に設定するには、アンカー (0.5, 0.5) またはピボット (100, 150) を使用します
+
+</Accordion>
+
+</Accordions>
+
+## パーセンテージによる位置決め
+
+Pixi’VN では、パーセンテージによってコンポーネントを位置決めする機能が導入されています。 その動作は html のものと非常に似ています。
+
+実際には、パーセンテージは親コンポーネントの高さまたは幅に乗算され、ピクセル単位の位置が計算されます。
+
+以下のプロパティで変更できます。
+
+* `percentageX`：左から右への移動に使用します（x 軸に沿って）
+* `percentageY`：上から下への移動に使用します（y 軸に沿って）。
+* `percentagePosition`：オブジェクト `{ x: number, y: number }`。 x と y の両方を同じ値に設定することもできます。例：`conponent.align = 0.5`。
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("egg_head", "egg_head", {
+            percentagePosition: 0.5,
+            anchor: 0.5,
+        });
+        await showImage("flower_top", "flower_top", {
+            percentagePosition: 0,
+        });
+        await showImage("panda", "panda", {
+            percentageX: 1,
+            percentageY: 0,
+            anchor: { x: 1, y: 0 },
+        });
+        await showImage("skully", "skully", {
+            percentageX: 0,
+            percentageY: 1,
+            anchor: { x: 0, y: 1 },
+        });
+        await showImage("helmlok", "helmlok", {
+            percentagePosition: 1,
+            anchor: 1,
+        });
+        await showImage("bunny", "bunny", {
+            percentageX: 0.5,
+            percentageY: 1,
+            anchor: { x: 0.5, y: 1 },
+        });
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                { alias: "panda", src: "https://pixijs.com/assets/panda.png" },
+                {
+                    alias: "skully",
+                    src: "https://pixijs.com/assets/skully.png",
+                },
+                {
+                    alias: "helmlok",
+                    src: "https://pixijs.com/assets/helmlok.png",
+                },
+                { alias: "bunny", src: "https://pixijs.com/assets/bunny.png" },
+            ],
+        },
+    ],
+};
+```
+
+<PositionwithpercentageExample />
+
+## 配置（align）
+
+これまで、[アンカー/ピボット](#anchor-and-pivot) の影響を受ける位置決め方法を見てきました。 これらの方法の欠点は、例えばコンポーネントを画面の中央に追加したい場合、まずアンカーを 0.5 に設定し、次に位置を画面の幅と高さの半分に設定しなければならないことです。 ここで配置プロパティの出番です。
+
+配置はもともと ***Ren'Py*** のために作られた機能で、これも Pixi’VN に導入されました。 配置は [位置](#position-pixel) と [アンカー/ピボット](#anchor-and-pivot) を組み合わせることで、コンポーネントを画面の始め、中央、あるいは終わりに、より直感的に配置できる方法を提供します。
+
+配置は、各次元において 0.0 から 1.0 までのパーセンテージで指定されます。 例えば、パーセンテージとして 0.25 を使用すると、コンポーネントは画面の 25% の位置に、アンカーを 0.25 として配置されます。
+
+以下のプロパティで変更できます。
+
+* `xAlign`：左から右への移動に使用します（x 軸に沿って）
+* `yAlign`：上から下への移動に使用します（y 軸に沿って）。
+* 配置（`align`）：オブジェクト `{ x: number, y: number }`。 x と y の両方を同じ値に設定することもできます。例：`conponent.align = 0.5`。
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("egg_head", "egg_head", { align: 0.5 });
+        await showImage("flower_top", "flower_top", { align: 0 });
+        await showImage("panda", "panda", { xAlign: 1, yAlign: 0 });
+        await showImage("skully", "skully", { xAlign: 0, yAlign: 1 });
+        await showImage("helmlok", "helmlok", { align: 1 });
+        await showImage("bunny", "bunny", { xAlign: 0.5, yAlign: 1 });
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                { alias: "panda", src: "https://pixijs.com/assets/panda.png" },
+                {
+                    alias: "skully",
+                    src: "https://pixijs.com/assets/skully.png",
+                },
+                {
+                    alias: "helmlok",
+                    src: "https://pixijs.com/assets/helmlok.png",
+                },
+                { alias: "bunny", src: "https://pixijs.com/assets/bunny.png" },
+            ],
+        },
+    ],
+};
+```
+
+<AlignExample />
