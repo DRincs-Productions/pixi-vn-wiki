@@ -144,7 +144,7 @@ export const manifest: AssetsManifest = {
 
 </Accordions>
 
-Il est également recommandé de définir les `channels` immédiatement après l'initialisation du jeu. Pour ce faire, vous pouvez utiliser la fonction [`sound.addChannel`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#addchannel).
+Il est également recommandé de définir les `channels` immédiatement après l'initialisation du jeu. To do this, you can use the [`sound.channels.add`](/jsdoc/pixi-vn/index/interfaces/SoundChannelsInterface#add) function.
 
 ```ts title="main.ts"
 import { Game, sound } from "@drincs/pixi-vn";
@@ -152,8 +152,8 @@ import { Game, sound } from "@drincs/pixi-vn";
 Game.init(body, {
     // ...
 }).then(() => {
-    sound.addChannel("bgm", { background: true });
-    sound.addChannel("sfx");
+    sound.channels.add("bgm", { background: true });
+    sound.channels.add("sfx");
     sound.defaultChannelAlias = "sfx";
 });
 ```
@@ -177,8 +177,8 @@ La fonctionnalité de base consiste à démarrer un son (`asset`). Cela peut êt
 ```ts
 import { sound } from "@drincs/pixi-vn";
 
-await sound.findChannel("sfx").play("sfx_whoosh", { delay: 0.1 });
-await sound.findChannel("bgm").play("bgm", "bgm_cheerful", { loop: true });
+await sound.channels.find("sfx").play("sfx_whoosh", { delay: 0.1 });
+await sound.channels.find("bgm").play("bgm", "bgm_cheerful", { loop: true });
 ```
 
 </Accordion>
@@ -251,8 +251,8 @@ if (bgmMedia) bgmMedia.paused = false;
 ```ts
 import { sound } from "@drincs/pixi-vn";
 
-sound.findChannel("sfx").pauseAll();
-sound.findChannel("sfx").resumeAll();
+sound.channels.find("sfx").pauseAll();
+sound.channels.find("sfx").resumeAll();
 ```
 
 </Accordion>
@@ -307,7 +307,7 @@ Les paramètres assignés sur un [`channel`](/jsdoc/pixi-vn/index/interfaces/Aud
 ```ts
 import { sound } from "@drincs/pixi-vn";
 
-sound.findChannel("sfx").volume = 90;
+sound.channels.find("sfx").volume = 90;
 ```
 
 </Accordion>
@@ -350,7 +350,7 @@ sound.find("bgm_cheerful")?.stop();
 
 ```ts
 import { sound } from "@drincs/pixi-vn";
-sound.findChannel("sfx").stopAll();
+sound.channels.find("sfx").stopAll();
 ```
 
 </Accordion>
@@ -395,12 +395,12 @@ await sound.play("sfx_whoosh", { filters: [new filters.ReverbFilter()] });
 
 <Accordion title="channel" id="channel-edit">
 
-Passer `filters` à [`sound.addChannel`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#addchannel) les applique à tous les `media` démarrés sur ce `channel`.
+Passing `filters` to [`sound.channels.add`](/jsdoc/pixi-vn/index/interfaces/SoundChannelsInterface#add) applies them to every `media` started on that `channel`.
 
 ```ts
 import { sound, filters } from "@drincs/pixi-vn";
 
-sound.addChannel("bgm", {
+sound.channels.add("bgm", {
     filters: [new filters.ReverbFilter()],
 });
 ```
@@ -419,9 +419,9 @@ Il existe également des fonctions disponibles pour gérer les sons dans les men
 
 Toutes les modifications effectuées par ces fonctions ne sont pas sauvegardées dans les sauvegardes de jeu, donc lorsqu'une sauvegarde est chargée, les sons reviendront à l'état dans lequel ils se trouvaient avant d'être modifiés par ces fonctions.
 
-Les fonctions [`sound.pauseUnsavedAll`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#pauseunsavedall) et [`sound.resumeUnsavedAll`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#resumeunsavedall) sont destinées à être utilisées lors de l'ouverture et de la fermeture d'un menu, comme celui des paramètres. La première fonction met en pause tous les sons qui ne sont pas déjà en pause, tandis que la seconde reprend tous les sons qui avaient été mis en pause par la première fonction.
+The [`sound.unsaved.pauseAll`](/jsdoc/pixi-vn/index/interfaces/SoundUnsavedInterface#pauseall) and [`sound.unsaved.resumeAll`](/jsdoc/pixi-vn/index/interfaces/SoundUnsavedInterface#resumeall) functions are intended to be used when opening and closing a menu, such as the settings. La première fonction met en pause tous les sons qui ne sont pas déjà en pause, tandis que la seconde reprend tous les sons qui avaient été mis en pause par la première fonction.
 
-Par ailleurs, les fonctions [`sound.playTransient`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#playtransient) et [`stopTransientAll`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#stoptransientall) sont destinées aux sons temporaires, comme les sons d'interaction UI. La première fonction lit un son qui ne sera pas sauvegardé dans les sauvegardes de jeu, tandis que la seconde arrête tous les sons démarrés par la première fonction.
+Meanwhile, the [`sound.unsaved.playTransient`](/jsdoc/pixi-vn/index/interfaces/SoundUnsavedInterface#playtransient) and [`sound.unsaved.stopTransientAll`](/jsdoc/pixi-vn/index/interfaces/SoundUnsavedInterface#stoptransientall) functions are intended for temporary sounds, such as UI interaction sounds. La première fonction lit un son qui ne sera pas sauvegardé dans les sauvegardes de jeu, tandis que la seconde arrête tous les sons démarrés par la première fonction.
 
 </Accordion>
 
