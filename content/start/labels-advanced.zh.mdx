@@ -13,7 +13,7 @@ import { ReturningDifferentStepLists } from "@/components/examples";
 
 [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) 是一个在 [`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart) 中执行的函数，当叙事步骤（`step`）索引为 0 时执行，也在用户加载存档文件时执行。
 
-加载存档文件时，[`narration.openedLabels`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#openedlabels) 的所有 [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) 函数（当前叙事节点（`label`）以及堆栈中的所有叙事节点（`labels`））都会被执行。
+When a save file is loaded, all [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) functions of the [`narration.labels.opened`](/jsdoc/pixi-vn/index/interfaces/NarrationLabelsInterface#opened) (the current `label` and all `labels` in the stack) are executed.
 
 例如，这对于确保在叙事节点（`label`）开始之前缓存其中使用的所有图像非常有用。
 
@@ -127,7 +127,7 @@ Game.onStepEnd((stepIndex, label) => { // [!code focus]
 import { storage, narration, newLabel } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start", () => {
-    let condition = storage.getFlag("condition");
+    let condition = storage.flags.get("condition");
     if (condition) {
         return [
             () => {
@@ -143,7 +143,7 @@ export const startLabel = newLabel("start", () => {
                 narration.dialogue = "Step 1";
             },
             async (props, { labelId }) => {
-                storage.setFlag("condition", true);
+                storage.flags.set("condition", true);
                 return await narration.jump(labelId, props);
             },
         ];
