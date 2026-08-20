@@ -13,7 +13,7 @@ Cette section couvre les fonctionnalités avancées des <DynamicLink href="/star
 
 [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) est une fonction exécutée dans [`onStepStart`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onstepstart) si l'index du `step` est 0, et également lorsque l'utilisateur charge une sauvegarde.
 
-Lorsqu'une sauvegarde est chargée, toutes les fonctions [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) des [`narration.openedLabels`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#openedlabels) (le `label` actuel et tous les `labels` dans la pile) sont exécutées.
+When a save file is loaded, all [`onLoadingLabel`](/jsdoc/pixi-vn/index/interfaces/LabelProps#onloadinglabel) functions of the [`narration.labels.opened`](/jsdoc/pixi-vn/index/interfaces/NarrationLabelsInterface#opened) (the current `label` and all `labels` in the stack) are executed.
 
 Cela est utile, par exemple, pour s'assurer que toutes les images utilisées dans le `label` sont mises en cache avant que le `label` ne démarre.
 
@@ -127,7 +127,7 @@ Lors de la création d'un nouveau `label`, vous pouvez passer une fonction qui r
 import { storage, narration, newLabel } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start", () => {
-    let condition = storage.getFlag("condition");
+    let condition = storage.flags.get("condition");
     if (condition) {
         return [
             () => {
@@ -143,7 +143,7 @@ export const startLabel = newLabel("start", () => {
                 narration.dialogue = "Step 1";
             },
             async (props, { labelId }) => {
-                storage.setFlag("condition", true);
+                storage.flags.set("condition", true);
                 return await narration.jump(labelId, props);
             },
         ];
