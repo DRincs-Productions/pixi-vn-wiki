@@ -10,28 +10,7 @@ import {
     ShowContainerExample,
 } from "@/components/ink-examples";
 
-The **_ink_ + Pixi’VN integration** introduces a "# script" that allows you to show, edit, remove, and animate a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink>. To do this, you need to use the following syntax:
-
-```ink title="ink"
-# {operation} {component type} {alias} {parameters}
-```
-
-- `#`: is the hashtag symbol to identify a hashtag command.
-- `operation`: the operation to perform. Currently supported:
-    - `show`: Show a canvas component. (Read more [here](#show))
-    - `edit`: Edit a canvas component. (Read more [here](#edit))
-    - `remove`: Remove a canvas component. (Read more [here](#remove))
-    - `pause`: Pause a canvas component. (Read more [here](#pause))
-    - `resume`: Resume a canvas component. (Read more [here](#resume))
-- `component type`: the component type. Available types:
-    - <DynamicLink href="/start/canvas-image">`image`</DynamicLink>
-    - <DynamicLink href="/start/canvas-image-container">
-          `imagecontainer`
-      </DynamicLink>
-    - <DynamicLink href="/start/canvas-video">`video`</DynamicLink>
-    - <DynamicLink href="/start/canvas-text">`text`</DynamicLink>
-- `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> to identify the component. Use double quotes if the alias contains spaces.
-- `parameters` (Optional): a space-separated list of property/value pairs. If a value contains spaces, wrap it in double quotes. If a value is a object, pass valid JSON and escape the braces for **_ink_** (e.g. `\{ "placeholder": "Enter your name", "maxLength": 20 \}`).
+The **_ink_ + Pixi’VN integration** introduces a "# script" that allows you to show, edit, remove, and animate a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink>.
 
 ```ink tab="ink/start.ink"
 === start ===
@@ -53,15 +32,13 @@ The **_ink_ + Pixi’VN integration** introduces a "# script" that allows you to
 -> DONE
 ```
 
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
+```ts tab="src/assets/index.ts"
+import generatedManifestJson from "@/assets/manifest.gen.json";
+import type { AssetsManifest } from "@drincs/pixi-vn";
 
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
+export const manifest: AssetsManifest = {
     bundles: [
+        ...generatedManifestJson.bundles,
         {
             name: "start",
             assets: [
@@ -85,7 +62,6 @@ const manifest: AssetsManifest = {
         },
     ],
 };
-export default manifest;
 ```
 
 <CanvasExample />
@@ -94,164 +70,55 @@ export default manifest;
 
 ### Show
 
-You can use the `show` to show a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink> in **_ink_**.
+You can use the `show` to <DynamicLink href="/start/canvas-image#show">show</DynamicLink> a canvas component in **_ink_**. To do this, you need to use the following syntax:
 
-Is raccomended to <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">initialize the asset matrix at project start</DynamicLink> to use the alias of texture in `source`. To do this, you need to use the following syntax:
-
-```ink title="ink"
-# show {component type} {alias} {source} {parameters}
-```
-
-:::tip
-
-To include `https://` in an **_ink_ script** you must escape the slashes like `https:\/\/` because `//` is treated as a comment in **_ink_**.
-
-:::
-
-:::tip
-
-If you initialize the <DynamicLink href="/start/assets-management#initialize-the-asset-matrix-at-project-start">asset matrix</DynamicLink> at project start, you can use the asset alias as the `source` parameter.
-
-:::
-
-:::tip
-
-If omitting the `source` parameter, it defaults to the `alias`.
-
-:::
-
-- `component type`: the component type. Available types:
-    - <DynamicLink href="/start/canvas-image">`image`</DynamicLink>
-    - <DynamicLink href="/start/canvas-image-container">
-          `imagecontainer`
-      </DynamicLink>
-    - <DynamicLink href="/start/canvas-video">`video`</DynamicLink>
-    - <DynamicLink href="/start/canvas-text">`text`</DynamicLink>
-- `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> to identify the component. Use double quotes if the alias contains spaces.
-- `source` (Optional): meaning varies by component:
-    - `image` and `video`: URL or asset alias for the texture.
-    - `text`: the text to display.
-    - `imagecontainer`: a list of texture aliases/URLs (e.g. `[url1 url2 url3]`).
-- `parameters` (Optional): a space-separated list of property/value pairs. If a value contains spaces, wrap it in double quotes. If a value is a object, pass valid JSON and escape the braces for **_ink_** (e.g. `\{ "placeholder": "Enter your name", "maxLength": 20 \}`). Valid parameters vary by component:
-    - `image` and `video`: [`PixiJS.Sprite`](https://pixijs.download/release/docs/scene.Sprite.html) and <DynamicLink href="/start/canvas-position">`properties for positioning`</DynamicLink> properties.
-    - `text`: [`PixiJS.Text`](https://pixijs.com/8.x/guides/components/text) and <DynamicLink href="/start/canvas-position">`properties for positioning`</DynamicLink> properties.
-    - `imagecontainer`: [`PixiJS.Container`](https://pixijs.com/8.x/guides/components/containers) and <DynamicLink href="/start/canvas-position">`properties for positioning`</DynamicLink> properties.
-
-<Accordions>
-
-<Accordion title="example" id="example">
-
-```ink tab="ink/start.ink"
-=== start ===
+```ink tab="ink"
 # show image eggHead
 # show image "eggHead 2" eggHead xAlign 1 yAlign 1
 # show image flowerTop xAlign 0 yAlign 1 visible true cursor "pointer" alpha 0.5
 # show video my_video xAlign 1 yAlign 0
 # show text hello "Hello, this is a text" xAlign 0.5 yAlign 0.5 style \\\{ "fill": "red", "fontSize": 30 \\\}
-# pause
--> DONE
 ```
 
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
+```txt tab="CLI"
+# show <component type> <alias> [<source>] [<parameters>]
 
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
-    bundles: [
-        {
-            name: "start",
-            assets: [
-                {
-                    alias: "eggHead",
-                    src: "https://pixijs.com/assets/eggHead.png",
-                },
-                {
-                    alias: "flowerTop",
-                    src: "https://pixijs.com/assets/flowerTop.png",
-                },
-                {
-                    alias: "my_video",
-                    src: "https://pixijs.com/assets/video.mp4",
-                },
-            ],
-        },
-    ],
-};
-export default manifest;
+where:
+    component type = the component type to show. Available types: `image`, `video`, `text`.
+    alias = the alias to identify the component. Use double quotes if it contains spaces.
+    source (Optional) = the alias or URL of the asset to use as the texture source. If not set, `alias` will be used as the source.
+    parameters (Optional) = a space-separated list of property/value pairs. If a value is a string and includes spaces, you must use double quotes.
 ```
+
+Available `parameters` (all optional) are the properties of [`PixiVNJsonCanvasImageVideoShowProps`](/jsdoc/pixi-vn-json/index/interfaces/PixiVNJsonCanvasImageVideoShowProps#properties) or [`PixiVNJsonCanvasTextShowProps`](/jsdoc/pixi-vn-json/index/interfaces/PixiVNJsonCanvasTextShowProps#properties).
+
+
+<Accordions>
+
+<Accordion title="Example" id="example">
 
 <ShowComponentExample />
 
 </Accordion>
 
-<Accordion title="Example with imagecontainer" id="example-imagecontainer">
+<Accordion title="Show container" id="show-imagecontainer">
 
 ```ink tab="ink/start.ink"
-=== start ===
 # show imagecontainer james [m01-body m01-eyes m01-mouth] xAlign 0.5 yAlign 1
 # show imagecontainer sly [fm01-body fm01-eyes fm01-mouth] xAlign 0.2 yAlign 1 with movein
 # show imagecontainer steph [fm02-body fm02-eyes fm02-mouth] xAlign 0.8 yAlign 1 with dissolve
-# pause
--> DONE
 ```
 
-```ts tab="utils/defineAssets.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
+```txt tab="CLI"
+# show imagecontainer <alias> [<source>] [<parameters>]
 
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
-    bundles: [
-        {
-            name: "start",
-            assets: [
-                {
-                    alias: "fm01-body",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm01/fm01-body.webp",
-                },
-                {
-                    alias: "fm01-eyes",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm01/fm01-eyes-smile.webp",
-                },
-                {
-                    alias: "fm01-mouth",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm01/fm01-mouth-smile00.webp",
-                },
-                {
-                    alias: "fm02-body",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm02/fm02-body.webp",
-                },
-                {
-                    alias: "fm02-eyes",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm02/fm02-eyes-smile.webp",
-                },
-                {
-                    alias: "fm02-mouth",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/fm02/fm02-mouth-smile00.webp",
-                },
-                {
-                    alias: "m01-body",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-body.webp",
-                },
-                {
-                    alias: "m01-eyes",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-smile.webp",
-                },
-                {
-                    alias: "m01-mouth",
-                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-smile00.webp",
-                },
-            ],
-        },
-    ],
-};
-export default manifest;
+where:
+    alias = the alias to identify the component. Use double quotes if it contains spaces.
+    source (Optional) = a list of texture aliases/URLs (e.g. `[url1 url2 url3]`). If not set, `alias` will be used as the source.
+    parameters (Optional) = a space-separated list of property/value pairs. If a value is a string and includes spaces, you must use double quotes.
 ```
+
+Available `parameters` (all optional) are the properties of [`PixiVNJsonCanvasImageContainerShowProps`](/jsdoc/pixi-vn-json/index/interfaces/PixiVNJsonCanvasImageContainerShowProps#properties).
 
 <ShowContainerExample />
 
@@ -261,59 +128,34 @@ export default manifest;
 
 If you want to show the canvas component with a <DynamicLink href="/start/canvas-transition">transition</DynamicLink>, you can add into the parameters the `with {transition type}`.
 
-```ink title="ink"
-# show {component type} {alias} {source} {parameters} with {transition type} {transition parameters}
-```
-
-- `transition type` (Optional): the available transitions are:
-    - `dissolve`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#dissolve-transition">dissolve transition</DynamicLink>.
-    - `fade`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#fade-transition">fade transition</DynamicLink>.
-    - `movein`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#move-inout-transition">movein transition</DynamicLink>.
-    - `zoomin`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#zoom-inout-transition">zoomin transition</DynamicLink>.
-    - `pushin`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#push-inout-transition">pushin transition</DynamicLink>.
-- `transition parameters` (Optional): a space-separated list of property/value pairs. Corresponds to the `options` parameter of their Javascript counterpart. If a value contains spaces, wrap it in double quotes. If a value is a object, pass valid JSON and escape the braces for **_ink_** (e.g. `\{ "placeholder": "Enter your name", "maxLength": 20 \}`). You can add all the [`motion` options](https://motion.dev/docs/animate#options) and additional parameters you would use in JS/TS.
-
 ```ink tab="ink/start.ink"
-=== start ===
 # show eggHead with dissolve duration 3
 temp durationVar = 3
 # show eggHead eggHead2 with fade duration {durationVar}
 # show flowerTop x 20 y 30 with movein direction left
 # show helmlok x 20 y 30 with zoomin
 # show skully x 20 y 30 with pushin
--> DONE
 ```
 
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
+```txt tab="CLI"
+# show <component type> <alias> [<source>] [<parameters>] with <transition type> [<transition parameters>]
 
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
-    bundles: [
-        {
-            name: "start",
-            assets: [
-                {
-                    alias: "eggHead",
-                    src: "https://pixijs.com/assets/eggHead.png",
-                },
-                {
-                    alias: "flowerTop",
-                    src: "https://pixijs.com/assets/flowerTop.png",
-                },
-                {
-                    alias: "my_video",
-                    src: "https://pixijs.com/assets/video.mp4",
-                },
-            ],
-        },
-    ],
-};
-export default manifest;
+where:
+    component type = the component type to show. Available types: `image`, `imagecontainer`, `video`, `text`.
+    alias = the alias to identify the component. Use double quotes if it contains spaces.
+    source (Optional) = the alias or URL of the asset to use as the texture source. If not set, `alias` will be used as the source.
+    parameters (Optional) = a space-separated list of property/value pairs. If a value is a string and includes spaces, you must use double quotes.
+    transition type = the transition to use. Available types: `dissolve`, `fade`, `movein`, `zoomin`, `pushin`.
+    transition parameters (Optional) = a space-separated list of property/value pairs corresponding to the transition options. If a value is a string and includes spaces, you must use double quotes.
 ```
+
+Available `transition parameters` (all optional) are the properties of [`PixiVNJsonMediaTransiotions`](/jsdoc/pixi-vn-json/index/interfaces/PixiVNJsonMediaTransiotions), and vary depending on the `transition type` used:
+
+- `dissolve`: properties of [`ShowWithDissolveTransitionProps`](/jsdoc/pixi-vn/index/interfaces/ShowWithDissolveTransitionProps#properties).
+- `fade`: properties of [`ShowWithFadeTransitionProps`](/jsdoc/pixi-vn/index/interfaces/ShowWithFadeTransitionProps#properties).
+- `movein`: properties of [`MoveInOutProps`](/jsdoc/pixi-vn/index/interfaces/MoveInOutProps#properties).
+- `pushin`: properties of [`PushInOutProps`](/jsdoc/pixi-vn/index/interfaces/PushInOutProps#properties).
+- `zoomin`: properties of [`ZoomInOutProps`](/jsdoc/pixi-vn/index/interfaces/ZoomInOutProps#properties).
 
 </Accordion>
 
@@ -321,48 +163,43 @@ export default manifest;
 
 ### Edit
 
-You can use the `edit` to edit a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink> in **_ink_**. To do this, you need to use the following syntax:
+You can use the `edit` to edit a canvas component in **_ink_**. To do this, you need to use the following syntax:
 
-```ink title="ink"
-# edit {component type} {alias} {parameters}
-```
-
-- `component type`: the component type. Available types:
-    - <DynamicLink href="/start/canvas-image">`image`</DynamicLink>
-    - <DynamicLink href="/start/canvas-image-container">
-          `imagecontainer`
-      </DynamicLink>
-    - <DynamicLink href="/start/canvas-video">`video`</DynamicLink>
-    - <DynamicLink href="/start/canvas-text">`text`</DynamicLink>
-- `parameters` (Optional): a space-separated list of property/value pairs. If a value contains spaces, wrap it in double quotes. If a value is a object, pass valid JSON and escape the braces for **_ink_** (e.g. `\{ "placeholder": "Enter your name", "maxLength": 20 \}`). Valid parameters vary by component:
-    - `image` and `video`: [`PixiJS.Sprite`](https://pixijs.download/release/docs/scene.Sprite.html) and <DynamicLink href="/start/canvas-position">`properties for positioning`</DynamicLink> properties.
-    - `text`: [`PixiJS.Text`](https://pixijs.com/8.x/guides/components/text) and <DynamicLink href="/start/canvas-position">`properties for positioning`</DynamicLink> properties.
-    - `imagecontainer`: [`PixiJS.Container`](https://pixijs.com/8.x/guides/components/containers) and <DynamicLink href="/start/canvas-position">`properties for positioning`</DynamicLink> properties.
-
-```ink title="ink"
+```ink tab="ink"
 # edit image bg position \{ "x": 20, "y": 30 \} visible true cursor "pointer" alpha 0.5
 ```
 
-### Remove
+```txt tab="CLI"
+# edit <component type> <alias> [<parameters>]
 
-You can use the `remove` to remove a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink> in **_ink_**. To do this, you need to use the following syntax:
-
-```ink title="ink"
-# remove {component type} {alias}
+where:
+    component type = the component type to edit. Available types: `image`, `imagecontainer`, `video`, `text`,  `canvaselement`.
+    alias = the alias to identify the component. Use double quotes if it contains spaces.
+    parameters (Optional) = a space-separated list of property/value pairs. If a value contains spaces, wrap it in double quotes. If a value is an object, pass valid JSON and escape the braces for ink.
 ```
 
-- `component type`: the component type. Available types:
-    - <DynamicLink href="/start/canvas-image">`image`</DynamicLink>
-    - <DynamicLink href="/start/canvas-image-container">
-          `imagecontainer`
-      </DynamicLink>
-    - <DynamicLink href="/start/canvas-video">`video`</DynamicLink>
-    - <DynamicLink href="/start/canvas-text">`text`</DynamicLink>
-- `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> to identify the component. Use double quotes if the alias contains spaces.
+Available `parameters` (all optional) vary by component:
 
-```ink title="ink"
+- `image`: properties of [`ImageSpriteMemory`](/jsdoc/pixi-vn/index/interfaces/ImageSpriteMemory#properties).
+- `video`: properties of [`VideoSpriteMemory`](/jsdoc/pixi-vn/index/interfaces/VideoSpriteMemory#properties).
+- `imagecontainer`: properties of [`ImageContainerMemory`](/jsdoc/pixi-vn/index/interfaces/ImageContainerMemory#properties).
+- `text`: properties of [`TextMemory`](/jsdoc/pixi-vn/index/interfaces/TextMemory#properties).
+
+### Remove
+
+You can use the `remove` to <DynamicLink href="/start/canvas-image#remove">remove</DynamicLink>  a canvas componentin **_ink_**. To do this, you need to use the following syntax:
+
+```ink tab="ink"
 # remove image bg
 # remove image "bg 2"
+```
+
+```txt tab="CLI"
+# remove <component type> <alias>
+
+where:
+    component type = the component type to remove. Available types: `image`, `imagecontainer`, `video`, `text`.
+    alias = the alias to identify the component. Use double quotes if it contains spaces.
 ```
 
 <Accordions>
@@ -371,19 +208,7 @@ You can use the `remove` to remove a <DynamicLink href="/start/canvas-components
 
 If you want to remove the canvas component with a <DynamicLink href="/start/canvas-transition">transition</DynamicLink>, you can add after the alias of the canvas component `with {transition type}`.
 
-```ink title="ink"
-# remove {component type} {alias} with {transition type} {transition parameters}
-```
-
-- `transition type` (Optional): the available transitions are:
-    - `dissolve`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#dissolve-transition">dissolve transition</DynamicLink>.
-    - `fade`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#fade-transition">fade transition</DynamicLink>.
-    - `movein`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#move-inout-transition">movein transition</DynamicLink>.
-    - `zoomin`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#zoom-inout-transition">zoomin transition</DynamicLink>.
-    - `pushin`: The canvas component appears with a <DynamicLink href="/start/canvas-transition#push-inout-transition">pushin transition</DynamicLink>.
-- `transition parameters` (Optional): a space-separated list of property/value pairs. Corresponds to the `options` parameter of their Javascript counterpart. If a value contains spaces, wrap it in double quotes. If a value is a object, pass valid JSON and escape the braces for **_ink_** (e.g. `\{ "placeholder": "Enter your name", "maxLength": 20 \}`). You can add all the [`motion` options](https://motion.dev/docs/animate#options) and additional parameters you would use in JS/TS.
-
-```ink title="ink"
+```ink tab="ink"
 # remove image bg with dissolve duration 3
 temp durationVar = 3
 # remove image bg with fade duration {durationVar}
@@ -391,6 +216,24 @@ temp durationVar = 3
 # remove image bg with zoomout
 # remove image bg with pushout
 ```
+
+```txt tab="CLI"
+# remove <component type> <alias> with <transition type> [<transition parameters>]
+
+where:
+    component type = the component type to remove. Available types: `image`, `imagecontainer`, `video`, `text`.
+    alias = the alias to identify the component. Use double quotes if it contains spaces.
+    transition type = the transition to use. Available types: `dissolve`, `fade`, `moveout`, `zoomout`, `pushout`.
+    transition parameters (Optional) = a space-separated list of property/value pairs corresponding to the transition options. If a value is a string and includes spaces, you must use double quotes.
+```
+
+Available `transition parameters` (all optional) are the properties of [`PixiVNJsonMediaTransiotions`](/jsdoc/pixi-vn-json/index/interfaces/PixiVNJsonMediaTransiotions), and vary depending on the `transition type` used:
+
+- `dissolve`: properties of [`ShowWithDissolveTransitionProps`](/jsdoc/pixi-vn/index/interfaces/ShowWithDissolveTransitionProps#properties).
+- `fade`: properties of [`ShowWithFadeTransitionProps`](/jsdoc/pixi-vn/index/interfaces/ShowWithFadeTransitionProps#properties).
+- `movein`: properties of [`MoveInOutProps`](/jsdoc/pixi-vn/index/interfaces/MoveInOutProps#properties).
+- `pushin`: properties of [`PushInOutProps`](/jsdoc/pixi-vn/index/interfaces/PushInOutProps#properties).
+- `zoomin`: properties of [`ZoomInOutProps`](/jsdoc/pixi-vn/index/interfaces/ZoomInOutProps#properties).
 
 </Accordion>
 
@@ -410,62 +253,40 @@ Video resumed
 -> DONE
 ```
 
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
-
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
-    bundles: [
-        {
-            name: "start",
-            assets: [
-                {
-                    alias: "my_video",
-                    src: "https://pixijs.com/assets/video.mp4",
-                },
-            ],
-        },
-    ],
-};
-export default manifest;
-```
-
-<Sandbox
-    template="p3qgjq"
-    entry="/src/ink/start.ink,/src/utils/assets-utility.ts"
-/>
-
 <Accordions>
 
-<Accordion title="pause" id="pause">
+<Accordion title="Pause" id="pause">
 
 To pause a video in **_ink_**, you can use `pause`. To do this, you need to use the following syntax:
 
-```ink title="ink"
-# pause video {alias}
-```
-
-```ink title="ink"
+```ink tab="ink"
 # pause video bg
 # pause video "bg 2"
 ```
 
+```txt tab="CLI"
+# pause video <alias>
+
+where:
+    alias = the alias to identify the video to pause. Use double quotes if it contains spaces.
+```
+
 </Accordion>
 
-<Accordion title="resume" id="resume">
+<Accordion title="Resume" id="resume">
 
 To resume a video in **_ink_**, you can use `resume`. To do this, you need to use the following syntax:
 
-```ink title="ink"
-# resume video {alias}
-```
-
-```ink title="ink"
+```ink tab="ink"
 # resume video bg
 # resume video "bg 2"
+```
+
+```txt tab="CLI"
+# resume video <alias>
+
+where:
+    alias = the alias to identify the video to resume. Use double quotes if it contains spaces.
 ```
 
 </Accordion>
@@ -476,16 +297,29 @@ To resume a video in **_ink_**, you can use `resume`. To do this, you need to us
 
 You can use the `animate` to use the <DynamicLink href="/start/canvas-motion">animations</DynamicLink> in **_ink_**. To do this, you need to use the following syntax:
 
-```ink title="ink"
-# animate {alias} {keyframes} options {parameters}
+```ink tab="ink"
+# animate alien angle 360 options duration 1
 ```
 
-- `alias`: The <DynamicLink href="/start/canvas-alias">alias</DynamicLink> to identify the component. Use double quotes if the alias contains spaces.
-- `keyframes`: a space-separated list of property/value pairs representing the properties to animate and the values to reach. If a value contains spaces, wrap it in double quotes. If a value is a object, pass valid JSON and escape the braces for **_ink_** (e.g. `\{ "placeholder": "Enter your name", "maxLength": 20 \}`). Valid parameters vary by component:
-    - `image` and `video`: [`PixiJS.Sprite`](https://pixijs.com/8.x/guides/components/sprites) and <DynamicLink href="/start/canvas-position">`properties for positioning`</DynamicLink> properties.
-    - `text`: [`PixiJS.Text`](https://pixijs.com/8.x/guides/components/text) and <DynamicLink href="/start/canvas-position">`properties for positioning`</DynamicLink> properties.
-    - `imagecontainer`: [`PixiJS.Container`](https://pixijs.com/8.x/guides/components/containers) and <DynamicLink href="/start/canvas-position">`properties for positioning`</DynamicLink> properties.
-- `parameters` (Optional): a space-separated list of property/value pairs. Corresponds to the `options` parameter of their Javascript counterpart. If a value contains spaces, wrap it in double quotes. If a value is a object, pass valid JSON and escape the braces for **_ink_** (e.g. `\{ "placeholder": "Enter your name", "maxLength": 20 \}`). You can add all the [`motion` options](https://motion.dev/docs/animate#options) and additional parameters you would use in JS/TS.
+```txt tab="CLI"
+# animate <alias> <keyframes> options <parameters>
+
+where:
+    alias = the alias to identify the component. Use double quotes if it contains spaces.
+    keyframes = a space-separated list of property/value pairs representing the properties to animate and the values to reach. If a value contains spaces, wrap it in double quotes. If a value is an object, pass valid JSON and escape the braces for ink.
+    parameters (Optional) = a space-separated list of property/value pairs corresponding to the `options` parameter of the motion library. If a value contains spaces, wrap it in double quotes. If a value is an object, pass valid JSON and escape the braces for ink.
+```
+
+The `keyframes` define the **target state** you want the component's properties to reach (e.g. a position, scale, or opacity), while `parameters` define **how** to get there (e.g. duration, easing).
+
+Available `keyframes` vary by component:
+
+- `image`: properties of [`ImageSpriteMemory`](/jsdoc/pixi-vn/index/interfaces/ImageSpriteMemory#properties).
+- `video`: properties of [`VideoSpriteMemory`](/jsdoc/pixi-vn/index/interfaces/VideoSpriteMemory#properties).
+- `imagecontainer`: properties of [`ImageContainerMemory`](/jsdoc/pixi-vn/index/interfaces/ImageContainerMemory#properties).
+- `text`: properties of [`TextMemory`](/jsdoc/pixi-vn/index/interfaces/TextMemory#properties).
+
+Available `parameters` (all Optional) can include all the [`motion` options](https://motion.dev/docs/animate#options) and additional parameters you would use in JS/TS. You can find all the `parameters` in detail in [`PixiVNJsonAnimateBaseOptions`](/jsdoc/pixi-vn-json/index/interfaces/PixiVNJsonAnimateBaseOptions#properties).
 
 Here are some examples:
 
@@ -493,7 +327,7 @@ Here are some examples:
 
 <Accordion title="Move" id="move">
 
-```ink tab="ink/start.ink"
+```ink title="ink/start.ink"
 === start ===
 # show image alien
 # animate alien xAlign 1 yAlign 0 options ease "easeOut"
@@ -507,34 +341,11 @@ Here are some examples:
 -> DONE
 ```
 
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
-
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
-    bundles: [
-        {
-            name: "start",
-            assets: [
-                {
-                    alias: "alien",
-                    src: "https://pixijs.com/assets/eggHead.png",
-                },
-            ],
-        },
-    ],
-};
-export default manifest;
-```
-
 </Accordion>
 
 <Accordion title="Rotate" id="rotate">
 
-```ink tab="ink/start.ink"
+```ink title="ink/start.ink"
 === start ===
 # show alien
 # animate alien angle 360 options duration 1 type "spring" repeat Infinity repeatDelay 0.2
@@ -542,34 +353,11 @@ export default manifest;
 -> DONE
 ```
 
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
-
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
-    bundles: [
-        {
-            name: "start",
-            assets: [
-                {
-                    alias: "alien",
-                    src: "https://pixijs.com/assets/eggHead.png",
-                },
-            ],
-        },
-    ],
-};
-export default manifest;
-```
-
 </Accordion>
 
 <Accordion title="Fade" id="fade">
 
-```ink tab="ink/start.ink"
+```ink title="ink/start.ink"
 === start ===
 # show alien
 # animate alien alpha 0 options ease "linear" duration 1
@@ -577,34 +365,11 @@ export default manifest;
 -> DONE
 ```
 
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
-
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
-    bundles: [
-        {
-            name: "start",
-            assets: [
-                {
-                    alias: "alien",
-                    src: "https://pixijs.com/assets/eggHead.png",
-                },
-            ],
-        },
-    ],
-};
-export default manifest;
-```
-
 </Accordion>
 
 <Accordion title="Zoom" id="zoom">
 
-```ink tab="ink/start.ink"
+```ink title="ink/start.ink"
 === start ===
 # show alien
 # animate alien scaleX 0 scaleY 0 options ease "circInOut" duration 1
@@ -612,34 +377,11 @@ export default manifest;
 -> DONE
 ```
 
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
-
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
-    bundles: [
-        {
-            name: "start",
-            assets: [
-                {
-                    alias: "alien",
-                    src: "https://pixijs.com/assets/eggHead.png",
-                },
-            ],
-        },
-    ],
-};
-export default manifest;
-```
-
 </Accordion>
 
 <Accordion title="Mirror" id="mirror">
 
-```ink tab="ink/start.ink"
+```ink title="ink/start.ink"
 === start ===
 # show alien
 # animate alien scaleX -1 options duration 1
@@ -649,28 +391,34 @@ export default manifest;
 -> DONE
 ```
 
-```ts tab="assets/manifest.ts"
-import { AssetsManifest } from "@drincs/pixi-vn";
+</Accordion>
 
-/**
- * Manifest for the assets used in the game.
- * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
- */
-const manifest: AssetsManifest = {
-    bundles: [
-        {
-            name: "start",
-            assets: [
-                {
-                    alias: "alien",
-                    src: "https://pixijs.com/assets/eggHead.png",
-                },
-            ],
-        },
-    ],
-};
-export default manifest;
+</Accordions>
+
+### Articulated animations
+
+Articulated animations are functions that use the [`canvas.animate`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#animate) function under the hood to create animations that involve multiple steps, such as shaking, bouncing, or other complex effects. You can trigger them in **_ink_** using a dedicated hashtag command for each effect.
+
+<Accordions>
+
+<Accordion title="Shake" id="shake">
+
+You can use the `shake` command to apply the [`shakeEffect`](/jsdoc/pixi-vn/index/functions/shakeEffect) to a canvas component. To do this, you need to use the following syntax:
+
+```ink tab="ink"
+# shake bg
+# shake "bg 2"
 ```
+
+```txt tab="CLI"
+# shake <alias> [<parameters>]
+
+where:
+    alias = the alias to identify the component to shake. Use double quotes if it contains spaces.
+    parameters (Optional) = a space-separated list of property/value pairs. If a value is a string and includes spaces, you must use double quotes.
+```
+
+Available `parameters` (all optional) are the properties of [`ShakeEffectProps`](/jsdoc/pixi-vn/index/interfaces/ShakeEffectProps#properties).
 
 </Accordion>
 

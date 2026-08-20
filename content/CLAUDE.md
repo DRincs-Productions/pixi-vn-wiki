@@ -68,3 +68,25 @@ When a glossary term appears **as inline code** in the source (e.g. `` `label` `
 5. **Report** which file was created and flag any terminology choices or ambiguities.
 
 When asked to translate a file into multiple languages, handle each language in sequence and summarize all created files at the end.
+
+## Explaining `ink` Syntax Patterns
+
+**Scope** — applies whenever documentation under `content/ink/` (or elsewhere) introduces an `ink` syntax pattern (e.g. a line format, a hashtag command, a special ID composition).
+
+Do **not** introduce a syntax pattern with a placeholder-only code block (e.g. `` {character_id}: {text} ``) followed by a bullet list defining each placeholder. Instead, use two tabs:
+
+```ink tab="ink"
+mc: Hello
+```
+
+```txt tab="CLI"
+<character_id>: <text>
+
+where:
+    character_id = character identifier
+    text = any text message
+```
+
+- The `ink` tab shows a concrete, minimal, runnable-looking example.
+- The `CLI` tab shows the generic pattern using `<placeholder>` (not `{placeholder}`), followed by a `where:` block listing each placeholder with a short definition, indented with 4 spaces.
+- Keep any fuller runnable example (e.g. paired `ink/start.ink` + `values/characters.ts` tabs) that already follows — this two-tab block replaces only the abstract pattern + bullet-list introduction, not the full worked example.

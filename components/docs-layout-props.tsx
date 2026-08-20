@@ -543,6 +543,11 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                                 name: t("distribution-itchio"),
                                 url: `${preUrl}/start/distribution-itchio`,
                             },
+                            {
+                                type: "page",
+                                name: t("distribution-reddit"),
+                                url: `${preUrl}/start/distribution-reddit`,
+                            },
                         ],
                     },
                     {
@@ -551,7 +556,7 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                         defaultOpen: true,
                         index: {
                             type: "page",
-                            name: t("distribution-website"),
+                            name: t("distribution-desktop-mobile"),
                             url: `${preUrl}/start/distribution-desktop-mobile`,
                         },
                         children: [
@@ -698,21 +703,21 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
                 children: [
                     {
                         type: "page",
-                        name: t("functions"),
-                        url: `${preUrl}/ink/functions`,
-                        icon: <FunctionSquare />,
-                    },
-                    {
-                        type: "page",
-                        name: "Text replacement",
+                        name: t("replacement"),
                         url: `${preUrl}/ink/replacement`,
                         icon: <Replace />,
                     },
                     {
                         type: "page",
-                        name: "Custom hashtag command",
+                        name: t("hashtag"),
                         url: `${preUrl}/ink/hashtag`,
                         icon: <Hash />,
+                    },
+                    {
+                        type: "page",
+                        name: t("functions"),
+                        url: `${preUrl}/ink/functions`,
+                        icon: <FunctionSquare />,
                     },
                 ],
             },
@@ -776,6 +781,10 @@ export async function homeLinks(lang?: string): Promise<LinkItemType[]> {
         {
             text: t("start"),
             url: `${preUrl}/start`,
+        },
+        {
+            text: t("templates"),
+            url: `${preUrl}/start/templates`,
         },
         {
             text: t("ink"),
