@@ -51,6 +51,213 @@ Game.addOnError((error, { notify, uiTransition }) => { // [!code ++]
 }); // [!code ++]
 ```
 
+#### Manager APIs reorganized into namespaces
+
+The `canvas`, `sound`, `storage`, and `narration` managers used to expose dozens of unrelated methods directly on the manager (ticker methods, layer methods, and HTML-layer methods all mixed together on `canvas`, for example). This release groups related operations into namespaced sub-APIs — `canvas.tickers`/`.layers`/`.htmlLayers`, `sound.channels`/`.unsaved`, `storage.temp`/`.flags`, `narration.labels`/`.queries`/`.input`/`.choices` — so each manager reads as a short, discoverable surface instead of a flat list, and related options/overloads live next to each other. See <DynamicLink href="/start/canvas-tickers">Tickers</DynamicLink>, <DynamicLink href="/start/canvas">Canvas</DynamicLink>, <DynamicLink href="/start/sound">Sound</DynamicLink>, <DynamicLink href="/start/flags">Flags</DynamicLink>, <DynamicLink href="/start/temp-storage">Temporary storage</DynamicLink>, and <DynamicLink href="/start/labels-flow">Labels flow</DynamicLink> for the current shape of each namespace.
+
+Almost every old flat method still works and just forwards to its namespaced replacement — it's marked `@deprecated` but not removed, so migrate at your own pace. Two members are an exception: their **type** changed, so they break immediately rather than just warning.
+
+`sound.channels` was `AudioChannelInterface[]`; it is now an object, and the array moved to `.values`:
+
+```ts
+sound.channels.map((c) => c.alias); // [!code --]
+sound.channels.values.map((c) => c.alias); // [!code ++]
+```
+
+`narration.choices` (getter) was `StoredIndexedChoiceInterface[] | undefined`; it now returns a namespace object, and the array moved to `.list`. The _setter_, `narration.choices = [...]`, is unchanged — it's a shortcut for `.list`:
+
+```ts
+const choices = narration.choices; // [!code --]
+const choices = narration.choices.list; // [!code ++]
+```
+
+Every other rename below is a non-breaking, forward-compatible deprecation.
+
+`canvas`'s ticker methods moved to `canvas.tickers`:
+
+```ts
+canvas.transferTickers("old", "new"); // [!code --]
+canvas.tickers.transfer("old", "new"); // [!code ++]
+
+canvas.currentTickers; // [!code --]
+canvas.tickers.currentTickers; // [!code ++]
+
+canvas.currentTickersSteps; // [!code --]
+canvas.tickers.currentTickersSteps; // [!code ++]
+
+canvas.findTicker("t1"); // [!code --]
+canvas.tickers.find("t1"); // [!code ++]
+
+canvas.addTicker("alien", new RotateTicker({ speed: 0.2 })); // [!code --]
+canvas.tickers.add("alien", new RotateTicker({ speed: 0.2 })); // [!code ++]
+
+canvas.addTickersSequence("alien", steps); // [!code --]
+canvas.tickers.addSequence("alien", steps); // [!code ++]
+
+canvas.unlinkComponentFromTicker("alien", RotateTicker); // [!code --]
+canvas.tickers.unlinkComponent("alien", RotateTicker); // [!code ++]
+
+canvas.removeAllTickers(); // [!code --]
+canvas.tickers.removeAll(); // [!code ++]
+
+canvas.removeTicker("t1"); // [!code --]
+canvas.tickers.remove("t1"); // [!code ++]
+
+canvas.pauseTicker({ canvasAlias: "alien" }); // [!code --]
+canvas.tickers.pause({ canvasAlias: "alien" }); // [!code ++]
+
+canvas.resumeTicker({ canvasAlias: "alien" }); // [!code --]
+canvas.tickers.resume({ canvasAlias: "alien" }); // [!code ++]
+
+canvas.isTickerPaused("alien"); // [!code --]
+canvas.tickers.isPaused("alien"); // [!code ++]
+
+canvas.completeTickerOnStepEnd({ id: "t1" }); // [!code --]
+canvas.tickers.completeOnStepEnd({ id: "t1" }); // [!code ++]
+
+canvas.forceCompletionOfTicker("t1"); // [!code --]
+canvas.tickers.forceCompletion("t1"); // [!code ++]
+
+canvas.onTickerComplete("t1", options); // [!code --]
+canvas.tickers.onComplete("t1", options); // [!code ++]
+```
+
+`canvas`'s layer methods moved to `canvas.layers`:
+
+```ts
+canvas.gameLayer; // [!code --]
+canvas.layers.gameLayer; // [!code ++]
+
+canvas.addLayer("ui", uiLayer); // [!code --]
+canvas.layers.add("ui", uiLayer); // [!code ++]
+
+canvas.getLayer("ui"); // [!code --]
+canvas.layers.get("ui"); // [!code ++]
+
+canvas.removeLayer("ui"); // [!code --]
+canvas.layers.remove("ui"); // [!code ++]
+```
+
+`canvas`'s HTML-layer methods moved to `canvas.htmlLayers`:
+
+```ts
+canvas.addHtmlLayer("ui", root); // [!code --]
+canvas.htmlLayers.add("ui", root); // [!code ++]
+
+canvas.getHtmlLayer("ui"); // [!code --]
+canvas.htmlLayers.get("ui"); // [!code ++]
+
+canvas.removeHtmlLayer("ui"); // [!code --]
+canvas.htmlLayers.remove("ui"); // [!code ++]
+```
+
+`sound`'s transient/unsaved playback methods moved to `sound.unsaved`:
+
+```ts
+sound.playTransient("ui-click"); // [!code --]
+sound.unsaved.playTransient("ui-click"); // [!code ++]
+
+sound.pauseUnsavedAll(); // [!code --]
+sound.unsaved.pauseAll(); // [!code ++]
+
+sound.resumeUnsavedAll(); // [!code --]
+sound.unsaved.resumeAll(); // [!code ++]
+
+sound.stopTransientAll(); // [!code --]
+sound.unsaved.stopTransientAll(); // [!code ++]
+```
+
+`sound`'s channel creation/lookup methods moved to `sound.channels` (alongside the `.values` change above):
+
+```ts
+sound.addChannel("music"); // [!code --]
+sound.channels.add("music"); // [!code ++]
+
+sound.findChannel("music"); // [!code --]
+sound.channels.find("music"); // [!code ++]
+```
+
+`storage`'s temporary-variable methods moved to `storage.temp` (a new `storage.temp.deadlines` map is exposed alongside them):
+
+```ts
+storage.setTempVariable("key", "value"); // [!code --]
+storage.temp.set("key", "value"); // [!code ++]
+
+storage.removeTempVariable("key"); // [!code --]
+storage.temp.remove("key"); // [!code ++]
+```
+
+`storage`'s flag methods moved to `storage.flags`:
+
+```ts
+storage.setFlag("introSeen", true); // [!code --]
+storage.flags.set("introSeen", true); // [!code ++]
+
+storage.getFlag("introSeen"); // [!code --]
+storage.flags.get("introSeen"); // [!code ++]
+```
+
+`narration`'s label-stack members moved to `narration.labels`:
+
+```ts
+narration.openedLabels; // [!code --]
+narration.labels.opened; // [!code ++]
+
+narration.currentLabel; // [!code --]
+narration.labels.current; // [!code ++]
+
+narration.closeCurrentLabel(); // [!code --]
+narration.labels.closeCurrent(); // [!code ++]
+
+narration.closeAllLabels(); // [!code --]
+narration.labels.closeAll(); // [!code ++]
+```
+
+`narration`'s read-only queries moved to `narration.queries`:
+
+```ts
+narration.isLabelAlreadyCompleted(label); // [!code --]
+narration.queries.isLabelAlreadyCompleted(label); // [!code ++]
+
+narration.alreadyCurrentStepMadeChoices; // [!code --]
+narration.queries.alreadyCurrentStepMadeChoices; // [!code ++]
+
+narration.isCurrentStepAlreadyOpened; // [!code --]
+narration.queries.isCurrentStepAlreadyOpened; // [!code ++]
+
+narration.getTimesLabelOpened(label); // [!code --]
+narration.queries.timesLabelOpened(label); // [!code ++]
+
+narration.getTimesChoiceMade(index); // [!code --]
+narration.queries.timesChoiceMade(index); // [!code ++]
+```
+
+`narration`'s input-request members moved to `narration.input`:
+
+```ts
+narration.inputValue; // [!code --]
+narration.input.value; // [!code ++]
+
+narration.isRequiredInput; // [!code --]
+narration.input.isRequired; // [!code ++]
+
+narration.inputType; // [!code --]
+narration.input.type; // [!code ++]
+
+narration.requestInput({ type: "number" }); // [!code --]
+narration.input.request({ type: "number" }); // [!code ++]
+
+narration.removeInputRequest(); // [!code --]
+narration.input.removeRequest(); // [!code ++]
+```
+
+`narration`'s choice selection moved to `narration.choices` (alongside the `.list` change above):
+
+```ts
+narration.selectChoice(choices[0], {}); // [!code --]
+narration.choices.select(choices[0], {}); // [!code ++]
+```
+
 ### Migration from v1.7.x to v1.8.0
 
 In this version, it has been decided to migrate from `@pixi/sound` to `Tone.js` as the audio system. This decision was made to improve performance, stability, and flexibility of the audio system, as well as to resolve some known issues with `@pixi/sound`.
