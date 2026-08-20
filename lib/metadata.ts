@@ -23,6 +23,14 @@ export function createMetadata(
     return {
         title: title,
         description: description,
+        icons: {
+            icon: [
+                { url: "/favicon.ico", sizes: "any" },
+                { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+            ],
+            shortcut: "/favicon.ico",
+            apple: "/icon-192.png",
+        },
         keywords: [
             "pixi-vn",
             "pixivn",

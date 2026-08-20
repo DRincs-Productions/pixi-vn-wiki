@@ -783,6 +783,10 @@ export async function homeLinks(lang?: string): Promise<LinkItemType[]> {
             url: `${preUrl}/start`,
         },
         {
+            text: t("templates"),
+            url: `${preUrl}/start/templates`,
+        },
+        {
             text: t("ink"),
             url: `${preUrl}/ink`,
         },
