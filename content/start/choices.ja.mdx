@@ -64,21 +64,21 @@ export const startLabel = newLabel("start", [
 
 ## 取得
 
-現在の選択メニューを取得するには、[`narration.choices`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#choices) を使用します。 これは [`StoredChoiceInterface`](/jsdoc/pixi-vn/index/type-aliases/StoredChoiceInterface) の配列を返します。
+To get the current choice menu, use [`narration.choices.list`](/jsdoc/pixi-vn/index/interfaces/NarrationChoicesInterface#list). これは [`StoredChoiceInterface`](/jsdoc/pixi-vn/index/type-aliases/StoredChoiceInterface) の配列を返します。
 
 ```ts
-const menuOptions: StoredChoiceInterface[] = narration.choices;
+const menuOptions: StoredChoiceInterface[] = narration.choices.list;
 ```
 
 ## 選択の実行
 
-選択を選ぶには、[`narration.selectChoice`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#selectchoice) を使用します。
+To select a choice, use [`narration.choices.select`](/jsdoc/pixi-vn/index/interfaces/NarrationChoicesInterface#select).
 
 ```ts
-const item = narration.choices![0]; // get the first item
+const item = narration.choices.list![0]; // get the first item
 
-narration
-    .selectChoice(item, {
+narration.choices
+    .select(item, {
         // Add StepLabelProps here
         navigate: navigate, // example
         // And the props to pass to the label
@@ -106,7 +106,7 @@ narration.choices = undefined;
 
 <Accordion title="すでに行った選択" id="choices-already-made">
 
-現在のナラティブステップ（`step`）ですでに行った選択を取得するには、[`narration.alreadyCurrentStepMadeChoices`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#alreadycurrentstepmadechoices) を使用します。
+To get the choices already made in the current `step`, use [`narration.queries.alreadyCurrentStepMadeChoices`](/jsdoc/pixi-vn/index/interfaces/NarrationQueriesInterface#alreadycurrentstepmadechoices).
 
 ```ts tab="hooks/useQueryInterface.ts"
 import { INTERFACE_DATA_USE_QUERY_KEY } from "@/constants";
@@ -121,14 +121,14 @@ export function useQueryChoiceMenuOptions() {
             CHOICE_MENU_OPTIONS_USE_QUERY_KEY,
         ],
         queryFn: async () =>
-            narration.choices?.map((option) => ({
+            narration.choices.list?.map((option) => ({
                 ...option,
                 text:
                     typeof option.text === "string"
                         ? option.text
                         : option.text.map((text) => text).join(" "),
                 alreadyChosen: // [!code ++]
-                    narration.alreadyCurrentStepMadeChoices?.find( // [!code ++]
+                    narration.queries.alreadyCurrentStepMadeChoices?.find( // [!code ++]
                         (index) => index === option.choiceIndex, // [!code ++]
                     ) !== undefined, // [!code ++]
             })) || [],
