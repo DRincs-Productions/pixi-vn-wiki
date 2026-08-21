@@ -57,7 +57,7 @@ export default function useMinigame(
   useEffect(() => {
     // Create the layer and start the game once
     loading.current = true;
-    const layer = canvas.addLayer("minigame", new Container());
+    const layer = canvas.layers.add("minigame", new Container());
     if (!layer) {
       console.error("Failed to create UI layer for minigame");
       return;
@@ -73,7 +73,7 @@ export default function useMinigame(
 
     return () => {
       cancelled = true;
-      canvas.removeLayer("minigame");
+      canvas.layers.remove("minigame");
       if (exitRef.current) {
         exitRef.current(layer);
       }

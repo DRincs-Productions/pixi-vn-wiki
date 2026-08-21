@@ -103,11 +103,11 @@ Game.init(body, {
     backgroundColor: BACKGROUND_COLOR,
 }).then(async () => {
     // Pixi.JS UI Layer
-    canvas.addLayer("ui", new Container());
+    canvas.layers.add("ui", new Container());
 
     // Sound setup
-    sound.addChannel("bgm", { background: true });
-    sound.addChannel("sfx");
+    sound.channels.add("bgm", { background: true });
+    sound.channels.add("sfx");
     sound.defaultChannelAlias = "sfx";
 
     // React setup with ReactDOM
@@ -116,7 +116,7 @@ Game.init(body, {
         throw new Error("root element not found");
     }
 
-    const htmlLayout = canvas.addHtmlLayer("ui", root);
+    const htmlLayout = canvas.htmlLayers.add("ui", root);
     if (!htmlLayout) {
         throw new Error("htmlLayout not found");
     }

@@ -93,7 +93,7 @@ export const startLabel = newLabel("start", [
       args.speed = 2 + Math.random() * 2;
 
       canvas.add("alien" + i, dude);
-      canvas.addTicker("alien" + i, new TintingTestTicker(args));
+      canvas.tickers.add("alien" + i, new TintingTestTicker(args));
     }
   },
 ]);`,
@@ -518,7 +518,7 @@ export const startLabel = newLabel("start", [
     });
   },
   () => {
-    canvas.removeAllTickers();
+    canvas.tickers.removeAll();
     let tickerId = canvas.animate<ImageContainer>("james", { xAlign: 0, yAlign: 1 });
   },
 ]);`,
@@ -845,7 +845,7 @@ export function ReturningDifferentStepLists() {
                 "labels/startLabel.ts": `import { narration, newLabel, storage } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start", () => {
-  let condition = storage.getFlag("condition");
+  let condition = storage.flags.get("condition");
   if (condition) {
     return [
       () => {
@@ -861,7 +861,7 @@ export const startLabel = newLabel("start", () => {
         narration.dialogue = "Step 1";
       },
       async (props, { labelId }) => {
-        storage.setFlag("condition", true);
+        storage.flags.set("condition", true);
         return await narration.jump(labelId, props);
       },
     ];
@@ -926,24 +926,24 @@ export const startLabel = newLabel("start", [
   },
   () => {
     narration.dialogue = "What is your name?";
-    narration.requestInput({ type: "string" });
+    narration.input.request({ type: "string" });
   },
   () => {
-    narration.dialogue = \`My name is \${narration.inputValue}\`;
+    narration.dialogue = \`My name is \${narration.input.value}\`;
   },
   () => {
     narration.dialogue = "How old are you?";
-    narration.requestInput({ type: "number" }, 18);
+    narration.input.request({ type: "number" }, 18);
   },
   () => {
-    narration.dialogue = \`I am \${narration.inputValue} years old\`;
+    narration.dialogue = \`I am \${narration.input.value} years old\`;
   },
   () => {
     narration.dialogue = "Describe who you are:";
-    narration.requestInput({ type: "html textarea" });
+    narration.input.request({ type: "html textarea" });
   },
   () => {
-    narration.dialogue = \`\${narration.inputValue}\`;
+    narration.dialogue = \`\${narration.input.value}\`;
   },
   () => {
     narration.dialogue = "Restart";
@@ -1870,11 +1870,11 @@ export function useQueryChoiceMenuOptions() {
   return useQuery({
     queryKey: [INTERFACE_DATA_USE_QUEY_KEY, CHOICE_MENU_OPTIONS_USE_QUEY_KEY],
     queryFn: async () =>
-      narration.choices?.map((option) => ({
+      narration.choices.list?.map((option) => ({
         ...option,
         text: typeof option.text === "string" ? option.text : option.text.join(" "),
         alreadyChosen:
-          narration.alreadyCurrentStepMadeChoices?.find((index) => index === option.choiceIndex) !== undefined,
+          narration.queries.alreadyCurrentStepMadeChoices?.find((index) => index === option.choiceIndex) !== undefined,
       })) || [],
   });
 }
@@ -1884,9 +1884,9 @@ export function useQueryInputValue<T>() {
   return useQuery({
     queryKey: [INTERFACE_DATA_USE_QUEY_KEY, INPUT_VALUE_USE_QUEY_KEY],
     queryFn: async () => ({
-      isRequired: narration.isRequiredInput,
-      type: narration.inputType,
-      currentValue: narration.inputValue as T | undefined,
+      isRequired: narration.input.isRequired,
+      type: narration.input.type,
+      currentValue: narration.input.value as T | undefined,
     }),
   });
 }
@@ -1920,7 +1920,7 @@ const CAN_GO_NEXT_USE_QUEY_KEY = "can_go_next_use_quey_key";
 export function useQueryCanGoNext() {
   return useQuery({
     queryKey: [INTERFACE_DATA_USE_QUEY_KEY, CAN_GO_NEXT_USE_QUEY_KEY],
-    queryFn: async () => narration.canContinue && !narration.isRequiredInput,
+    queryFn: async () => narration.canContinue && !narration.input.isRequired,
   });
 }
 
