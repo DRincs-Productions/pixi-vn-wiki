@@ -283,7 +283,7 @@ export function useQueryChoiceMenuOptions() {
             CHOICE_MENU_OPTIONS_USE_QUEY_KEY,
         ],
         queryFn: async () =>
-            narration.choices?.map((option) => ({
+            narration.choices.list?.map((option) => ({
                 ...option,
                 text:
                     typeof option.text === "string"
@@ -306,8 +306,8 @@ export default function useNarrationFunctions() {
 
     const selectChoice = useCallback(
         async (item: StoredIndexedChoiceInterface) => {
-            return narration
-                .selectChoice(item, gameProps)
+            return narration.choices
+                .select(item, gameProps)
                 .then(() =>
                     queryClient.invalidateQueries({
                         queryKey: [INTERFACE_DATA_USE_QUEY_KEY],
@@ -405,7 +405,7 @@ export function useQueryCanGoNext() {
     return useQuery({
         queryKey: [INTERFACE_DATA_USE_QUEY_KEY, CAN_GO_NEXT_USE_QUEY_KEY],
         queryFn: async () =>
-            narration.canContinue && !narration.isRequiredInput,
+            narration.canContinue && !narration.input.isRequired,
     });
 }
 ```
@@ -610,7 +610,7 @@ export default function TextInput() {
             )}
             <button
                 onClick={() => {
-                    narration.inputValue = tempValue || currentValue;
+                    narration.input.value = tempValue || currentValue;
                     setTempValue(undefined);
                     queryClient.invalidateQueries({
                         queryKey: [INTERFACE_DATA_USE_QUEY_KEY],
@@ -658,7 +658,7 @@ function onInput(e) {
 }
 
 function confirm() {
-    narration.inputValue = tempValue.value ?? currentValue.value;
+    narration.input.value = tempValue.value ?? currentValue.value;
     tempValue.value = undefined;
     queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] });
 }
@@ -676,9 +676,9 @@ export function useQueryInputValue<T>() {
     return useQuery({
         queryKey: [INTERFACE_DATA_USE_QUEY_KEY, INPUT_VALUE_USE_QUEY_KEY],
         queryFn: async () => ({
-            isRequired: narration.isRequiredInput,
-            type: narration.inputType,
-            currentValue: narration.inputValue as T | undefined,
+            isRequired: narration.input.isRequired,
+            type: narration.input.type,
+            currentValue: narration.input.value as T | undefined,
         }),
     });
 }
