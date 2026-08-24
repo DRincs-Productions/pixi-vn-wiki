@@ -22,26 +22,6 @@ export function PixiVnExample({ path }: { path: string }) {
     );
 }
 
-export function DialogueGlueExample() {
-    return (
-        <ReactTemplate
-            files={{
-                "labels/startLabel.ts": `import { narration, newLabel } from "@drincs/pixi-vn";
-
-export const startLabel = newLabel("start", [
-  () => {
-    narration.dialogue = "Hello, my name is Alice and ...";
-  },
-  () => {
-    narration.dialogGlue = true;
-    narration.dialogue = "I am a character in this game.";
-  },
-]);`,
-            }}
-        />
-    );
-}
-
 export function HeredityFactorExample() {
     return (
         <ReactTemplate
