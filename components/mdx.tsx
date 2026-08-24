@@ -1,4 +1,5 @@
 import DynamicLink from "@/components/dynamiclink";
+import { PixiVnExample } from "@/components/examples";
 import * as AccordionsComponents from "@/components/mdx/accordion";
 import * as FilesComponents from "@/components/mdx/files";
 import { Mermaid } from "@/components/mdx/mermaid";
@@ -44,6 +45,7 @@ export function getMDXComponents(components?: MDXComponents) {
         Comments: () => null,
         DynamicLink,
         Mermaid,
+        PixiVnExample,
         ...components,
     } satisfies MDXComponents;
 }
