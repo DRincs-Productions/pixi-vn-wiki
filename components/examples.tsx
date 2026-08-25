@@ -2,12 +2,7 @@
 
 import { RefreshCw, SquareCode } from "lucide-react";
 import { useState } from "react";
-import { ReactTemplate } from "./sandpack";
 import { buttonVariants } from "./ui/button";
-
-export function VisualNovelExample() {
-    return <ReactTemplate />;
-}
 
 export function PixiVnExample({ path }: { path: string }) {
     const [reloadKey, setReloadKey] = useState(0);
