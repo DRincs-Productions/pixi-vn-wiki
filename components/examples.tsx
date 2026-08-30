@@ -32,7 +32,7 @@ export function PixiVnExample({ path }: { path: string }) {
             </div>
             <iframe
                 key={reloadKey}
-                src={`https://pixi-vn-visual-novel-example.pages.dev/${path}`}
+                src={`https://examples.pixi-vn.com/${path}`}
                 title={path}
                 style={{
                     width: "100%",

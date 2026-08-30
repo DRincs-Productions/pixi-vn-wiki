@@ -18,7 +18,11 @@ This is a different delivery mechanism from the one in `content/CLAUDE.md`: that
 
 This project has Crowdin's duplicate-string detection enabled: when identical source text appears more than once, Crowdin marks the first occurrence as the **master** string and every later occurrence as **hidden** (`isHidden: true` on the source string object). Hidden strings automatically inherit whatever translation is applied to their master.
 
-**Rule: only ever translate strings where `isHidden` is `false`. Never submit a translation for a string where `isHidden` is `true` — it will get the master's translation automatically.**
+**`isHidden` is not only about duplicates.** A string can be `isHidden: true` with `isDuplicate: false` and `masterStringId: null` — this means it was hidden directly (e.g. a non-prose value such as a frontmatter `icon` path) rather than because of the duplicate mechanism. Treat both cases identically: **`isHidden` alone is the only signal that matters.**
+
+**Rule: only ever translate strings where `isHidden` is `false`. Never submit a translation for a string where `isHidden` is `true`, even if the "translation" would just be the source text unchanged (e.g. a file path) — leave it alone entirely, don't post anything for it.**
+
+**Caveat: re-check `isHidden` right before translating, not just at the start of a session.** It has been observed to change value between two fetches of the same string with no revision bump — don't trust a value read hours or many steps earlier.
 
 ## API basics
 

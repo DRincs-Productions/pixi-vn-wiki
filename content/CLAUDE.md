@@ -55,9 +55,21 @@ When a glossary term appears **as inline code** in the source (e.g. `` `label` `
 
 ## Language-Specific Notes
 
+### "Visual novel" genre term
+
+Confirmed by auditing existing translations across the repo — apply consistently, don't re-decide per file:
+
+- **Chinese (`zh`)** — translate it: 视觉小说.
+- **Japanese (`ja`)** — transliterate phonetically in katakana: ビジュアルノベル.
+- **Korean (`ko`)** — transliterate phonetically in Hangul: 비주얼 노벨.
+- **French (`fr`), Spanish (`es`), German (`de`), Italian (`it`), Russian (`ru`)** — keep the English words "visual novel" embedded as-is in the sentence (German capitalizes it as a compound, e.g. _Visual-Novel_; the others keep it lowercase). Do **not** translate it into these languages' own words (e.g. not Russian "визуальная новелла", not French "roman visuel").
+
+This applies to the fixed genre term "visual novel" specifically. A separate, more generic phrase like "story-driven game" is ordinary prose and should be translated normally per language.
+
 ### Italian (`it`)
 
 - **`label` is grammatically feminine** — use feminine articles, adjectives, and pronouns throughout. Examples: _la `label`_, _una `label`_, _della `label`_, _nella `label`_, _questa `label`_; plurals: _le `labels`_, _delle `labels`_, _tutte le `labels`_.
+- **Canvas transition names** (`Move in/out`, `Push in/out`, `Zoom in/out`) — confirmed by an existing translation in the repo (`Zoom avanti/indietro`): keep the effect name in English (Move/Push/Zoom) but translate "in/out" to "avanti/indietro", e.g. _Zoom avanti/indietro_, _la transizione move avanti/indietro_.
 
 ## Workflow
 
