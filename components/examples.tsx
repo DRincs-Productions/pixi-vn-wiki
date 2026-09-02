@@ -4,7 +4,7 @@ import { RefreshCw, SquareCode } from "lucide-react";
 import { useState } from "react";
 import { buttonVariants } from "./ui/button";
 
-export function PixiVnExample({ path }: { path: string }) {
+export function PixiVnExample({ path, ink = false }: { path: string; ink?: boolean }) {
     const [reloadKey, setReloadKey] = useState(0);
 
     return (
@@ -20,7 +20,7 @@ export function PixiVnExample({ path }: { path: string }) {
                     <RefreshCw />
                 </button>
                 <a
-                    href={`https://github.com/DRincs-Productions/pixi-vn-examples/blob/main/src/routes/${path}.tsx`}
+                    href={`https://github.com/DRincs-Productions/pixi-vn-examples/blob/main/src/routes/${path}.${ink ? "ink" : "tsx"}`}
                     target="_blank"
                     rel="noreferrer"
                     aria-label="View source on GitHub"
