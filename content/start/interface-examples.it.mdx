@@ -11,7 +11,7 @@ Puoi utilizzare il pulsante precedente per creare la tua schermata UI, con l'IA.
 
 :::tip
 
-Tutti gli esempi sono stati creati utilizzando elementi HTML di base; per migliorare la grafica, sarà necessario sostituirli con componenti UI dalla propria libreria preferita.
+These examples use simple UI primitives (`Button`, `Card`, `Avatar`, `Dialog`, `Input`, ...) imported from a `components/ui` folder, similar to what [shadcn/ui](https://ui.shadcn.com) (React) or [shadcn-vue](https://www.shadcn-vue.com) provide. Replace them with the equivalent components from your own UI library.
 
 :::
 
@@ -23,8 +23,10 @@ Tutti gli esempi sono stati creati utilizzando elementi HTML di base; per miglio
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
-import { useQueryDialogue } from "../hooks/useQueryInterface";
-import ChoiceMenu from "./ChoiceMenu";
+import { Avatar } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
+import { useQueryDialogue } from "@/hooks/useQueryInterface";
+import ChoiceMenu from "@/components/narration/ChoiceMenu";
 
 export default function NarrationScreen() {
     const { data: { text, character } = {} } = useQueryDialogue();
@@ -33,61 +35,50 @@ export default function NarrationScreen() {
         <div
             style={{
                 position: "absolute",
+                inset: 0,
                 display: "flex",
                 flexDirection: "column",
-                height: "100%",
-                width: "100%",
             }}
         >
             <div style={{ flex: 1, minHeight: 0 }}>
                 <ChoiceMenu />
             </div>
             {text && (
-                <div
+                <Card
                     style={{
                         flex: "0 0 auto",
-                        height: "30%",
+                        height: "35%",
                         minHeight: 0,
                         pointerEvents: "auto",
-                        backgroundColor: "white",
-                        display: "flex",
-                        flexDirection: "column",
-                        overflow: "hidden",
                     }}
                 >
-                    {character && character.name && (
-                        <b>{`${character?.name || ""} ${character?.surname || ""}`}</b>
-                    )}
-                    <div
+                    <CardContent
                         style={{
                             display: "flex",
-                            flexDirection: "row",
+                            gap: 12,
                             height: "100%",
                             minHeight: 0,
                             overflow: "hidden",
                         }}
                     >
                         {character?.icon && (
-                            <img
-                                src={character?.icon}
-                                loading="lazy"
-                                alt=""
-                                style={{
-                                    maxWidth: "30%",
-                                    height: "auto",
-                                    objectFit: "contain",
-                                    display: "block",
-                                }}
-                            />
+                            <Avatar size="lg" style={{ flexShrink: 0 }}>
+                                <img
+                                    src={character.icon}
+                                    loading="lazy"
+                                    alt=""
+                                    style={{
+                                        width: "100%",
+                                        height: "100%",
+                                        objectFit: "cover",
+                                    }}
+                                />
+                            </Avatar>
                         )}
-                        <div
-                            style={{
-                                flex: 1,
-                                minHeight: 0,
-                                overflow: "auto",
-                                height: "100%",
-                            }}
-                        >
+                        <div style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
+                            {character?.name && (
+                                <b>{`${character.name} ${character.surname || ""}`}</b>
+                            )}
                             <Markdown
                                 remarkPlugins={[remarkGfm]}
                                 rehypePlugins={[rehypeRaw]}
@@ -95,8 +86,8 @@ export default function NarrationScreen() {
                                 {text}
                             </Markdown>
                         </div>
-                    </div>
-                </div>
+                    </CardContent>
+                </Card>
             )}
         </div>
     );
@@ -106,43 +97,44 @@ export default function NarrationScreen() {
 ```vue tab="Vue"
 <template>
     <div
-        style="position: absolute; display: flex; flex-direction: column; height: 100%; width: 100%;"
+        style="position: absolute; inset: 0; display: flex; flex-direction: column;"
     >
         <div style="flex: 1; min-height: 0;">
             <ChoiceMenu />
         </div>
-        <div
+        <Card
             v-if="text"
-            style="flex: 0 0 auto; height: 30%; min-height: 0; pointer-events: auto; background-color: white; display: flex; flex-direction: column; overflow: hidden;"
+            style="flex: 0 0 auto; height: 35%; min-height: 0; pointer-events: auto;"
         >
-            <b v-if="character && (character.name || character.surname)"
-                >{{ character?.name || "" }} {{ character?.surname || "" }}</b
+            <CardContent
+                style="display: flex; gap: 12px; height: 100%; min-height: 0; overflow: hidden;"
             >
-            <div
-                style="display: flex; flex-direction: row; height: 100%; min-height: 0; overflow: hidden;"
-            >
-                <img
-                    v-if="character && character.icon"
-                    :src="character.icon"
-                    loading="lazy"
-                    alt=""
-                    style="max-width: 30%; height: auto; object-fit: contain; display: block;"
-                />
-                <div
-                    style="flex: 1; min-height: 0; overflow: auto; height: 100%;"
-                >
-                    <Markdown v-if="text" :source="text" />
+                <Avatar v-if="character?.icon" size="lg" style="flex-shrink: 0;">
+                    <img
+                        :src="character.icon"
+                        loading="lazy"
+                        alt=""
+                        style="width: 100%; height: 100%; object-fit: cover;"
+                    />
+                </Avatar>
+                <div style="flex: 1; min-height: 0; overflow: auto;">
+                    <b v-if="character?.name"
+                        >{{ character.name }} {{ character.surname || "" }}</b
+                    >
+                    <Markdown :source="text" />
                 </div>
-            </div>
-        </div>
+            </CardContent>
+        </Card>
     </div>
 </template>
 
 <script setup>
 import { computed } from "vue";
 import Markdown from "vue3-markdown-it";
-import { useQueryDialogue } from "../hooks/useQueryInterface";
-import ChoiceMenu from "./ChoiceMenu.vue";
+import { Avatar } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
+import { useQueryDialogue } from "@/hooks/useQueryInterface";
+import ChoiceMenu from "@/components/narration/ChoiceMenu.vue";
 
 const { data } = useQueryDialogue();
 const text = computed(() => data.value?.text);
@@ -154,32 +146,25 @@ const character = computed(() => data.value?.character);
 import { CharacterBaseModel, narration } from "@drincs/pixi-vn";
 import { useQuery } from "@tanstack/react-query";
 
-export const INTERFACE_DATA_USE_QUEY_KEY = "interface_data_use_quey_key";
+export const INTERFACE_DATA_QUERY_KEY = "pixi-vn-interface";
 
-const DIALOGUE_USE_QUEY_KEY = "dialogue_use_quey_key";
 export function useQueryDialogue() {
     return useQuery({
-        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, DIALOGUE_USE_QUEY_KEY],
-        queryFn: async ({ queryKey }) => {
-            let dialogue = narration.dialogue;
+        queryKey: [INTERFACE_DATA_QUERY_KEY, "dialogue"],
+        queryFn: async () => {
+            const dialogue = narration.dialogue;
             let text = dialogue?.text;
             if (Array.isArray(text)) {
                 text = text.join(" ");
             }
-            let character = dialogue?.character as
-                | string
-                | CharacterBaseModel
-                | undefined;
-            if (typeof character === "string") {
-                character = new CharacterBaseModel(character, {
-                    name: character,
-                });
-            }
+            const character =
+                typeof dialogue?.character === "string"
+                    ? new CharacterBaseModel(dialogue.character, {
+                          name: dialogue.character,
+                      })
+                    : dialogue?.character;
 
-            return {
-                text,
-                character,
-            };
+            return { text, character };
         },
     });
 }
@@ -190,15 +175,21 @@ export function useQueryDialogue() {
 <Accordion title="Schermata dell'UI del menu di scelta" id="choice-menu">
 
 ```tsx tab="React"
-import useNarrationFunctions from "../hooks/useNarrationFunctions";
-import { useQueryChoiceMenuOptions } from "../hooks/useQueryInterface";
+import { Button } from "@/components/ui/button";
+import useNarrationFunctions from "@/hooks/useNarrationFunctions";
+import { useQueryChoiceMenuOptions } from "@/hooks/useQueryInterface";
 
 export default function ChoiceMenu() {
     const { data: menu = [] } = useQueryChoiceMenuOptions();
     const { selectChoice } = useNarrationFunctions();
 
+    if (menu.length === 0) {
+        return null;
+    }
+
     return (
         <div
+            onClick={(e) => e.stopPropagation()}
             style={{
                 display: "flex",
                 flexDirection: "column",
@@ -207,23 +198,18 @@ export default function ChoiceMenu() {
                 width: "100%",
                 height: "100%",
                 overflow: "auto",
-                gap: "8px",
-                maxHeight: "100%",
-                margin: 0,
-                pointerEvents: menu?.length > 0 ? "auto" : "none",
+                gap: 8,
+                pointerEvents: "auto",
             }}
         >
-            {menu?.map((item, index) => (
-                <button
-                    key={"choice-" + index}
-                    style={{
-                        justifyContent: "center",
-                        alignItems: "center",
-                    }}
+            {menu.map((item) => (
+                <Button
+                    key={item.choiceIndex}
+                    variant="secondary"
                     onClick={() => selectChoice(item)}
                 >
                     {item.text}
-                </button>
+                </Button>
             ))}
         </div>
     );
@@ -233,35 +219,26 @@ export default function ChoiceMenu() {
 ```vue tab="Vue"
 <template>
     <div
-        :style="{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '100%',
-            height: '100%',
-            overflow: 'auto',
-            gap: '8px',
-            maxHeight: '100%',
-            margin: 0,
-        }"
-        :pointer-events="menu.length > 0 ? 'auto' : 'none'"
+        v-if="menu.length > 0"
+        @click.stop
+        style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 100%; overflow: auto; gap: 8px; pointer-events: auto;"
     >
-        <button
-            v-for="(item, index) in menu"
-            :key="'choice-' + index"
-            :style="{ justifyContent: 'center', alignItems: 'center' }"
+        <Button
+            v-for="item in menu"
+            :key="item.choiceIndex"
+            variant="secondary"
             @click="selectChoice(item)"
         >
             {{ item.text }}
-        </button>
+        </Button>
     </div>
 </template>
 
 <script setup>
 import { computed } from "vue";
-import useNarrationFunctions from "../hooks/useNarrationFunctions";
-import { useQueryChoiceMenuOptions } from "../hooks/useQueryInterface";
+import { Button } from "@/components/ui/button";
+import useNarrationFunctions from "@/hooks/useNarrationFunctions";
+import { useQueryChoiceMenuOptions } from "@/hooks/useQueryInterface";
 
 const { data } = useQueryChoiceMenuOptions();
 const menu = computed(() => data.value || []);
@@ -270,18 +247,14 @@ const { selectChoice } = useNarrationFunctions();
 ```
 
 ```ts tab="hooks/useQueryInterface.ts"
-import { CharacterBaseModel, narration } from "@drincs/pixi-vn";
+import { narration } from "@drincs/pixi-vn";
 import { useQuery } from "@tanstack/react-query";
 
-export const INTERFACE_DATA_USE_QUEY_KEY = "interface_data_use_quey_key";
+export const INTERFACE_DATA_QUERY_KEY = "pixi-vn-interface";
 
-const CHOICE_MENU_OPTIONS_USE_QUEY_KEY = "choice_menu_options_use_quey_key";
 export function useQueryChoiceMenuOptions() {
     return useQuery({
-        queryKey: [
-            INTERFACE_DATA_USE_QUEY_KEY,
-            CHOICE_MENU_OPTIONS_USE_QUEY_KEY,
-        ],
+        queryKey: [INTERFACE_DATA_QUERY_KEY, "choices"],
         queryFn: async () =>
             narration.choices.list?.map((option) => ({
                 ...option,
@@ -298,24 +271,23 @@ export function useQueryChoiceMenuOptions() {
 import { narration, StoredIndexedChoiceInterface } from "@drincs/pixi-vn";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import { INTERFACE_DATA_USE_QUEY_KEY } from "./useQueryInterface";
+import { INTERFACE_DATA_QUERY_KEY } from "@/hooks/useQueryInterface";
 
 export default function useNarrationFunctions() {
     const queryClient = useQueryClient();
-    const gameProps = {};
 
     const selectChoice = useCallback(
         async (item: StoredIndexedChoiceInterface) => {
             return narration.choices
-                .select(item, gameProps)
+                .select(item, {})
                 .then(() =>
                     queryClient.invalidateQueries({
-                        queryKey: [INTERFACE_DATA_USE_QUEY_KEY],
+                        queryKey: [INTERFACE_DATA_QUERY_KEY],
                     }),
                 )
                 .catch((e) => console.error(e));
         },
-        [gameProps, queryClient],
+        [queryClient],
     );
 
     return {
@@ -326,70 +298,71 @@ export default function useNarrationFunctions() {
 
 </Accordion>
 
-<Accordion title="Pulsante 'successivo'" id="go-next">
+<Accordion title="Continue by clicking the screen" id="go-next">
+
+Instead of a dedicated "next" button, wrap the narrative screen in an overlay that advances the narration whenever the player clicks anywhere on it.
 
 ```tsx tab="React"
 import { useState } from "react";
-import useNarrationFunctions from "../hooks/useNarrationFunctions";
-import { useQueryCanGoNext } from "../hooks/useQueryInterface";
+import useNarrationFunctions from "@/hooks/useNarrationFunctions";
+import { useQueryCanGoNext } from "@/hooks/useQueryInterface";
 
-export default function NextButton() {
+export default function ContinueOverlay({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
     const { data: canGoNext = false } = useQueryCanGoNext();
     const [loading, setLoading] = useState(false);
     const { goNext } = useNarrationFunctions();
 
-    if (!canGoNext) {
-        return null;
-    }
-
     return (
-        <button
+        <div
             onClick={() => {
+                if (!canGoNext || loading) {
+                    return;
+                }
                 setLoading(true);
-                goNext()
-                    .then(() => setLoading(false))
-                    .catch(() => setLoading(false));
+                goNext().finally(() => setLoading(false));
             }}
-            disabled={loading}
             style={{
-                width: 40,
-                height: 20,
+                position: "relative",
+                width: "100%",
+                height: "100%",
                 pointerEvents: "auto",
             }}
         >
-            Next
-        </button>
+            {children}
+        </div>
     );
 }
 ```
 
 ```vue tab="Vue"
 <template>
-    <button
-        v-if="canGoNext"
-        :disabled="loading"
-        :style="{ width: '40px', height: '20px', pointerEvents: 'auto' }"
+    <div
         @click="handleClick"
+        style="position: relative; width: 100%; height: 100%; pointer-events: auto;"
     >
-        Next
-    </button>
+        <slot />
+    </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import useNarrationFunctions from "../hooks/useNarrationFunctions";
-import { useQueryCanGoNext } from "../hooks/useQueryInterface";
+import { ref } from "vue";
+import useNarrationFunctions from "@/hooks/useNarrationFunctions";
+import { useQueryCanGoNext } from "@/hooks/useQueryInterface";
 
-const { data } = useQueryCanGoNext();
-const canGoNext = computed(() => data.value ?? false);
+const { data: canGoNextData } = useQueryCanGoNext();
 const loading = ref(false);
 const { goNext } = useNarrationFunctions();
 
 function handleClick() {
+    if (!canGoNextData.value || loading.value) {
+        return;
+    }
     loading.value = true;
-    goNext()
-        .then(() => (loading.value = false))
-        .catch(() => (loading.value = false));
+    goNext().finally(() => (loading.value = false));
 }
 </script>
 ```
@@ -398,12 +371,11 @@ function handleClick() {
 import { narration } from "@drincs/pixi-vn";
 import { useQuery } from "@tanstack/react-query";
 
-export const INTERFACE_DATA_USE_QUEY_KEY = "interface_data_use_quey_key";
+export const INTERFACE_DATA_QUERY_KEY = "pixi-vn-interface";
 
-const CAN_GO_NEXT_USE_QUEY_KEY = "can_go_next_use_quey_key";
 export function useQueryCanGoNext() {
     return useQuery({
-        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, CAN_GO_NEXT_USE_QUEY_KEY],
+        queryKey: [INTERFACE_DATA_QUERY_KEY, "canGoNext"],
         queryFn: async () =>
             narration.canContinue && !narration.input.isRequired,
     });
@@ -414,35 +386,37 @@ export function useQueryCanGoNext() {
 import { narration } from "@drincs/pixi-vn";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import { INTERFACE_DATA_USE_QUEY_KEY } from "./useQueryInterface";
+import { INTERFACE_DATA_QUERY_KEY } from "@/hooks/useQueryInterface";
 
 export default function useNarrationFunctions() {
     const queryClient = useQueryClient();
-    const gameProps = {};
 
     const goNext = useCallback(async () => {
-        try {
-            if (!narration.canContinue) {
-                return;
-            }
-            return narration
-                .continue(gameProps)
-                .then(() =>
-                    queryClient.invalidateQueries({
-                        queryKey: [INTERFACE_DATA_USE_QUEY_KEY],
-                    }),
-                )
-                .catch((e) => console.error(e));
-        } catch (e) {
-            console.error(e);
+        if (!narration.canContinue) {
             return;
         }
-    }, [gameProps, queryClient]);
+        return narration
+            .continue({})
+            .then(() =>
+                queryClient.invalidateQueries({
+                    queryKey: [INTERFACE_DATA_QUERY_KEY],
+                }),
+            )
+            .catch((e) => console.error(e));
+    }, [queryClient]);
 
     return {
         goNext,
     };
 }
+```
+
+Wrap the narrative dialogue screen with it, so a click anywhere on the screen continues the narration (elements like the choice menu, the back button and the input dialog call `stopPropagation()` so interacting with them doesn't also trigger a "next"):
+
+```tsx tab="Usage"
+<ContinueOverlay>
+    <NarrationScreen />
+</ContinueOverlay>
 ```
 
 </Accordion>
@@ -451,8 +425,9 @@ export default function useNarrationFunctions() {
 
 ```tsx tab="React"
 import { useState } from "react";
-import useNarrationFunctions from "../hooks/useNarrationFunctions";
-import { useQueryCanGoBack } from "../hooks/useQueryInterface";
+import { Button } from "@/components/ui/button";
+import useNarrationFunctions from "@/hooks/useNarrationFunctions";
+import { useQueryCanGoBack } from "@/hooks/useQueryInterface";
 
 export default function BackButton() {
     const { data: canGoBack = false } = useQueryCanGoBack();
@@ -464,53 +439,48 @@ export default function BackButton() {
     }
 
     return (
-        <button
-            onClick={() => {
-                setLoading(true);
-                goBack()
-                    .then(() => setLoading(false))
-                    .catch(() => setLoading(false));
-            }}
+        <Button
+            variant="secondary"
             disabled={loading}
-            style={{
-                width: 40,
-                height: 20,
-                pointerEvents: "auto",
+            onClick={(e) => {
+                e.stopPropagation();
+                setLoading(true);
+                goBack().finally(() => setLoading(false));
             }}
         >
             Back
-        </button>
+        </Button>
     );
 }
 ```
 
 ```vue tab="Vue"
 <template>
-    <button
+    <Button
         v-if="canGoBack"
+        variant="secondary"
         :disabled="loading"
-        :style="{ width: '40px', height: '20px', pointerEvents: 'auto' }"
         @click="handleClick"
     >
         Back
-    </button>
+    </Button>
 </template>
 
 <script setup>
 import { ref, computed } from "vue";
-import useNarrationFunctions from "../hooks/useNarrationFunctions";
-import { useQueryCanGoBack } from "../hooks/useQueryInterface";
+import { Button } from "@/components/ui/button";
+import useNarrationFunctions from "@/hooks/useNarrationFunctions";
+import { useQueryCanGoBack } from "@/hooks/useQueryInterface";
 
 const { data } = useQueryCanGoBack();
 const canGoBack = computed(() => data.value ?? false);
 const loading = ref(false);
 const { goBack } = useNarrationFunctions();
 
-function handleClick() {
+function handleClick(e) {
+    e.stopPropagation();
     loading.value = true;
-    goBack()
-        .then(() => (loading.value = false))
-        .catch(() => (loading.value = false));
+    goBack().finally(() => (loading.value = false));
 }
 </script>
 ```
@@ -519,12 +489,11 @@ function handleClick() {
 import { stepHistory } from "@drincs/pixi-vn";
 import { useQuery } from "@tanstack/react-query";
 
-export const INTERFACE_DATA_USE_QUEY_KEY = "interface_data_use_quey_key";
+export const INTERFACE_DATA_QUERY_KEY = "pixi-vn-interface";
 
-const CAN_GO_BACK_USE_QUEY_KEY = "can_go_back_use_quey_key";
 export function useQueryCanGoBack() {
     return useQuery({
-        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, CAN_GO_BACK_USE_QUEY_KEY],
+        queryKey: [INTERFACE_DATA_QUERY_KEY, "canGoBack"],
         queryFn: async () => stepHistory.canGoBack,
     });
 }
@@ -534,22 +503,21 @@ export function useQueryCanGoBack() {
 import { stepHistory } from "@drincs/pixi-vn";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import { INTERFACE_DATA_USE_QUEY_KEY } from "./useQueryInterface";
+import { INTERFACE_DATA_QUERY_KEY } from "@/hooks/useQueryInterface";
 
 export default function useNarrationFunctions() {
     const queryClient = useQueryClient();
-    const gameProps = {};
 
     const goBack = useCallback(async () => {
         return stepHistory
-            .back(gameProps)
+            .back({})
             .then(() =>
                 queryClient.invalidateQueries({
-                    queryKey: [INTERFACE_DATA_USE_QUEY_KEY],
+                    queryKey: [INTERFACE_DATA_QUERY_KEY],
                 }),
             )
             .catch((e) => console.error(e));
-    }, [gameProps, queryClient]);
+    }, [queryClient]);
 
     return {
         goBack,
@@ -564,84 +532,117 @@ export default function useNarrationFunctions() {
 ```tsx tab="React"
 import { narration } from "@drincs/pixi-vn";
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
-    INTERFACE_DATA_USE_QUEY_KEY,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import {
+    INTERFACE_DATA_QUERY_KEY,
     useQueryDialogue,
     useQueryInputValue,
-} from "../../hooks/useQueryInterface";
+} from "@/hooks/useQueryInterface";
 
-export default function TextInput() {
+export default function TextInputDialog() {
     const { data: { text } = {} } = useQueryDialogue();
     const {
-        data: { isRequired: open, currentValue } = {
-            currentValue: undefined,
+        data: { isRequired: open, currentValue, type } = {
             isRequired: false,
+            currentValue: undefined,
+            type: undefined,
         },
     } = useQueryInputValue<string | number>();
-    const [tempValue, setTempValue] = useState<string | number>();
+    const [value, setValue] = useState<string | number>("");
     const queryClient = useQueryClient();
 
+    useEffect(() => {
+        if (open) {
+            setValue(currentValue ?? "");
+        }
+    }, [open]);
+
+    const confirm = () => {
+        narration.input.value = value;
+        queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_QUERY_KEY] });
+    };
+
     return (
-        <dialog
-            open={open}
-            style={{
-                pointerEvents: "auto",
-            }}
-        >
-            <p>{text}</p>
-            {open && (
-                <input
-                    defaultValue={currentValue || ""}
+        <Dialog open={open}>
+            <DialogContent onClick={(e) => e.stopPropagation()}>
+                <DialogHeader>
+                    <DialogTitle>Your input is needed</DialogTitle>
+                    {text && <DialogDescription>{text}</DialogDescription>}
+                </DialogHeader>
+                <Input
+                    type={type === "number" ? "number" : "text"}
+                    value={value}
                     onChange={(e) => {
-                        if (e && e.target && "value" in e.target) {
-                            let value: any = e.target.value;
-                            if (
-                                "type" in e.target &&
-                                e.target.type === "number" &&
-                                "valueAsNumber" in e.target
-                            ) {
-                                value = e.target.valueAsNumber;
-                            }
-                            setTempValue(value);
+                        setValue(
+                            type === "number"
+                                ? e.target.valueAsNumber
+                                : e.target.value,
+                        );
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            confirm();
                         }
                     }}
                 />
-            )}
-            <button
-                onClick={() => {
-                    narration.input.value = tempValue || currentValue;
-                    setTempValue(undefined);
-                    queryClient.invalidateQueries({
-                        queryKey: [INTERFACE_DATA_USE_QUEY_KEY],
-                    });
-                }}
-            >
-                Confirm
-            </button>
-        </dialog>
+                <DialogFooter>
+                    <Button onClick={confirm}>Confirm</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 }
 ```
 
 ```vue tab="Vue"
 <template>
-    <dialog :open="open" style="pointer-events: auto;">
-        <p>{{ text }}</p>
-        <input v-if="open" :value="currentValue || ''" @input="onInput" />
-        <button @click="confirm">Confirm</button>
-    </dialog>
+    <Dialog :open="open">
+        <DialogContent @click.stop>
+            <DialogHeader>
+                <DialogTitle>Your input is needed</DialogTitle>
+                <DialogDescription v-if="text">{{ text }}</DialogDescription>
+            </DialogHeader>
+            <Input
+                :type="type === 'number' ? 'number' : 'text'"
+                v-model="value"
+                @keydown.enter="confirm"
+            />
+            <DialogFooter>
+                <Button @click="confirm">Confirm</Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { useQueryClient } from "@tanstack/vue-query";
 import { narration } from "@drincs/pixi-vn";
+import { Button } from "@/components/ui/button";
 import {
-    INTERFACE_DATA_USE_QUEY_KEY,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import {
+    INTERFACE_DATA_QUERY_KEY,
     useQueryDialogue,
     useQueryInputValue,
-} from "../../hooks/useQueryInterface";
+} from "@/hooks/useQueryInterface";
 
 const { data: dialogueData } = useQueryDialogue();
 const text = computed(() => dialogueData.value?.text);
@@ -649,18 +650,20 @@ const text = computed(() => dialogueData.value?.text);
 const { data: inputData } = useQueryInputValue();
 const open = computed(() => inputData.value?.isRequired ?? false);
 const currentValue = computed(() => inputData.value?.currentValue);
+const type = computed(() => inputData.value?.type);
 
-const tempValue = ref(undefined);
+const value = ref("");
+watch(open, (isOpen) => {
+    if (isOpen) {
+        value.value = currentValue.value ?? "";
+    }
+});
+
 const queryClient = useQueryClient();
 
-function onInput(e) {
-    tempValue.value = e.target?.value;
-}
-
 function confirm() {
-    narration.input.value = tempValue.value ?? currentValue.value;
-    tempValue.value = undefined;
-    queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_USE_QUEY_KEY] });
+    narration.input.value = value.value;
+    queryClient.invalidateQueries({ queryKey: [INTERFACE_DATA_QUERY_KEY] });
 }
 </script>
 ```
@@ -669,12 +672,11 @@ function confirm() {
 import { CharacterBaseModel, narration } from "@drincs/pixi-vn";
 import { useQuery } from "@tanstack/react-query";
 
-export const INTERFACE_DATA_USE_QUEY_KEY = "interface_data_use_quey_key";
+export const INTERFACE_DATA_QUERY_KEY = "pixi-vn-interface";
 
-const INPUT_VALUE_USE_QUEY_KEY = "input_value_use_quey_key";
 export function useQueryInputValue<T>() {
     return useQuery({
-        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, INPUT_VALUE_USE_QUEY_KEY],
+        queryKey: [INTERFACE_DATA_QUERY_KEY, "input"],
         queryFn: async () => ({
             isRequired: narration.input.isRequired,
             type: narration.input.type,
@@ -683,286 +685,23 @@ export function useQueryInputValue<T>() {
     });
 }
 
-const DIALOGUE_USE_QUEY_KEY = "dialogue_use_quey_key";
 export function useQueryDialogue() {
     return useQuery({
-        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, DIALOGUE_USE_QUEY_KEY],
-        queryFn: async ({ queryKey }) => {
-            let dialogue = narration.dialogue;
+        queryKey: [INTERFACE_DATA_QUERY_KEY, "dialogue"],
+        queryFn: async () => {
+            const dialogue = narration.dialogue;
             let text = dialogue?.text;
             if (Array.isArray(text)) {
                 text = text.join(" ");
             }
-            let character = dialogue?.character as
-                | string
-                | CharacterBaseModel
-                | undefined;
-            if (typeof character === "string") {
-                character = new CharacterBaseModel(character, {
-                    name: character,
-                });
-            }
+            const character =
+                typeof dialogue?.character === "string"
+                    ? new CharacterBaseModel(dialogue.character, {
+                          name: dialogue.character,
+                      })
+                    : dialogue?.character;
 
-            return {
-                text,
-                character,
-            };
-        },
-    });
-}
-```
-
-</Accordion>
-
-<Accordion title="Schermata dell'UI della storia" id="storia">
-
-```tsx tab="React"
-import { Box, Stack } from "@mui/system";
-import React from "react";
-import { useQueryNarrativeHistory } from "../use_query/useQueryInterface";
-
-export default function HistoryScreen() {
-    const { data = [] } = useQueryNarrativeHistory();
-
-    return (
-        <dialog
-            open={true}
-            style={{
-                height: "80%",
-            }}
-        >
-            <Box
-                sx={{
-                    display: "flex",
-                    flex: 1,
-                    minHeight: 0,
-                    px: 2,
-                    py: 3,
-                    overflowY: "scroll",
-                    flexDirection: "column-reverse",
-                    pointerEvents: "auto",
-                    overflow: "auto",
-                    height: "80%",
-                }}
-            >
-                <Stack spacing={2} justifyContent="flex-end">
-                    {data.map((data, index) => {
-                        return (
-                            <React.Fragment key={"history" + index}>
-                                <Stack direction="row" spacing={1.5}>
-                                    <img
-                                        src={data.icon}
-                                        loading="lazy"
-                                        alt=""
-                                        style={{
-                                            verticalAlign: "middle",
-                                            maxWidth: "50px",
-                                            maxHeight: "50px",
-                                            borderRadius: "50%",
-                                        }}
-                                    />
-                                    <Box sx={{ flex: 1 }}>
-                                        {data.character && data.character}
-                                        <div />
-                                        {data.text}
-                                    </Box>
-                                </Stack>
-                                <Stack direction="row" spacing={0.5}>
-                                    <Box sx={{ flex: 1 }}>
-                                        {data.choices &&
-                                            data.choices.map(
-                                                (choice, index) => {
-                                                    if (choice.hidden) {
-                                                        return null;
-                                                    }
-                                                    if (choice.isResponse) {
-                                                        return (
-                                                            <div
-                                                                key={
-                                                                    "choices-success" +
-                                                                    index
-                                                                }
-                                                                style={{
-                                                                    display:
-                                                                        "inline-block",
-                                                                    padding:
-                                                                        "5px 5px",
-                                                                    fontSize:
-                                                                        "12px",
-                                                                    borderRadius:
-                                                                        "25px",
-                                                                    backgroundColor:
-                                                                        "#21ff3e",
-                                                                }}
-                                                            >
-                                                                {choice.text}
-                                                            </div>
-                                                        );
-                                                    }
-                                                    return (
-                                                        <div
-                                                            key={
-                                                                "choices" +
-                                                                index
-                                                            }
-                                                            style={{
-                                                                display:
-                                                                    "inline-block",
-                                                                padding:
-                                                                    "5px 5px",
-                                                                fontSize:
-                                                                    "12px",
-                                                                borderRadius:
-                                                                    "25px",
-                                                                backgroundColor:
-                                                                    "#bcfdff",
-                                                            }}
-                                                        >
-                                                            {choice.text}
-                                                        </div>
-                                                    );
-                                                },
-                                            )}
-                                        {data.inputValue && (
-                                            <div
-                                                key={"choices-success" + index}
-                                                style={{
-                                                    display: "inline-block",
-                                                    padding: "5px 5px",
-                                                    fontSize: "12px",
-                                                    borderRadius: "25px",
-                                                    backgroundColor: "#b0c2b2",
-                                                }}
-                                            >
-                                                {data.inputValue.toString()}
-                                            </div>
-                                        )}
-                                    </Box>
-                                </Stack>
-                            </React.Fragment>
-                        );
-                    })}
-                </Stack>
-            </Box>
-        </dialog>
-    );
-}
-```
-
-```vue tab="Vue"
-<template>
-    <dialog open style="height: 80%;">
-        <div
-            style="display:flex;flex:1;min-height:0;padding:0 16px;overflow-y:scroll;flex-direction:column-reverse;pointer-events:auto;height:80%;"
-        >
-            <div
-                v-for="(item, index) in data"
-                :key="'history' + index"
-                style="margin-bottom: 12px;"
-            >
-                <div style="display:flex;gap:12px;align-items:center;">
-                    <img
-                        :src="item.icon"
-                        loading="lazy"
-                        alt=""
-                        style="vertical-align:middle;max-width:50px;max-height:50px;border-radius:50%;"
-                    />
-                    <div style="flex:1;">
-                        <div>{{ item.character }}</div>
-                        <div />
-                        <div>{{ item.text }}</div>
-                    </div>
-                </div>
-                <div style="display:flex;gap:8px;margin-top:8px;">
-                    <div style="flex:1;">
-                        <template v-if="item.choices">
-                            <template
-                                v-for="(choice, i) in item.choices"
-                                :key="'choice-' + i"
-                            >
-                                <span
-                                    v-if="!choice.hidden"
-                                    :style="
-                                        choice.isResponse
-                                            ? responseStyle
-                                            : choiceStyle
-                                    "
-                                    >{{ choice.text }}</span
-                                >
-                            </template>
-                        </template>
-                        <div v-if="item.inputValue" :style="inputStyle">
-                            {{ item.inputValue.toString() }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </dialog>
-</template>
-
-<script setup>
-import { computed } from "vue";
-import { useQueryNarrativeHistory } from "../use_query/useQueryInterface";
-
-const { data } = useQueryNarrativeHistory();
-const responseStyle = {
-    display: "inline-block",
-    padding: "5px 5px",
-    fontSize: "12px",
-    borderRadius: "25px",
-    backgroundColor: "#21ff3e",
-};
-const choiceStyle = {
-    display: "inline-block",
-    padding: "5px 5px",
-    fontSize: "12px",
-    borderRadius: "25px",
-    backgroundColor: "#bcfdff",
-};
-const inputStyle = {
-    display: "inline-block",
-    padding: "5px 5px",
-    fontSize: "12px",
-    borderRadius: "25px",
-    backgroundColor: "#b0c2b2",
-};
-</script>
-```
-
-```ts tab="hooks/useQueryInterface.ts"
-import {
-    CharacterBaseModel,
-    getCharacterById,
-    narration,
-} from "@drincs/pixi-vn";
-import { useQuery } from "@tanstack/react-query";
-
-export const INTERFACE_DATA_USE_QUEY_KEY = "interface_data_use_quey_key";
-
-const NARRATIVE_HISTORY_USE_QUEY_KEY = "narrative_history_use_quey_key";
-export function useQueryNarrativeHistory() {
-    return useQuery({
-        queryKey: [INTERFACE_DATA_USE_QUEY_KEY, NARRATIVE_HISTORY_USE_QUEY_KEY],
-        queryFn: () => {
-            return narration.narrativeHistory.map((step) => {
-                let character = step.dialoge?.character
-                    ? (getCharacterById(step.dialoge?.character) ??
-                      new CharacterBaseModel(step.dialoge?.character, {
-                          name: step.dialoge?.character,
-                      }))
-                    : undefined;
-                return {
-                    character: character?.name
-                        ? character.name +
-                          (character.surname ? " " + character.surname : "")
-                        : undefined,
-                    text: step.dialoge?.text || "",
-                    icon: character?.icon,
-                    choices: step.choices,
-                    inputValue: step.inputValue,
-                };
-            });
+            return { text, character };
         },
     });
 }
