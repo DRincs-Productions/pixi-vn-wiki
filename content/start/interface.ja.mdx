@@ -1,0 +1,154 @@
+---
+title: ユーザーインターフェース（UI）
+description: React、Vue、PixiJSなどの外部JavaScriptフレームワークを使用して、Pixi’VNでUI画面を構築・統合する方法。
+---
+
+<Accordions>
+
+<Accordion title="UIとは？" id="what-is-ui">
+
+UIとは、ユーザーインターフェース（UI）の略です。 これは、ユーザーがデジタルデバイス、アプリケーション、またはウェブサイトと対話するための視覚的要素やインタラクティブなコンポーネントを指します。 UIには、ボタン、メニュー、アイコン、テキストフィールド、レイアウトなど、ユーザーが操作するすべての要素が含まれます。 UIデザインの目標は、美しさと機能性を兼ね備えたインターフェースを作成し、ユーザーにシームレスで直感的な体験を提供することです。
+
+</Accordion>
+
+</Accordions>
+
+Pixi’VNは、ゲームUIを作成するための組み込みコンポーネントを提供しておらず、JavaScriptエコシステムにすでに存在するものを再発明することもありません。 特定のフレームワークに縛り付けるのではなく、UIを構築するために好きな外部JavaScriptフレームワークを自由に使用できるため、React、Vueなどのシステムを活用して、複雑でハイパフォーマンスな**UI画面**を作成できます。
+
+この柔軟性により、Pixi’VNはAI支援開発にも最適です。UIは独自システムではなく標準的で広く使われているフレームワークで構築されるため、AIコーディングアシスタントはこれらのツールをすでによく理解しており、UIコードを非常に効果的に生成、理解、修正できます。
+
+<Cards>
+    <DynamicLink className="no-underline @max-lg:col-span-full" href="/start/interface-react">
+        <Card title="React">
+            セットアップ、テンプレート、最適なUIライブラリを含め、Pixi’VNをReactと統合します。
+        </Card>
+    </DynamicLink>
+    <DynamicLink className="no-underline @max-lg:col-span-full" href="/start/interface-vue">
+        <Card title="Vue">
+            セットアップ、テンプレート、UIの例を含め、Pixi’VNをVueと統合します。
+        </Card>
+    </DynamicLink>
+    <DynamicLink className="no-underline @max-lg:col-span-full" href="/start/interface-pixijs">
+        <Card title="PixiJS">
+            PixiJSのレイヤーとコンポーネントを使用してカスタムUI画面を構築し、HTML UIと組み合わせます。
+        </Card>
+    </DynamicLink>
+</Cards>
+
+Pixi’VNは、他のJavaScriptフレームワークとの互換性を向上させるための機能を提供します:
+
+<Accordions>
+
+<Accordion title="HTML UIレイヤーの追加" id="adding-html-ui-layers">
+
+**HTML UIレイヤーとは何ですか？** HTML UIレイヤーとは、PixiJSキャンバスの上に追加され、キャンバスと同じ寸法を持つHTML要素です。 これにより、ReactやVueなどのJavaScriptフレームワークを使用してUIを作成できます。
+
+HTML UIレイヤーを追加するには、[`canvas.htmlLayers.add`](/jsdoc/pixi-vn/index/interfaces/CanvasHtmlLayersInterface#add)関数を使用できます。
+
+```ts tab="main.ts"
+const root = document.getElementById("root");
+if (!root) {
+    throw new Error("root element not found");
+}
+const htmlLayer = canvas.htmlLayers.add("ui", root, {
+    position: "absolute",
+    pointerEvents: "none",
+    userSelect: "none",
+});
+```
+
+```html tab="index.html"
+<!doctype html>
+<html lang="en">
+    <body>
+        <div id="root"></div>
+        <script type="module" src="/src/main.ts"></script>
+    </body>
+</html>
+```
+
+レイヤーのHTML要素を取得するには、[`canvas.htmlLayers.get`](/jsdoc/pixi-vn/index/interfaces/CanvasHtmlLayersInterface#get)関数を使用できます。
+
+HTML UIレイヤーを削除するには、[`canvas.htmlLayers.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasHtmlLayersInterface#remove)関数を使用できます。
+
+</Accordion>
+
+<Accordion title="HTML UIのインタラクションを有効にする方法？" id="how-to-enable-ui-interaction">
+
+デフォルトでは、HTML UIレイヤーのすべてのHTML要素には`pointer-events: none`スタイルが設定されています。 これは、HTML要素がマウスやタッチイベントを一切傍受せず、PixiJSキャンバスがすべてのイベントを受け取れることを意味します。 これは、キャンバスに画像や動画を表示する際に、UIがそれを妨げないようにしたい場合に便利です。
+
+そのため、ユーザーと対話させたいコンポーネントにのみ`pointer-events: auto`スタイルを設定する必要があります。
+
+例：
+
+```css tab="Shadcn - Tailwind CSS" title="styles.css"
+@layer components {
+    [data-slot="button"],
+    [data-slot="card"],
+    [data-slot="resizable-handle"],
+    [data-slot="scroll-area"],
+    [data-slot="scroll-area-scrollbar"],
+    [data-slot="toggle"] {
+        pointer-events: auto;
+    }
+}
+```
+
+```tsx tab="React"
+export default function NextButton() {
+    return (
+        <button
+            style={{
+                pointerEvents: "auto",
+            }}
+        >
+            Next
+        </button>
+    );
+}
+```
+
+```vue tab="Vue"
+<template>
+    <button style="pointer-events: auto;">Next</button>
+</template>
+```
+
+</Accordion>
+
+<Accordion title="PixiJS UIレイヤーの追加" id="adding-pixijs-ui-layers">
+
+**PixiJS UIレイヤーとは何ですか？** これはPixiJSのContainerです。 Pixi’VNの機能専用のメインContainerとは異なり:
+
+* UIの現在の状態はセーブデータに含まれません。
+* パフォーマンスが向上します。 Pixi’VNはそれに対して一切のチェックを行いません。
+* Pixi’VNの機能は使用できません。
+* PixiJSのコアコンポーネントであるため、PixiJS互換のすべてのコンポーネントを追加できます。
+
+PixiJS UIレイヤーを追加するには、[`canvas.layers.add`](/jsdoc/pixi-vn/index/interfaces/CanvasLayersInterface#add)関数を使用できます。
+
+例：
+
+```ts title="src/main.ts"
+const container = canvas.layers.add("ui");
+```
+
+レイヤーのPixiJS Containerを取得するには、[`canvas.layers.get`](/jsdoc/pixi-vn/index/interfaces/CanvasLayersInterface#get)関数を使用できます。
+
+PixiJS UIレイヤーを削除するには、[`canvas.layers.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasLayersInterface#remove)関数を使用できます。
+
+</Accordion>
+
+</Accordions>
+
+{/* ![Architecture](/arch.png) */}
+
+## UIとキャンバスの違い
+
+Pixi’VNの設計思想として、UIとキャンバスは2つの独立した別々の要素です。 UIはキャンバスの上にあり、ボタンやフォームなどを作成するために使用されます。 キャンバスは画像や動画などを表示するために使用されます。
+
+キャンバスの現在の状態に関するすべての情報はセーブデータに含まれており、以前のステップの状態を復元することができます。 UIの現在の状態はセーブデータに含まれません。 そのため、必要な情報は<DynamicLink href="/start/interface-connect-storage">自分で保存して管理する</DynamicLink>必要があり、<DynamicLink href="/start/storage">ゲームストレージ</DynamicLink>またはブラウザストレージに保存します。
+
+キャンバスでは、各ステップでコンポーネントを追加できます。 UIではそれができません。代わりに、複数の<DynamicLink href="/start/interface-connect-storage">「画面」を作成し、それらの間を移動する</DynamicLink>ことができます。
+
+キャンバスでは、Pixi’VNのコンポーネントのみを追加できます。 UIでは、任意のHTML/PixiJSコンポーネントを追加したり、任意のUIコンポーネントライブラリを使用したりできるため、はるかに複雑なインターフェースを作成できます。

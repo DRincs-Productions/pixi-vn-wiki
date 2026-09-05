@@ -1,0 +1,570 @@
+---
+title: Transizioni
+description: Scopri gli effetti di transizione integrati in Pixi’VN per mostrare e rimuovere i componenti del canvas, comprese le transizioni dissolve, fade, move, push e zoom. Scopri come personalizzare o creare le tue transizioni per effetti visivi avanzati nel flusso del tuo gioco.
+---
+
+Pixi’VN offre vari effetti di transizione per mostrare o rimuovere un <DynamicLink href="/start/canvas-components">componente del canvas</DynamicLink>, oltre alla possibilità di [creare le tue transizioni](#custom-functionality).
+
+<Accordions>
+
+<Accordion title="Dissolve" id="dissolvenza">
+
+La transizione dissolve:
+
+* Quando mostra un componente, aumenta gradualmente il suo `alpha`. Se esiste già un componente con lo stesso alias, verrà rimosso quando la transizione del nuovo componente è completa.
+* Quando rimuove un componente, diminuisce gradualmente il suo `alpha`.
+
+La funzione [`showWithDissolve`](/jsdoc/pixi-vn/index/functions/showWithDissolve) mostra un elemento del canvas con una transizione dissolve.
+
+La funzione [`removeWithDissolve`](/jsdoc/pixi-vn/index/functions/removeWithDissolve) rimuove un elemento del canvas con una transizione dissolve.
+
+```ts tab="content/labels/start.label.ts"
+import {
+    newLabel,
+    removeWithDissolve,
+    showWithDissolve,
+} from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showWithDissolve("alien", "egg_head");
+        await showWithDissolve("human", {
+            value: ["m01-body", "m01-eyes", "m01-mouth"],
+            options: { scale: 0.5, xAlign: 0.7 },
+        });
+    },
+    async () => {
+        await showWithDissolve("alien", "flower_top");
+        removeWithDissolve("human");
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                {
+                    alias: "m01-body",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-body.webp",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-smile.webp",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-smile00.webp",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<PixiVnExample path="canvas/dissolve-transition" />
+
+</Accordion>
+
+<Accordion title="Dissolvenza" id="fade">
+
+La transizione fade:
+
+* Quando mostra un componente, aumenta gradualmente il suo `alpha`. Se esiste già un componente con lo stesso alias, il componente esistente verrà rimosso con un effetto fade-out prima che il nuovo componente venga mostrato.
+* Quando rimuove un componente, diminuisce gradualmente il suo `alpha`.
+
+La funzione [`showWithFade`](/jsdoc/pixi-vn/index/functions/showWithFade) mostra un elemento del canvas con una transizione fade.
+
+La funzione [`removeWithFade`](/jsdoc/pixi-vn/index/functions/removeWithFade) rimuove un elemento del canvas con una transizione fade.
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, removeWithFade, showWithFade } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showWithFade("alien", "egg_head", { duration: 5 });
+        await showWithFade("human", {
+            value: ["m01-body", "m01-eyes", "m01-mouth"],
+            options: { scale: 0.5, xAlign: 0.7 },
+        });
+    },
+    async () => {
+        await showWithFade("alien", "flower_top");
+        removeWithFade("human");
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                {
+                    alias: "m01-body",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-body.webp",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-smile.webp",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-smile00.webp",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<PixiVnExample path="canvas/fade-transition" />
+
+</Accordion>
+
+<Accordion title="Move avanti/indietro" id="move-in-out">
+
+La transizione move avanti/indietro:
+
+* Quando mostra un componente, lo sposta dall'esterno (destra, sinistra, alto o basso) fino alla sua posizione sul canvas. Se esiste già un componente con lo stesso alias, il componente esistente verrà rimosso con un effetto move-out prima che il nuovo componente venga mostrato.
+* Quando rimuove un componente, lo sposta dalla sua posizione verso l'esterno del canvas.
+
+La funzione [`moveIn`](/jsdoc/pixi-vn/index/functions/moveIn) mostra un elemento del canvas con una transizione move-in.
+
+La funzione [`moveOut`](/jsdoc/pixi-vn/index/functions/moveOut) rimuove un elemento del canvas con una transizione move-out.
+
+```ts tab="content/labels/start.label.ts"
+import { moveIn, moveOut, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await moveIn("alien", "egg_head", { direction: "up" });
+        await moveIn("human", {
+            value: ["m01-body", "m01-eyes", "m01-mouth"],
+            options: { scale: 0.5, xAlign: 0.7 },
+        });
+    },
+    async () => {
+        await moveIn("alien", "flower_top", { direction: "up" });
+        moveOut("human");
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                {
+                    alias: "m01-body",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-body.webp",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-smile.webp",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-smile00.webp",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<PixiVnExample path="canvas/movein-transition" />
+
+</Accordion>
+
+<Accordion title="Push avanti/indietro" id="push-in-out">
+
+La transizione push avanti/indietro:
+
+* Quando mostra un componente, lo sposta dall'esterno (destra, sinistra, alto o basso) fino alla sua posizione sul canvas. Se esiste già un componente con lo stesso alias, il componente esistente verrà rimosso con un effetto push-out mentre il nuovo componente si sta spostando in entrata.
+* Quando rimuove un componente, lo sposta dalla sua posizione verso l'esterno del canvas.
+
+La funzione [`pushIn`](/jsdoc/pixi-vn/index/functions/pushIn) mostra un elemento del canvas con una transizione push-in.
+
+La funzione [`pushOut`](/jsdoc/pixi-vn/index/functions/pushOut) rimuove un elemento del canvas con una transizione push-out.
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, pushIn, pushOut } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await pushIn("alien", "egg_head");
+        await pushIn("human", {
+            value: ["m01-body", "m01-eyes", "m01-mouth"],
+            options: { scale: 0.5, xAlign: 0.7 },
+        });
+    },
+    async () => {
+        await pushIn("alien", "flower_top", { direction: "up" });
+        pushOut("human");
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                {
+                    alias: "m01-body",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-body.webp",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-smile.webp",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-smile00.webp",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<PixiVnExample path="canvas/pushin-transition" />
+
+</Accordion>
+
+<Accordion title="Zoom avanti/indietro" id="zoom-in-out">
+
+La transizione zoom avanti/indietro:
+
+* Quando mostra un componente, lo scala da 0 (dall'esterno del canvas) fino alla sua scala e posizione originali. Se esiste già un componente con lo stesso alias, il componente esistente verrà rimosso quando la transizione del nuovo componente è completa.
+* Quando rimuove un componente, lo scala dalla sua dimensione originale a 0, spostandolo all'esterno del canvas.
+
+La funzione [`zoomIn`](/jsdoc/pixi-vn/index/functions/zoomIn) mostra un elemento del canvas con una transizione zoom-in.
+
+La funzione [`zoomOut`](/jsdoc/pixi-vn/index/functions/zoomOut) rimuove un elemento del canvas con una transizione zoom-out.
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, zoomIn, zoomOut } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await zoomIn("alien", "egg_head");
+        await zoomIn("human", {
+            value: ["m01-body", "m01-eyes", "m01-mouth"],
+            options: { scale: 0.5, xAlign: 0.7 },
+        });
+    },
+    async () => {
+        await zoomIn("alien", "flower_top");
+        zoomOut("human");
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "egg_head",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "flower_top",
+                    src: "https://pixijs.com/assets/flowerTop.png",
+                },
+                {
+                    alias: "m01-body",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-body.webp",
+                },
+                {
+                    alias: "m01-eyes",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-eyes-smile.webp",
+                },
+                {
+                    alias: "m01-mouth",
+                    src: "https://raw.githubusercontent.com/DRincs-Productions/pixi-vn-bucket/refs/heads/main/breakdown/m01/m01-mouth-smile00.webp",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<PixiVnExample path="canvas/zoomin-transition" />
+
+</Accordion>
+
+</Accordions>
+
+## Funzionalità personalizzate
+
+<Callout type="info">
+
+Il team di Pixi’VN accoglie con favore nuove proposte e contributi per rendere questa libreria ancora più completa. Sentiti libero di condividere o proporre la tua transizione nella chat qui sotto!
+
+</Callout>
+
+Creare la tua transizione è semplice: usa <DynamicLink href="/start/canvas-motion">`canvas.animate`</DynamicLink> per definire effetti personalizzati.
+
+Per aiutarti a iniziare, ecco una versione semplificata di [`showWithDissolve`](/jsdoc/pixi-vn/index/functions/showWithDissolve):
+
+```ts title="canvas/transitions/showWithDissolve.ts"
+import { canvas, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn";
+import { AnimationOptions } from "@drincs/pixi-vn/motion";
+
+export default async function showWithDissolve(
+    alias: string,
+    component: ImageSprite,
+    props: AnimationOptions = {},
+    priority?: UPDATE_PRIORITY,
+): Promise<string[] | undefined> {
+    let { completeOnContinue = true, ...options } = props;
+    // add the new component
+    canvas.add(alias, component);
+    // edit the properties of the new component
+    component.alpha = 0;
+    // create the ticker and play it
+    let id = canvas.animate(
+        alias,
+        {
+            alpha: 1,
+        },
+        {
+            ...options,
+            completeOnContinue,
+        },
+        priority,
+    );
+    // load the image if the image is not loaded
+    if (component.haveEmptyTexture) {
+        await component.load();
+    }
+    // return the ids of the tickers
+    if (id) {
+        return [id];
+    }
+}
+```
+
+### Sostituire o rimuovere il componente precedente
+
+Se esiste già un componente con lo stesso alias, puoi lasciare che venga sostituito, oppure:
+
+<Accordions>
+
+<Accordion title="Rimuovere il componente precedente al termine" id="remove-the-previous-component-after-completion">
+
+Per rimuovere il componente precedente quando la transizione del nuovo componente è completa, usa la <DynamicLink href="/start/canvas-motion">proprietà `aliasToRemoveAfter`</DynamicLink>.
+
+```ts title="canvas/transitions/showWithDissolve.ts"
+import { canvas, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn";
+import { AnimationOptions } from "@drincs/pixi-vn/motion";
+
+export default async function showWithDissolve(
+    alias: string,
+    component: ImageSprite,
+    props: AnimationOptions = {},
+    priority?: UPDATE_PRIORITY,
+): Promise<string[] | undefined> {
+    let { completeOnContinue = true, ...options } = props;
+    // check if the alias is already exist // [!code ++]
+    let oldComponentAlias: string | undefined = undefined; // [!code ++]
+    let oldComponent = canvas.find(alias); // [!code ++]
+    if (oldComponent) {
+        // [!code ++]
+        oldComponentAlias = alias + "_temp_disolve"; // [!code ++]
+        canvas.editAlias(alias, oldComponentAlias); // [!code ++]
+    } // [!code ++]
+    // add the new component and transfer the properties of the old component to the new component
+    canvas.add(alias, component);
+    oldComponent?.parent?.setChildIndex(
+        oldComponent,
+        oldComponent.parent.getChildIndex(oldComponent) - 0.1,
+    ); // [!code ++]
+    oldComponentAlias &&
+        canvas.copyCanvasElementProperty(oldComponentAlias, alias); // [!code ++]
+    oldComponentAlias &&
+        canvas.tickers.transfer(oldComponentAlias, alias, "duplicate"); // [!code ++]
+    // edit the properties of the new component
+    component.alpha = 0;
+    // create the ticker and play it
+    let id = canvas.animate(
+        alias,
+        {
+            alpha: 1,
+        },
+        {
+            ...options,
+            completeOnContinue,
+        },
+        priority,
+    );
+    // load the image if the image is not loaded
+    if (component.haveEmptyTexture) {
+        await component.load();
+    }
+    // return the ids of the tickers
+    if (id) {
+        return [id];
+    }
+}
+```
+
+</Accordion>
+
+<Accordion title="Rimuovere il componente precedente con una transizione" id="remove-the-previous-component-with-a-transition">
+
+Per rimuovere il componente precedente con una transizione, esegui un'altra animazione con <DynamicLink href="/start/canvas-motion">`canvas.animate`</DynamicLink> e usa la <DynamicLink href="/start/canvas-motion">proprietà `tickerIdToResume`</DynamicLink>.
+
+```ts title="canvas/transitions/showWithFade.ts"
+import { canvas, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn";
+import { AnimationOptions } from "@drincs/pixi-vn/motion";
+
+export default async function showWithDissolve(
+    alias: string,
+    component: ImageSprite,
+    props: AnimationOptions = {},
+    priority?: UPDATE_PRIORITY,
+): Promise<string[] | undefined> {
+    let { completeOnContinue = true, ...options } = props;
+    // check if the alias is already exist // [!code ++]
+    let oldComponentAlias: string | undefined = undefined; // [!code ++]
+    let oldComponent = canvas.find(alias); // [!code ++]
+    if (oldComponent) {
+        // [!code ++]
+        return showWithDissolve(alias, component, props, priority); // [!code ++]
+    } // [!code ++]
+    let oldComponentAlias = alias + "_temp_fade"; // [!code ++]
+    canvas.editAlias(alias, oldComponentAlias); // [!code ++]
+    // add the new component and transfer the properties of the old component to the new component // [!code ++]
+    canvas.add(alias, component);
+    oldComponent?.parent?.setChildIndex(
+        oldComponent,
+        oldComponent.parent.getChildIndex(oldComponent) - 0.1,
+    ); // [!code ++]
+    oldComponentAlias &&
+        canvas.copyCanvasElementProperty(oldComponentAlias, alias); // [!code ++]
+    oldComponentAlias &&
+        canvas.tickers.transfer(oldComponentAlias, alias, "duplicate"); // [!code ++]
+    // edit the properties of the new component
+    component.alpha = 0;
+    // create the ticker and play it
+    let id = canvas.animate(
+        alias,
+        {
+            alpha: 1,
+        },
+        {
+            ...options,
+            completeOnContinue,
+        },
+        priority,
+    );
+    if (id) {
+        // [!code ++]
+        // pause the ticker // [!code ++]
+        canvas.tickers.pause({ id: id }); // [!code ++]
+        // remove the old component // [!code ++]
+        canvas.animate(
+            // [!code ++]
+            alias, // [!code ++]
+            {
+                // [!code ++]
+                alpha: 0, // [!code ++]
+            }, // [!code ++]
+            {
+                // [!code ++]
+                ...options, // [!code ++]
+                tickerIdToResume: id, // [!code ++]
+                aliasToRemoveAfter: oldComponentAlias, // [!code ++]
+                completeOnContinue, // [!code ++]
+            }, // [!code ++]
+            priority, // [!code ++]
+        ); // [!code ++]
+    } // [!code ++]
+    // load the image if the image is not loaded
+    if (component.haveEmptyTexture) {
+        await component.load();
+    }
+    // return the ids of the tickers
+    if (id) {
+        return [id];
+    }
+}
+```
+
+</Accordion>
+
+</Accordions>

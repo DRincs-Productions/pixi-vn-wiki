@@ -1,0 +1,49 @@
+---
+title: PixiJS UI
+description: PixiJS 레이어와 컴포넌트를 사용하여 Pixi’VN에서 사용자 지정 UI 화면을 만들고, 이를 HTML UI와 결합하는 방법.
+---
+
+<DynamicLink href="/start/canvas#pixijs-differences">여기</DynamicLink>에서 더 자세히 설명한 것처럼, Pixi’VN의 전체 렌더링 부분은 PixiJS를 기반으로 합니다. <DynamicLink href="/start/interface#adding-pixijs-ui-layers">PixiJS Layers</DynamicLink>를 활용하면 PixiJS를 사용하여 사용자 지정 UI 화면을 만들 수 있습니다.
+
+:::tip[Templates]
+
+모든 템플릿에서 시작 시 "ui"라는 이름의 PixiJS Layer가 생성됩니다. 이 레이어를 사용하여 UI 화면을 만들 수 있습니다.
+
+:::
+
+HTML Layer 컴포넌트를 PixiJS Layer 컴포넌트와 결합할 수도 있습니다. 이를 위해 HTML 화면이 처음 렌더링될 때 PixiJS 컴포넌트를 추가하고, 화면이 닫힐 때 PixiJS Layer를 정리하세요.
+
+예를 들어:
+
+```tsx title="React"
+import { useEffect } from "react";
+import { Assets, canvas } from "@drincs/pixi-vn";
+import { Sprite } from "pixi.js";
+
+export default function MyScreen() {
+    useEffect(() => {
+        let layer = canvas.layers.get("ui");
+        if (layer) {
+            const texture = await Assets.load(
+                "https://pixijs.com/assets/bunny.png",
+            );
+            const bunny = new Sprite(texture);
+            layer.addChild(bg);
+        }
+
+        return () => {
+            canvas.layers.get("ui")?.removeChildren();
+        };
+    });
+
+    return null;
+}
+```
+
+## 최고의 PixiJS 컴포넌트 라이브러리
+
+아름다운 사용자 인터페이스를 만들기 위해 최고의 PixiJS 컴포넌트 라이브러리 중 일부를 사용할 수 있습니다:
+
+* [PixiJS](https://pixijs.com/)
+* [PixiUI](https://github.com/pixijs/ui)
+* [PixiLayout](https://github.com/pixijs/layout)

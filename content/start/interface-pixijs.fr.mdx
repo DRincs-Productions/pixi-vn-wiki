@@ -1,0 +1,49 @@
+---
+title: PixiJS UI
+description: Comment utiliser les calques et composants PixiJS pour créer des écrans UI personnalisés dans Pixi’VN, et les combiner avec l'UI HTML.
+---
+
+Comme expliqué plus en détail <DynamicLink href="/start/canvas#pixijs-differences">ici</DynamicLink>, l'ensemble du rendu de Pixi’VN est basé sur PixiJS. En tirant parti des <DynamicLink href="/start/interface#adding-pixijs-ui-layers">PixiJS Layers</DynamicLink>, vous pouvez utiliser PixiJS pour créer des écrans UI personnalisés.
+
+:::tip[Templates]
+
+Dans tous les templates, un PixiJS Layer appelé "ui" est créé au démarrage. Vous pouvez utiliser ce calque pour créer vos écrans UI.
+
+:::
+
+Vous pouvez également combiner des composants HTML Layer avec des composants PixiJS Layer. Pour ce faire, ajoutez les composants PixiJS lors du premier rendu d'un écran HTML, puis nettoyez le PixiJS Layer lorsque l'écran est fermé.
+
+Par exemple :
+
+```tsx title="React"
+import { useEffect } from "react";
+import { Assets, canvas } from "@drincs/pixi-vn";
+import { Sprite } from "pixi.js";
+
+export default function MyScreen() {
+    useEffect(() => {
+        let layer = canvas.layers.get("ui");
+        if (layer) {
+            const texture = await Assets.load(
+                "https://pixijs.com/assets/bunny.png",
+            );
+            const bunny = new Sprite(texture);
+            layer.addChild(bg);
+        }
+
+        return () => {
+            canvas.layers.get("ui")?.removeChildren();
+        };
+    });
+
+    return null;
+}
+```
+
+## Meilleures bibliothèques de composants PixiJS
+
+Pour créer une belle interface utilisateur, vous pouvez utiliser certaines des meilleures bibliothèques de composants PixiJS :
+
+* [PixiJS](https://pixijs.com/)
+* [PixiUI](https://github.com/pixijs/ui)
+* [PixiLayout](https://github.com/pixijs/layout)

@@ -1,0 +1,598 @@
+---
+title: Minigames
+description: Guide to integrating minigames into Pixi’VN, including best practices, lifecycle management, and example implementations using PixiJS and React.
+---
+
+:::tip[AI]
+
+You can use the button above to create your own minigame, with AI.
+
+:::
+
+The beauty of an interactive story compared to normal text is that you can take a break and interact with minigames related to the story.
+
+:::tip
+
+Minigames in visual novels are typically launched during the narrative. To switch between the narrative UI and the minigame UI, it is recommended to link the minigame to a route (e.g., "/minigame/snake") and navigate to it from the story. More information is available <DynamicLink href="/start/interface-navigate">here</DynamicLink>.
+
+:::
+
+Here are some tips:
+
+* Use PixiJS directly — either the `pixi.js` package itself or the `@drincs/pixi-vn/pixi.js` submodule that re-exports it — with components such as `Graphics`, `Sprite`, and `Text`, combined with <DynamicLink href="/start/interface#adding-pixijs-ui-layers">PixiJS Layers</DynamicLink> to create a separate layer for your minigame, managed independently from the main visual novel interface.
+* Use hotkeys to handle keyboard input for your minigame controls. See <DynamicLink href="/start/hotkeys">Hotkeys</DynamicLink> to learn how to set them up.
+* It is always recommended not to use PixiJS to build the UI (buttons, score displays, game over messages, ...); use a framework such as <DynamicLink href="/start/interface-react">React</DynamicLink> or <DynamicLink href="/start/interface-vue">Vue</DynamicLink> instead.
+* Saving and restoring the minigame's current state is the developer's responsibility.
+* Since a minigame is its own route, a project usually ends up with more than one of them under the same `/minigame` path (e.g. `/minigame/snake`, `/minigame/quiz`); use <DynamicLink href="/start/interface-navigate">TanStack Router</DynamicLink>'s file-based routing to share logic between them instead of duplicating it in every minigame (see below).
+* Starting a minigame is nothing more than navigating to its route from the story; if it needs a parameter (a difficulty, a level id, ...), pass it through that same route (see below).
+
+<Accordions>
+
+<Accordion title="Starting a minigame" id="minigame-start">
+
+Since a minigame lives on its own route (see above), starting it is just a navigation — normally
+triggered from a step, using the `navigate` function already available on
+
+<DynamicLink href="/start/labels#steplabelprops">`StepLabelProps`</DynamicLink>(
+<DynamicLink href="/start/interface-navigate">set up once</DynamicLink> in every
+official template):
+
+```ts title="content/labels/start.label.ts"
+export const startLabel = newLabel("start", [
+    ({ navigate }) => {
+        navigate({ to: "/minigame/snake" });
+    },
+]);
+```
+
+When the minigame ends, navigate back to the narrative route the same way — typically from the
+`onExit` callback passed to `useMinigame` (see below), or from a button in the minigame's
+game-over UI.
+
+</Accordion>
+
+<Accordion title="Passing parameters to a minigame (e.g. difficulty)" id="minigame-params">
+
+A minigame is often configurable from the story — a difficulty level, a level id, a seed, ... Since
+it's reached by navigating to a route, these are passed exactly like any other route parameter,
+using <DynamicLink href="/start/interface-navigate">TanStack Router</DynamicLink>: as a **search
+param** (query string) for optional/configuration values, or a **path param** when the value is
+really part of the route's identity.
+
+```tsx tab="Search param" title="src/routes/minigame/snake.tsx" groupId="minigame_param_style"
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/minigame/snake")({
+    validateSearch: (search: Record<string, unknown>) => ({
+        difficulty:
+            search.difficulty === "easy" || search.difficulty === "hard"
+                ? search.difficulty
+                : "normal",
+    }),
+    component: SnakeGame,
+});
+
+function SnakeGame() {
+    const { difficulty } = Route.useSearch();
+    // e.g. use `difficulty` to change `moveInterval` or scoring
+    return null;
+}
+```
+
+```tsx tab="Path param" title="src/routes/minigame/snake.$difficulty.tsx" groupId="minigame_param_style"
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/minigame/snake/$difficulty")({
+    component: SnakeGame,
+});
+
+function SnakeGame() {
+    const { difficulty } = Route.useParams();
+    return null;
+}
+```
+
+And from the step that launches the minigame, pass the value the same way:
+
+```ts tab="Search param" title="content/labels/start.label.ts" groupId="minigame_param_style"
+export const startLabel = newLabel("start", [
+    ({ navigate }) => {
+        navigate({ to: "/minigame/snake", search: { difficulty: "hard" } });
+    },
+]);
+```
+
+```ts tab="Path param" title="content/labels/start.label.ts" groupId="minigame_param_style"
+export const startLabel = newLabel("start", [
+    ({ navigate }) => {
+        navigate({
+            to: "/minigame/snake/$difficulty",
+            params: { difficulty: "hard" },
+        });
+    },
+]);
+```
+
+</Accordion>
+
+<Accordion title="Sharing menu and logic between multiple minigame routes" id="minigame-routes-layout">
+
+Since a minigame is its own route, a project usually ends up with more than one of them under the
+same `/minigame` path (e.g. `/minigame/snake`, `/minigame/quiz`). With
+
+<DynamicLink href="/start/interface-navigate">TanStack Router</DynamicLink>'s
+file-based routing, you can factor out anything shared by every minigame
+(pausing narration/audio while it's open, common hotkeys, a shared HUD wrapper,
+...) into a single pathless layout route, `src/routes/minigame.tsx`, the same
+way the official templates already do for `/game` (`src/routes/game.tsx` wraps
+every `/game/*` screen with `<Outlet />
+`):
+
+```tsx title="src/routes/minigame.tsx"
+import { createFileRoute, Outlet } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/minigame")({
+    component: MinigameLayout,
+});
+
+function MinigameLayout() {
+    // hooks/providers shared by every minigame go here (e.g. pause narration audio)
+    return <Outlet />;
+}
+```
+
+Each individual minigame then only needs its own file under `src/routes/minigame/`, which
+
+<DynamicLink href="/start/interface-navigate">TanStack Router</DynamicLink>
+turns into the actual route:
+
+```tsx title="src/routes/minigame/snake.tsx"
+import { createFileRoute } from "@tanstack/react-router";
+import SnakeGame from "@/screens/minigames/SnakeGame";
+
+export const Route = createFileRoute("/minigame/snake")({
+    component: SnakeGame,
+});
+```
+
+</Accordion>
+
+</Accordions>
+
+:::tip[Templates]
+
+`useMinigame` is a custom hook that helps you manage the lifecycle of a minigame, including starting, updating, and cleaning up resources. It is present in all templates.
+
+:::
+
+Por ejemplo:
+
+```tsx tab="React" title="src/routes/minigame/example.tsx"
+import { Layer } from "@drincs/pixi-vn";
+import { Graphics, Ticker } from "@drincs/pixi-vn/pixi.js";
+import { createFileRoute } from "@tanstack/react-router";
+import { useCallback, useMemo, useState } from "react";
+import { useHotkey } from "@tanstack/react-hotkeys";
+import useMinigame from "@/lib/hooks/minigame-hooks";
+
+export const Route = createFileRoute("/minigame/example")({
+    component: MiniGame,
+});
+
+function MiniGame() {
+    const [displayScore, setDisplayScore] = useState(0);
+    const [gameOver, setGameOver] = useState(false);
+
+    const ticker = useMemo(() => {
+        const ticker = new Ticker();
+
+        const endGame = () => {
+            ticker.stop();
+            setGameOver(true);
+        };
+
+        ticker.add(({ deltaMS }) => {
+            // Update game logic here
+        });
+
+        return ticker;
+    }, []);
+
+    useHotkey(
+        "ArrowUp",
+        () => {
+            // Handle key down events for game controls
+        },
+        { enabled: !gameOver },
+    );
+
+    const game = useCallback(
+        (layer: Layer) => {
+            ticker.start();
+        },
+        [ticker], // They must not be changed during the game otherwise the game will restart
+    );
+
+    const options = useMemo(
+        () => ({
+            onExit() {
+                ticker.stop();
+                ticker.destroy();
+            },
+        }),
+        [ticker], // They must not be changed during the game otherwise the game will restart
+    );
+
+    const { loading } = useMinigame(game, options);
+
+    return (
+        <>
+            <div
+                style={{
+                    position: "absolute",
+                    top: 10,
+                    left: 10,
+                    color: "white",
+                    fontSize: "24px",
+                    background: "rgba(0,0,0,0.5)",
+                    padding: "5px 10px",
+                    borderRadius: "5px",
+                }}
+            >
+                Score: {displayScore}
+            </div>
+
+            {gameOver && (
+                <div
+                    style={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        color: "red",
+                        fontSize: "48px",
+                        background: "rgba(0,0,0,0.7)",
+                        padding: "20px 40px",
+                        borderRadius: "10px",
+                    }}
+                >
+                    GAME OVER
+                </div>
+            )}
+        </>
+    );
+}
+```
+
+```ts tab="lib/hooks/minigame-hooks.ts"
+import { CANVAS_MINIGAME_LAYER_NAME } from "@/constants";
+import { canvas, type Layer } from "@drincs/pixi-vn";
+import { Container } from "pixi.js";
+import { useEffect, useRef } from "react";
+
+export function useMinigame(
+    game: (layer: Layer) => void,
+    props?: {
+        onStart?: () => Promise<void>;
+        onExit?: (layer: Layer) => void;
+    },
+) {
+    const loading = useRef(false);
+
+    // Keep latest callbacks in refs to avoid effect restarts
+    const startRef = useRef<() => Promise<void>>(
+        props?.onStart ?? (async () => {}),
+    );
+    const exitRef = useRef<(layer: Layer) => void>(props?.onExit);
+
+    // Update refs when props change, without changing effect identity
+    useEffect(() => {
+        startRef.current = props?.onStart ?? (async () => {});
+    }, [props?.onStart]);
+
+    useEffect(() => {
+        exitRef.current = props?.onExit;
+    }, [props?.onExit]);
+
+    useEffect(() => {
+        // Create the layer and start the game once
+        loading.current = true;
+        const layer = canvas.layers.add(
+            CANVAS_MINIGAME_LAYER_NAME,
+            new Container(),
+        );
+        if (!layer) {
+            console.error("Failed to create UI layer for minigame");
+            return;
+        }
+
+        let cancelled = false;
+
+        startRef.current().then(() => {
+            if (cancelled) return;
+            loading.current = false;
+            game(layer);
+        });
+
+        return () => {
+            cancelled = true;
+            canvas.layers.remove(CANVAS_MINIGAME_LAYER_NAME);
+            if (exitRef.current) {
+                exitRef.current(layer);
+            }
+        };
+    }, [game]);
+
+    return { loading };
+}
+```
+
+## Examples
+
+:::tip
+
+El equipo de Pixi’VN da la bienvenida a nuevas propuestas y contribuciones para hacer esta biblioteca aún más completa. Feel free to share or propose your minigame implementations in the chat below!
+
+:::
+
+<Accordions>
+
+<Accordion title="Snake (minigame)" id="snake">
+
+```tsx tab="React" title="src/routes/minigame/snake.tsx"
+import { canvas, Layer } from "@drincs/pixi-vn";
+import { Graphics, Ticker } from "pixi.js";
+import { createFileRoute } from "@tanstack/react-router";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { useHotkeys } from "@tanstack/react-hotkeys";
+import useMinigame from "@/lib/hooks/minigame-hooks";
+
+const gridSize = 20;
+const moveInterval = 150;
+
+export const Route = createFileRoute("/minigame/snake")({
+    component: SnakeGame,
+});
+
+function SnakeGame() {
+    const [displayScore, setDisplayScore] = useState(0);
+    const [gameOver, setGameOver] = useState(false);
+
+    const directionRef = useRef({ x: 1, y: 0 });
+    const setDirection = (x: number, y: number) => {
+        if (
+            (x !== 0 && directionRef.current.x === 0) ||
+            (y !== 0 && directionRef.current.y === 0)
+        ) {
+            directionRef.current = { x, y };
+        }
+    };
+
+    useHotkeys([
+        {
+            hotkey: "ArrowUp",
+            callback: () => setDirection(0, -1),
+            options: { enabled: !gameOver },
+        },
+        {
+            hotkey: "ArrowDown",
+            callback: () => setDirection(0, 1),
+            options: { enabled: !gameOver },
+        },
+        {
+            hotkey: "ArrowLeft",
+            callback: () => setDirection(-1, 0),
+            options: { enabled: !gameOver },
+        },
+        {
+            hotkey: "ArrowRight",
+            callback: () => setDirection(1, 0),
+            options: { enabled: !gameOver },
+        },
+    ]);
+
+    // Populated by `game(layer)` once the minigame layer is created
+    const layerRef = useRef<Layer>(null!);
+    const snakeRef = useRef<Graphics[]>([]);
+    const appleRef = useRef<Graphics>(null!);
+
+    const placeApple = useCallback(() => {
+        const apple = appleRef.current;
+        const cols = Math.floor(canvas.width / gridSize);
+        const rows = Math.floor(canvas.height / gridSize);
+        apple.x = Math.floor(Math.random() * cols) * gridSize;
+        apple.y = Math.floor(Math.random() * rows) * gridSize;
+
+        // Avoid placing the apple on top of the snake
+        for (let segment of snakeRef.current) {
+            if (segment.x === apple.x && segment.y === apple.y) {
+                placeApple();
+                return;
+            }
+        }
+    }, []);
+
+    const ticker = useMemo(() => {
+        const ticker = new Ticker();
+        let elapsed = 0;
+
+        const endGame = () => {
+            ticker.stop();
+            setGameOver(true);
+        };
+
+        ticker.add(({ deltaMS }) => {
+            const snake = snakeRef.current;
+            const apple = appleRef.current;
+            const head = snake[0];
+
+            elapsed += deltaMS;
+            if (elapsed < moveInterval) return;
+            elapsed = 0;
+
+            // Move the body
+            for (let i = snake.length - 1; i > 0; i--) {
+                snake[i].position.set(snake[i - 1].x, snake[i - 1].y);
+            }
+
+            // Move the head
+            head.x += directionRef.current.x * gridSize;
+            head.y += directionRef.current.y * gridSize;
+
+            // Collision with the wall
+            if (
+                head.x < 0 ||
+                head.y < 0 ||
+                head.x >= canvas.width ||
+                head.y >= canvas.height
+            ) {
+                endGame();
+                return;
+            }
+
+            // Collision with the body
+            for (let i = 1; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) {
+                    endGame();
+                    return;
+                }
+            }
+
+            // Eat the apple
+            if (head.x === apple.x && head.y === apple.y) {
+                const newSegment = new Graphics();
+                newSegment
+                    .rect(0, 0, gridSize, gridSize)
+                    .fill({ color: 0x00ff00 });
+                newSegment.position.set(head.x, head.y);
+                layerRef.current.addChild(newSegment);
+                snake.push(newSegment);
+
+                setDisplayScore((prev) => prev + 1);
+                placeApple();
+            }
+        });
+
+        return ticker;
+    }, [placeApple]);
+
+    const game = useCallback(
+        (layer: Layer) => {
+            layerRef.current = layer;
+
+            const head = new Graphics();
+            head.rect(0, 0, gridSize, gridSize).fill({ color: 0x00ff00 });
+            head.x = 200;
+            head.y = 200;
+            layer.addChild(head);
+            snakeRef.current = [head];
+
+            const apple = new Graphics();
+            apple.rect(0, 0, gridSize, gridSize).fill({ color: 0xff0000 });
+            layer.addChild(apple);
+            appleRef.current = apple;
+            placeApple();
+
+            ticker.start();
+        },
+        [ticker, placeApple], // They must not be changed during the game otherwise the game will restart
+    );
+
+    const options = useMemo(
+        () => ({
+            onExit() {
+                ticker.stop();
+                ticker.destroy();
+            },
+        }),
+        [ticker],
+    );
+
+    useMinigame(game, options);
+
+    return (
+        <>
+            <div
+                style={{
+                    position: "absolute",
+                    top: 10,
+                    left: 10,
+                    color: "white",
+                    fontSize: "24px",
+                    background: "rgba(0,0,0,0.5)",
+                    padding: "5px 10px",
+                    borderRadius: "5px",
+                }}
+            >
+                Score: {displayScore}
+            </div>
+
+            {gameOver && (
+                <div
+                    style={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        color: "red",
+                        fontSize: "48px",
+                        background: "rgba(0,0,0,0.7)",
+                        padding: "20px 40px",
+                        borderRadius: "10px",
+                    }}
+                >
+                    GAME OVER
+                </div>
+            )}
+
+            {/* Direction buttons */}
+            <div
+                style={{
+                    position: "absolute",
+                    bottom: 0,
+                    right: 0,
+                    textAlign: "center",
+                    pointerEvents: "auto",
+                }}
+            >
+                <div style={{ marginTop: "10px" }}>
+                    <button
+                        style={{ fontSize: "30px" }}
+                        onClick={() => setDirection(0, -1)}
+                    >
+                        ⬆️
+                    </button>
+                </div>
+                <div>
+                    <button
+                        style={{ fontSize: "30px", marginRight: "50px" }}
+                        onClick={() => setDirection(-1, 0)}
+                    >
+                        ⬅️
+                    </button>
+                    <button
+                        style={{ fontSize: "30px" }}
+                        onClick={() => setDirection(1, 0)}
+                    >
+                        ➡️
+                    </button>
+                </div>
+                <div>
+                    <button
+                        style={{ fontSize: "30px" }}
+                        onClick={() => setDirection(0, 1)}
+                    >
+                        ⬇️
+                    </button>
+                </div>
+            </div>
+        </>
+    );
+}
+```
+
+<PixiVnExample path="minigame/snake" />
+
+</Accordion>
+
+</Accordions>

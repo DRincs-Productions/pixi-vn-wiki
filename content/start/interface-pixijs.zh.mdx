@@ -1,0 +1,49 @@
+---
+title: PixiJS UI
+description: 如何使用 PixiJS 图层和组件在 Pixi’VN 中构建自定义 UI 界面，并将它们与 HTML UI 结合使用。
+---
+
+正如<DynamicLink href="/start/canvas#pixijs-differences">这里</DynamicLink>更详细解释的那样，Pixi’VN 的整个渲染部分都基于 PixiJS。 通过利用<DynamicLink href="/start/interface#adding-pixijs-ui-layers">PixiJS Layers</DynamicLink>，你可以使用 PixiJS 创建自定义 UI 界面。
+
+:::tip[Templates]
+
+在所有模板中，启动时都会创建一个名为 "ui" 的 PixiJS Layer。 你可以使用此图层来创建你的 UI 界面。
+
+:::
+
+你也可以将 HTML Layer 组件与 PixiJS Layer 组件结合使用。 为此，请在 HTML 界面首次渲染时添加 PixiJS 组件，并在界面关闭时清理 PixiJS Layer。
+
+例如：
+
+```tsx title="React"
+import { useEffect } from "react";
+import { Assets, canvas } from "@drincs/pixi-vn";
+import { Sprite } from "pixi.js";
+
+export default function MyScreen() {
+    useEffect(() => {
+        let layer = canvas.layers.get("ui");
+        if (layer) {
+            const texture = await Assets.load(
+                "https://pixijs.com/assets/bunny.png",
+            );
+            const bunny = new Sprite(texture);
+            layer.addChild(bg);
+        }
+
+        return () => {
+            canvas.layers.get("ui")?.removeChildren();
+        };
+    });
+
+    return null;
+}
+```
+
+## 最佳 PixiJS 组件库
+
+要创建美观的用户界面，你可以使用一些最佳的 PixiJS 组件库：
+
+* [PixiJS](https://pixijs.com/)
+* [PixiUI](https://github.com/pixijs/ui)
+* [PixiLayout](https://github.com/pixijs/layout)
