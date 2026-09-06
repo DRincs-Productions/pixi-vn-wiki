@@ -1,41 +1,41 @@
 ---
 title: Minigiochi
-description: Guida all'integrazione di minigiochi in Pixi'VN, incluse le best practice, la gestione del ciclo di vita e implementazioni di esempio utilizzando PixiJS e React.
+description: Guida all'integrazione dei minigiochi in Pixi’VN, che include best practice, gestione del ciclo di vita e implementazioni di esempio utilizzando PixiJS e React.
 ---
 
 :::tip[IA]
 
-Puoi usare il pulsante qui sopra per creare il tuo minigioco, con l'IA.
+Puoi usare il pulsante sopra per creare il tuo minigioco, con l'AI.
 
 :::
 
-Il bello di una storia interattiva rispetto al testo normale è che puoi prenderti una pausa e interagire con i minigiochi correlati alla storia.
+Il bello di una storia interattiva rispetto al testo normale è che puoi prenderti una pausa e interagire con minigiochi legati alla storia.
 
 :::tip
 
-I minigiochi nelle visual novel vengono solitamente avviati durante la narrazione. To switch between the narrative UI and the minigame UI, it is recommended to link the minigame to a route (e.g., "/minigame/snake") and navigate to it from the story. Ulteriori informazioni sono disponibili <DynamicLink href="/start/interface-navigate">qui</DynamicLink>.
+I minigiochi nelle visual novel vengono generalmente avviati durante la narrazione. Per passare dall'UI narrativa all'UI del minigioco, si consiglia di collegare il minigioco a una route (ad es., "/minigame/snake") e navigare verso di essa dalla storia. Maggiori informazioni sono disponibili <DynamicLink href="/start/interface-navigate">qui</DynamicLink>.
 
 :::
 
 Ecco alcuni consigli:
 
-* Use PixiJS directly — either the `pixi.js` package itself or the `@drincs/pixi-vn/pixi.js` submodule that re-exports it — with components such as `Graphics`, `Sprite`, and `Text`, combined with <DynamicLink href="/start/interface#adding-pixijs-ui-layers">PixiJS Layers</DynamicLink> to create a separate layer for your minigame, managed independently from the main visual novel interface.
-* Use hotkeys to handle keyboard input for your minigame controls. See <DynamicLink href="/start/hotkeys">Hotkeys</DynamicLink> to learn how to set them up.
-* It is always recommended not to use PixiJS to build the UI (buttons, score displays, game over messages, ...); use a framework such as <DynamicLink href="/start/interface-react">React</DynamicLink> or <DynamicLink href="/start/interface-vue">Vue</DynamicLink> instead.
-* Saving and restoring the minigame's current state is the developer's responsibility.
-* Since a minigame is its own route, a project usually ends up with more than one of them under the same `/minigame` path (e.g. `/minigame/snake`, `/minigame/quiz`); use <DynamicLink href="/start/interface-navigate">TanStack Router</DynamicLink>'s file-based routing to share logic between them instead of duplicating it in every minigame (see below).
-* Starting a minigame is nothing more than navigating to its route from the story; if it needs a parameter (a difficulty, a level id, ...), pass it through that same route (see below).
+* Usa PixiJS direttamente — sia il pacchetto `pixi.js` stesso, sia il sottomodulo `@drincs/pixi-vn/pixi.js` che lo ri-esporta — con componenti come `Graphics`, `Sprite` e `Text`, combinati con <DynamicLink href="/start/interface#adding-pixijs-ui-layers">Livelli PixiJS</DynamicLink> per creare un livello separato per il tuo minigioco, gestito in modo indipendente dall'interfaccia principale della visual novel.
+* Usa gli hotkeys per gestire l'input da tastiera per i controlli del tuo minigioco. Consulta <DynamicLink href="/start/hotkeys">Hotkeys</DynamicLink> per scoprire come configurarli.
+* Si consiglia sempre di non usare PixiJS per costruire l'UI (pulsanti, visualizzazioni del punteggio, messaggi di game over, ...); usa invece un framework come <DynamicLink href="/start/interface-react">React</DynamicLink> o <DynamicLink href="/start/interface-vue">Vue</DynamicLink>.
+* Salvare e ripristinare lo stato attuale del minigioco è responsabilità dello sviluppatore.
+* Dato che un minigioco è una route a sé stante, un progetto di solito finisce per averne più di uno sotto lo stesso percorso `/minigame` (ad es. `/minigame/snake`, `/minigame/quiz`); usa il routing basato su file di <DynamicLink href="/start/interface-navigate">TanStack Router</DynamicLink> per condividere la logica tra di essi invece di duplicarla in ogni minigioco (vedi sotto).
+* Avviare un minigioco non è altro che navigare verso la sua route dalla storia; se necessita di un parametro (una difficoltà, un ID livello, ...), passalo tramite la stessa route (vedi sotto).
 
 <Accordions>
 
-<Accordion title="Starting a minigame" id="minigame-start">
+<Accordion title="Avviare un minigioco" id="minigame-start">
 
-Since a minigame lives on its own route (see above), starting it is just a navigation — normally
-triggered from a step, using the `navigate` function already available on
+Dato che un minigioco vive sulla propria route (vedi sopra), avviarlo è semplicemente una navigazione — normalmente
+attivata da uno step, usando la funzione `navigate` già disponibile su
 
 <DynamicLink href="/start/labels#steplabelprops">`StepLabelProps`</DynamicLink>(
-<DynamicLink href="/start/interface-navigate">set up once</DynamicLink> in every
-official template):
+<DynamicLink href="/start/interface-navigate">configurato una volta</DynamicLink> in ogni
+template ufficiale):
 
 ```ts title="content/labels/start.label.ts"
 export const startLabel = newLabel("start", [
@@ -45,19 +45,19 @@ export const startLabel = newLabel("start", [
 ]);
 ```
 
-When the minigame ends, navigate back to the narrative route the same way — typically from the
-`onExit` callback passed to `useMinigame` (see below), or from a button in the minigame's
-game-over UI.
+Quando il minigioco termina, naviga di nuovo verso la route narrativa allo stesso modo — tipicamente dalla
+callback `onExit` passata a `useMinigame` (vedi sotto), oppure da un pulsante nell'UI di game-over
+del minigioco.
 
 </Accordion>
 
-<Accordion title="Passing parameters to a minigame (e.g. difficulty)" id="minigame-params">
+<Accordion title="Passaggio di parametri a un minigioco (ad es. la difficoltà)" id="minigame-params">
 
-A minigame is often configurable from the story — a difficulty level, a level id, a seed, ... Since
-it's reached by navigating to a route, these are passed exactly like any other route parameter,
-using <DynamicLink href="/start/interface-navigate">TanStack Router</DynamicLink>: as a **search
-param** (query string) for optional/configuration values, or a **path param** when the value is
-really part of the route's identity.
+Un minigioco è spesso configurabile dalla storia — un livello di difficoltà, un ID livello, un seed, ... Dato che
+vi si accede navigando verso una route, questi vengono passati esattamente come qualsiasi altro parametro di route,
+usando <DynamicLink href="/start/interface-navigate">TanStack Router</DynamicLink>: come **parametro di
+ricerca** (query string) per valori opzionali/di configurazione, oppure come **parametro di percorso** quando il valore
+fa davvero parte dell'identità della route.
 
 ```tsx tab="Search param" title="src/routes/minigame/snake.tsx" groupId="minigame_param_style"
 import { createFileRoute } from "@tanstack/react-router";
@@ -92,7 +92,7 @@ function SnakeGame() {
 }
 ```
 
-And from the step that launches the minigame, pass the value the same way:
+E dallo step che avvia il minigioco, passa il valore allo stesso modo:
 
 ```ts tab="Search param" title="content/labels/start.label.ts" groupId="minigame_param_style"
 export const startLabel = newLabel("start", [
@@ -115,17 +115,17 @@ export const startLabel = newLabel("start", [
 
 </Accordion>
 
-<Accordion title="Sharing menu and logic between multiple minigame routes" id="minigame-routes-layout">
+<Accordion title="Condivisione di menu e logica tra più route di minigiochi" id="minigame-routes-layout">
 
-Since a minigame is its own route, a project usually ends up with more than one of them under the
-same `/minigame` path (e.g. `/minigame/snake`, `/minigame/quiz`). With
+Dato che un minigioco è una route a sé stante, un progetto di solito finisce per averne più di uno sotto lo
+stesso percorso `/minigame` (ad es. `/minigame/snake`, `/minigame/quiz`). Con
 
-<DynamicLink href="/start/interface-navigate">TanStack Router</DynamicLink>'s
-file-based routing, you can factor out anything shared by every minigame
-(pausing narration/audio while it's open, common hotkeys, a shared HUD wrapper,
-...) into a single pathless layout route, `src/routes/minigame.tsx`, the same
-way the official templates already do for `/game` (`src/routes/game.tsx` wraps
-every `/game/*` screen with `<Outlet />
+<DynamicLink href="/start/interface-navigate">TanStack Router</DynamicLink> e il suo
+routing basato su file, puoi estrapolare tutto ciò che è condiviso da ogni minigioco
+(mettere in pausa la narrazione/audio mentre è aperto, hotkeys comuni, un wrapper HUD condiviso,
+...) in un'unica route di layout senza percorso proprio (pathless), `src/routes/minigame.tsx`, allo stesso
+modo in cui i template ufficiali già fanno per `/game` (`src/routes/game.tsx` avvolge
+ogni schermata `/game/*` con `<Outlet />
 `):
 
 ```tsx title="src/routes/minigame.tsx"
@@ -141,10 +141,10 @@ function MinigameLayout() {
 }
 ```
 
-Each individual minigame then only needs its own file under `src/routes/minigame/`, which
+Ogni singolo minigioco ha bisogno solo del proprio file sotto `src/routes/minigame/`, che
 
 <DynamicLink href="/start/interface-navigate">TanStack Router</DynamicLink>
-turns into the actual route:
+trasforma nella route effettiva:
 
 ```tsx title="src/routes/minigame/snake.tsx"
 import { createFileRoute } from "@tanstack/react-router";
@@ -159,9 +159,9 @@ export const Route = createFileRoute("/minigame/snake")({
 
 </Accordions>
 
-:::tip[Templates]
+:::tip[Modelli]
 
-`useMinigame` è un hook personalizzato che ti aiuta a gestire il ciclo di vita di un minigioco, inclusi l'avvio, l'aggiornamento e la pulizia delle risorse. È presente in tutti i template.
+`useMinigame` è un hook personalizzato che ti aiuta a gestire il ciclo di vita di un minigioco, incluso l'avvio, l'aggiornamento e la pulizia delle risorse. È presente in tutti i template.
 
 :::
 
@@ -327,17 +327,17 @@ export function useMinigame(
 }
 ```
 
-## Examples
+## Esempi
 
 :::tip
 
-Il team di Pixi’VN accoglie con favore nuove proposte e contributi per rendere questa libreria ancora più completa. Feel free to share or propose your minigame implementations in the chat below!
+Il team di Pixi’VN accoglie con favore nuove proposte e contributi per rendere questa libreria ancora più completa. Sentiti libero di condividere o proporre le tue implementazioni di minigiochi nella chat qui sotto!
 
 :::
 
 <Accordions>
 
-<Accordion title="Snake (minigame)" id="snake">
+<Accordion title="Snake (minigioco)" id="snake">
 
 ```tsx tab="React" title="src/routes/minigame/snake.tsx"
 import { canvas, Layer } from "@drincs/pixi-vn";
