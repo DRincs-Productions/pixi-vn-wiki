@@ -1,41 +1,41 @@
 ---
 title: 小游戏
-description: 介绍如何在Pixi'VN中集成小游戏，涵盖最佳实践、生命周期管理，以及基于PixiJS与React的示例实现。
+description: 将小游戏集成到 Pixi’VN 中的指南，包括最佳实践、生命周期管理，以及使用 PixiJS 和 React 的示例实现。
 ---
 
 :::tip[AI]
 
-点击上方按钮，你还可以用 AI 快速生成属于自己的小游戏原型。
+你可以使用上方的按钮，通过 AI 创建你自己的小游戏。
 
 :::
 
-相比纯文字叙述，互动故事的魅力在于：玩家可以在剧情间隙稍作休息，通过小游戏与故事世界产生更深的互动。
+与普通文本相比，交互式故事的魅力在于，你可以稍作休息，与故事相关的小游戏进行互动。
 
 :::tip
 
-在视觉小说中，小游戏通常作为剧情的延伸被触发。 To switch between the narrative UI and the minigame UI, it is recommended to link the minigame to a route (e.g., "/minigame/snake") and navigate to it from the story. 更多路由配置细节请参阅<DynamicLink href="/start/interface-navigate">此处</DynamicLink>。
+视觉小说中的小游戏通常会在叙事过程中启动。 为了在叙事 UI 与小游戏 UI 之间切换，建议将小游戏关联到一个路由（例如 "/minigame/snake"），并从故事中导航至该路由。 更多信息请参见<DynamicLink href="/start/interface-navigate">此处</DynamicLink>。
 
 :::
 
-这里有一些提示：
+以下是一些提示：
 
-* Use PixiJS directly — either the `pixi.js` package itself or the `@drincs/pixi-vn/pixi.js` submodule that re-exports it — with components such as `Graphics`, `Sprite`, and `Text`, combined with <DynamicLink href="/start/interface#adding-pixijs-ui-layers">PixiJS Layers</DynamicLink> to create a separate layer for your minigame, managed independently from the main visual novel interface.
-* Use hotkeys to handle keyboard input for your minigame controls. See <DynamicLink href="/start/hotkeys">Hotkeys</DynamicLink> to learn how to set them up.
-* It is always recommended not to use PixiJS to build the UI (buttons, score displays, game over messages, ...); use a framework such as <DynamicLink href="/start/interface-react">React</DynamicLink> or <DynamicLink href="/start/interface-vue">Vue</DynamicLink> instead.
-* Saving and restoring the minigame's current state is the developer's responsibility.
-* Since a minigame is its own route, a project usually ends up with more than one of them under the same `/minigame` path (e.g. `/minigame/snake`, `/minigame/quiz`); use <DynamicLink href="/start/interface-navigate">TanStack Router</DynamicLink>'s file-based routing to share logic between them instead of duplicating it in every minigame (see below).
-* Starting a minigame is nothing more than navigating to its route from the story; if it needs a parameter (a difficulty, a level id, ...), pass it through that same route (see below).
+* 直接使用 PixiJS——可以是 `pixi.js` 包本身，也可以是重新导出它的 `@drincs/pixi-vn/pixi.js` 子模块——搭配 `Graphics`、`Sprite`、`Text` 等组件，并结合<DynamicLink href="/start/interface#adding-pixijs-ui-layers">PixiJS 图层</DynamicLink>，为你的小游戏创建一个独立于主视觉小说界面进行管理的单独图层。
+* 使用快捷键来处理小游戏控制的键盘输入。 请参阅<DynamicLink href="/start/hotkeys">Hotkeys</DynamicLink>了解如何设置它们。
+* 始终建议不要使用 PixiJS 来构建 UI（按钮、分数显示、游戏结束提示等）；而应使用诸如<DynamicLink href="/start/interface-react">React</DynamicLink>或<DynamicLink href="/start/interface-vue">Vue</DynamicLink>之类的框架。
+* 保存和恢复小游戏的当前状态是开发者的责任。
+* 由于小游戏本身就是一个路由，一个项目通常最终会在同一个 `/minigame` 路径下拥有不止一个小游戏（例如 `/minigame/snake`、`/minigame/quiz`）；请使用<DynamicLink href="/start/interface-navigate">TanStack Router</DynamicLink>的基于文件的路由机制，在它们之间共享逻辑，而不是在每个小游戏中重复编写（见下文）。
+* 启动一个小游戏，无非就是从故事中导航到它的路由；如果它需要参数（例如难度、关卡 ID 等），则通过同一个路由传递该参数（见下文）。
 
 <Accordions>
 
-<Accordion title="Starting a minigame" id="minigame-start">
+<Accordion title="启动小游戏" id="minigame-start">
 
-Since a minigame lives on its own route (see above), starting it is just a navigation — normally
-triggered from a step, using the `navigate` function already available on
+由于小游戏运行在其自己的路由上（见上文），启动它只是一次导航——通常
+从某个步骤触发，使用已经可用的 `navigate` 函数，该函数存在于
 
-<DynamicLink href="/start/labels#steplabelprops">`StepLabelProps`</DynamicLink>(
-<DynamicLink href="/start/interface-navigate">set up once</DynamicLink> in every
-official template):
+<DynamicLink href="/start/labels#steplabelprops">`StepLabelProps`</DynamicLink>（
+<DynamicLink href="/start/interface-navigate">已设置一次</DynamicLink>，用于每个
+官方模板中）：
 
 ```ts title="content/labels/start.label.ts"
 export const startLabel = newLabel("start", [
@@ -45,19 +45,18 @@ export const startLabel = newLabel("start", [
 ]);
 ```
 
-When the minigame ends, navigate back to the narrative route the same way — typically from the
-`onExit` callback passed to `useMinigame` (see below), or from a button in the minigame's
-game-over UI.
+当小游戏结束时，以同样的方式导航回叙事路由——通常从传递给
+`useMinigame` 的 `onExit` 回调（见下文）中触发，或者从小游戏
+游戏结束 UI 中的某个按钮触发。
 
 </Accordion>
 
-<Accordion title="Passing parameters to a minigame (e.g. difficulty)" id="minigame-params">
+<Accordion title="向小游戏传递参数（例如难度）" id="minigame-params">
 
-A minigame is often configurable from the story — a difficulty level, a level id, a seed, ... Since
-it's reached by navigating to a route, these are passed exactly like any other route parameter,
-using <DynamicLink href="/start/interface-navigate">TanStack Router</DynamicLink>: as a **search
-param** (query string) for optional/configuration values, or a **path param** when the value is
-really part of the route's identity.
+小游戏通常可以通过故事进行配置——例如难度等级、关卡 ID、种子等…… 由于
+它是通过导航到某个路由来访问的，因此这些参数的传递方式与其他任何路由参数完全相同，
+即使用<DynamicLink href="/start/interface-navigate">TanStack Router</DynamicLink>：对于可选/配置类的值，将其作为**搜索参数**（query string，查询字符串）；
+而当该值确实是路由标识本身的一部分时，则将其作为**路径参数**。
 
 ```tsx tab="Search param" title="src/routes/minigame/snake.tsx" groupId="minigame_param_style"
 import { createFileRoute } from "@tanstack/react-router";
@@ -92,7 +91,7 @@ function SnakeGame() {
 }
 ```
 
-And from the step that launches the minigame, pass the value the same way:
+而从启动该小游戏的步骤开始，也以同样的方式传递该值：
 
 ```ts tab="Search param" title="content/labels/start.label.ts" groupId="minigame_param_style"
 export const startLabel = newLabel("start", [
@@ -115,18 +114,16 @@ export const startLabel = newLabel("start", [
 
 </Accordion>
 
-<Accordion title="Sharing menu and logic between multiple minigame routes" id="minigame-routes-layout">
+<Accordion title="在多个小游戏路由之间共享菜单和逻辑" id="minigame-routes-layout">
 
-Since a minigame is its own route, a project usually ends up with more than one of them under the
-same `/minigame` path (e.g. `/minigame/snake`, `/minigame/quiz`). With
+由于小游戏本身就是一个路由，一个项目通常最终会在同一个
+`/minigame` 路径下拥有不止一个小游戏（例如 `/minigame/snake`、`/minigame/quiz`）。 借助
 
-<DynamicLink href="/start/interface-navigate">TanStack Router</DynamicLink>'s
-file-based routing, you can factor out anything shared by every minigame
-(pausing narration/audio while it's open, common hotkeys, a shared HUD wrapper,
-...) into a single pathless layout route, `src/routes/minigame.tsx`, the same
-way the official templates already do for `/game` (`src/routes/game.tsx` wraps
-every `/game/*` screen with `<Outlet />
-`):
+<DynamicLink href="/start/interface-navigate">TanStack Router</DynamicLink>的
+基于文件的路由，你可以提取出每个小游戏共有的任何内容
+（在小游戏打开期间暂停旁白/音频、通用快捷键、共享的 HUD 包装器等） 整合为一个单一的无路径布局路由 `src/routes/minigame.tsx`，这与
+官方模板对 `/game` 的处理方式相同（`src/routes/game.tsx` 会用
+`<Outlet />` 包裹每个 `/game/*` 屏幕）：
 
 ```tsx title="src/routes/minigame.tsx"
 import { createFileRoute, Outlet } from "@tanstack/react-router";
@@ -141,10 +138,10 @@ function MinigameLayout() {
 }
 ```
 
-Each individual minigame then only needs its own file under `src/routes/minigame/`, which
+每个独立的小游戏此后只需要在 `src/routes/minigame/` 下拥有自己的文件，而
 
 <DynamicLink href="/start/interface-navigate">TanStack Router</DynamicLink>
-turns into the actual route:
+会将其转换为实际的路由：
 
 ```tsx title="src/routes/minigame/snake.tsx"
 import { createFileRoute } from "@tanstack/react-router";
@@ -161,7 +158,7 @@ export const Route = createFileRoute("/minigame/snake")({
 
 :::tip[模板]
 
-`useMinigame`是一个自定义钩子，可帮助管理小游戏的生命周期，包括启动、更新和清理资源。 它已存在于所有模板。
+`useMinigame` 是一个自定义 Hook，可帮助你管理小游戏的生命周期，包括启动、更新和清理资源。 它包含在所有模板中。
 
 :::
 
@@ -327,17 +324,17 @@ export function useMinigame(
 }
 ```
 
-## Examples
+## 示例
 
 :::tip
 
-Pixi’VN 团队欢迎大家提出新的建议并做出贡献，让这个库变得更加完善。 欢迎在下面的聊天中分享或提出你自己的小游戏实施方案！
+Pixi’VN 团队欢迎大家提出新的建议并做出贡献，让这个库变得更加完善。 欢迎在下方的聊天区分享或提出你的小游戏实现方案！
 
 :::
 
 <Accordions>
 
-<Accordion title="Snake (minigame)" id="snake">
+<Accordion title="Snake（小游戏）" id="snake">
 
 ```tsx tab="React" title="src/routes/minigame/snake.tsx"
 import { canvas, Layer } from "@drincs/pixi-vn";
