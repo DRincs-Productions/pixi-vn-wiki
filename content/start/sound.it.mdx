@@ -1,6 +1,6 @@
 ---
 title: Suoni e musica
-description: Come riprodurre, mettere in pausa, riprendere, modificare e interrompere suoni e musica in Pixi’VN utilizzando media, canali e il gestore audio, incluse le transizioni in dissolvenza e i filtri, basato su Tone.js.
+description: Come riprodurre, mettere in pausa, riprendere, modificare e fermare suoni e musica in Pixi’VN utilizzando media, channels e il gestore sound, incluse le transizioni di fade e i filtri, costruito su Tone.js.
 ---
 
 :::warning
@@ -9,7 +9,7 @@ L'intero sistema audio è stato rivisto nella versione 1.6.0/1.8.0.
 
 :::
 
-Il modulo sound è un wrapper attorno alla libreria [Tone.js](https://tonejs.github.io/examples/). Fornisce un'interfaccia semplice per riprodurre suoni e salva lo stato corrente ad ogni <DynamicLink href="/start/labels">`step`</DynamicLink>.
+Il modulo sound è un wrapper attorno alla libreria [Tone.js](https://tonejs.github.io/examples/). Fornisce un'interfaccia semplice per riprodurre suoni e salva lo stato corrente a ogni <DynamicLink href="/start/labels">`step`</DynamicLink>.
 
 :::tip[*ink*]
 
@@ -21,12 +21,12 @@ Puoi usare questo metodo con la sintassi *ink*. Scopri di più <DynamicLink href
 
 <Accordion title="Nomenclatura" id="nomenclature">
 
-È composto dai seguenti elementi, a cui si farà riferimento in seguito:
+È composto dai seguenti elementi, che verranno richiamati in seguito:
 
-* `sound` (manager) è il controllore dell'intero sistema audio. Viene usato per gestire i `channels`, avviare e controllare i `media` musicali, e recuperare informazioni o modificare gli `assets` audio. Puoi impostare valori per regolare il livello audio complessivo. Queste impostazioni non vengono salvate nei file di salvataggio e sono pensate principalmente per le impostazioni di gioco.
-* `channels` è un sotto-livello del gestore audio e può essere visto come un contenitore. Viene usato per contenere, avviare e gestire i `media` musicali. Puoi impostare valori che influenzano solo i media contenuti. Queste impostazioni non vengono salvate nei file di salvataggio e sono pensate principalmente per le impostazioni di gioco.
-* `media` sono istanze di un suono che è stato avviato. Puoi impostare valori che si applicano solo a loro stessi. Tutte le impostazioni applicate ad essi vengono salvate nel salvataggio di gioco. Queste impostazioni sono pensate principalmente per essere modificate durante il gameplay. Sono contenuti all'interno di un `channel` in una relazione uno-a-molti. Ogni media ha un `alias` univoco.
-* `assets` (asset audio), come suggerisce il nome, sono gli asset usati durante il gioco per riprodurre suoni. Puoi impostare valori che influenzano tutti i media che usano questo asset. Queste impostazioni non vengono salvate e sono pensate principalmente per essere configurate durante l'inizializzazione del gioco quando si caricano gli asset.
+* `sound` (gestore) è il controllore dell'intero sistema audio. Viene utilizzato per gestire i `channels`, avviare e controllare i `media` musicali, e recuperare informazioni o modificare gli `assets` audio. Puoi impostare valori per regolare il livello audio complessivo. Queste impostazioni non vengono memorizzate nei file di salvataggio e sono pensate principalmente per le impostazioni di gioco.
+* `channels` è un sotto-livello del gestore sound e può essere visto come un contenitore. Viene utilizzato per contenere, avviare e gestire i `media` musicali. Puoi impostare valori che influenzano solo i media contenuti. Queste impostazioni non vengono memorizzate nei file di salvataggio e sono pensate principalmente per le impostazioni di gioco.
+* I `media` sono istanze di un suono che è stato avviato. Puoi impostare valori che si applicano solo a se stessi. Tutte le impostazioni applicate ad essi vengono salvate nel salvataggio di gioco. Queste impostazioni sono pensate principalmente per essere modificate durante il gameplay. Sono contenuti all'interno di un `channel` in una relazione uno-a-molti. Ogni media ha un `alias` univoco.
+* `assets` (risorse audio), come suggerisce il nome, sono le risorse utilizzate durante il gioco per riprodurre suoni. Puoi impostare valori che influenzano tutti i media che utilizzano questo asset. Queste impostazioni non vengono salvate e sono pensate principalmente per essere configurate durante l'inizializzazione del gioco, quando vengono caricati gli asset.
 
 </Accordion>
 
@@ -87,7 +87,7 @@ export const manifest: AssetsManifest = {
 
 <Accordion title="Assets" id="assets">
 
-Come per gli altri componenti che usano asset, devi definirli negli <DynamicLink href="/start/assets">assets</DynamicLink>. Successivamente, è consigliato <DynamicLink href="/start/assets-management#load-assets-in-the-background-at-project-start">caricare i suoni principali in background</DynamicLink> all'avvio del gioco usando le funzioni fornite da [`sound`](/jsdoc/pixi-vn/index/variables/sound).
+Come per altri componenti che utilizzano gli asset, è necessario definirli negli <DynamicLink href="/start/assets">assets</DynamicLink>. Successivamente, si consiglia di <DynamicLink href="/start/assets-management#load-assets-in-the-background-at-project-start">caricare i suoni principali in background</DynamicLink> all'avvio del gioco utilizzando le funzioni fornite da [`sound`](/jsdoc/pixi-vn/index/variables/sound).
 
 ```ts tab="utils/assets-utility.ts"
 import { manifest } from "@/assets";
@@ -144,7 +144,7 @@ export const manifest: AssetsManifest = {
 
 </Accordions>
 
-È inoltre consigliato definire i `channels` subito dopo l'inizializzazione del gioco. Per farlo, puoi usare la funzione [`sound.channels.add`](/jsdoc/pixi-vn/index/interfaces/SoundChannelsInterface#add).
+Si consiglia inoltre di definire i `channels` immediatamente dopo l'inizializzazione del gioco. Per fare ciò, puoi utilizzare la funzione [`sound.channels.add`](/jsdoc/pixi-vn/index/interfaces/SoundChannelsInterface#add).
 
 ```ts title="main.ts"
 import { Game, sound } from "@drincs/pixi-vn";
@@ -166,13 +166,13 @@ Se non viene specificato alcun `channel` durante la funzione `play`, il `media` 
 
 :::
 
-La funzionalità di base consiste nell'avviare un suono (`asset`). Questo può essere fatto usando la funzione `play`. La funzione `play` genera un'istanza `media` con cui puoi interagire per controllare il suono prodotto.
+La funzionalità di base consiste nell'avviare un suono (`asset`). Questo può essere fatto utilizzando la funzione `play`. La funzione `play` genera un'istanza `media` con cui puoi interagire per controllare il suono prodotto.
 
 <Accordions>
 
 <Accordion title="channel" id="channel-play">
 
-[`channel.play`](/jsdoc/pixi-vn/index/interfaces/AudioChannelInterface#play) avvia un `media` direttamente su un `channel` specifico, quindi non devi passare tu stesso l'opzione `channel`.
+[`channel.play`](/jsdoc/pixi-vn/index/interfaces/AudioChannelInterface#play) avvia un `media` direttamente su un `channel` specifico, quindi non è necessario passare tu stesso un'opzione `channel`.
 
 ```ts
 import { sound } from "@drincs/pixi-vn";
@@ -183,9 +183,9 @@ await sound.channels.find("bgm").play("bgm", "bgm_cheerful", { loop: true });
 
 </Accordion>
 
-<Accordion title="`sound` (manager)" id="sound-manager-play">
+<Accordion title="`sound` (gestore)" id="sound-manager-play">
 
-[`sound.play`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#play) avvia un `media` dal manager. Usa l'opzione `channel` per assegnarlo a un `channel` specifico, altrimenti ricade su [`sound.defaultChannelAlias`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#defaultchannelalias).
+[`sound.play`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#play) avvia un `media` dal gestore. Utilizza l'opzione `channel` per assegnarlo a un `channel` specifico, altrimenti torna a [`sound.defaultChannelAlias`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#defaultchannelalias).
 
 ```ts
 import { sound } from "@drincs/pixi-vn";
@@ -204,7 +204,7 @@ await sound.play("bgm", "bgm_cheerful", { loop: true, channel: "bgm" });
 
 <Accordion title="Dissolvenza" id="fade">
 
-Puoi avviare un `media` con una transizione in dissolvenza usando le opzioni [`fadeIn`](/jsdoc/pixi-vn/index/interfaces/SoundPlayOptions#fadein)/[`fadeOut`](/jsdoc/pixi-vn/index/interfaces/SoundPlayOptions#fadeout) di `play`. `fadeIn` influisce solo sull'avvio, mentre `fadeOut` viene mantenuto sul `media` e applicato automaticamente sia quando termina naturalmente sia quando in seguito chiami `stop()`.
+Puoi avviare un `media` con una transizione di fade utilizzando le opzioni [`fadeIn`](/jsdoc/pixi-vn/index/interfaces/SoundPlayOptions#fadein)/[`fadeOut`](/jsdoc/pixi-vn/index/interfaces/SoundPlayOptions#fadeout) di `play`. `fadeIn` influisce solo sull'avvio, mentre `fadeOut` viene mantenuto sul `media` e applicato automaticamente sia quando termina naturalmente sia quando in seguito chiami `stop()`.
 
 ```ts
 import { sound } from "@drincs/pixi-vn";
@@ -257,9 +257,9 @@ sound.channels.find("sfx").resumeAll();
 
 </Accordion>
 
-<Accordion title="`sound` (manager)" id="sound-manager-pause">
+<Accordion title="`sound` (gestore)" id="sound-manager-pause">
 
-[`sound.pause`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#pause)/[`sound.resume`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#resume) hanno come target un singolo `media` tramite `alias`, mentre [`sound.pauseAll`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#pauseall)/[`sound.resumeAll`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#resumeall) influenzano ogni `media` in tutti i `channels`.
+[`sound.pause`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#pause)/[`sound.resume`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#resume) agiscono su un singolo `media` tramite `alias`, mentre [`sound.pauseAll`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#pauseall)/[`sound.resumeAll`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#resumeall) influenzano ogni `media` in tutti i `channels`.
 
 ```ts
 import { sound } from "@drincs/pixi-vn";
@@ -279,7 +279,7 @@ sound.resumeAll();
 
 :::tip
 
-Solo le impostazioni di `media` verranno salvate nei file di salvataggio di gioco.
+Solo le impostazioni `media` verranno salvate nei file di salvataggio di gioco.
 
 :::
 
@@ -289,7 +289,7 @@ Solo le impostazioni di `media` verranno salvate nei file di salvataggio di gioc
 
 <Accordion title="media" id="media-edit">
 
-Le impostazioni assegnate direttamente su un'istanza [`media`](/jsdoc/pixi-vn/index/interfaces/MediaInterface) (come `volume`) influenzano solo quell'istanza, e vengono salvate nel salvataggio di gioco.
+Le impostazioni assegnate direttamente a un'istanza [`media`](/jsdoc/pixi-vn/index/interfaces/MediaInterface) (come `volume`) influenzano solo quell'istanza e vengono salvate nel salvataggio di gioco.
 
 ```ts
 import { sound } from "@drincs/pixi-vn";
@@ -302,7 +302,7 @@ if (bgmMedia) bgmMedia.volume.value = 90;
 
 <Accordion title="channel" id="channel-edit">
 
-Le impostazioni assegnate su un [`channel`](/jsdoc/pixi-vn/index/interfaces/AudioChannelInterface) (come `volume`) influenzano ogni `media` che contiene, senza essere salvate.
+Le impostazioni assegnate a un [`channel`](/jsdoc/pixi-vn/index/interfaces/AudioChannelInterface) (come `volume`) influenzano ogni `media` che contiene, senza essere salvate.
 
 ```ts
 import { sound } from "@drincs/pixi-vn";
@@ -312,9 +312,9 @@ sound.channels.find("sfx").volume = 90;
 
 </Accordion>
 
-<Accordion title="`sound` (manager)" id="sound-manager-edit">
+<Accordion title="`sound` (gestore)" id="sound-manager-edit">
 
-Le impostazioni assegnate sul manager [`sound`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface) (come `volumeAll`) influenzano ogni `channel`/`media` globalmente, senza essere salvate.
+Le impostazioni assegnate sul gestore [`sound`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface) (come `volumeAll`) influenzano ogni `channel`/`media` a livello globale, senza essere salvate.
 
 ```ts
 import { sound } from "@drincs/pixi-vn";
@@ -328,13 +328,13 @@ sound.volumeAll = 90;
 
 ## Stop
 
-Per interrompere un suono, puoi usare la funzione `stop`.
+Per fermare un suono, puoi utilizzare la funzione `stop`.
 
 <Accordions>
 
 <Accordion title="media" id="media-stop">
 
-[`media.stop`](/jsdoc/pixi-vn/index/interfaces/MediaInterface#stop) interrompe direttamente quella singola istanza `media`.
+[`media.stop`](/jsdoc/pixi-vn/index/interfaces/MediaInterface#stop) ferma direttamente quella singola istanza `media`.
 
 ```ts
 import { sound } from "@drincs/pixi-vn";
@@ -346,7 +346,7 @@ sound.find("bgm_cheerful")?.stop();
 
 <Accordion title="channel" id="channel-stop">
 
-[`channel.stopAll`](/jsdoc/pixi-vn/index/interfaces/AudioChannelInterface#stopall) interrompe ogni `media` contenuto in quel `channel`.
+[`channel.stopAll`](/jsdoc/pixi-vn/index/interfaces/AudioChannelInterface#stopall) ferma ogni `media` contenuto in quel `channel`.
 
 ```ts
 import { sound } from "@drincs/pixi-vn";
@@ -355,9 +355,9 @@ sound.channels.find("sfx").stopAll();
 
 </Accordion>
 
-<Accordion title="`sound` (manager)" id="sound-manager-stop">
+<Accordion title="`sound` (gestore)" id="sound-manager-stop">
 
-[`sound.stop`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#stop) interrompe un singolo `media` tramite `alias`, mentre [`sound.stopAll`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#stopall) interrompe ogni `media` in tutti i `channels`.
+[`sound.stop`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#stop) ferma un singolo `media` tramite `alias`, mentre [`sound.stopAll`](/jsdoc/pixi-vn/index/interfaces/SoundManagerInterface#stopall) ferma ogni `media` in tutti i `channels`.
 
 ```ts
 import { sound } from "@drincs/pixi-vn";
@@ -377,7 +377,7 @@ Attualmente, possono essere modificati solo all'avvio di un media.
 
 :::
 
-I filtri sono elementi che consentono una personalizzazione avanzata dei suoni.
+I filtri sono elementi che permettono una personalizzazione avanzata dei suoni.
 
 <Accordions>
 
@@ -417,11 +417,11 @@ sound.channels.add("bgm", {
 
 Sono disponibili anche funzioni per gestire i suoni nei menu, come nella schermata delle impostazioni.
 
-Tutte le modifiche effettuate da queste funzioni non vengono salvate nei salvataggi di gioco, quindi quando un salvataggio viene caricato, i suoni torneranno allo stato in cui si trovavano prima di essere modificati da queste funzioni.
+Tutte le modifiche apportate da queste funzioni non vengono salvate nei salvataggi di gioco, quindi quando viene caricato un salvataggio, i suoni torneranno allo stato in cui si trovavano prima di essere modificati da queste funzioni.
 
-Le funzioni [`sound.unsaved.pauseAll`](/jsdoc/pixi-vn/index/interfaces/SoundUnsavedInterface#pauseall) e [`sound.unsaved.resumeAll`](/jsdoc/pixi-vn/index/interfaces/SoundUnsavedInterface#resumeall) sono pensate per essere usate quando si apre e si chiude un menu, come quello delle impostazioni. La prima funzione mette in pausa tutti i suoni non già in pausa, mentre la seconda riprende tutti i suoni che erano stati messi in pausa dalla prima funzione.
+Le funzioni [`sound.unsaved.pauseAll`](/jsdoc/pixi-vn/index/interfaces/SoundUnsavedInterface#pauseall) e [`sound.unsaved.resumeAll`](/jsdoc/pixi-vn/index/interfaces/SoundUnsavedInterface#resumeall) sono pensate per essere utilizzate quando si apre e si chiude un menu, come le impostazioni. La prima funzione mette in pausa tutti i suoni che non sono già in pausa, mentre la seconda riprende tutti i suoni che sono stati messi in pausa dalla prima funzione.
 
-Meanwhile, the [`sound.unsaved.playTransient`](/jsdoc/pixi-vn/index/interfaces/SoundUnsavedInterface#playtransient) and [`sound.unsaved.stopTransientAll`](/jsdoc/pixi-vn/index/interfaces/SoundUnsavedInterface#stoptransientall) functions are intended for temporary sounds, such as UI interaction sounds. La prima funzione riproduce un suono che non verrà salvato nei salvataggi di gioco, mentre la seconda interrompe tutti i suoni avviati con la prima funzione.
+Nel frattempo, le funzioni [`sound.unsaved.playTransient`](/jsdoc/pixi-vn/index/interfaces/SoundUnsavedInterface#playtransient) e [`sound.unsaved.stopTransientAll`](/jsdoc/pixi-vn/index/interfaces/SoundUnsavedInterface#stoptransientall) sono pensate per suoni temporanei, come i suoni di interazione UI. La prima funzione riproduce un suono che non verrà salvato nei salvataggi di gioco, mentre la seconda ferma tutti i suoni avviati con la prima funzione.
 
 </Accordion>
 
