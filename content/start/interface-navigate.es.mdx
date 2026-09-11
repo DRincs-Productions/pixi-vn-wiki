@@ -1,22 +1,22 @@
 ---
-title: Navigate/switch between UI screens
+title: Navegar/cambiar entre pantallas de UI
 ---
 
-To navigate between different UI screens, it is necessary to use a routing system. A routing system allows you to define routes (or paths) for different screens and manage navigation between them.
+Para navegar entre las diferentes pantallas de UI, es necesario utilizar un sistema de enrutamiento. Un sistema de enrutamiento le permite definir rutas (o caminos) para diferentes pantallas y gestionar la navegación entre ellas.
 
 ## TanStack Router
 
 <Accordions>
 
-<Accordion title="What is TanStack Router?" id="what-is-tanstack-router">
+<Accordion title="¿Qué es TanStack Router?" id="what-is-tanstack-router">
 
-TanStack Router is a routing system for web applications that allows you to manage navigation between different pages or components in a simple and efficient way. It is designed to be flexible and easy to use, offering advanced features such as support for dynamic parameters, router state management, and integration with rendering libraries like React, Vue, and Angular.
+TanStack Router es un sistema de enrutamiento para aplicaciones web que le permite gestionar la navegación entre diferentes páginas o componentes de forma sencilla y eficiente. Está diseñado para ser flexible y fácil de usar, y ofrece funciones avanzadas como soporte para parámetros dinámicos, gestión del estado del enrutador e integración con bibliotecas de renderizado como React, Vue y Angular.
 
 </Accordion>
 
 </Accordions>
 
-The main advantage of TanStack Router is its ability to automatically generate route handling using `createFileRoute`. With `createFileRoute`, you can define your routes simply by creating files in a specific folder structure. For example, if you create a file `about.tsx` in the `src/routes` folder, TanStack Router will automatically generate a route for `/about` that renders the component defined in `about.tsx`.
+La principal ventaja de TanStack Router es su capacidad de generar automáticamente la gestión de rutas mediante `createFileRoute`. Con `createFileRoute`, puede definir sus rutas simplemente creando archivos en una estructura de carpetas específica. Por ejemplo, si crea un archivo `about.tsx` en la carpeta `src/routes`, TanStack Router generará automáticamente una ruta para `/about` que renderiza el componente definido en `about.tsx`.
 
 ```ts title="src/routes/about.tsx"
 import { createFileRoute } from "@tanstack/react-router";
@@ -43,13 +43,13 @@ function About() {
 }
 ```
 
-## How to navigate between screens/routes?
+## ¿Cómo navegar entre pantallas/rutas?
 
-To navigate between screens/routes, use the navigation function provided by your routing system.
+Para navegar entre pantallas/rutas, utilice la función de navegación proporcionada por su sistema de enrutamiento.
 
 :::tip[Plantillas]
 
-In all templates, the `StepLabelProps` interface is already extended to include a `navigate` function. Puede encontrarla en el archivo `pixi-vn.d.ts`.
+En todas las plantillas, la interfaz `StepLabelProps` ya está extendida para incluir una función `navigate`. Puede encontrarla en el archivo `pixi-vn.d.ts`.
 
 :::
 
@@ -57,7 +57,7 @@ In all templates, the `StepLabelProps` interface is already extended to include 
 
 <Accordion title="Inicializar" id="initialize">
 
-To enable this, the navigation function must be included in the <DynamicLink href="/start/labels#steplabelprops">`StepLabelProps` interface</DynamicLink>.
+Para habilitar esto, la función de navegación debe incluirse en la <DynamicLink href="/start/labels#steplabelprops">interfaz `StepLabelProps`</DynamicLink>.
 
 ```ts tab="pixi-vn.d.ts"
 import { narration } from "@drincs/pixi-vn";
@@ -86,12 +86,12 @@ export default function useGameProps(): StepLabelProps {
 
 </Accordions>
 
-<Callout title="Testing" type="info">
+<Callout title="Pruebas" type="info">
 
-If the Vite.js plugin's `Game.testing` (see the "Vite.js plugin" section above and the `pixi-vn-testing`
-Agent Skill) is used to let an AI agent play-test the game, call
+Si se usa el `Game.testing` del plugin de Vite.js (consulte la sección "Vite.js plugin" más arriba y la
+Agent Skill `pixi-vn-testing`) para permitir que un agente de IA pruebe el juego automáticamente, llame también a
 [`Game.testing.setProps`](/jsdoc/pixi-vn/index/namespaces/Game/namespaces/testing/functions/setProps)
-here too, so `navigate` (and anything else this hook returns) stays available to a test session:
+aquí, para que `navigate` (y cualquier otra cosa que devuelva este hook) permanezca disponible para una sesión de prueba:
 
 ```ts tab="hooks/useGameProps.ts"
 import { Game, StepLabelProps } from "@drincs/pixi-vn"; // [!code focus]
@@ -111,17 +111,17 @@ export default function useGameProps(): StepLabelProps {
 
 <Callout title="ink" type="info">
 
-In all *ink* templates, a <DynamicLink href="/ink/hashtag">custom hashtag command</DynamicLink> has been introduced to navigate between routes. To do this, you need to use the following syntax:
+En todas las plantillas de *ink*, se ha introducido un <DynamicLink href="/ink/hashtag">comando hashtag personalizado</DynamicLink> para navegar entre rutas. To do this, you need to use the following syntax:
 
 ```ink title="ink"
 # navigate [route]
 ```
 
-* `route`: The destination route/path. For example, `# navigate /new-route`.
+* `route`: La ruta/camino de destino. Por ejemplo, `# navigate /new-route`.
 
 </Callout>
 
-When you create a new label, you can use the `navigate` function to switch between routes:
+Cuando cree una nueva label, puede utilizar la función `navigate` para cambiar entre rutas:
 
 ```ts tab="content/labels/start.label.ts"
 export const startLabel = newLabel("start", [
@@ -135,13 +135,13 @@ export const startLabel = newLabel("start", [
 
 <Accordions>
 
-<Accordion title="Block the browser's back and forward buttons" id="block-back-forward">
+<Accordion title="Bloquear los botones de retroceso y avance del navegador" id="block-back-forward">
 
-Using the browser's back and forward buttons can cause the game to be in an inconsistent state. This is because those keys allow the player to navigate between routes, not between narrative `steps`.
+Usar los botones de retroceso y avance del navegador puede provocar que el juego quede en un estado inconsistente. Esto se debe a que esas teclas permiten al jugador navegar entre rutas, no entre `steps` narrativos.
 
-It is recommended to prevent the path from changing when the browser's back button is pressed. There are many ways to do this, but the following approach is suggested:
+Se recomienda evitar que la ruta cambie cuando se presiona el botón de retroceso del navegador. Hay muchas formas de hacerlo, pero se sugiere el siguiente enfoque:
 
-Intercept the `popstate` event, which is triggered after the browser's back button is pressed, and call `history.forward()` to cancel the navigation. To allow users to navigate back if they press the back button twice in succession, we can push a new state to the history stack on each route change.
+Intercepte el evento `popstate`, que se activa después de presionar el botón de retroceso del navegador, y llame a `history.forward()` para cancelar la navegación. Para permitir que los usuarios naveguen hacia atrás si presionan el botón de retroceso dos veces seguidas, podemos añadir un nuevo estado a la pila del historial en cada cambio de ruta.
 
 Por ejemplo:
 
