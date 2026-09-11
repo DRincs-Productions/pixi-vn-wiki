@@ -1,13 +1,13 @@
 ---
-title: UI variables
-description: How to connect UI components to settings, read-only game data, and read/write game storage variables with TanStack Query/Store, and how to keep the UI in sync with storage.setStorageHandler.
+title: UI 变量
+description: 如何使用 TanStack Query/Store 将 UI 组件连接到设置、只读游戏数据以及可读写的游戏存储变量，以及如何通过 storage.setStorageHandler 使 UI 保持同步。
 ---
 
-In a Pixi’VN UI, the variables you display or edit generally fall into three categories, and each one has a different recommended pattern. Pixi’VN <DynamicLink href="/start/templates">templates</DynamicLink> already use these patterns throughout `src/lib/stores/` and `src/lib/query/` — worth opening as real, working examples.
+在 Pixi’VN UI 中，你显示或编辑的变量通常分为三类，每一类都有各自推荐的模式。 Pixi’VN 的<DynamicLink href="/start/templates">模板</DynamicLink>已经在 `src/lib/stores/` 和 `src/lib/query/` 中大量使用了这些模式——值得打开看看，作为真实可用的示例。
 
-## Settings variables
+## 设置变量
 
-Things like text speed, font size, or auto-forward delay are **not** part of the <DynamicLink href="/start/storage">game storage</DynamicLink>: they must persist across every playthrough (and even before a save exists), so they live in `localStorage`, mirrored into a [TanStack Store](https://tanstack.com/store/latest) so components can react to changes.
+文本速度、字体大小或自动前进延迟等设置**并非**<DynamicLink href="/start/storage">游戏存储</DynamicLink>的一部分：它们必须在每次游玩过程中持久保存（甚至在存档存在之前也是如此），因此它们保存在 `localStorage` 中，并镜像到一个 [TanStack Store](https://tanstack.com/store/latest) 中，以便组件能够对变化做出响应。
 
 ```ts title="src/lib/stores/auto-settings-store.ts"
 import { Store } from "@tanstack/store";
@@ -47,9 +47,9 @@ function AutoForwardToggle() {
 }
 ```
 
-## Read-only game variables
+## 只读游戏变量
 
-For variables you only need to **display** (a stat, a flag, a piece of dialogue), read them straight from the <DynamicLink href="/start/storage">game storage</DynamicLink> inside a [TanStack Query](https://tanstack.com/query/latest) `queryFn`.
+对于只需要**显示**的变量（例如数值、标志或一段对话），直接在 [TanStack Query](https://tanstack.com/query/latest) 的 `queryFn` 中从<DynamicLink href="/start/storage">游戏存储</DynamicLink>读取它们。
 
 ```ts
 import { useQuery } from "@tanstack/react-query";
@@ -63,7 +63,7 @@ export function useQueryAffection() {
 }
 ```
 
-Game storage variables only change during a <DynamicLink href="/start/labels#continue-and-go-back">`step` / go back</DynamicLink>, when running a <DynamicLink href="/start/labels#run-a-label">`label`</DynamicLink>, or when <DynamicLink href="/start/save#load">loading a save</DynamicLink> — Pixi’VN has no way of knowing you have a query depending on that data, so your UI has to ask TanStack Query to refetch after those events. Rather than invalidating each query key one by one, it's simpler to invalidate everything at once at a handful of call sites (after `narration.continue()`/`goNext`, `stepHistory.back()`, `narration.call()`/`jump`, and after restoring a save):
+游戏存储变量只在<DynamicLink href="/start/labels#continue-and-go-back">叙事步骤（`step`）/ go back</DynamicLink>期间、运行<DynamicLink href="/start/labels#run-a-label">叙事节点（`label`）</DynamicLink>时，或<DynamicLink href="/start/save#load">加载存档</DynamicLink>时发生变化——Pixi’VN 无法知道你有依赖该数据的查询，因此你的 UI 必须在这些事件发生后要求 TanStack Query 重新获取数据。 与其逐个使查询键失效，不如在少数几个调用点一次性使所有查询失效更简单（在 `narration.continue()`/`goNext`、`stepHistory.back()`、`narration.call()`/`jump` 之后，以及恢复存档之后）：
 
 ```ts
 const queryClient = useQueryClient();
@@ -73,9 +73,9 @@ narration.continue({}).then(() => {
 });
 ```
 
-## Read/write game variables
+## 可读写的游戏变量
 
-For variables the UI itself can change (a selected option, a toggle tied to a quest flag), use the same TanStack Store wrapper as for settings, but back it with the <DynamicLink href="/start/storage">game storage</DynamicLink> instead of `localStorage`, so the value survives saves and `go back`:
+对于 UI 本身可以更改的变量（例如选中的选项、与任务标志绑定的开关），使用与设置相同的 TanStack Store 封装方式，但让它基于<DynamicLink href="/start/storage">游戏存储</DynamicLink>而不是 `localStorage`，这样该值就能在存档和 `go back` 之后依然保留：
 
 ```ts
 import { storage } from "@drincs/pixi-vn";
@@ -95,13 +95,13 @@ export namespace Memo {
 }
 ```
 
-Because the setter updates the Store directly, the UI stays in sync automatically for changes made **through this same setter** — no manual refresh needed.
+因为该 setter 直接更新 Store，所以对于**通过这个同一个 setter** 所做的更改，UI 会自动保持同步——无需手动刷新。
 
-## Keeping the UI in sync with storage changes made elsewhere
+## 使 UI 与其他地方发生的存储更改保持同步
 
-The Store pattern above only keeps the UI in sync when the UI itself is the one calling `storage.set`. If a `label`, a `step`, or any other part of the game changes the same game storage variable, nothing tells that Store — or a `useQuery` reading that key — to refresh.
+上面的 Store 模式仅在 UI 自身调用 `storage.set` 时才能保持 UI 同步。 如果叙事节点（`label`）、叙事步骤（`step`）或游戏的其他任何部分更改了同一个游戏存储变量，则不会有任何机制通知该 Store（或读取该键的 `useQuery`）进行刷新。
 
-To catch **every** game storage write in one place, use [`storage.setStorageHandler`](/jsdoc/pixi-vn/index/interfaces/StorageManagerInterface#setstoragehandler). It lets you register callbacks that fire whenever a variable is set, removed, or a temporary variable expires — anywhere in the game, not just from the UI:
+要在一个地方捕获**每一次**游戏存储写入，请使用 [`storage.setStorageHandler`](/jsdoc/pixi-vn/index/interfaces/StorageManagerInterface#setstoragehandler)。 它允许你注册回调函数，当变量被设置、被移除，或临时变量过期时触发——无论在游戏中的任何位置，而不仅仅是来自 UI：
 
 ```ts
 import { storage } from "@drincs/pixi-vn";
@@ -119,10 +119,10 @@ storage.setStorageHandler({
 });
 ```
 
-:::warning[Only one handler at a time]
+:::warning[同一时间只能有一个处理程序]
 
-`setStorageHandler` does not stack handlers — it holds a single one internally, and every call **replaces** the previous one. If you call it from several files, only the last one registered will actually run; the earlier ones stop firing silently.Set it **once**, in a single place close to app start-up (e.g. your root provider), with one handler that does everything the UI needs (invalidate queries, update stores, etc.). Because it re-runs on every single storage write in the whole game, prefer this broad, centralized handler over sprinkling many targeted ones — it's easy to reason about, and there's no risk of one overwriting another.
+`setStorageHandler` 不会叠加多个处理程序——它内部只保存一个，每次调用都会**替换**前一个。 如果你在多个文件中调用它，只有最后一个注册的处理程序会真正运行；之前的那些会悄悄停止触发。请在靠近应用启动的单一位置**一次性**设置它（例如你的根 provider），使用一个处理程序完成 UI 所需的所有操作（使查询失效、更新 stores 等）。 因为它会在整个游戏中的每一次存储写入时重新运行，所以更推荐使用这种范围广泛、集中式的处理程序，而不是零散地设置多个针对性的处理程序——这样更容易理解，也不存在一个覆盖另一个的风险。
 
-Set it **once**, in a single place close to app start-up (e.g. your root provider), with one handler that does everything the UI needs (invalidate queries, update stores, etc.). Because it re-runs on every single storage write in the whole game, prefer this broad, centralized handler over sprinkling many targeted ones — it's easy to reason about, and there's no risk of one overwriting another.
+请在靠近应用启动的单一位置**一次性**设置它（例如你的根 provider），使用一个处理程序完成 UI 所需的所有操作（使查询失效、更新 stores 等）。 因为它会在整个游戏中的每一次存储写入时重新运行，所以更推荐使用这种范围广泛、集中式的处理程序，而不是零散地设置多个针对性的处理程序——这样更容易理解，也不存在一个覆盖另一个的风险。
 
 :::
