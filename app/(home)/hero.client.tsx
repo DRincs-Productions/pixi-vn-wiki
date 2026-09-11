@@ -1,6 +1,7 @@
 "use client";
 
-import LogoImg from "@/app/icon.png";
+import MascotChibiImg from "@/app/mascot_chibi.png";
+import MascotFullbodyImg from "@/app/mascot_fullbody.png";
 import { buttonVariants } from "@/components/ui/button";
 import { DiscordIcon } from "@/components/ui/icons";
 import { cn } from "@/lib/cn";
@@ -130,10 +131,16 @@ export function Hero() {
                 </div>
                 <div className="hidden md:block w-64 h-64 shrink-0" />
                 <Image
-                    src={LogoImg}
+                    src={MascotChibiImg}
                     alt="preview"
                     priority
-                    className="w-64 h-64 object-contain pointer-events-auto max-md:order-first max-md:mb-2 md:absolute md:top-10 md:right-10 md:w-64 md:h-64"
+                    className="w-64 h-64 object-contain pointer-events-auto order-first mb-2 md:hidden"
+                />
+                <Image
+                    src={MascotFullbodyImg}
+                    alt="preview"
+                    priority
+                    className="hidden md:block object-contain pointer-events-auto md:absolute md:top-10 md:right-10 md:w-64 md:h-96"
                 />
             </div>
             {isDesktop && (
