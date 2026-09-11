@@ -2,7 +2,7 @@ import { faqTree, sidebar } from "@/components/docs-layout-props";
 import { baseOptions } from "@/lib/layout.shared";
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import { setRequestLocale } from "next-intl/server";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import LayoutProvider from "../layout.provider";
 
 export default async function Layout({ children }: { children: ReactNode }) {
@@ -11,7 +11,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
     const treeVar = await faqTree();
     return (
         <LayoutProvider>
-            <DocsLayout sidebar={sidebarVar} tree={treeVar} {...baseOptions()}>
+            <DocsLayout sidebar={sidebarVar} tree={treeVar} {...baseOptions("docs")}>
                 {children}
             </DocsLayout>
         </LayoutProvider>

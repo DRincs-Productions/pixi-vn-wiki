@@ -14,7 +14,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
             <DocsLayout
                 sidebar={sidebarVar}
                 tree={jsdocPixiVnLive2dSource.pageTree}
-                {...baseOptions()}
+                {...baseOptions("docs")}
             >
                 {children}
             </DocsLayout>

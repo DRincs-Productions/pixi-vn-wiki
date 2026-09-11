@@ -6,22 +6,31 @@ import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import Image from "next/image";
 import { appName, discordUrl, gitConfig, kofiUrl } from "./shared";
 
-export function baseOptions(): BaseLayoutProps {
+export function baseOptions(variant: "home" | "docs" = "home"): BaseLayoutProps {
     return {
         nav: {
             // JSX supported
-            title: (
-                <>
-                    <Image src={LogoImg} alt="Logo" width={32} height={32} />
+            title:
+                variant === "docs" ? (
                     <Image
                         src={LogoWordmarkImg}
                         alt={appName}
-                        height={28}
-                        width={125}
-                        className="w-auto"
+                        height={20}
+                        width={89}
+                        className="h-5 w-auto"
                     />
-                </>
-            ),
+                ) : (
+                    <>
+                        <Image src={LogoImg} alt="Logo" width={40} height={40} />
+                        <Image
+                            src={LogoWordmarkImg}
+                            alt={appName}
+                            height={28}
+                            width={125}
+                            className="h-7 w-auto"
+                        />
+                    </>
+                ),
         },
         githubUrl: `https://github.com/${gitConfig.user}/${gitConfig.repo}`,
         i18n,

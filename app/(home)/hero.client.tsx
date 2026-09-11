@@ -129,7 +129,7 @@ export function Hero() {
                         strings={[t("hero_title"), t("hero_title_2"), t("hero_title_3")]}
                     />
                 </div>
-                <div className="hidden md:block w-80 h-64 shrink-0" />
+                <div className="hidden md:block w-56 h-64 lg:w-80 shrink-0" />
                 <Image
                     src={MascotChibiImg}
                     alt="preview"
@@ -140,7 +140,7 @@ export function Hero() {
                     src={MascotFullbodyImg}
                     alt="preview"
                     priority
-                    className="hidden md:block object-contain pointer-events-auto md:absolute md:top-10 md:right-10 md:w-80 md:h-[30rem]"
+                    className="hidden md:block object-contain pointer-events-auto md:absolute md:top-6 md:right-2 md:w-56 md:h-80 lg:top-10 lg:right-10 lg:w-80 lg:h-[30rem]"
                 />
             </div>
             {isDesktop && (

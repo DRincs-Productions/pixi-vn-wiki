@@ -1,7 +1,7 @@
 import { nqtrTree, sidebar } from "@/components/docs-layout-props";
 import { baseOptions } from "@/lib/layout.shared";
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 export default async function Layout({
     children,
@@ -14,7 +14,7 @@ export default async function Layout({
     const sidebarVar = await sidebar(lang);
     const treeVar = await nqtrTree(lang);
     return (
-        <DocsLayout sidebar={sidebarVar} tree={treeVar} {...baseOptions()}>
+        <DocsLayout sidebar={sidebarVar} tree={treeVar} {...baseOptions("docs")}>
             {children}
         </DocsLayout>
     );

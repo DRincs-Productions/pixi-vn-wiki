@@ -10,7 +10,7 @@ export default async function Layout({ children }: LayoutProps<"/start">) {
     const treeVar = await startTree();
     return (
         <LayoutProvider>
-            <DocsLayout sidebar={sidebarVar} tree={treeVar} {...baseOptions()}>
+            <DocsLayout sidebar={sidebarVar} tree={treeVar} {...baseOptions("docs")}>
                 {children}
             </DocsLayout>
         </LayoutProvider>
