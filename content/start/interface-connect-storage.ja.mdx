@@ -1,13 +1,13 @@
 ---
-title: UI variables
-description: How to connect UI components to settings, read-only game data, and read/write game storage variables with TanStack Query/Store, and how to keep the UI in sync with storage.setStorageHandler.
+title: UI変数
+description: TanStack Query/Store を使ってUIコンポーネントを設定、読み取り専用のゲームデータ、読み書き可能なゲームストレージ変数に接続する方法、および storage.setStorageHandler を使ってUIをストレージと同期させ続ける方法。
 ---
 
-In a Pixi’VN UI, the variables you display or edit generally fall into three categories, and each one has a different recommended pattern. Pixi’VN <DynamicLink href="/start/templates">templates</DynamicLink> already use these patterns throughout `src/lib/stores/` and `src/lib/query/` — worth opening as real, working examples.
+Pixi’VN のUIでは、表示または編集する変数は基本的に3つのカテゴリーに分類され、それぞれに推奨されるパターンが異なります。 Pixi’VN の<DynamicLink href="/start/templates">テンプレート</DynamicLink>では、`src/lib/stores/` と `src/lib/query/` の随所でこれらのパターンがすでに使われています — 実際に動作する例として開いてみる価値があります。
 
-## Settings variables
+## 設定変数
 
-Things like text speed, font size, or auto-forward delay are **not** part of the <DynamicLink href="/start/storage">game storage</DynamicLink>: they must persist across every playthrough (and even before a save exists), so they live in `localStorage`, mirrored into a [TanStack Store](https://tanstack.com/store/latest) so components can react to changes.
+テキスト速度、フォントサイズ、オートフォワードの遅延時間などは、<DynamicLink href="/start/storage">ゲームストレージ</DynamicLink>の一部**ではありません**。プレイスルーをまたいで（セーブが存在する前でも）永続化する必要があるため、`localStorage` に保存され、コンポーネントが変更に反応できるよう [TanStack Store](https://tanstack.com/store/latest) にミラーリングされます。
 
 ```ts title="src/lib/stores/auto-settings-store.ts"
 import { Store } from "@tanstack/store";
@@ -47,9 +47,9 @@ function AutoForwardToggle() {
 }
 ```
 
-## Read-only game variables
+## 読み取り専用のゲーム変数
 
-For variables you only need to **display** (a stat, a flag, a piece of dialogue), read them straight from the <DynamicLink href="/start/storage">game storage</DynamicLink> inside a [TanStack Query](https://tanstack.com/query/latest) `queryFn`.
+**表示**するだけでよい変数(ステータス、フラグ、セリフの一部など)については、[TanStack Query](https://tanstack.com/query/latest) の `queryFn` 内で<DynamicLink href="/start/storage">ゲームストレージ</DynamicLink>から直接読み取ります。
 
 ```ts
 import { useQuery } from "@tanstack/react-query";
@@ -63,7 +63,7 @@ export function useQueryAffection() {
 }
 ```
 
-Game storage variables only change during a <DynamicLink href="/start/labels#continue-and-go-back">`step` / go back</DynamicLink>, when running a <DynamicLink href="/start/labels#run-a-label">`label`</DynamicLink>, or when <DynamicLink href="/start/save#load">loading a save</DynamicLink> — Pixi’VN has no way of knowing you have a query depending on that data, so your UI has to ask TanStack Query to refetch after those events. Rather than invalidating each query key one by one, it's simpler to invalidate everything at once at a handful of call sites (after `narration.continue()`/`goNext`, `stepHistory.back()`, `narration.call()`/`jump`, and after restoring a save):
+ゲームストレージの変数が変化するのは、<DynamicLink href="/start/labels#continue-and-go-back">ナラティブステップ（`step`）/ go back</DynamicLink>の間、<DynamicLink href="/start/labels#run-a-label">ナラティブノード（`label`）</DynamicLink>の実行時、または<DynamicLink href="/start/save#load">セーブの読み込み</DynamicLink>時のみです — Pixi’VN は、そのデータに依存するクエリがあるかどうかを知る方法がないため、UI側でこれらのイベントの後にTanStack Queryに再取得を依頼する必要があります。 各クエリキーを1つずつ無効化するよりも、いくつかの呼び出し箇所（`narration.continue()`/`goNext` の後、`stepHistory.back()`、`narration.call()`/`jump`、およびセーブの復元後）でまとめて一括で無効化する方がシンプルです。
 
 ```ts
 const queryClient = useQueryClient();
@@ -73,9 +73,9 @@ narration.continue({}).then(() => {
 });
 ```
 
-## Read/write game variables
+## 読み書き可能なゲーム変数
 
-For variables the UI itself can change (a selected option, a toggle tied to a quest flag), use the same TanStack Store wrapper as for settings, but back it with the <DynamicLink href="/start/storage">game storage</DynamicLink> instead of `localStorage`, so the value survives saves and `go back`:
+UI自体が変更できる変数(選択されたオプション、クエストフラグに紐づくトグルなど)については、設定用と同じTanStack Storeラッパーを使用しますが、`localStorage` の代わりに<DynamicLink href="/start/storage">ゲームストレージ</DynamicLink>を裏側に使うことで、値がセーブと `go back` を越えて保持されるようにします。
 
 ```ts
 import { storage } from "@drincs/pixi-vn";
@@ -95,13 +95,13 @@ export namespace Memo {
 }
 ```
 
-Because the setter updates the Store directly, the UI stays in sync automatically for changes made **through this same setter** — no manual refresh needed.
+セッターがStoreを直接更新するため、**この同じセッターを通じて**行われた変更についてはUIが自動的に同期されます — 手動でのリフレッシュは不要です。
 
-## Keeping the UI in sync with storage changes made elsewhere
+## 他の場所で行われたストレージの変更にUIを同期させ続ける
 
-The Store pattern above only keeps the UI in sync when the UI itself is the one calling `storage.set`. If a `label`, a `step`, or any other part of the game changes the same game storage variable, nothing tells that Store — or a `useQuery` reading that key — to refresh.
+上記のStoreパターンは、UI自体が `storage.set` を呼び出している場合にのみUIを同期させます。 ナラティブノード（`label`）やナラティブステップ（`step`）、あるいはゲームの他の部分が同じゲームストレージ変数を変更した場合、そのStore — またはそのキーを読み取る `useQuery` — に更新を促す仕組みはありません。
 
-To catch **every** game storage write in one place, use [`storage.setStorageHandler`](/jsdoc/pixi-vn/index/interfaces/StorageManagerInterface#setstoragehandler). It lets you register callbacks that fire whenever a variable is set, removed, or a temporary variable expires — anywhere in the game, not just from the UI:
+**すべての**ゲームストレージへの書き込みを1か所で捕捉するには、[`storage.setStorageHandler`](/jsdoc/pixi-vn/index/interfaces/StorageManagerInterface#setstoragehandler) を使用します。 これにより、変数が設定されたとき、削除されたとき、または一時変数の有効期限が切れたときに発火するコールバックを登録できます — UIからだけでなく、ゲーム内のどこからでも対象になります。
 
 ```ts
 import { storage } from "@drincs/pixi-vn";
@@ -119,10 +119,10 @@ storage.setStorageHandler({
 });
 ```
 
-:::warning[Only one handler at a time]
+:::warning[一度に1つのハンドラーのみ]
 
-`setStorageHandler` does not stack handlers — it holds a single one internally, and every call **replaces** the previous one. If you call it from several files, only the last one registered will actually run; the earlier ones stop firing silently.Set it **once**, in a single place close to app start-up (e.g. your root provider), with one handler that does everything the UI needs (invalidate queries, update stores, etc.). Because it re-runs on every single storage write in the whole game, prefer this broad, centralized handler over sprinkling many targeted ones — it's easy to reason about, and there's no risk of one overwriting another.
+`setStorageHandler` はハンドラーを積み重ねません — 内部的に単一のハンドラーのみを保持し、呼び出すたびに前のものを**置き換えます**。 複数のファイルから呼び出した場合、実際に実行されるのは最後に登録されたものだけです。それ以前のものは何の警告もなく発火しなくなります。アプリ起動時に近い1か所（例えばルートプロバイダーなど）で、UIが必要とするすべてのこと（クエリの無効化、Storeの更新など）を行う1つのハンドラーを使って、**一度だけ**設定してください。 これはゲーム全体のすべてのストレージ書き込みのたびに再実行されるため、個別に対象を絞った多数のハンドラーを散りばめるよりも、この広範囲で一元化されたハンドラーを使う方が望ましいです — 挙動を把握しやすく、互いに上書きし合うリスクもありません。
 
-Set it **once**, in a single place close to app start-up (e.g. your root provider), with one handler that does everything the UI needs (invalidate queries, update stores, etc.). Because it re-runs on every single storage write in the whole game, prefer this broad, centralized handler over sprinkling many targeted ones — it's easy to reason about, and there's no risk of one overwriting another.
+アプリ起動時に近い1か所（例えばルートプロバイダーなど）で、UIが必要とするすべてのこと（クエリの無効化、Storeの更新など）を行う1つのハンドラーを使って、**一度だけ**設定してください。 これはゲーム全体のすべてのストレージ書き込みのたびに再実行されるため、個別に対象を絞った多数のハンドラーを散りばめるよりも、この広範囲で一元化されたハンドラーを使う方が望ましいです — 挙動を把握しやすく、互いに上書きし合うリスクもありません。
 
 :::
