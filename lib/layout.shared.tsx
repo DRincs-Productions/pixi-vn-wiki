@@ -1,4 +1,5 @@
 import LogoImg from "@/app/icon.png";
+import LogoWordmarkImg from "@/public/logo.png";
 import { DiscordIcon, KofiIcon } from "@/components/ui/icons";
 import { i18n } from "@/lib/i18n";
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
@@ -11,8 +12,14 @@ export function baseOptions(): BaseLayoutProps {
             // JSX supported
             title: (
                 <>
-                    <Image src={LogoImg} alt="Logo" width={24} height={24} className="mr-2" />
-                    {appName}
+                    <Image src={LogoImg} alt="Logo" width={32} height={32} />
+                    <Image
+                        src={LogoWordmarkImg}
+                        alt={appName}
+                        height={28}
+                        width={125}
+                        className="w-auto"
+                    />
                 </>
             ),
         },
