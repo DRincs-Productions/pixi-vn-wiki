@@ -21,7 +21,7 @@ export function baseOptions(variant: "home" | "docs" = "home"): BaseLayoutProps 
                     />
                 ) : (
                     <>
-                        <Image src={LogoImg} alt="Logo" width={40} height={40} />
+                        <Image src={LogoImg} alt="Logo" width={56} height={56} />
                         <Image
                             src={LogoWordmarkImg}
                             alt={appName}
