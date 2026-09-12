@@ -39,6 +39,7 @@ export const contributorRepos = [
 
 export const discordUrl = "https://discord.gg/E95FZWakzp";
 export const kofiUrl = "https://ko-fi.com/pixivn";
+export const kofiApiUrl = "https://kofi.pixi-vn.com/api/supporters?sort=recent&limit=50&offset=0";
 
 // available languages that will be displayed on UI
 // make sure `locale` is consistent with your i18n config

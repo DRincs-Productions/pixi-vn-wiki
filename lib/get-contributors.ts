@@ -1,3 +1,5 @@
+import { kofiApiUrl } from "@/lib/shared";
+
 export interface Contributor {
     login: string;
     avatar_url: string;
@@ -84,6 +86,29 @@ export async function fetchCrowdinTranslators(): Promise<Translator[]> {
                 avatarUrl: member.avatarUrl,
                 profileUrl: `https://crowdin.com/profile/${member.username}`,
             }));
+    } catch {
+        return [];
+    }
+}
+
+export interface KofiSupporter {
+    name: string;
+    supportCount: number;
+    totalsByCurrency: Record<string, number>;
+    coffees: number;
+    lastSupportAt: string;
+}
+
+export async function fetchKofiSupporters(): Promise<KofiSupporter[]> {
+    try {
+        const response = await fetch(kofiApiUrl, {
+            next: { revalidate: 60 * 60 },
+        });
+
+        if (!response.ok) return [];
+
+        const { supporters } = (await response.json()) as { supporters: KofiSupporter[] };
+        return supporters;
     } catch {
         return [];
     }

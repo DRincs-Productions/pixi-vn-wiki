@@ -1,5 +1,9 @@
-import { KofiLogo } from "@/components/ui/icons";
-import { fetchAllContributors, fetchCrowdinTranslators } from "@/lib/get-contributors";
+import { KofiIcon, KofiLogo } from "@/components/ui/icons";
+import {
+    fetchAllContributors,
+    fetchCrowdinTranslators,
+    fetchKofiSupporters,
+} from "@/lib/get-contributors";
 import { contributorRepos, gitConfig, kofiUrl } from "@/lib/shared";
 import { Heart } from "lucide-react";
 import { getTranslations } from "next-intl/server";
@@ -26,8 +30,36 @@ export async function Contributing() {
                 </a>
             </div>
             <div className="flex flex-col items-center gap-10">
+                <KofiSupporters />
                 <GithubContributors />
                 <CrowdinTranslators />
+            </div>
+        </div>
+    );
+}
+
+async function KofiSupporters() {
+    const t = await getTranslations("Contributing");
+    const supporters = await fetchKofiSupporters();
+
+    if (supporters.length === 0) return null;
+
+    return (
+        <div className="flex flex-col items-center gap-4">
+            <h3 className="text-sm font-medium text-fd-muted-foreground">{t("supporters")}</h3>
+            <div className="flex flex-row flex-wrap items-center justify-center gap-3">
+                {supporters.map((supporter) => (
+                    <div
+                        key={supporter.name}
+                        className="flex items-center gap-1.5 rounded-full border border-fd-border bg-fd-card px-3 py-1.5 text-sm"
+                    >
+                        <span>{supporter.name}</span>
+                        <span className="flex items-center gap-1 text-fd-muted-foreground">
+                            <KofiIcon className="size-4" />
+                            {supporter.coffees}
+                        </span>
+                    </div>
+                ))}
             </div>
         </div>
     );
