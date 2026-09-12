@@ -97,6 +97,8 @@ export interface KofiSupporter {
     totalsByCurrency: Record<string, number>;
     coffees: number;
     lastSupportAt: string;
+    icon?: string;
+    link?: string;
 }
 
 export async function fetchKofiSupporters(): Promise<KofiSupporter[]> {

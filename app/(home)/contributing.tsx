@@ -48,18 +48,46 @@ async function KofiSupporters() {
         <div className="flex flex-col items-center gap-4">
             <h3 className="text-sm font-medium text-fd-muted-foreground">{t("supporters")}</h3>
             <div className="flex flex-row flex-wrap items-center justify-center gap-3">
-                {supporters.map((supporter) => (
-                    <div
-                        key={supporter.name}
-                        className="flex items-center gap-1.5 rounded-full border border-fd-border bg-fd-card px-3 py-1.5 text-sm"
-                    >
-                        <span>{supporter.name}</span>
-                        <span className="flex items-center gap-1 text-fd-muted-foreground">
-                            <KofiIcon className="size-4" />
-                            {supporter.coffees}
-                        </span>
-                    </div>
-                ))}
+                {supporters.map((supporter) => {
+                    const className =
+                        "flex items-center gap-2 rounded-full border border-fd-border bg-fd-card px-3 py-1.5 text-sm";
+                    const content = (
+                        <>
+                            {supporter.icon && (
+                                <Image
+                                    src={supporter.icon}
+                                    alt={`${supporter.name}'s icon`}
+                                    unoptimized
+                                    width={20}
+                                    height={20}
+                                    loading="lazy"
+                                    className="size-5 rounded-full"
+                                />
+                            )}
+                            <span>{supporter.name}</span>
+                            <span className="flex items-center gap-1 text-fd-muted-foreground">
+                                <KofiIcon className="size-4" />
+                                {supporter.coffees}
+                            </span>
+                        </>
+                    );
+
+                    return supporter.link ? (
+                        <a
+                            key={supporter.name}
+                            href={supporter.link}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            className={`${className} transition-colors hover:bg-fd-accent`}
+                        >
+                            {content}
+                        </a>
+                    ) : (
+                        <div key={supporter.name} className={className}>
+                            {content}
+                        </div>
+                    );
+                })}
             </div>
         </div>
     );
