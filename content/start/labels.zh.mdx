@@ -1,0 +1,130 @@
+---
+title: 叙事节点（label）与叙事步骤（step）
+description: 介绍 Pixi’VN 中标签和步骤的核心概念，详细说明叙事流程如何在游戏引擎中组织和管理。
+---
+
+视觉小说通常是一系列带有图像和文字的场景。 在 Pixi’VN 中，整个叙事流程基于叙事节点（`label`）和叙事步骤（`step`）的概念。
+
+叙事节点（`label`）用于组织叙事；它充当故事的"书签"或章节。 从技术角度来说，叙事节点（`label`）是一个充当叙事步骤（`step`）容器的类。
+
+叙事步骤（`step`）是叙事节点（`label`）中发生的单个动作或事件。 步骤用于显示图像、文字和其他叙事元素。
+
+:::tip[术语说明]
+
+叙事节点（`label`）这一术语借鉴自 Ren'Py，在那里它充当故事中的"书签"或"地标"。 在 ink 语言中，对应的术语是叙事节点（`knot`）。叙事步骤（`step`）是 Pixi’VN 引入的术语，用于表示叙事节点（`label`）中发生的各个动作或事件。
+
+叙事步骤（`step`）是 Pixi’VN 引入的术语，用于表示叙事节点（`label`）中发生的各个动作或事件。
+
+:::
+
+<Accordions>
+
+<Accordion title="生命周期" id="lifecycle">
+
+1. 游戏通过调用叙事节点（`label`）启动，使用 [`Game.start`](/jsdoc/pixi-vn/index/namespaces/Game/functions/start) 函数。 叙事节点的第一个叙事步骤（`step`）会自动执行。
+2. 之后，通过将 [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) 函数连接到事件（例如按钮点击），每次调用该函数时，叙事节点（`label`）的下一个叙事步骤（`step`）就会执行。 某些叙事步骤（`step`）还可以启动其他叙事节点（`label`）。
+3. 只有当所有叙事步骤（`step`）都完成时，游戏才会结束。 此时，[`Game.onEnd`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onEnd) 函数会被触发。
+
+</Accordion>
+
+</Accordions>
+
+## 添加
+
+要创建叙事节点（`label`），请使用 [`newLabel`](/jsdoc/pixi-vn/index/functions/newLabel) 函数。
+
+```ts title="content/labels/start.label.ts"
+import { narration, StepLabelProps } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        narration.dialogue = { character: liam, text: "Example of dialogue" };
+    },
+    (props: StepLabelProps, { labelId }) => narration.jump(labelId, props),
+]);
+```
+
+## 其他功能
+
+<Accordions>
+
+<Accordion title="`StepLabelProps`" id="steplabelprops">
+
+:::tip[模板]
+
+在所有模板中，`StepLabelProps` 接口已被重写。 您可以在 `pixi-vn.d.ts` 文件中找到它。
+
+:::
+
+所有 <DynamicLink href="/start/labels-flow">叙事流程控制函数</DynamicLink> 都需要一个符合 [`StepLabelProps`](/jsdoc/pixi-vn/index/interfaces/StepLabelProps) 接口的对象。 您可以在 `.d.ts` 文件中"重写" `StepLabelProps` 接口以指定所需参数。
+
+```ts tab="pixi-vn.d.ts"
+import { narration } from "@drincs/pixi-vn";
+
+declare module "@drincs/pixi-vn" {
+    interface StepLabelProps {
+        navigate: (route: string) => void;
+    }
+}
+```
+
+```ts tab="content/labels/start.label.ts"
+export const startLabel = newLabel("start", [
+    ({ navigate }) => {
+        navigate("/new-route");
+    },
+]);
+```
+
+</Accordion>
+
+<Accordion title="`step` 自定义属性" id="step-pros">
+
+您可以向 [`newLabel`](/jsdoc/pixi-vn/index/functions/newLabel) 函数传递一个类型，以便为叙事节点（`label`）添加自定义参数，同时保留 [`StepLabelProps`](#steplabelprops)。
+
+```ts title="content/labels/start.label.ts"
+import { narration } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel<{ name: string }>("start", [
+    (props) => {
+        console.log(props.name);
+    },
+]);
+
+narration.call(startLabel, {
+    // Add StepLabelProps here
+    navigate: navigate, // example
+    // And the custom props for the label
+    name: "John",
+});
+```
+
+</Accordion>
+
+<Accordion title="`StepLabelResult`" id="step-results">
+
+叙事步骤可以返回一个 [`StepLabelResult`](/jsdoc/pixi-vn/index/interfaces/StepLabelResult) 对象。 您可以在 `.d.ts` 文件中"重写" `StepLabelResult` 接口，以定义叙事步骤（`step`）结果的自定义属性。
+
+```ts tab="pixi-vn.d.ts"
+declare module "@drincs/pixi-vn" {
+    interface StepLabelResult {
+        newRoute?: string;
+        [key: string]: any;
+    }
+}
+```
+
+```ts tab="content/labels/start.label.ts"
+export const startLabel = newLabel("start", [
+    () => {
+        return {
+            newRoute: "/new-route",
+            customProperty: 12,
+        };
+    },
+]);
+```
+
+</Accordion>
+
+</Accordions>

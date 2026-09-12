@@ -1,0 +1,191 @@
+---
+title: 在 UI 屏幕之间导航/切换
+---
+
+要在不同的 UI 屏幕之间导航，需要使用路由系统。 路由系统允许你为不同的屏幕定义路由（或路径），并管理它们之间的导航。
+
+## TanStack Router
+
+<Accordions>
+
+<Accordion title="什么是 TanStack Router？" id="what-is-tanstack-router">
+
+TanStack Router 是一个用于 Web 应用程序的路由系统，能够以简单高效的方式管理不同页面或组件之间的导航。 它的设计注重灵活性和易用性，提供动态参数支持、路由器状态管理，以及与 React、Vue、Angular 等渲染库的集成等高级功能。
+
+</Accordion>
+
+</Accordions>
+
+TanStack Router 的主要优势在于它能够使用 `createFileRoute` 自动生成路由处理。 使用 `createFileRoute`，你只需在特定的文件夹结构中创建文件即可定义路由。 例如，如果你在 `src/routes` 文件夹中创建一个 `about.tsx` 文件，TanStack Router 将自动生成一个 `/about` 路由，用于渲染 `about.tsx` 中定义的组件。
+
+```ts title="src/routes/about.tsx"
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/about")({ // [!code focus]
+    component: About, // [!code focus]
+}); // [!code focus]
+
+function About() {
+    return (
+        <main className="page-wrap px-4 py-12">
+            <section className="island-shell rounded-2xl p-6 sm:p-8">
+                <p className="island-kicker mb-2">About</p>
+                <h1 className="display-title mb-3 text-4xl font-bold text-[var(--sea-ink)] sm:text-5xl">
+                    A small starter with room to grow.
+                </h1>
+                <p className="m-0 max-w-3xl text-base leading-8 text-[var(--sea-ink-soft)]">
+                    TanStack Start gives you type-safe routing, server functions, and modern SSR defaults. Use this as a
+                    clean foundation, then layer in your own routes, styling, and add-ons.
+                </p>
+            </section>
+        </main>
+    );
+}
+```
+
+## 如何在屏幕/路由之间导航？
+
+要在屏幕/路由之间导航，请使用路由系统提供的导航函数。
+
+:::tip[模板]
+
+在所有模板中，`StepLabelProps` 接口已经过扩展，包含了一个 `navigate` 函数。 您可以在 `pixi-vn.d.ts` 文件中找到它。
+
+:::
+
+<Accordions>
+
+<Accordion title="初始化" id="initialize">
+
+要启用此功能，必须将导航函数包含在 <DynamicLink href="/start/labels#steplabelprops">`StepLabelProps` 接口</DynamicLink>中。
+
+```ts tab="pixi-vn.d.ts"
+import { narration } from "@drincs/pixi-vn";
+
+declare module "@drincs/pixi-vn" {
+    interface StepLabelProps {
+        navigate: (route: string) => void;
+    }
+}
+```
+
+```ts tab="hooks/useGameProps.ts"
+import { StepLabelProps } from "@drincs/pixi-vn";
+import useMyNavigate from "./useMyNavigate";
+
+export default function useGameProps(): StepLabelProps {
+    const navigate = useMyNavigate();
+
+    return {
+        navigate,
+    };
+}
+```
+
+</Accordion>
+
+</Accordions>
+
+<Callout title="测试" type="info">
+
+如果使用了 Vite.js 插件的 `Game.testing`（参见上文的“Vite.js 插件”部分以及 `pixi-vn-testing`
+Agent Skill）来让 AI 智能体对游戏进行测试，也请在此处调用
+[`Game.testing.setProps`](/jsdoc/pixi-vn/index/namespaces/Game/namespaces/testing/functions/setProps)
+，这样 `navigate`（以及此 hook 返回的其他内容）在测试会话中也能保持可用：
+
+```ts tab="hooks/useGameProps.ts"
+import { Game, StepLabelProps } from "@drincs/pixi-vn"; // [!code focus]
+import useMyNavigate from "./useMyNavigate";
+
+export default function useGameProps(): StepLabelProps {
+    const navigate = useMyNavigate();
+    const props = {
+        navigate,
+    };
+    Game.testing.setProps(props); // [!code focus]
+    return props;
+}
+```
+
+</Callout>
+
+<Callout title="ink" type="info">
+
+在所有 *ink* 模板中，引入了一个 <DynamicLink href="/ink/hashtag">自定义井号命令</DynamicLink>，用于在路由之间导航。 To do this, you need to use the following syntax:
+
+```ink title="ink"
+# navigate [route]
+```
+
+* `route`：目标路由/路径。 例如：`# navigate /new-route`。
+
+</Callout>
+
+创建新的叙事节点时，你可以使用 `navigate` 函数在路由之间切换：
+
+```ts tab="content/labels/start.label.ts"
+export const startLabel = newLabel("start", [
+    ({ navigate }) => {
+        navigate("/new-route");
+    },
+]);
+```
+
+## 其他功能
+
+<Accordions>
+
+<Accordion title="阻止浏览器的后退和前进按钮" id="block-back-forward">
+
+使用浏览器的后退和前进按钮可能导致游戏处于不一致的状态。 这是因为这些按键允许玩家在路由之间导航，而不是在叙事步骤（`steps`）之间导航。
+
+建议在按下浏览器后退按钮时阻止路径发生变化。 实现这一点的方法有很多，但建议采用以下方法：
+
+拦截在浏览器后退按钮被按下后触发的 `popstate` 事件，并调用 `history.forward()` 来取消此次导航。 为了让用户在连续两次按下后退按钮时仍能返回导航，我们可以在每次路由变化时向历史记录栈中推入一个新的状态。
+
+例如：
+
+```ts title="hooks/useConfirmBackNavigation.ts"
+import { useLocation } from "@tanstack/react-router";
+import { useEffect } from "react";
+
+/**
+ * useConfirmBackNavigation
+ *
+ * Prevent accidental browser "back" navigation.
+ * Behavior:
+ * - On each `href` change it pushes a history state (`pushState`).
+ * - Listens for `popstate` and calls `history.forward()` to cancel a single
+ *   press of the browser back button.
+ * - If the user presses back twice in succession (i.e. the second press occurs
+ *   before the first is handled), the browser will navigate back.
+ *
+ * Usage: call this hook at the app root to avoid unintended back navigations
+ * (e.g. accidental taps or gestures). Returns `null`.
+ */
+export default function useConfirmBackNavigation() {
+    const { href } = useLocation();
+
+    useEffect(() => {
+        const isInIframe =
+            typeof window !== "undefined" && window.self !== window.top;
+        if (isInIframe) return;
+        const listener = () => {
+            window.history.forward();
+        };
+        window.addEventListener("popstate", listener);
+
+        return () => {
+            window.removeEventListener("popstate", listener);
+        };
+    }, []);
+
+    useEffect(() => {
+        window.history.pushState(null, href, href);
+    }, [href]);
+}
+```
+
+</Accordion>
+
+</Accordions>

@@ -1,0 +1,51 @@
+---
+title: ストレージクラス
+description: |
+  `StoredClassModel` を使用してプロパティを保存するクラスを作成する方法。
+---
+
+Pixi’VN は、ゲームストレージに保存されるプロパティを持つクラスを作成するために使用できる抽象クラス [`StoredClassModel`](/jsdoc/pixi-vn/index/classes/StoredClassModel) を提供します。
+
+```ts
+const CITY_CATEGORY = "city";
+
+export default class City extends StoredClassModel {
+    constructor(id: string, props: CityProps) {
+        super(CITY_CATEGORY, id);
+        // ...
+    }
+}
+```
+
+```ts
+const milan = new City("milan", {
+    // ...
+});
+```
+
+## ストレージプロパティ
+
+クラスのプロパティをゲームストレージに保存するには、[`getStorageProperty`](/jsdoc/pixi-vn/index/classes/StoredClassModel#getstorageproperty) と [`setStorageProperty`](/jsdoc/pixi-vn/index/classes/StoredClassModel#setstorageproperty) ヘルパーを使用します。
+
+```ts
+export default class City extends StoredClassModel {
+    constructor(id: string, props: CityProps) {
+        // ...
+    }
+
+    get inhabitants(): number {
+        return this.getStorageProperty<string>("inhabitants") || "";
+    }
+    set inhabitants(value: number) {
+        this.setStorageProperty("inhabitants", value);
+    }
+}
+```
+
+```ts
+const milan = new City("milan", {
+    // ...
+});
+
+milan.inhabitants = 100000;
+```

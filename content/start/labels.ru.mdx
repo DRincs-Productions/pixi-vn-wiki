@@ -1,0 +1,130 @@
+---
+title: Нарративные узлы (label) и шаги (step)
+description: Объясняет основные концепции меток и шагов в Pixi’VN, подробно описывая, как нарративный поток структурируется и управляется в игровом движке.
+---
+
+Визуальные новеллы — это, как правило, последовательность сцен с изображениями и текстом. В Pixi’VN весь нарративный поток основан на концепциях нарративных узлов (`label`) и нарративных шагов (`step`).
+
+Нарративный узел (`label`) используется для организации нарратива; он работает как «закладка» или раздел истории. Технически, нарративный узел (`label`) — это класс, выступающий контейнером для нарративных шагов (`step`).
+
+Нарративный шаг (`step`) — это отдельное действие или событие, происходящее внутри нарративного узла (`label`). Шаги используются для отображения изображений, текста и других нарративных элементов.
+
+:::tip[Терминология]
+
+Термин нарративный узел (`label`) заимствован из Ren'Py, где он выступает «закладкой» или «ориентиром» в истории. В языке ink эквивалентным термином является нарративный узел (`knot`).Термин нарративный шаг (`step`) введён Pixi’VN для обозначения отдельных действий или событий, происходящих внутри нарративного узла (`label`).
+
+Термин нарративный шаг (`step`) введён Pixi’VN для обозначения отдельных действий или событий, происходящих внутри нарративного узла (`label`).
+
+:::
+
+<Accordions>
+
+<Accordion title="Жизненный цикл" id="lifecycle">
+
+1. Игра запускается вызовом нарративного узла (`label`) с помощью функции [`Game.start`](/jsdoc/pixi-vn/index/namespaces/Game/functions/start). Первый нарративный шаг (`step`) нарративного узла выполняется автоматически.
+2. После этого, подключив функцию [`narration.continue`](/jsdoc/pixi-vn/index/interfaces/NarrationManagerInterface#continue) к событию (например, нажатию кнопки), при каждом вызове функции выполняется следующий нарративный шаг (`step`) нарративного узла (`label`). Некоторые нарративные шаги (`step`) также могут запускать другие нарративные узлы (`label`).
+3. Игра завершается только тогда, когда все нарративные шаги (`step`) выполнены. В этот момент срабатывает функция [`Game.onEnd`](/jsdoc/pixi-vn/index/namespaces/Game/functions/onEnd).
+
+</Accordion>
+
+</Accordions>
+
+## Добавление
+
+Чтобы создать нарративный узел (`label`), используйте функцию [`newLabel`](/jsdoc/pixi-vn/index/functions/newLabel).
+
+```ts title="content/labels/start.label.ts"
+import { narration, StepLabelProps } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        narration.dialogue = { character: liam, text: "Example of dialogue" };
+    },
+    (props: StepLabelProps, { labelId }) => narration.jump(labelId, props),
+]);
+```
+
+## Другие возможности
+
+<Accordions>
+
+<Accordion title="`StepLabelProps`" id="steplabelprops">
+
+:::tip[Шаблоны]
+
+Во всех шаблонах интерфейс `StepLabelProps` уже переопределён. Его можно найти в файле `pixi-vn.d.ts`.
+
+:::
+
+Все <DynamicLink href="/start/labels-flow">функции управления нарративным потоком</DynamicLink> требуют объект, соответствующий интерфейсу [`StepLabelProps`](/jsdoc/pixi-vn/index/interfaces/StepLabelProps). Вы можете «переопределить» интерфейс `StepLabelProps` в вашем файле `.d.ts`, чтобы указать необходимые параметры.
+
+```ts tab="pixi-vn.d.ts"
+import { narration } from "@drincs/pixi-vn";
+
+declare module "@drincs/pixi-vn" {
+    interface StepLabelProps {
+        navigate: (route: string) => void;
+    }
+}
+```
+
+```ts tab="content/labels/start.label.ts"
+export const startLabel = newLabel("start", [
+    ({ navigate }) => {
+        navigate("/new-route");
+    },
+]);
+```
+
+</Accordion>
+
+<Accordion title="Свойства `step`" id="step-pros">
+
+Вы можете передать тип в функцию [`newLabel`](/jsdoc/pixi-vn/index/functions/newLabel), чтобы добавить пользовательские параметры для этого нарративного узла (`label`) в дополнение к [`StepLabelProps`](#steplabelprops).
+
+```ts title="content/labels/start.label.ts"
+import { narration } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel<{ name: string }>("start", [
+    (props) => {
+        console.log(props.name);
+    },
+]);
+
+narration.call(startLabel, {
+    // Add StepLabelProps here
+    navigate: navigate, // example
+    // And the custom props for the label
+    name: "John",
+});
+```
+
+</Accordion>
+
+<Accordion title="`StepLabelResult`" id="step-results">
+
+Нарративные шаги могут возвращать объект [`StepLabelResult`](/jsdoc/pixi-vn/index/interfaces/StepLabelResult). Вы можете «переопределить» интерфейс `StepLabelResult` в вашем файле `.d.ts`, чтобы определить пользовательские свойства для результатов нарративного шага (`step`).
+
+```ts tab="pixi-vn.d.ts"
+declare module "@drincs/pixi-vn" {
+    interface StepLabelResult {
+        newRoute?: string;
+        [key: string]: any;
+    }
+}
+```
+
+```ts tab="content/labels/start.label.ts"
+export const startLabel = newLabel("start", [
+    () => {
+        return {
+            newRoute: "/new-route",
+            customProperty: 12,
+        };
+    },
+]);
+```
+
+</Accordion>
+
+</Accordions>
