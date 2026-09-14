@@ -25,6 +25,7 @@ import {
     LayoutGrid,
     MessageCircleQuestion,
     Music,
+    Palette,
     PlugZap,
     Replace,
     Rocket,
@@ -568,6 +569,12 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                         ],
                     },
                 ],
+            },
+            {
+                type: "page",
+                name: t("brand"),
+                icon: <Palette />,
+                url: `${preUrl}/start/brand`,
             },
         ],
     };
