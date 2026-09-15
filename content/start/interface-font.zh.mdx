@@ -1,0 +1,42 @@
+---
+title: 样式与主题
+description: 如何在基于 shadcn/ui 构建的 Pixi’VN 模板中自定义 UI 外观——颜色、圆角、字体等等。
+---
+
+Pixi’VN 模板基于 Tailwind CSS，使用 [shadcn/ui](https://ui.shadcn.com/) 构建 UI。 与常规组件库不同，shadcn/ui 并不以包的形式发布：组件源代码会被复制到你自己的项目中（位于 `src/components/ui/` 下）。
+
+:::tip[模板]
+
+Pixi’VN 模板使用 Vite、Tailwind CSS 和 shadcn/ui，因此以下说明是针对该配置进行调整的。 完整的项目结构请参见 <DynamicLink href="/start/templates">模板</DynamicLink>。
+
+:::
+
+整个主题——颜色、圆角、字体等等——都取决于一个文件：`src/styles.css`。
+
+## 超越基础主题生成器
+
+除了手动编辑 `styles.css`，你还可以使用可视化工具生成完整的主题。
+
+### shadcn/ui 主题生成器
+
+[官方主题生成器](https://ui.shadcn.com/create) 是一个可视化编辑器：你可以选择基础颜色，调整浅色和深色模式的调色板，并设置圆角大小，同时实时预览真实的 shadcn 组件（按钮、卡片、输入框等） 这样你就可以在应用之前看到结果。 满意后，打开页面上的 **Copy** 部分：它会给你一条可直接运行的命令，格式如下：
+
+```npm
+npx shadcn@latest add <generated-command>
+```
+
+在项目根目录下运行此命令，会获取你生成的主题，并用它覆盖 `styles.css` 中的颜色/圆角变量，具体说明请参见 <DynamicLink href="/start/templates">模板 → 自定义样式</DynamicLink>。
+
+将生成的代码应用到项目后，运行：
+
+```npm
+npm run ui:reinit
+```
+
+这会直接从 shadcn 注册表强制重新安装项目中已有的每个 shadcn 组件，使用你更新后的 `styles.css` 和 `components.json`，并在之后重新格式化源文件。 这样可以让所有组件都与新主题保持一致，而不是让它们停留在构建时所使用的旧变量上。
+
+### tweakcn
+
+[tweakcn](https://tweakcn.com/) 是官方主题生成器的一个社区制作的替代方案。 它涵盖了同样的颜色和圆角设置，还额外支持字体和阴影的实时编辑，并提供了一系列现成的预设供你直接使用，而不必从零开始构建调色板。 它同样会将结果导出为 CSS 变量，因此你可以用同样的方式将输出粘贴到 `styles.css` 中，然后再执行 `npm run ui:reinit`。
+
+这两者是目前与 shadcn/ui 搭配使用最广泛的主题生成器。 如果你遇到其他工具，重要的是它们要能输出纯 CSS 变量（或 shadcn 注册表命令）——符合该格式的内容都可以用同样的方式放入 `styles.css`。

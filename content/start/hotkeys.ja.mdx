@@ -1,0 +1,65 @@
+---
+title: ホットキー
+description: TanStack Hotkeysを使ってPixi’VNでキーボードショートカット(ホットキー)を作成する方法。クイックセーブ/ロードやミニゲーム操作の例付き。
+---
+
+ホットキーを使うと、プレイヤーはクイックセーブ、ダイアログのスキップ、<DynamicLink href="/start/minigames">ミニゲーム</DynamicLink>の操作など、キーボードから直接アクションを実行できます。 `window.addEventListener("keydown", ...)` の呼び出しを自分で管理するのではなく、[TanStack Hotkeys](https://tanstack.com/hotkeys/latest)を使うことをお勧めします。これは、スコープ、シーケンス、長押し、競合検出を備えたタイプ付きコマンドシステムにキーボード入力を変換するライブラリです。
+
+:::tip
+
+ビジュアルノベルでよく使われるホットキー(クイックセーブ、クイックロード、履歴、設定など)の一覧 は<DynamicLink href="/faq#hotkeys">FAQ</DynamicLink>にあります。
+
+:::
+
+<Accordions>
+
+<Accordion title="Installation" id="installation">
+
+:::tip[テンプレート]
+
+すべてのテンプレートには、TanStack Hotkeysパッケージがすでにインストールされています。
+
+:::
+
+TanStack Hotkeysは、フレームワークごとに個別のパッケージを提供しています。 Reactプロジェクトの場合は、次のようにインストールします。
+
+```npm
+npm install @tanstack/react-hotkeys
+```
+
+Vue、Angular、Litのアダプターも利用できます。使用するフレームワークのパッケージに合わせて `@tanstack/react-hotkeys` を置き換えてください。
+
+</Accordion>
+
+</Accordions>
+
+## 使用方法
+
+`useHotkey` フックでホットキーを登録します。
+
+```tsx
+import { useHotkey } from "@tanstack/react-hotkeys";
+
+useHotkey("Mod+S", () => {
+    quickSave();
+});
+```
+
+`Mod` 修飾キーは、macOSでは自動的に `Meta`(Cmd)に、Windows/Linuxでは `Control` に解決されるため、同じコードがプラットフォーム間で機能します。
+
+## 条件付きでのスコープ設定と有効化
+
+`useHotkey` はフックであるため、コンポーネントのマウント時にショートカットを登録し、アンマウント時に自動的にクリーンアップします。手動の `window.addEventListener` とは異なり、リスナーを自分で削除する必要はありません。
+
+`target` オプションを使うとホットキーを特定の要素に限定でき、`enabled` を使うとゲームの状態に応じてオン/オフを切り替えられます。たとえば、ミニゲームの実行中などです。
+
+```tsx
+const panelRef = useRef<HTMLDivElement>(null);
+
+useHotkey("Escape", () => closePanel(), { target: panelRef });
+useHotkey("ArrowUp", () => setDirection(0, -1), { enabled: !gameOver });
+```
+
+## 詳細情報
+
+TanStack Hotkeysは、キーシーケンス(例:「GそしてD」)、長押し、競合検出、devtoolsパネルもサポートしています。 全機能については、[公式ドキュメント](https://tanstack.com/hotkeys/latest)を参照してください。

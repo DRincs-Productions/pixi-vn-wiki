@@ -1,0 +1,227 @@
+---
+title: 国際化
+description: このページでは、i18next を使用して Pixi’VN ゲームに多言語サポートを追加する方法（UI とナレーションの翻訳戦略を含む）を説明します。 ビジュアルノベルを翻訳するには？
+---
+
+ビジュアルノベルや類似のゲームでは、プレイヤーが母国語を選択できるようにすることが一般的です。
+
+Pixi’VN プロジェクトでは、翻訳を処理するために外部ライブラリを使用することをお勧めします。 これにより、ニーズに最適な実装を柔軟に選択できます。
+
+最も人気があり広く互換性のあるライブラリは **i18next** です。
+
+<Accordions>
+
+<Accordion title="i18next とは何ですか？" id="what-is-i18next">
+
+i18next は JavaScript 用の国際化フレームワークです。 使用するには、インストールして初期化する必要があります。 詳細は [i18next ウェブサイト](https://www.i18next.com/) をご覧ください。
+
+</Accordion>
+
+</Accordions>
+
+:::tip[テンプレート]
+
+すべてのテンプレートでは、i18next がすでに含まれ、設定されています。 すぐにゲームの翻訳を開始できます。
+
+:::
+
+翻訳は複数の JSON ファイル（言語ごとに 1 つ）にキーと値のペアで保存されます。 キーはテキストの一意の識別子で、値は翻訳された文字列です。
+
+<Accordions>
+
+<Accordion title="初期化" id="initialize">
+
+```ts title="lib/i18n.ts"
+import i18n, { type ReadCallback } from "i18next";
+import LanguageDetector from "i18next-browser-languagedetector";
+import ChainedBackend from "i18next-chained-backend";
+import { initReactI18next } from "react-i18next";
+
+class Backend extends ChainedBackend {
+    override async read(lng: string, ns: string, callback: ReadCallback) {
+        try {
+            const object = await getLocalesResource(lng);
+            const result = object[ns];
+            callback(null, result);
+        } catch (error) {
+            callback(error as Error, { data: null });
+        }
+    }
+}
+
+export const useI18n = async () => {
+    if (!i18n.isInitialized) {
+        return await i18n
+            .use(Backend)
+            .use(LanguageDetector)
+            .use(initReactI18next)
+            .init({
+                debug: false,
+                fallbackLng: "en",
+                supportedLngs: ["en"],
+                interpolation: {
+                    escapeValue: false,
+                },
+                load: "currentOnly",
+                detection: {
+                    order: ["localStorage"],
+                    caches: ["localStorage"],
+                },
+                missingInterpolationHandler(_text, value, _options) {
+                    return value[1];
+                },
+            });
+    }
+};
+
+function getLocalesResource(
+    lng: string,
+): Promise<Record<string, Record<string, string>>> {
+    return import(`./../locales/${lng}.json`);
+}
+```
+
+</Accordion>
+
+<Accordion title="UI の翻訳" id="translate-ui">
+
+UI を翻訳するには、i18next が提供する `t` 関数を使用します。 翻訳キーを `t` に渡すと、プレイヤーの言語に対応するテキストが取得されます。
+
+例：
+
+```tsx tab="React"
+import { useTranslation } from "react-i18next";
+
+export default function MyComponent() {
+    const { t } = useTranslation("ui");
+
+    return (
+        <div>
+            <Button>{t("text_speed")}</Button>
+        </div>
+    );
+}
+```
+
+```vue tab="Vue"
+<script setup>
+import { useTranslation } from "i18next-vue";
+const { t } = useTranslation("ui");
+</script>
+
+<template>
+    <div>
+        <button>{{ t("text_speed") }}</button>
+    </div>
+</template>
+```
+
+```svelte tab="Svelte"
+<script>
+    import { useTranslation } from 'svelte-i18n';
+    const { t } = useTranslation("ui");
+</script>
+
+<div>
+    <button>{t('text_speed')}</button>
+</div>
+```
+
+</Accordion>
+
+<Accordion title="ナレーションの翻訳（TypeScript/JavaScript）" id="translate-narration">
+
+:::tip[テンプレート]
+
+すべてのテンプレートでは、`StepLabelProps` インターフェースにすでに `t` 関数が含まれています。 `pixi-vn.d.ts` を参照してください。
+
+:::
+
+:::tip
+
+UI に直接使用するのではなく、<DynamicLink href="/start/labels">label</DynamicLink> 内で `t` を使用することをお勧めします。これにより、[i18n 補間](https://i18next.com/translation-function/interpolation) を活用できます。
+
+:::
+
+Pixi’VN プロジェクトでは、TypeScript/JavaScript の <DynamicLink href="/start/labels">ナラティブノード（`labels`）</DynamicLink> でナレーションテキストを翻訳する必要があることが多いです。 これを可能にするには、翻訳関数を <DynamicLink href="/start/labels#steplabelprops">`StepLabelProps` インターフェース</DynamicLink>に含める必要があります。
+
+元の文字列を翻訳キーとして使用することをお勧めします。
+
+```ts tab="content/labels/start.label.ts"
+export const startLabel = newLabel("start", [
+    ({ t }) => {
+        narration.dialogue = {
+            character: liam,
+            text: t("Hello, my name is {{name}}", { name: "Liam" }),
+        };
+    },
+]);
+```
+
+```ts tab="pixi-vn.d.ts"
+import type { TFunction } from "i18next";
+
+declare module "@drincs/pixi-vn" {
+    interface StepLabelProps {
+        /**
+         * Translate a key to a string.
+         * @param key The key to translate.
+         * @returns The translated string.
+         */
+        t: TFunction<[string], undefined>;
+        // ...
+    }
+}
+```
+
+```ts tab="locales/es.json"
+{
+    "narration": {
+        "Hello, my name is {{name}}": "Hola, mi nombre es {{name}}"
+        // ...
+    }
+}
+```
+
+```ts tab="lib/hooks/props-hooks.ts"
+import { useTranslation } from "react-i18next";
+
+export function useGameProps(): StepLabelProps {
+    const { t } = useTranslation(["narration"]);
+
+    return {
+        // ...
+        t,
+    };
+}
+```
+
+</Accordion>
+
+</Accordions>
+
+## 作成
+
+:::tip[*ink*]
+
+*ink* を使用している場合、*ink* テキストから翻訳用の文字列を自動的に抽出できます。 <DynamicLink href="/ink/translate">こちら</DynamicLink>で詳細を確認してください。
+
+:::
+
+翻訳 JSON ファイルは手動で作成する必要があります。 翻訳を 2 つのセクションに分けることをお勧めします（`es.json` を参照）：
+
+* UI テキスト：画面、設定、クイックボタンなど——ナレーション以外のすべて。
+* ナレーションテキスト：対話、選択肢メニューなど。
+
+```json tab="locales/es.json"
+{
+    "ui": {
+        "text_speed": "Velocidad del texto"
+        // ...
+    },
+    "narration": {
+        "Hello, my name is {{name}}": "Hola, mi nombre es {{name}}"
+        // ...
+    }
+}
+```

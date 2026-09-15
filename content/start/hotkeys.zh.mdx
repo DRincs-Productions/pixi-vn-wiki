@@ -1,0 +1,65 @@
+---
+title: 快捷键
+description: 介绍如何在 Pixi’VN 中使用 TanStack Hotkeys 创建键盘快捷键（hotkeys），并提供快速保存/加载和小游戏控制方面的示例。
+---
+
+快捷键让玩家能够直接通过键盘触发操作，例如快速保存、跳过对话，或控制一个<DynamicLink href="/start/minigames">小游戏</DynamicLink>。 与其自行管理 `window.addEventListener("keydown", ...)` 调用，不如使用 [TanStack Hotkeys](https://tanstack.com/hotkeys/latest)，这是一个能将键盘输入转换为具有作用域、序列、按住按键和冲突检测功能的类型化命令系统的库。
+
+:::tip
+
+视觉小说中常用快捷键列表（快速保存、快速加载、历史记录、设置等） 可在<DynamicLink href="/faq#hotkeys">FAQ</DynamicLink>中找到。
+
+:::
+
+<Accordions>
+
+<Accordion title="Installation" id="installation">
+
+:::tip[模板]
+
+在所有模板中，TanStack Hotkeys 包均已预先安装。
+
+:::
+
+TanStack Hotkeys 为每个框架都提供了单独的包。 对于 React 项目，安装：
+
+```npm
+npm install @tanstack/react-hotkeys
+```
+
+Vue、Angular 和 Lit 的适配器也同样可用——将 `@tanstack/react-hotkeys` 替换为你所用框架对应的包。
+
+</Accordion>
+
+</Accordions>
+
+## 使用方法
+
+使用 `useHotkey` 钩子注册一个快捷键：
+
+```tsx
+import { useHotkey } from "@tanstack/react-hotkeys";
+
+useHotkey("Mod+S", () => {
+    quickSave();
+});
+```
+
+`Mod` 修饰键在 macOS 上会自动解析为 `Meta`（Cmd），在 Windows/Linux 上则解析为 `Control`，因此同一段代码可以跨平台使用。
+
+## 作用域限定与条件启用
+
+`useHotkey` 是一个钩子，因此它会在组件挂载时注册快捷键，并在组件卸载时自动清理——不同于手动使用 `window.addEventListener`，你无需自己移除监听器。
+
+使用 `target` 选项可将快捷键限定在特定元素上，使用 `enabled` 选项则可根据游戏状态开启或关闭快捷键，例如在小游戏运行期间：
+
+```tsx
+const panelRef = useRef<HTMLDivElement>(null);
+
+useHotkey("Escape", () => closePanel(), { target: panelRef });
+useHotkey("ArrowUp", () => setDirection(0, -1), { enabled: !gameOver });
+```
+
+## 了解更多
+
+TanStack Hotkeys 还支持按键序列（例如 “G then D”）、按住按键、冲突检测以及开发者工具面板。 完整功能集请参阅[官方文档](https://tanstack.com/hotkeys/latest)。

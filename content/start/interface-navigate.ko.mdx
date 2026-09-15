@@ -1,0 +1,191 @@
+---
+title: UI 화면 간 이동/전환
+---
+
+서로 다른 UI 화면 간에 이동하려면 라우팅 시스템을 사용해야 합니다. 라우팅 시스템을 사용하면 서로 다른 화면에 대한 route(또는 경로)를 정의하고, 화면 간 이동을 관리할 수 있습니다.
+
+## TanStack Router
+
+<Accordions>
+
+<Accordion title="TanStack Router란?" id="what-is-tanstack-router">
+
+TanStack Router는 웹 애플리케이션을 위한 라우팅 시스템으로, 서로 다른 페이지나 컴포넌트 간의 이동을 간단하고 효율적인 방식으로 관리할 수 있게 해줍니다. 동적 매개변수 지원, 라우터 상태 관리, React, Vue, Angular와 같은 렌더링 라이브러리와의 통합 등 고급 기능을 제공하며, 유연하고 사용하기 쉽게 설계되었습니다.
+
+</Accordion>
+
+</Accordions>
+
+TanStack Router의 가장 큰 장점은 `createFileRoute`를 사용하여 route 처리를 자동으로 생성할 수 있다는 점입니다. `createFileRoute`를 사용하면 특정 폴더 구조 안에 파일을 생성하는 것만으로 간단하게 route를 정의할 수 있습니다. 예를 들어 `src/routes` 폴더에 `about.tsx` 파일을 생성하면, TanStack Router는 `about.tsx`에 정의된 컴포넌트를 렌더링하는 `/about` route를 자동으로 생성합니다.
+
+```ts title="src/routes/about.tsx"
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/about")({ // [!code focus]
+    component: About, // [!code focus]
+}); // [!code focus]
+
+function About() {
+    return (
+        <main className="page-wrap px-4 py-12">
+            <section className="island-shell rounded-2xl p-6 sm:p-8">
+                <p className="island-kicker mb-2">About</p>
+                <h1 className="display-title mb-3 text-4xl font-bold text-[var(--sea-ink)] sm:text-5xl">
+                    A small starter with room to grow.
+                </h1>
+                <p className="m-0 max-w-3xl text-base leading-8 text-[var(--sea-ink-soft)]">
+                    TanStack Start gives you type-safe routing, server functions, and modern SSR defaults. Use this as a
+                    clean foundation, then layer in your own routes, styling, and add-ons.
+                </p>
+            </section>
+        </main>
+    );
+}
+```
+
+## 화면/route 간 이동 방법
+
+화면/route 간에 이동하려면 라우팅 시스템에서 제공하는 탐색 함수를 사용하세요.
+
+:::tip[템플릿]
+
+모든 템플릿에서 `StepLabelProps` 인터페이스는 이미 `navigate` 함수를 포함하도록 확장되어 있습니다. `pixi-vn.d.ts` 파일에서 확인할 수 있습니다.
+
+:::
+
+<Accordions>
+
+<Accordion title="초기화" id="initialize">
+
+이를 활성화하려면 <DynamicLink href="/start/labels#steplabelprops">`StepLabelProps` 인터페이스</DynamicLink>에 탐색 함수를 포함해야 합니다.
+
+```ts tab="pixi-vn.d.ts"
+import { narration } from "@drincs/pixi-vn";
+
+declare module "@drincs/pixi-vn" {
+    interface StepLabelProps {
+        navigate: (route: string) => void;
+    }
+}
+```
+
+```ts tab="hooks/useGameProps.ts"
+import { StepLabelProps } from "@drincs/pixi-vn";
+import useMyNavigate from "./useMyNavigate";
+
+export default function useGameProps(): StepLabelProps {
+    const navigate = useMyNavigate();
+
+    return {
+        navigate,
+    };
+}
+```
+
+</Accordion>
+
+</Accordions>
+
+<Callout title="테스트" type="info">
+
+AI 에이전트가 게임을 플레이 테스트하게 하기 위해 Vite.js 플러그인의 `Game.testing`(위의 "Vite.js 플러그인" 섹션과 `pixi-vn-testing`
+Agent Skill 참고)을 사용하는 경우, 여기에서도
+[`Game.testing.setProps`](/jsdoc/pixi-vn/index/namespaces/Game/namespaces/testing/functions/setProps)
+를 호출하여 `navigate`(및 이 훅이 반환하는 다른 항목들)가 테스트 세션에서 계속 사용 가능하도록 하세요:
+
+```ts tab="hooks/useGameProps.ts"
+import { Game, StepLabelProps } from "@drincs/pixi-vn"; // [!code focus]
+import useMyNavigate from "./useMyNavigate";
+
+export default function useGameProps(): StepLabelProps {
+    const navigate = useMyNavigate();
+    const props = {
+        navigate,
+    };
+    Game.testing.setProps(props); // [!code focus]
+    return props;
+}
+```
+
+</Callout>
+
+<Callout title="ink" type="info">
+
+모든 *ink* 템플릿에는 route 간 이동을 위한 <DynamicLink href="/ink/hashtag">사용자 지정 해시태그 명령어</DynamicLink>가 도입되었습니다. To do this, you need to use the following syntax:
+
+```ink title="ink"
+# navigate [route]
+```
+
+* `route`: 목적지 route/경로입니다. 예를 들어 `# navigate /new-route`와 같습니다.
+
+</Callout>
+
+새로운 내러티브 노드를 생성할 때, `navigate` 함수를 사용하여 route 간에 전환할 수 있습니다:
+
+```ts tab="content/labels/start.label.ts"
+export const startLabel = newLabel("start", [
+    ({ navigate }) => {
+        navigate("/new-route");
+    },
+]);
+```
+
+## 기타 기능
+
+<Accordions>
+
+<Accordion title="브라우저의 뒤로 가기 및 앞으로 가기 버튼 차단" id="block-back-forward">
+
+브라우저의 뒤로 가기 및 앞으로 가기 버튼을 사용하면 게임이 일관되지 않은 상태가 될 수 있습니다. 이는 그 버튼들이 플레이어로 하여금 내러티브 단계(`steps`)가 아니라 route 사이를 이동하게 하기 때문입니다.
+
+브라우저의 뒤로 가기 버튼이 눌렸을 때 경로가 변경되지 않도록 방지하는 것이 좋습니다. 이를 수행하는 방법은 여러 가지가 있지만, 다음과 같은 방식을 제안합니다:
+
+브라우저의 뒤로 가기 버튼이 눌린 후 발생하는 `popstate` 이벤트를 가로채고, `history.forward()`를 호출하여 이동을 취소합니다. 사용자가 뒤로 가기 버튼을 연속으로 두 번 누르면 실제로 뒤로 이동할 수 있도록, route가 변경될 때마다 히스토리 스택에 새로운 상태를 push할 수 있습니다.
+
+예를 들어:
+
+```ts title="hooks/useConfirmBackNavigation.ts"
+import { useLocation } from "@tanstack/react-router";
+import { useEffect } from "react";
+
+/**
+ * useConfirmBackNavigation
+ *
+ * Prevent accidental browser "back" navigation.
+ * Behavior:
+ * - On each `href` change it pushes a history state (`pushState`).
+ * - Listens for `popstate` and calls `history.forward()` to cancel a single
+ *   press of the browser back button.
+ * - If the user presses back twice in succession (i.e. the second press occurs
+ *   before the first is handled), the browser will navigate back.
+ *
+ * Usage: call this hook at the app root to avoid unintended back navigations
+ * (e.g. accidental taps or gestures). Returns `null`.
+ */
+export default function useConfirmBackNavigation() {
+    const { href } = useLocation();
+
+    useEffect(() => {
+        const isInIframe =
+            typeof window !== "undefined" && window.self !== window.top;
+        if (isInIframe) return;
+        const listener = () => {
+            window.history.forward();
+        };
+        window.addEventListener("popstate", listener);
+
+        return () => {
+            window.removeEventListener("popstate", listener);
+        };
+    }, []);
+
+    useEffect(() => {
+        window.history.pushState(null, href, href);
+    }, [href]);
+}
+```
+
+</Accordion>
+
+</Accordions>

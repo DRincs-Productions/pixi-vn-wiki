@@ -1,0 +1,71 @@
+---
+title: 履歴
+description: Pixi’VN がダイアログ、選択肢、ナラティブステップ（`step`）カウンター、保存制限など、ナラティブ履歴をどのように追跡・管理するかを説明します。
+---
+
+:::tip[UI 画面]
+
+履歴 UI 画面の例は、<DynamicLink href="/start/interface-examples#history">インターフェース例</DynamicLink> セクションで確認できます。
+
+:::
+
+:::tip[用語説明]
+
+このドキュメントでは、「ナラティブ履歴」という用語は、プレイヤーに表示されたすべてのダイアログ、選択肢などのリストを指します。
+
+:::
+
+Pixi’VNは、ゲーム中に実行されるすべてのナラティブステップ（`step`）において、ダイアログ、選択肢、レスポンスなどをすべて保存します。 これにより、以前のステップに戻って過去の出来事を振り返ったり、以前の選択肢を再確認したりすることが可能になります。
+
+## 取得
+
+ナラティブ履歴を取得するには、[`stepHistory.narrativeHistory`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#narrativehistory) を使用してください。
+
+```ts
+const dialogues: NarrativeHistory[] = stepHistory.narrativeHistory;
+```
+
+## 削除
+
+すべてのナラティブ履歴を削除するには、[`stepHistory.removeNarrativeHistory`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#removenarrativehistory) を使用してください。
+
+```ts
+stepHistory.removeNarrativeHistory();
+```
+
+ナラティブ履歴の一部を削除するには、最初の N 件の要素を削除するための数値を渡してください：
+
+```ts
+// Delete the first 2 elements
+stepHistory.removeNarrativeHistory(2);
+```
+
+## その他の機能
+
+<Accordions>
+
+<Accordion title="保存されるナラティブステップの上限（`step`）" id="limit-saved-steps">
+
+ナラティブステップ（`step`）ごとに、現在のゲーム状態に関するすべての情報が保存されます。
+
+セーブファイルが大きくなりすぎるのを防ぐため、保存されるナラティブステップ（`steps`）の数に上限があります。 デフォルトでは最新の 20 ナラティブステップ（`steps`）のみが保存されますが、この上限を増やすことができます（例：100 に設定）。 上限に達すると、古いナラティブステップ（`steps`）からは必要最低限の情報のみが保持されます。 これにより、完全な <DynamicLink href="/start/history">ナラティブ履歴</DynamicLink> を表示することはできますが、上限を超えた特定のナラティブステップ（`step`）には <DynamicLink href="/start/labels-flow#go-back">戻る</DynamicLink> ことができません。
+
+ナラティブステップ（`step`）の保存上限は、[`stepHistory.stepLimitSaved`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#steplimitsaved) プロパティを設定することで変更できます。
+
+```ts
+import { stepHistory } from "@drincs/pixi-vn";
+
+stepHistory.stepLimitSaved = 100;
+```
+
+ナラティブステップ（`step`）の保存上限を無効にするには、[`stepHistory.stepLimitSaved`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#steplimitsaved) を `Infinity` に設定してください。
+
+```ts
+import { stepHistory } from "@drincs/pixi-vn";
+
+stepHistory.stepLimitSaved = Infinity;
+```
+
+</Accordion>
+
+</Accordions>
