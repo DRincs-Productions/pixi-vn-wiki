@@ -34,12 +34,12 @@ james: ...Suit yourself.
                 ts: (
                     <ServerCodeBlock
                         code={`import { mc } from "@/content/characters";
-import { moveIn, narration, newChoiceOption, newLabel, showImage } from "@drincs/pixi-vn";
+import { narration, newChoiceOption, newLabel, showImage, transitions } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start", [
     async () => {
         await showImage("bg", "bg01-hallway");
-        await moveIn(
+        await transitions.moveIn(
             "james",
             {
                 value: ["m01-body", "m01-eyes-smile", "m01-mouth-neutral01"],
