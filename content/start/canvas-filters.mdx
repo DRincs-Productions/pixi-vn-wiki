@@ -1,15 +1,502 @@
 ---
 title: Filters
+description: Learn how to apply, save, and restore PixiJS filters on any canvas component in Pixi’VN, with a runnable example for every filter registered out of the box from pixi.js core and the pixi-filters collection.
 ---
 
-<Callout title="This page is under construction" type="warn">
+Filters let you apply visual effects (blur, glow, color grading, distortions, and more) to any
+<DynamicLink href="/start/canvas-components">canvas component</DynamicLink>, using PixiJS's own
+`.filters` property. **This functionality is available starting from v1.9.4.**
 
-Currently, this functionality is not available in Pixi’VN, but we plan to implement it. If you are interested, feel free to write in the chat below!
+```ts
+import { showImage } from "@drincs/pixi-vn";
+import { BlurFilter } from "pixi.js";
 
-</Callout>
+const alien = await showImage("alien", "egg_head");
+alien.filters = [new BlurFilter({ strength: 12 })];
+```
 
-Having the ability to filter the entire canvas or a specific component can be very useful in many cases.
+## Save and restore
 
-![image](https://filters.pixijs.download/main/screenshots/shockwave.gif?v=3)
+A live `Filter` instance can't be serialized directly - it doesn't expose its own constructor
+options after creation, and its state lives in GPU-facing resources/uniform groups. Pixi’VN solves
+this with `RegisteredFilters`: an extensible registry (the same alias-to-class pattern used by
+<DynamicLink href="/start/canvas-tickers">tickers</DynamicLink>) that knows how to read a filter's
+current parameters into a serializable object, and reconstruct an equivalent instance from it later.
 
-The [PixiJS Filters](https://pixijs.io/filters/docs/) library provides this capability to PixiJS.
+Every filter listed below is registered out of the box - attach one to any canvas component and it
+will automatically be saved and restored as part of that component's own save data, no extra setup
+needed.
+
+### Registering your own filters
+
+Use `filterDecorator` to make a custom filter (yours, or a third-party one Pixi’VN doesn't register
+itself) save-compatible too:
+
+```ts
+import { filterDecorator } from "@drincs/pixi-vn/filters";
+import { Filter } from "pixi.js";
+
+@filterDecorator({
+    toMemory: (filter: MyFilter) => ({ amount: filter.amount }),
+})
+class MyFilter extends Filter {
+    amount: number;
+    constructor(args: { amount?: number } = {}) {
+        super({ /* ... */ });
+        this.amount = args.amount ?? 0;
+    }
+}
+```
+
+`toMemory` reads a live instance's current parameters into a plain, JSON-serializable object; that
+object is passed straight back into the class's constructor to reconstruct it on restore.
+
+### Filters that can't be saved
+
+A handful of filters genuinely can't round-trip through this mechanism, and are **not** registered:
+
+- **`ColorMapFilter`, `SimpleLightmapFilter`** (`pixi-filters`) - their constructors require a
+  `Texture`, which isn't itself serializable by this registry.
+- **`DisplacementFilter`** (`pixi.js` core) - requires a live `Sprite` as its displacement map.
+- **`ColorMatrixFilter`** (`pixi.js` core) - its state (`matrix`, `alpha`) is entirely set through
+  instance methods/setters after construction; the constructor itself accepts no way to seed them.
+- **`TiltShiftAxisFilter`** (`pixi-filters`) - exposes no getters at all for its own constructor
+  options. Its subclass `TiltShiftFilter`, which *is* fully readable, is registered instead.
+
+You can still use any of these directly (`sprite.filters = [new ColorMatrixFilter()]`) - they just
+won't survive a save/restore round-trip unless you register your own `toMemory` for them, the same
+way you would for a custom filter.
+
+## The `Filters` namespace
+
+Every registered filter class is also grouped under the `Filters` namespace, so you don't need to
+import from `pixi.js`/`pixi-filters` directly:
+
+```ts
+import { Filters } from "@drincs/pixi-vn/filters";
+
+alien.filters = [new Filters.GlowFilter({ distance: 15, outerStrength: 3 })];
+```
+
+## All registered filters
+
+The live example below cycles through every filter registered out of the box, applied one at a
+time to the same image so they're easy to compare:
+
+<PixiVnExample path="canvas/filters-example" />
+
+<Accordions>
+
+<Accordion title="AlphaFilter" id="alpha-filter">
+
+From `pixi.js` core. Applies a uniform alpha (transparency) across the whole component, avoiding the
+visual layering artifacts of setting `.alpha` directly on a component with overlapping children.
+
+```ts
+import { Filters } from "@drincs/pixi-vn/filters";
+
+alien.filters = [new Filters.AlphaFilter({ alpha: 0.4 })];
+```
+
+</Accordion>
+
+<Accordion title="BlurFilter" id="blur-filter">
+
+From `pixi.js` core. A Gaussian blur.
+
+```ts
+alien.filters = [new Filters.BlurFilter({ strength: 12 })];
+```
+
+</Accordion>
+
+<Accordion title="NoiseFilter" id="noise-filter">
+
+From `pixi.js` core. Adds random pixel noise (film grain/static).
+
+```ts
+alien.filters = [new Filters.NoiseFilter({ noise: 0.6 })];
+```
+
+</Accordion>
+
+<Accordion title="AdjustmentFilter" id="adjustment-filter">
+
+Adjusts gamma, contrast, saturation, brightness, and individual RGB/alpha channels.
+
+```ts
+alien.filters = [new Filters.AdjustmentFilter({ gamma: 1.8, saturation: 2 })];
+```
+
+</Accordion>
+
+<Accordion title="AdvancedBloomFilter" id="advanced-bloom-filter">
+
+A bloom effect with a brightness threshold, so only the brightest parts of the image glow.
+
+```ts
+alien.filters = [new Filters.AdvancedBloomFilter({ threshold: 0.2, bloomScale: 1.5 })];
+```
+
+</Accordion>
+
+<Accordion title="AsciiFilter" id="ascii-filter">
+
+Renders the component as ASCII-art-style blocks.
+
+```ts
+alien.filters = [new Filters.AsciiFilter({ size: 8 })];
+```
+
+</Accordion>
+
+<Accordion title="BackdropBlurFilter" id="backdrop-blur-filter">
+
+Blurs whatever is *behind* the component (the backdrop), rather than the component itself - useful
+for frosted-glass style UI panels.
+
+```ts
+alien.filters = [new Filters.BackdropBlurFilter({ strength: 10 })];
+```
+
+</Accordion>
+
+<Accordion title="BevelFilter" id="bevel-filter">
+
+Gives the component a raised/beveled edge, with configurable light and shadow colors.
+
+```ts
+alien.filters = [new Filters.BevelFilter({ thickness: 4, rotation: 45 })];
+```
+
+</Accordion>
+
+<Accordion title="BloomFilter" id="bloom-filter">
+
+A simpler bloom/glow effect than `AdvancedBloomFilter`, without a brightness threshold.
+
+```ts
+alien.filters = [new Filters.BloomFilter({ strength: 15 })];
+```
+
+</Accordion>
+
+<Accordion title="BulgePinchFilter" id="bulge-pinch-filter">
+
+Bulges or pinches the image around a circular area.
+
+```ts
+alien.filters = [new Filters.BulgePinchFilter({ radius: 150, strength: 0.8 })];
+```
+
+</Accordion>
+
+<Accordion title="ColorGradientFilter" id="color-gradient-filter">
+
+Overlays a linear or radial color gradient.
+
+```ts
+alien.filters = [
+    new Filters.ColorGradientFilter({
+        stops: [
+            { offset: 0, color: "red" },
+            { offset: 1, color: "blue" },
+        ],
+        alpha: 0.5,
+    }),
+];
+```
+
+</Accordion>
+
+<Accordion title="ColorOverlayFilter" id="color-overlay-filter">
+
+Tints the component with a flat color overlay.
+
+```ts
+alien.filters = [new Filters.ColorOverlayFilter({ color: 0xff00ff, alpha: 0.5 })];
+```
+
+</Accordion>
+
+<Accordion title="ColorReplaceFilter" id="color-replace-filter">
+
+Replaces one color with another, within a tolerance.
+
+```ts
+alien.filters = [new Filters.ColorReplaceFilter({ targetColor: 0xff0000, tolerance: 0.3 })];
+```
+
+</Accordion>
+
+<Accordion title="ConvolutionFilter" id="convolution-filter">
+
+Applies a convolution kernel matrix - the general-purpose mechanism behind effects like sharpen,
+edge detection, and emboss.
+
+```ts
+alien.filters = [
+    new Filters.ConvolutionFilter({ matrix: [0, -1, 0, -1, 5, -1, 0, -1, 0], width: 3, height: 3 }),
+];
+```
+
+</Accordion>
+
+<Accordion title="CrossHatchFilter" id="cross-hatch-filter">
+
+A cross-hatch sketch effect. No configuration options.
+
+```ts
+alien.filters = [new Filters.CrossHatchFilter()];
+```
+
+</Accordion>
+
+<Accordion title="CRTFilter" id="crt-filter">
+
+Simulates an old CRT television: curvature, scanlines, noise, and vignetting.
+
+```ts
+alien.filters = [new Filters.CRTFilter({ curvature: 6, lineWidth: 2, vignetting: 0.4 })];
+```
+
+</Accordion>
+
+<Accordion title="DotFilter" id="dot-filter">
+
+A halftone-style dot pattern.
+
+```ts
+alien.filters = [new Filters.DotFilter({ scale: 0.6, angle: 5 })];
+```
+
+</Accordion>
+
+<Accordion title="DropShadowFilter" id="drop-shadow-filter">
+
+Adds a drop shadow behind the component.
+
+```ts
+alien.filters = [new Filters.DropShadowFilter({ offset: { x: 8, y: 8 }, blur: 4 })];
+```
+
+</Accordion>
+
+<Accordion title="EmbossFilter" id="emboss-filter">
+
+An emboss effect. Takes a single `strength` number rather than an options object.
+
+```ts
+alien.filters = [new Filters.EmbossFilter(8)];
+```
+
+</Accordion>
+
+<Accordion title="GlitchFilter" id="glitch-filter">
+
+A digital glitch/datamosh effect, slicing the image into displaced horizontal bands.
+
+```ts
+alien.filters = [new Filters.GlitchFilter({ slices: 10, offset: 30 })];
+```
+
+</Accordion>
+
+<Accordion title="GlowFilter" id="glow-filter">
+
+An outer/inner glow around the component's opaque pixels.
+
+```ts
+alien.filters = [new Filters.GlowFilter({ distance: 15, outerStrength: 3, color: 0x00ffff })];
+```
+
+</Accordion>
+
+<Accordion title="GodrayFilter" id="godray-filter">
+
+Animated god-ray/light-shaft effect.
+
+```ts
+alien.filters = [new Filters.GodrayFilter({ gain: 0.6, lacunarity: 2.5 })];
+```
+
+</Accordion>
+
+<Accordion title="GrayscaleFilter" id="grayscale-filter">
+
+Converts the component to grayscale. No configuration options.
+
+```ts
+alien.filters = [new Filters.GrayscaleFilter()];
+```
+
+</Accordion>
+
+<Accordion title="HslAdjustmentFilter" id="hsl-adjustment-filter">
+
+Adjusts hue, saturation, and lightness.
+
+```ts
+alien.filters = [new Filters.HslAdjustmentFilter({ hue: 120, saturation: 0.3 })];
+```
+
+</Accordion>
+
+<Accordion title="KawaseBlurFilter" id="kawase-blur-filter">
+
+A fast, high-quality alternative blur algorithm to the standard `BlurFilter`.
+
+```ts
+alien.filters = [new Filters.KawaseBlurFilter({ strength: 8 })];
+```
+
+</Accordion>
+
+<Accordion title="MotionBlurFilter" id="motion-blur-filter">
+
+Directional motion blur, driven by a velocity vector.
+
+```ts
+alien.filters = [new Filters.MotionBlurFilter({ velocity: { x: 40, y: 0 } })];
+```
+
+</Accordion>
+
+<Accordion title="MultiColorReplaceFilter" id="multi-color-replace-filter">
+
+Like `ColorReplaceFilter`, but replaces several colors at once.
+
+```ts
+alien.filters = [
+    new Filters.MultiColorReplaceFilter({
+        replacements: [
+            [0xffffff, 0xff0000],
+            [0x000000, 0x0000ff],
+        ],
+    }),
+];
+```
+
+</Accordion>
+
+<Accordion title="OldFilmFilter" id="old-film-filter">
+
+An old-film look: sepia tone, scratches, noise, and vignetting.
+
+```ts
+alien.filters = [new Filters.OldFilmFilter({ sepia: 0.5, scratch: 0.5 })];
+```
+
+</Accordion>
+
+<Accordion title="OutlineFilter" id="outline-filter">
+
+Draws an outline around the component's opaque pixels.
+
+```ts
+alien.filters = [new Filters.OutlineFilter({ thickness: 3, color: 0xffff00 })];
+```
+
+</Accordion>
+
+<Accordion title="PixelateFilter" id="pixelate-filter">
+
+Pixelates the component. Takes a single `size` value (or `[x, y]`) rather than an options object -
+this is also the filter <DynamicLink href="/start/canvas-transition#pixelate-in-out">`transitions.pixelateIn`/`pixelateOut`</DynamicLink> animate under the hood.
+
+```ts
+alien.filters = [new Filters.PixelateFilter(10)];
+```
+
+</Accordion>
+
+<Accordion title="RadialBlurFilter" id="radial-blur-filter">
+
+A radial (spin/zoom-style) blur around a center point.
+
+```ts
+alien.filters = [new Filters.RadialBlurFilter({ angle: 15, radius: -1 })];
+```
+
+</Accordion>
+
+<Accordion title="ReflectionFilter" id="reflection-filter">
+
+A wavy water-reflection effect. `amplitude`/`waveLength` are `[start, end]` ranges, not single
+numbers.
+
+```ts
+alien.filters = [
+    new Filters.ReflectionFilter({ amplitude: [0, 20], waveLength: [30, 100] }),
+];
+```
+
+</Accordion>
+
+<Accordion title="RGBSplitFilter" id="rgb-split-filter">
+
+Offsets the red, green, and blue channels independently - a chromatic-aberration/glitch look.
+
+```ts
+alien.filters = [
+    new Filters.RGBSplitFilter({ red: { x: -10, y: 0 }, blue: { x: 10, y: 0 } }),
+];
+```
+
+</Accordion>
+
+<Accordion title="ShockwaveFilter" id="shockwave-filter">
+
+An animated shockwave/ripple distortion expanding from a center point.
+
+```ts
+alien.filters = [new Filters.ShockwaveFilter({ amplitude: 30, radius: 200 })];
+```
+
+</Accordion>
+
+<Accordion title="SimplexNoiseFilter" id="simplex-noise-filter">
+
+Organic, cloud-like simplex noise.
+
+```ts
+alien.filters = [new Filters.SimplexNoiseFilter({ strength: 0.5, step: 64 })];
+```
+
+</Accordion>
+
+<Accordion title="TiltShiftFilter" id="tilt-shift-filter">
+
+A tilt-shift ("miniature model") blur along a configurable band.
+
+```ts
+alien.filters = [new Filters.TiltShiftFilter({ blur: 30, gradientBlur: 400 })];
+```
+
+</Accordion>
+
+<Accordion title="TwistFilter" id="twist-filter">
+
+Twists the image around a center point, like a whirlpool.
+
+```ts
+alien.filters = [new Filters.TwistFilter({ radius: 150, angle: 4 })];
+```
+
+</Accordion>
+
+<Accordion title="ZoomBlurFilter" id="zoom-blur-filter">
+
+A radial zoom blur, as if rushing toward (or away from) a center point.
+
+```ts
+alien.filters = [new Filters.ZoomBlurFilter({ strength: 0.2, innerRadius: 20 })];
+```
+
+</Accordion>
+
+</Accordions>
+
+Both `pixi.js` and `pixi-filters` are peer dependencies of Pixi’VN, so every filter above is already
+available once you've followed the <DynamicLink href="/start">setup guide</DynamicLink> - no
+additional install step needed.
