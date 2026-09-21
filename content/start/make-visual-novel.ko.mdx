@@ -1047,7 +1047,7 @@ export default startLabel;
 
 비주얼 노벨을 더 역동적으로 만들기 위해, 캔버스 컴포넌트(이미지, 컨테이너 등) 를 갑자기 나타나거나 사라지게 하는 대신 애니메이션 효과로 표시하거나 제거하는 트랜지션을 사용할 수 있습니다. Pixi’VN은 디졸브, 페이드, 이동 인/아웃, 푸시 인/아웃, 줌 인/아웃과 같은 여러 내장 트랜지션을 제공하며, 자신만의 커스텀 트랜지션을 만들 수도 있습니다.
 
-이 예시에서는 이동 인/아웃 트랜지션을 사용하여 `james`가 캔버스 외부에서 장면 안으로 들어오도록 합니다. _ink_에서는 `# show` 명령어에 `with movein`(및 그 매개변수)을 추가하여 이를 수행하며, JS/TS에서는 `moveIn`/`moveOut` 함수를 사용할 수 있습니다.
+이 예시에서는 이동 인/아웃 트랜지션을 사용하여 `james`가 캔버스 외부에서 장면 안으로 들어오도록 합니다. In *ink*, this is done by appending `with movein` (and its parameters) to the `# show` command, while in JS/TS you can use the `transitions.moveIn`/`transitions.moveOut` functions.
 
 :::tip
 
@@ -1077,7 +1077,7 @@ mc: ...
 const startLabel = newLabel("start", [
     async () => {
         await showImage("bg", "bg01-hallway");
-        await moveIn(
+        await transitions.moveIn(
             "james",
             {
                 value: ["m01-body", "m01-eyes-smile", "m01-mouth-neutral01"],
@@ -1122,7 +1122,7 @@ export default startLabel;
 
 이 예시에서, 제 애니메이션은 `steph`를 장면 밖으로 내보냈다가 다음 내러티브 단계 (`step`)에서 다시 등장시킵니다. 또한 그녀가 올바른 방향을 향하도록 x축 기준으로 좌우 반전(mirror)시키겠습니다.
 
-`steph`를 밖으로/안으로 이동시키기 위해 `moveOut`과 `moveIn` 함수를 사용하겠습니다. 미러 효과를 위해서는 `canvas.animate` 함수를 사용하겠습니다.
+To take `steph` out/in, I will use the `transitions.moveOut` and `transitions.moveIn` functions. 미러 효과를 위해서는 `canvas.animate` 함수를 사용하겠습니다.
 
 먼저, `canvas.animate` 함수를 사용하여 `scaleX` 속성을 `-1`(반전됨)에서 `1`로 설정하는 애니메이션을 만들되, 즉시 시작되지 않도록 `autoplay: false`를 설정합니다.
 
@@ -1142,9 +1142,9 @@ canvas.animate<ImageContainer>(
 );
 ```
 
-그 다음, `moveIn` 함수를 사용하여 `steph`를 장면으로 이동시키며, 트랜지션이 끝난 후 재개할 수 있도록 애니메이션의 `tickerId`를 전달합니다.
+Then, I use the `transitions.moveIn` function to move `steph` into the scene, passing the `tickerId` of the animation so it can be resumed after the transition is complete.
 
-다음 내러티브 단계 (`step`)가 실행되기 전에 애니메이션이 완료되도록 `completeOnContinue: true` 옵션을 사용합니다. `moveIn`은 트랜지션이므로 `completeOnContinue`는 기본적으로 true입니다.
+다음 내러티브 단계 (`step`)가 실행되기 전에 애니메이션이 완료되도록 `completeOnContinue: true` 옵션을 사용합니다. For `transitions.moveIn`, being a transition, `completeOnContinue` is true by default.
 
 :::tip
 
@@ -1155,7 +1155,7 @@ canvas.animate<ImageContainer>(
 이 애니메이션에는 TypeScript를 사용했으므로, 다른 언어에서도 호출할 수 있도록 이를 위한 내러티브 노드 (`label`)를 만들었습니다.
 
 ```ts title="labels/animation01.ts"
-import { canvas, ImageContainer, moveIn, newLabel } from "@drincs/pixi-vn";
+import { canvas, ImageContainer, newLabel, transitions } from "@drincs/pixi-vn";
 
 export const animation01 = newLabel("animation_01", [
     async () => {
@@ -1167,7 +1167,7 @@ export const animation01 = newLabel("animation_01", [
             { autoplay: false, completeOnContinue: true },
         );
 
-        await moveIn(
+        await transitions.moveIn(
             "steph",
             {
                 value: ["fm02-body", "fm02-eyes-joy", "fm02-mouth-smile01"],
@@ -1231,7 +1231,7 @@ const startLabel = newLabel("start", [
             "fm02-eyes-upset",
             "fm02-mouth-nervous00",
         ]);
-        moveOut("steph", { direction: "left", speed: 300 });
+        transitions.moveOut("steph", { direction: "left", speed: 300 });
         narration.dialogue = `${steph_fullname} goes through the opposite door,`;
     },
     async (props) => {
@@ -1326,7 +1326,7 @@ const startLabel = newLabel("start", [
     async () => {
         await showImage("bg", "bg01-hallway");
         await sound.play("sfx_whoosh", { delay: 0.1 });
-        await moveIn("james", {
+        await transitions.moveIn("james", {
             value: ["m01-body", "m01-eyes-smile", "m01-mouth-neutral01"],
             options: { xAlign: 0.5, yAlign: 1 },
         });
@@ -1367,19 +1367,19 @@ const startLabel = newLabel("start", [
             "fm02-mouth-smile00",
         ]);
         await sound.play("sfx_whoosh", { delay: 0.1 });
-        moveOut("james", {
+        transitions.moveOut("james", {
             direction: "right",
             ease: "circInOut",
             type: "spring",
             duration: 0.5,
             delay: 0.05,
         });
-        moveOut("sly", {
+        transitions.moveOut("sly", {
             direction: "right",
             ease: "anticipate",
             duration: 0.5,
         });
-        moveOut("steph", {
+        transitions.moveOut("steph", {
             direction: "left",
             ease: "easeInOut",
             duration: 0.5,
@@ -1405,12 +1405,12 @@ const secondPart = newLabel("second_part", [
         const text = new Text({
             text: t(`(A few minutes later...)`),
         });
-        await showWithFade("bg", text);
+        await transitions.showWithFade("bg", text);
         text.align = 0.5;
     },
     async () => {
         sound.resumeAll();
-        await showWithFade("bg", "bg02-dorm");
+        await transitions.showWithFade("bg", "bg02-dorm");
         await sound.play("sfx_whoosh", { delay: 0.4 });
         // ...
         narration.dialogue = `She enters my room before I'VE even had a chance to.`;
