@@ -1047,7 +1047,7 @@ export default startLabel;
 
 Чтобы сделать визуальную новеллу более динамичной, вы можете использовать переходы, чтобы показывать или удалять компоненты холста (изображения, контейнеры, ...) с анимированным эффектом, вместо того чтобы они появлялись или исчезали резко. Pixi’VN предоставляет несколько встроенных переходов — таких как растворение, затухание, движение внутрь/наружу, выталкивание внутрь/наружу и приближение/отдаление — а также позволяет создавать собственные пользовательские переходы.
 
-В этом примере мы используем переход "движение внутрь/наружу" (move in/out), чтобы заставить `james` войти в сцену извне холста. В *ink* это делается путём добавления `with movein` (и его параметров) к команде `# show`, тогда как в JS/TS вы можете использовать функции `moveIn`/`moveOut`.
+В этом примере мы используем переход "движение внутрь/наружу" (move in/out), чтобы заставить `james` войти в сцену извне холста. In *ink*, this is done by appending `with movein` (and its parameters) to the `# show` command, while in JS/TS you can use the `transitions.moveIn`/`transitions.moveOut` functions.
 
 :::tip
 
@@ -1077,7 +1077,7 @@ mc: ...
 const startLabel = newLabel("start", [
     async () => {
         await showImage("bg", "bg01-hallway");
-        await moveIn(
+        await transitions.moveIn(
             "james",
             {
                 value: ["m01-body", "m01-eyes-smile", "m01-mouth-neutral01"],
@@ -1122,7 +1122,7 @@ export default startLabel;
 
 В этом примере моя анимация уберёт `steph` со сцены и вернёт её обратно на следующем нарративном шаге (`step`). Я также отражу её по оси x, чтобы убедиться, что она смотрит в правильную сторону.
 
-Чтобы убрать/вернуть `steph`, я буду использовать функции `moveOut` и `moveIn`. Для эффекта зеркального отражения я буду использовать функцию `canvas.animate`.
+To take `steph` out/in, I will use the `transitions.moveOut` and `transitions.moveIn` functions. Для эффекта зеркального отражения я буду использовать функцию `canvas.animate`.
 
 Сначала я использую функцию `canvas.animate`, чтобы создать анимацию, которая задаёт свойству `scaleX` значение от `-1` (отражено) до `1`, с `autoplay: false`, чтобы она не начиналась немедленно.
 
@@ -1142,9 +1142,9 @@ canvas.animate<ImageContainer>(
 );
 ```
 
-Затем я использую функцию `moveIn`, чтобы переместить `steph` в сцену, передавая `tickerId` анимации, чтобы её можно было возобновить после завершения перехода.
+Then, I use the `transitions.moveIn` function to move `steph` into the scene, passing the `tickerId` of the animation so it can be resumed after the transition is complete.
 
-Я использую опцию `completeOnContinue: true`, чтобы убедиться, что анимация завершится до выполнения следующего нарративного шага (`step`). Для `moveIn`, поскольку это переход, `completeOnContinue` по умолчанию равен true.
+Я использую опцию `completeOnContinue: true`, чтобы убедиться, что анимация завершится до выполнения следующего нарративного шага (`step`). For `transitions.moveIn`, being a transition, `completeOnContinue` is true by default.
 
 :::tip
 
@@ -1155,7 +1155,7 @@ canvas.animate<ImageContainer>(
 Поскольку я использую TypeScript для этой анимации, я создал для неё нарративный узел (`label`), чтобы его можно было вызывать и из других языков.
 
 ```ts title="labels/animation01.ts"
-import { canvas, ImageContainer, moveIn, newLabel } from "@drincs/pixi-vn";
+import { canvas, ImageContainer, newLabel, transitions } from "@drincs/pixi-vn";
 
 export const animation01 = newLabel("animation_01", [
     async () => {
@@ -1167,7 +1167,7 @@ export const animation01 = newLabel("animation_01", [
             { autoplay: false, completeOnContinue: true },
         );
 
-        await moveIn(
+        await transitions.moveIn(
             "steph",
             {
                 value: ["fm02-body", "fm02-eyes-joy", "fm02-mouth-smile01"],
@@ -1231,7 +1231,7 @@ const startLabel = newLabel("start", [
             "fm02-eyes-upset",
             "fm02-mouth-nervous00",
         ]);
-        moveOut("steph", { direction: "left", speed: 300 });
+        transitions.moveOut("steph", { direction: "left", speed: 300 });
         narration.dialogue = `${steph_fullname} goes through the opposite door,`;
     },
     async (props) => {
@@ -1326,7 +1326,7 @@ const startLabel = newLabel("start", [
     async () => {
         await showImage("bg", "bg01-hallway");
         await sound.play("sfx_whoosh", { delay: 0.1 });
-        await moveIn("james", {
+        await transitions.moveIn("james", {
             value: ["m01-body", "m01-eyes-smile", "m01-mouth-neutral01"],
             options: { xAlign: 0.5, yAlign: 1 },
         });
@@ -1367,19 +1367,19 @@ const startLabel = newLabel("start", [
             "fm02-mouth-smile00",
         ]);
         await sound.play("sfx_whoosh", { delay: 0.1 });
-        moveOut("james", {
+        transitions.moveOut("james", {
             direction: "right",
             ease: "circInOut",
             type: "spring",
             duration: 0.5,
             delay: 0.05,
         });
-        moveOut("sly", {
+        transitions.moveOut("sly", {
             direction: "right",
             ease: "anticipate",
             duration: 0.5,
         });
-        moveOut("steph", {
+        transitions.moveOut("steph", {
             direction: "left",
             ease: "easeInOut",
             duration: 0.5,
@@ -1405,12 +1405,12 @@ const secondPart = newLabel("second_part", [
         const text = new Text({
             text: t(`(A few minutes later...)`),
         });
-        await showWithFade("bg", text);
+        await transitions.showWithFade("bg", text);
         text.align = 0.5;
     },
     async () => {
         sound.resumeAll();
-        await showWithFade("bg", "bg02-dorm");
+        await transitions.showWithFade("bg", "bg02-dorm");
         await sound.play("sfx_whoosh", { delay: 0.4 });
         // ...
         narration.dialogue = `She enters my room before I'VE even had a chance to.`;
