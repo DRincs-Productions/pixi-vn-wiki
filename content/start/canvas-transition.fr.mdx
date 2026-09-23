@@ -854,6 +854,81 @@ export default async function showWithDissolve(
 }
 ```
 
+<Accordions>
+
+<Accordion title="Using filters" id="using-filters">
+
+`canvas.animate` (above) animates a canvas component's own properties - `alpha`, position, scale, and
+so on. Some effects (blur, pixelate, glow, color grading, ...) instead need to animate a PixiJS
+<DynamicLink href="/start/canvas-filters">`Filter`</DynamicLink>'s own properties over time - that's
+what `filters.animate` (from `@drincs/pixi-vn/filters`) is for. **This functionality is available
+starting from v1.9.4.** It's the same mechanism `transitions.blurIn`/`blurOut`/`pixelateIn`/`pixelateOut`
+use internally.
+
+`filters.animate` mirrors `canvas.animate`'s `(alias, keyframes, options, priority)` shape, with the
+`Filter` instance to animate inserted as the second argument. You're responsible for attaching the
+filter to the component before starting the animation, and detaching (and destroying) it once the
+animation completes, via the `cleanup` callback:
+
+```ts title="canvas/transitions/blurIn.ts"
+import { canvas, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn";
+import { filters } from "@drincs/pixi-vn/filters";
+import { AnimationOptions } from "@drincs/pixi-vn/motion";
+
+export default async function blurIn(
+    alias: string,
+    component: ImageSprite,
+    props: AnimationOptions & { strength?: number } = {},
+    priority?: UPDATE_PRIORITY,
+): Promise<string[] | undefined> {
+    let { strength = 32, completeOnContinue = true, ...options } = props;
+    // add the new component
+    canvas.add(alias, component);
+    // create the filter and attach it to the component
+    const filter = new filters.BlurFilter({ strength });
+    component.filters = [filter];
+    // animate the filter's own `strength` property down to 0
+    let id = filters.animate(
+        alias,
+        filter,
+        {
+            strength: [strength, 0],
+        },
+        {
+            ...options,
+            completeOnContinue,
+        },
+        priority,
+        undefined,
+        // cleanup: runs once the animation completes - detach and destroy the filter
+        () => {
+            component.filters = null;
+            filter.destroy();
+        },
+    );
+    // load the image if the image is not loaded
+    if (component.haveEmptyTexture) {
+        await component.load();
+    }
+    // return the ids of the tickers
+    if (id) {
+        return [id];
+    }
+}
+```
+
+`filters.animate` can also drive a plain numeric progress value instead of a `Filter`'s own property -
+pass `undefined` as the filter and an `apply` callback (called every frame with the interpolated
+value) in its place. This is how `transitions.wipeIn`/`irisIn`/`splitIn` animate their mask geometry
+(a growing radius, a moving boundary, ...), since a mask has no filter property to write directly.
+
+The <DynamicLink href="/start/canvas-filters">Filters</DynamicLink> page covers every filter Pixi’VN
+registers out of the box, plus how to make a custom filter save-compatible.
+
+</Accordion>
+
+</Accordions>
+
 ### Remplacer ou supprimer le composant précédent
 
 Si un composant avec le même alias existe déjà, vous pouvez le laisser être remplacé, ou :
