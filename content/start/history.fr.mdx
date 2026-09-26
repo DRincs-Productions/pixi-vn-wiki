@@ -1,0 +1,71 @@
+---
+title: Historique
+description: Décrit comment Pixi’VN suit et gère l'historique narratif, notamment les dialogues, les choix, les compteurs de `step` et les limites de sauvegarde.
+---
+
+:::tip[Interface UI]
+
+Vous pouvez trouver un exemple de l'écran UI d'historique dans la section <DynamicLink href="/start/interface-examples#history">exemples d'interface</DynamicLink>.
+
+:::
+
+:::tip[Terminologie]
+
+Dans cette documentation, le terme « historique narratif » désigne la liste de tous les dialogues, choix et autres éléments qui ont été présentés au joueur.
+
+:::
+
+Pixi’VN sauvegarde tous les dialogues, choix, réponses et bien plus encore à chaque `step` exécuté pendant le jeu. Cela permet de revenir aux étapes précédentes, permettant au joueur de revoir les événements passés ou de revisiter des choix antérieurs.
+
+## Obtenir
+
+Pour obtenir l'historique narratif, utilisez [`stepHistory.narrativeHistory`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#narrativehistory).
+
+```ts
+const dialogues: NarrativeHistory[] = stepHistory.narrativeHistory;
+```
+
+## Supprimer
+
+Pour supprimer tout l'historique narratif, utilisez [`stepHistory.removeNarrativeHistory`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#removenarrativehistory).
+
+```ts
+stepHistory.removeNarrativeHistory();
+```
+
+Pour supprimer une partie de l'historique narratif, passez un nombre pour supprimer les N premiers éléments :
+
+```ts
+// Delete the first 2 elements
+stepHistory.removeNarrativeHistory(2);
+```
+
+## Autres fonctionnalités
+
+<Accordions>
+
+<Accordion title="Limite des `steps` sauvegardés" id="limit-saved-steps">
+
+À chaque `step`, toutes les informations sur l'état actuel du jeu sont sauvegardées.
+
+Pour éviter que le fichier de sauvegarde ne devienne trop volumineux, il existe une limite sur le nombre de `steps` sauvegardés. Par défaut, seuls les 20 derniers `steps` sont sauvegardés, mais vous pouvez augmenter cette limite (par exemple, à 100). Lorsque la limite est atteinte, seules les informations essentielles des `steps` plus anciens sont conservées. Cela vous permet d'afficher l'<DynamicLink href="/start/history">historique narratif</DynamicLink> complet, mais vous ne pouvez pas <DynamicLink href="/start/labels-flow#go-back">retourner</DynamicLink> à un `step` spécifique au-delà de la limite.
+
+Vous pouvez modifier la limite de sauvegarde des `steps` en définissant la propriété [`stepHistory.stepLimitSaved`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#steplimitsaved).
+
+```ts
+import { stepHistory } from "@drincs/pixi-vn";
+
+stepHistory.stepLimitSaved = 100;
+```
+
+Pour désactiver la limite de sauvegarde des `steps`, définissez [`stepHistory.stepLimitSaved`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#steplimitsaved) sur `Infinity`.
+
+```ts
+import { stepHistory } from "@drincs/pixi-vn";
+
+stepHistory.stepLimitSaved = Infinity;
+```
+
+</Accordion>
+
+</Accordions>

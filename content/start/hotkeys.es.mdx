@@ -1,0 +1,65 @@
+---
+title: Atajos de teclado
+description: Cómo crear atajos de teclado (hotkeys) en Pixi’VN utilizando TanStack Hotkeys, con ejemplos de guardado/carga rápidos y controles de minijuego.
+---
+
+Los atajos de teclado permiten a los jugadores activar acciones directamente desde el teclado, como guardar rápidamente, saltar diálogos o controlar un <DynamicLink href="/start/minigames">minijuego</DynamicLink>. En lugar de gestionar las llamadas a `window.addEventListener("keydown", ...)` tú mismo, se recomienda usar [TanStack Hotkeys](https://tanstack.com/hotkeys/latest), una librería que convierte la entrada del teclado en un sistema de comandos tipado con ámbitos, secuencias, teclas mantenidas y detección de conflictos.
+
+:::tip
+
+Una lista de atajos de teclado comúnmente utilizados en visual novels (guardado rápido, carga rápida, historial, ajustes, ...) está disponible en las <DynamicLink href="/faq#hotkeys">FAQ</DynamicLink>.
+
+:::
+
+<Accordions>
+
+<Accordion title="Installation" id="installation">
+
+:::tip[Plantillas]
+
+En todas las plantillas, el paquete de TanStack Hotkeys ya está instalado.
+
+:::
+
+TanStack Hotkeys distribuye un paquete independiente para cada framework. Para un proyecto de React, instala:
+
+```npm
+npm install @tanstack/react-hotkeys
+```
+
+También hay disponibles adaptadores para Vue, Angular y Lit — sustituye `@tanstack/react-hotkeys` por el paquete de tu framework.
+
+</Accordion>
+
+</Accordions>
+
+## Uso
+
+Registra un atajo de teclado con el hook `useHotkey`:
+
+```tsx
+import { useHotkey } from "@tanstack/react-hotkeys";
+
+useHotkey("Mod+S", () => {
+    quickSave();
+});
+```
+
+El modificador `Mod` se resuelve automáticamente en `Meta` (Cmd) en macOS y en `Control` en Windows/Linux, por lo que el mismo código funciona en todas las plataformas.
+
+## Ámbito y activación condicional
+
+`useHotkey` es un hook, por lo que registra el atajo cuando el componente se monta y lo limpia automáticamente cuando el componente se desmonta — no necesitas eliminar el listener tú mismo, a diferencia de un `window.addEventListener` manual.
+
+Usa la opción `target` para limitar un atajo de teclado a un elemento específico, y `enabled` para activarlo o desactivarlo según el estado de tu juego, por ejemplo mientras se ejecuta un minijuego:
+
+```tsx
+const panelRef = useRef<HTMLDivElement>(null);
+
+useHotkey("Escape", () => closePanel(), { target: panelRef });
+useHotkey("ArrowUp", () => setDirection(0, -1), { enabled: !gameOver });
+```
+
+## Más información
+
+TanStack Hotkeys también admite secuencias de teclas (por ejemplo, "G luego D"), teclas mantenidas, detección de conflictos y un panel de devtools. Consulta la [documentación oficial](https://tanstack.com/hotkeys/latest) para conocer el conjunto completo de funciones.

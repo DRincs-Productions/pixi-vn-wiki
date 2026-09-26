@@ -1,0 +1,154 @@
+---
+title: User Interface (UI)
+description: Cómo crear e integrar pantallas de UI en Pixi’VN utilizando frameworks de JavaScript externos como React, Vue y PixiJS.
+---
+
+<Accordions>
+
+<Accordion title="¿Qué es UI?" id="what-is-ui">
+
+UI significa Interfaz de Usuario. Se refiere a los elementos visuales y los componentes interactivos mediante los cuales un usuario interactúa con un dispositivo digital, una aplicación o un sitio web. La UI incluye todo aquello con lo que los usuarios interactúan, como botones, menús, iconos, campos de texto y el diseño. El objetivo del diseño de UI es crear una interfaz que sea a la vez estéticamente agradable y funcional, proporcionando una experiencia fluida e intuitiva para los usuarios.
+
+</Accordion>
+
+</Accordions>
+
+Pixi’VN no proporciona componentes integrados para crear la UI del juego, y no reinventa lo que ya existe en el ecosistema de JavaScript. En lugar de encerrarte en un framework específico, te permite utilizar cualquier framework de JavaScript externo que prefieras para construir tu UI, de modo que puedas aprovechar sistemas como React, Vue, etc., para crear **pantallas de UI** complejas y de alto rendimiento.
+
+Esta flexibilidad también hace que Pixi’VN sea ideal para el desarrollo asistido por IA: dado que la UI se construye con frameworks estándar y ampliamente utilizados en lugar de un sistema propietario, los asistentes de codificación con IA ya conocen bien estas herramientas y pueden generar, entender y modificar código de UI de forma muy eficaz.
+
+<Cards>
+    <DynamicLink className="no-underline @max-lg:col-span-full" href="/start/interface-react">
+        <Card title="React">
+            Integra Pixi’VN con React, incluyendo la configuración, plantillas y las mejores bibliotecas de UI.
+        </Card>
+    </DynamicLink>
+    <DynamicLink className="no-underline @max-lg:col-span-full" href="/start/interface-vue">
+        <Card title="Vue">
+            Integra Pixi’VN con Vue, incluyendo la configuración, plantillas y ejemplos de UI.
+        </Card>
+    </DynamicLink>
+    <DynamicLink className="no-underline @max-lg:col-span-full" href="/start/interface-pixijs">
+        <Card title="PixiJS">
+            Utiliza capas y componentes de PixiJS para crear pantallas de UI personalizadas, y combínalas con UI en HTML.
+        </Card>
+    </DynamicLink>
+</Cards>
+
+Pixi’VN ofrece funciones para mejorar la compatibilidad con otros frameworks de JavaScript:
+
+<Accordions>
+
+<Accordion title="Añadir capas de UI de HTML" id="adding-html-ui-layers">
+
+**¿Qué es una capa de UI de HTML?** Una capa de UI de HTML es un elemento HTML que se añade encima del canvas de PixiJS y tiene las mismas dimensiones que el canvas. Esto te permite crear una UI con un framework de JavaScript como React o Vue.
+
+Para añadir una capa de UI de HTML, puedes usar la función [`canvas.htmlLayers.add`](/jsdoc/pixi-vn/index/interfaces/CanvasHtmlLayersInterface#add).
+
+```ts tab="main.ts"
+const root = document.getElementById("root");
+if (!root) {
+    throw new Error("root element not found");
+}
+const htmlLayer = canvas.htmlLayers.add("ui", root, {
+    position: "absolute",
+    pointerEvents: "none",
+    userSelect: "none",
+});
+```
+
+```html tab="index.html"
+<!doctype html>
+<html lang="en">
+    <body>
+        <div id="root"></div>
+        <script type="module" src="/src/main.ts"></script>
+    </body>
+</html>
+```
+
+Para obtener el elemento HTML de la capa, puedes usar la función [`canvas.htmlLayers.get`](/jsdoc/pixi-vn/index/interfaces/CanvasHtmlLayersInterface#get).
+
+Para eliminar una capa de UI de HTML, puedes usar la función [`canvas.htmlLayers.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasHtmlLayersInterface#remove).
+
+</Accordion>
+
+<Accordion title="¿Cómo habilitar la interacción de la UI de HTML?" id="how-to-enable-ui-interaction">
+
+De forma predeterminada, todos los elementos HTML de las capas de UI de HTML tienen el estilo `pointer-events: none`. Esto significa que los elementos HTML no interceptarán ningún evento de ratón o táctil, permitiendo que el canvas de PixiJS reciba todos los eventos. Esto es útil cuando quieres mostrar una imagen o un vídeo en el canvas y no quieres que la UI interfiera con ello.
+
+Así que debes establecer el estilo `pointer-events: auto` únicamente para el componente que quieras que interactúe con el usuario.
+
+Por ejemplo:
+
+```css tab="Shadcn - Tailwind CSS" title="styles.css"
+@layer components {
+    [data-slot="button"],
+    [data-slot="card"],
+    [data-slot="resizable-handle"],
+    [data-slot="scroll-area"],
+    [data-slot="scroll-area-scrollbar"],
+    [data-slot="toggle"] {
+        pointer-events: auto;
+    }
+}
+```
+
+```tsx tab="React"
+export default function NextButton() {
+    return (
+        <button
+            style={{
+                pointerEvents: "auto",
+            }}
+        >
+            Next
+        </button>
+    );
+}
+```
+
+```vue tab="Vue"
+<template>
+    <button style="pointer-events: auto;">Next</button>
+</template>
+```
+
+</Accordion>
+
+<Accordion title="Añadir capas de UI de PixiJS" id="adding-pixijs-ui-layers">
+
+**¿Qué es una capa de UI de PixiJS?** Es un Container de PixiJS. A diferencia del Container principal, dedicado únicamente a las funciones de Pixi’VN:
+
+* El estado actual de la UI no se incluirá en los guardados.
+* Tiene mejor rendimiento. Pixi’VN no realizará ninguna comprobación sobre él.
+* No puedes usar las funciones de Pixi’VN.
+* Al ser un componente principal de PixiJS, puedes añadir todos los componentes compatibles con PixiJS.
+
+Para añadir una capa de UI de PixiJS, puedes usar la función [`canvas.layers.add`](/jsdoc/pixi-vn/index/interfaces/CanvasLayersInterface#add).
+
+Por ejemplo:
+
+```ts title="src/main.ts"
+const container = canvas.layers.add("ui");
+```
+
+Para obtener el Container de PixiJS de la capa, puedes usar la función [`canvas.layers.get`](/jsdoc/pixi-vn/index/interfaces/CanvasLayersInterface#get).
+
+Para eliminar una capa de UI de PixiJS, puedes usar la función [`canvas.layers.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasLayersInterface#remove).
+
+</Accordion>
+
+</Accordions>
+
+{/* ![Architecture](/arch.png) */}
+
+## Diferencias entre la UI y el canvas
+
+Tal como fue diseñado y concebido Pixi’VN, la UI y el canvas son dos elementos distintos e independientes. La UI está por encima del canvas y se utiliza para crear botones, formularios, etc. El canvas se utiliza para mostrar imágenes, vídeos, etc.
+
+Toda la información sobre el estado actual del canvas se incluye en el guardado, y es posible restaurar el estado de un paso anterior. El estado actual de la UI no se incluirá en los guardados. Así que tienes que <DynamicLink href="/start/interface-connect-storage">gestionarlo tú mismo guardando la información</DynamicLink> que necesites en el <DynamicLink href="/start/storage">almacenamiento del juego</DynamicLink> o en el almacenamiento del navegador.
+
+En el canvas puedes añadir componentes durante cada paso. En la UI no puedes hacer eso, puedes crear varias <DynamicLink href="/start/interface-connect-storage">"pantallas" y navegar entre ellas</DynamicLink>.
+
+En el canvas solo puedes añadir componentes de Pixi’VN. En la UI puedes añadir cualquier componente HTML/PixiJS o utilizar cualquier biblioteca de componentes de UI, de modo que puedas crear interfaces mucho más complejas.

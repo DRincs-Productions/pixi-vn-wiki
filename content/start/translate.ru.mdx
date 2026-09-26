@@ -1,0 +1,227 @@
+---
+title: Интернационализация
+description: На этой странице объясняется, как добавить поддержку нескольких языков в вашу игру Pixi’VN с помощью i18next, включая стратегии перевода пользовательского интерфейса и нарратива. Как переводить визуальную новеллу?
+---
+
+В визуальных новеллах и подобных играх игрокам обычно предоставляется возможность выбрать родной язык.
+
+Для вашего проекта Pixi’VN следует использовать внешнюю библиотеку для работы с переводами. Это даёт гибкость в выборе реализации, наиболее подходящей для ваших нужд.
+
+Наиболее популярной и широко совместимой библиотекой является **i18next**.
+
+<Accordions>
+
+<Accordion title="Что такое i18next?" id="what-is-i18next">
+
+i18next — это фреймворк интернационализации для JavaScript. Для его использования необходимо установить и инициализировать его. Подробнее на [сайте i18next](https://www.i18next.com/).
+
+</Accordion>
+
+</Accordions>
+
+:::tip[Шаблоны]
+
+Во всех шаблонах i18next уже включён и настроен. Вы можете сразу начать переводить свою игру.
+
+:::
+
+Переводы хранятся в нескольких JSON-файлах (по одному на язык) в виде пар ключ-значение. Ключ — это уникальный идентификатор текста, а значение — переведённая строка.
+
+<Accordions>
+
+<Accordion title="Инициализация" id="initialize">
+
+```ts title="lib/i18n.ts"
+import i18n, { type ReadCallback } from "i18next";
+import LanguageDetector from "i18next-browser-languagedetector";
+import ChainedBackend from "i18next-chained-backend";
+import { initReactI18next } from "react-i18next";
+
+class Backend extends ChainedBackend {
+    override async read(lng: string, ns: string, callback: ReadCallback) {
+        try {
+            const object = await getLocalesResource(lng);
+            const result = object[ns];
+            callback(null, result);
+        } catch (error) {
+            callback(error as Error, { data: null });
+        }
+    }
+}
+
+export const useI18n = async () => {
+    if (!i18n.isInitialized) {
+        return await i18n
+            .use(Backend)
+            .use(LanguageDetector)
+            .use(initReactI18next)
+            .init({
+                debug: false,
+                fallbackLng: "en",
+                supportedLngs: ["en"],
+                interpolation: {
+                    escapeValue: false,
+                },
+                load: "currentOnly",
+                detection: {
+                    order: ["localStorage"],
+                    caches: ["localStorage"],
+                },
+                missingInterpolationHandler(_text, value, _options) {
+                    return value[1];
+                },
+            });
+    }
+};
+
+function getLocalesResource(
+    lng: string,
+): Promise<Record<string, Record<string, string>>> {
+    return import(`./../locales/${lng}.json`);
+}
+```
+
+</Accordion>
+
+<Accordion title="Перевод пользовательского интерфейса" id="translate-ui">
+
+Для перевода пользовательского интерфейса используйте функцию `t`, предоставляемую i18next. Передайте ключ перевода в `t`, чтобы получить соответствующий текст на языке игрока.
+
+Например:
+
+```tsx tab="React"
+import { useTranslation } from "react-i18next";
+
+export default function MyComponent() {
+    const { t } = useTranslation("ui");
+
+    return (
+        <div>
+            <Button>{t("text_speed")}</Button>
+        </div>
+    );
+}
+```
+
+```vue tab="Vue"
+<script setup>
+import { useTranslation } from "i18next-vue";
+const { t } = useTranslation("ui");
+</script>
+
+<template>
+    <div>
+        <button>{{ t("text_speed") }}</button>
+    </div>
+</template>
+```
+
+```svelte tab="Svelte"
+<script>
+    import { useTranslation } from 'svelte-i18n';
+    const { t } = useTranslation("ui");
+</script>
+
+<div>
+    <button>{t('text_speed')}</button>
+</div>
+```
+
+</Accordion>
+
+<Accordion title="Перевод нарратива (TypeScript/JavaScript)" id="translate-narration">
+
+:::tip[Шаблоны]
+
+Во всех шаблонах интерфейс `StepLabelProps` уже включает функцию `t`. См. `pixi-vn.d.ts`.
+
+:::
+
+:::tip
+
+Рекомендуется использовать `t` внутри <DynamicLink href="/start/labels">label</DynamicLink>, а не напрямую в пользовательском интерфейсе, чтобы воспользоваться [интерполяцией i18n](https://i18next.com/translation-function/interpolation).
+
+:::
+
+В проектах Pixi’VN часто требуется переводить текст нарратива в <DynamicLink href="/start/labels">нарративных узлах (`labels`)</DynamicLink> TypeScript/JavaScript. Для этого функция перевода должна быть включена в <DynamicLink href="/start/labels#steplabelprops">интерфейс `StepLabelProps`</DynamicLink>.
+
+Рекомендуется использовать исходную строку в качестве ключа перевода.
+
+```ts tab="content/labels/start.label.ts"
+export const startLabel = newLabel("start", [
+    ({ t }) => {
+        narration.dialogue = {
+            character: liam,
+            text: t("Hello, my name is {{name}}", { name: "Liam" }),
+        };
+    },
+]);
+```
+
+```ts tab="pixi-vn.d.ts"
+import type { TFunction } from "i18next";
+
+declare module "@drincs/pixi-vn" {
+    interface StepLabelProps {
+        /**
+         * Translate a key to a string.
+         * @param key The key to translate.
+         * @returns The translated string.
+         */
+        t: TFunction<[string], undefined>;
+        // ...
+    }
+}
+```
+
+```ts tab="locales/es.json"
+{
+    "narration": {
+        "Hello, my name is {{name}}": "Hola, mi nombre es {{name}}"
+        // ...
+    }
+}
+```
+
+```ts tab="lib/hooks/props-hooks.ts"
+import { useTranslation } from "react-i18next";
+
+export function useGameProps(): StepLabelProps {
+    const { t } = useTranslation(["narration"]);
+
+    return {
+        // ...
+        t,
+    };
+}
+```
+
+</Accordion>
+
+</Accordions>
+
+## Создание
+
+:::tip[*ink*]
+
+Если вы используете *ink*, можно автоматически извлекать строки из *ink*-текста для перевода. Подробнее <DynamicLink href="/ink/translate">здесь</DynamicLink>.
+
+:::
+
+Файлы JSON с переводами необходимо создавать вручную. Рекомендуется разделить переводы на два раздела (см. `es.json`):
+
+* Тексты пользовательского интерфейса: для экранов, настроек, быстрых кнопок и т. д.—всё, что не является нарративом.
+* Тексты нарратива: для диалогов, меню выбора и т. д.
+
+```json tab="locales/es.json"
+{
+    "ui": {
+        "text_speed": "Velocidad del texto"
+        // ...
+    },
+    "narration": {
+        "Hello, my name is {{name}}": "Hola, mi nombre es {{name}}"
+        // ...
+    }
+}
+```
