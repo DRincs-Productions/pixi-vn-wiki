@@ -67,15 +67,39 @@ You can still use any of these directly (`sprite.filters = [new ColorMatrixFilte
 won't survive a save/restore round-trip unless you register your own `toMemory` for them, the same
 way you would for a custom filter.
 
-## The `Filters` namespace
+## Combining and removing filters
 
-Every registered filter class is also grouped under the `Filters` namespace, so you don't need to
+There is no dedicated `addFilter`/`removeFilter` API - `.filters` is a plain array, so you manage it
+directly. Assigning a new array replaces whatever was there; to add or remove one filter while
+keeping the others, read the current array back off the component first:
+
+```ts
+import { filters } from "@drincs/pixi-vn/filters";
+
+// add a filter, keeping any already attached
+alien.filters = [...(alien.filters ?? []), new filters.OutlineFilter({ thickness: 6, color: 0xffee00 })];
+
+// remove only the filters of a given class
+alien.filters = (alien.filters ?? []).filter((f) => !(f instanceof filters.OldFilmFilter));
+
+// remove everything
+alien.filters = null;
+```
+
+Since every registered filter is saved as part of the component's own save data, whatever list you
+assign is what gets restored when navigating back and forward through the narration history:
+
+<PixiVnExample path="canvas/persistent-filters-example" />
+
+## The `filters` namespace
+
+Every registered filter class is also grouped under the `filters` namespace, so you don't need to
 import from `pixi.js`/`pixi-filters` directly:
 
 ```ts
-import { Filters } from "@drincs/pixi-vn/filters";
+import { filters } from "@drincs/pixi-vn/filters";
 
-alien.filters = [new Filters.GlowFilter({ distance: 15, outerStrength: 3 })];
+alien.filters = [new filters.GlowFilter({ distance: 15, outerStrength: 3 })];
 ```
 
 ## All registered filters
@@ -93,9 +117,9 @@ From `pixi.js` core. Applies a uniform alpha (transparency) across the whole com
 visual layering artifacts of setting `.alpha` directly on a component with overlapping children.
 
 ```ts
-import { Filters } from "@drincs/pixi-vn/filters";
+import { filters } from "@drincs/pixi-vn/filters";
 
-alien.filters = [new Filters.AlphaFilter({ alpha: 0.4 })];
+alien.filters = [new filters.AlphaFilter({ alpha: 0.4 })];
 ```
 
 </Accordion>
@@ -105,7 +129,7 @@ alien.filters = [new Filters.AlphaFilter({ alpha: 0.4 })];
 From `pixi.js` core. A Gaussian blur.
 
 ```ts
-alien.filters = [new Filters.BlurFilter({ strength: 12 })];
+alien.filters = [new filters.BlurFilter({ strength: 12 })];
 ```
 
 </Accordion>
@@ -115,7 +139,7 @@ alien.filters = [new Filters.BlurFilter({ strength: 12 })];
 From `pixi.js` core. Adds random pixel noise (film grain/static).
 
 ```ts
-alien.filters = [new Filters.NoiseFilter({ noise: 0.6 })];
+alien.filters = [new filters.NoiseFilter({ noise: 0.6 })];
 ```
 
 </Accordion>
@@ -125,7 +149,7 @@ alien.filters = [new Filters.NoiseFilter({ noise: 0.6 })];
 Adjusts gamma, contrast, saturation, brightness, and individual RGB/alpha channels.
 
 ```ts
-alien.filters = [new Filters.AdjustmentFilter({ gamma: 1.8, saturation: 2 })];
+alien.filters = [new filters.AdjustmentFilter({ gamma: 1.8, saturation: 2 })];
 ```
 
 </Accordion>
@@ -135,7 +159,7 @@ alien.filters = [new Filters.AdjustmentFilter({ gamma: 1.8, saturation: 2 })];
 A bloom effect with a brightness threshold, so only the brightest parts of the image glow.
 
 ```ts
-alien.filters = [new Filters.AdvancedBloomFilter({ threshold: 0.2, bloomScale: 1.5 })];
+alien.filters = [new filters.AdvancedBloomFilter({ threshold: 0.2, bloomScale: 1.5 })];
 ```
 
 </Accordion>
@@ -145,7 +169,7 @@ alien.filters = [new Filters.AdvancedBloomFilter({ threshold: 0.2, bloomScale: 1
 Renders the component as ASCII-art-style blocks.
 
 ```ts
-alien.filters = [new Filters.AsciiFilter({ size: 8 })];
+alien.filters = [new filters.AsciiFilter({ size: 8 })];
 ```
 
 </Accordion>
@@ -156,7 +180,7 @@ Blurs whatever is *behind* the component (the backdrop), rather than the compone
 for frosted-glass style UI panels.
 
 ```ts
-alien.filters = [new Filters.BackdropBlurFilter({ strength: 10 })];
+alien.filters = [new filters.BackdropBlurFilter({ strength: 10 })];
 ```
 
 </Accordion>
@@ -166,7 +190,7 @@ alien.filters = [new Filters.BackdropBlurFilter({ strength: 10 })];
 Gives the component a raised/beveled edge, with configurable light and shadow colors.
 
 ```ts
-alien.filters = [new Filters.BevelFilter({ thickness: 4, rotation: 45 })];
+alien.filters = [new filters.BevelFilter({ thickness: 4, rotation: 45 })];
 ```
 
 </Accordion>
@@ -176,7 +200,7 @@ alien.filters = [new Filters.BevelFilter({ thickness: 4, rotation: 45 })];
 A simpler bloom/glow effect than `AdvancedBloomFilter`, without a brightness threshold.
 
 ```ts
-alien.filters = [new Filters.BloomFilter({ strength: 15 })];
+alien.filters = [new filters.BloomFilter({ strength: 15 })];
 ```
 
 </Accordion>
@@ -186,7 +210,7 @@ alien.filters = [new Filters.BloomFilter({ strength: 15 })];
 Bulges or pinches the image around a circular area.
 
 ```ts
-alien.filters = [new Filters.BulgePinchFilter({ radius: 150, strength: 0.8 })];
+alien.filters = [new filters.BulgePinchFilter({ radius: 150, strength: 0.8 })];
 ```
 
 </Accordion>
@@ -197,7 +221,7 @@ Overlays a linear or radial color gradient.
 
 ```ts
 alien.filters = [
-    new Filters.ColorGradientFilter({
+    new filters.ColorGradientFilter({
         stops: [
             { offset: 0, color: "red" },
             { offset: 1, color: "blue" },
@@ -214,7 +238,7 @@ alien.filters = [
 Tints the component with a flat color overlay.
 
 ```ts
-alien.filters = [new Filters.ColorOverlayFilter({ color: 0xff00ff, alpha: 0.5 })];
+alien.filters = [new filters.ColorOverlayFilter({ color: 0xff00ff, alpha: 0.5 })];
 ```
 
 </Accordion>
@@ -224,7 +248,7 @@ alien.filters = [new Filters.ColorOverlayFilter({ color: 0xff00ff, alpha: 0.5 })
 Replaces one color with another, within a tolerance.
 
 ```ts
-alien.filters = [new Filters.ColorReplaceFilter({ targetColor: 0xff0000, tolerance: 0.3 })];
+alien.filters = [new filters.ColorReplaceFilter({ targetColor: 0xff0000, tolerance: 0.3 })];
 ```
 
 </Accordion>
@@ -236,7 +260,7 @@ edge detection, and emboss.
 
 ```ts
 alien.filters = [
-    new Filters.ConvolutionFilter({ matrix: [0, -1, 0, -1, 5, -1, 0, -1, 0], width: 3, height: 3 }),
+    new filters.ConvolutionFilter({ matrix: [0, -1, 0, -1, 5, -1, 0, -1, 0], width: 3, height: 3 }),
 ];
 ```
 
@@ -247,7 +271,7 @@ alien.filters = [
 A cross-hatch sketch effect. No configuration options.
 
 ```ts
-alien.filters = [new Filters.CrossHatchFilter()];
+alien.filters = [new filters.CrossHatchFilter()];
 ```
 
 </Accordion>
@@ -257,7 +281,7 @@ alien.filters = [new Filters.CrossHatchFilter()];
 Simulates an old CRT television: curvature, scanlines, noise, and vignetting.
 
 ```ts
-alien.filters = [new Filters.CRTFilter({ curvature: 6, lineWidth: 2, vignetting: 0.4 })];
+alien.filters = [new filters.CRTFilter({ curvature: 6, lineWidth: 2, vignetting: 0.4 })];
 ```
 
 </Accordion>
@@ -267,7 +291,7 @@ alien.filters = [new Filters.CRTFilter({ curvature: 6, lineWidth: 2, vignetting:
 A halftone-style dot pattern.
 
 ```ts
-alien.filters = [new Filters.DotFilter({ scale: 0.6, angle: 5 })];
+alien.filters = [new filters.DotFilter({ scale: 0.6, angle: 5 })];
 ```
 
 </Accordion>
@@ -277,7 +301,7 @@ alien.filters = [new Filters.DotFilter({ scale: 0.6, angle: 5 })];
 Adds a drop shadow behind the component.
 
 ```ts
-alien.filters = [new Filters.DropShadowFilter({ offset: { x: 8, y: 8 }, blur: 4 })];
+alien.filters = [new filters.DropShadowFilter({ offset: { x: 8, y: 8 }, blur: 4 })];
 ```
 
 </Accordion>
@@ -287,7 +311,7 @@ alien.filters = [new Filters.DropShadowFilter({ offset: { x: 8, y: 8 }, blur: 4 
 An emboss effect. Takes a single `strength` number rather than an options object.
 
 ```ts
-alien.filters = [new Filters.EmbossFilter(8)];
+alien.filters = [new filters.EmbossFilter(8)];
 ```
 
 </Accordion>
@@ -297,7 +321,7 @@ alien.filters = [new Filters.EmbossFilter(8)];
 A digital glitch/datamosh effect, slicing the image into displaced horizontal bands.
 
 ```ts
-alien.filters = [new Filters.GlitchFilter({ slices: 10, offset: 30 })];
+alien.filters = [new filters.GlitchFilter({ slices: 10, offset: 30 })];
 ```
 
 </Accordion>
@@ -307,7 +331,7 @@ alien.filters = [new Filters.GlitchFilter({ slices: 10, offset: 30 })];
 An outer/inner glow around the component's opaque pixels.
 
 ```ts
-alien.filters = [new Filters.GlowFilter({ distance: 15, outerStrength: 3, color: 0x00ffff })];
+alien.filters = [new filters.GlowFilter({ distance: 15, outerStrength: 3, color: 0x00ffff })];
 ```
 
 </Accordion>
@@ -317,7 +341,7 @@ alien.filters = [new Filters.GlowFilter({ distance: 15, outerStrength: 3, color:
 Animated god-ray/light-shaft effect.
 
 ```ts
-alien.filters = [new Filters.GodrayFilter({ gain: 0.6, lacunarity: 2.5 })];
+alien.filters = [new filters.GodrayFilter({ gain: 0.6, lacunarity: 2.5 })];
 ```
 
 </Accordion>
@@ -327,7 +351,7 @@ alien.filters = [new Filters.GodrayFilter({ gain: 0.6, lacunarity: 2.5 })];
 Converts the component to grayscale. No configuration options.
 
 ```ts
-alien.filters = [new Filters.GrayscaleFilter()];
+alien.filters = [new filters.GrayscaleFilter()];
 ```
 
 </Accordion>
@@ -337,7 +361,7 @@ alien.filters = [new Filters.GrayscaleFilter()];
 Adjusts hue, saturation, and lightness.
 
 ```ts
-alien.filters = [new Filters.HslAdjustmentFilter({ hue: 120, saturation: 0.3 })];
+alien.filters = [new filters.HslAdjustmentFilter({ hue: 120, saturation: 0.3 })];
 ```
 
 </Accordion>
@@ -347,7 +371,7 @@ alien.filters = [new Filters.HslAdjustmentFilter({ hue: 120, saturation: 0.3 })]
 A fast, high-quality alternative blur algorithm to the standard `BlurFilter`.
 
 ```ts
-alien.filters = [new Filters.KawaseBlurFilter({ strength: 8 })];
+alien.filters = [new filters.KawaseBlurFilter({ strength: 8 })];
 ```
 
 </Accordion>
@@ -357,7 +381,7 @@ alien.filters = [new Filters.KawaseBlurFilter({ strength: 8 })];
 Directional motion blur, driven by a velocity vector.
 
 ```ts
-alien.filters = [new Filters.MotionBlurFilter({ velocity: { x: 40, y: 0 } })];
+alien.filters = [new filters.MotionBlurFilter({ velocity: { x: 40, y: 0 } })];
 ```
 
 </Accordion>
@@ -368,7 +392,7 @@ Like `ColorReplaceFilter`, but replaces several colors at once.
 
 ```ts
 alien.filters = [
-    new Filters.MultiColorReplaceFilter({
+    new filters.MultiColorReplaceFilter({
         replacements: [
             [0xffffff, 0xff0000],
             [0x000000, 0x0000ff],
@@ -384,7 +408,7 @@ alien.filters = [
 An old-film look: sepia tone, scratches, noise, and vignetting.
 
 ```ts
-alien.filters = [new Filters.OldFilmFilter({ sepia: 0.5, scratch: 0.5 })];
+alien.filters = [new filters.OldFilmFilter({ sepia: 0.5, scratch: 0.5 })];
 ```
 
 </Accordion>
@@ -394,7 +418,7 @@ alien.filters = [new Filters.OldFilmFilter({ sepia: 0.5, scratch: 0.5 })];
 Draws an outline around the component's opaque pixels.
 
 ```ts
-alien.filters = [new Filters.OutlineFilter({ thickness: 3, color: 0xffff00 })];
+alien.filters = [new filters.OutlineFilter({ thickness: 3, color: 0xffff00 })];
 ```
 
 </Accordion>
@@ -405,7 +429,7 @@ Pixelates the component. Takes a single `size` value (or `[x, y]`) rather than a
 this is also the filter <DynamicLink href="/start/canvas-transition#pixelate-in-out">`transitions.pixelateIn`/`pixelateOut`</DynamicLink> animate under the hood.
 
 ```ts
-alien.filters = [new Filters.PixelateFilter(10)];
+alien.filters = [new filters.PixelateFilter(10)];
 ```
 
 </Accordion>
@@ -415,7 +439,7 @@ alien.filters = [new Filters.PixelateFilter(10)];
 A radial (spin/zoom-style) blur around a center point.
 
 ```ts
-alien.filters = [new Filters.RadialBlurFilter({ angle: 15, radius: -1 })];
+alien.filters = [new filters.RadialBlurFilter({ angle: 15, radius: -1 })];
 ```
 
 </Accordion>
@@ -427,7 +451,7 @@ numbers.
 
 ```ts
 alien.filters = [
-    new Filters.ReflectionFilter({ amplitude: [0, 20], waveLength: [30, 100] }),
+    new filters.ReflectionFilter({ amplitude: [0, 20], waveLength: [30, 100] }),
 ];
 ```
 
@@ -439,7 +463,7 @@ Offsets the red, green, and blue channels independently - a chromatic-aberration
 
 ```ts
 alien.filters = [
-    new Filters.RGBSplitFilter({ red: { x: -10, y: 0 }, blue: { x: 10, y: 0 } }),
+    new filters.RGBSplitFilter({ red: { x: -10, y: 0 }, blue: { x: 10, y: 0 } }),
 ];
 ```
 
@@ -450,7 +474,7 @@ alien.filters = [
 An animated shockwave/ripple distortion expanding from a center point.
 
 ```ts
-alien.filters = [new Filters.ShockwaveFilter({ amplitude: 30, radius: 200 })];
+alien.filters = [new filters.ShockwaveFilter({ amplitude: 30, radius: 200 })];
 ```
 
 </Accordion>
@@ -460,7 +484,7 @@ alien.filters = [new Filters.ShockwaveFilter({ amplitude: 30, radius: 200 })];
 Organic, cloud-like simplex noise.
 
 ```ts
-alien.filters = [new Filters.SimplexNoiseFilter({ strength: 0.5, step: 64 })];
+alien.filters = [new filters.SimplexNoiseFilter({ strength: 0.5, step: 64 })];
 ```
 
 </Accordion>
@@ -470,7 +494,7 @@ alien.filters = [new Filters.SimplexNoiseFilter({ strength: 0.5, step: 64 })];
 A tilt-shift ("miniature model") blur along a configurable band.
 
 ```ts
-alien.filters = [new Filters.TiltShiftFilter({ blur: 30, gradientBlur: 400 })];
+alien.filters = [new filters.TiltShiftFilter({ blur: 30, gradientBlur: 400 })];
 ```
 
 </Accordion>
@@ -480,7 +504,7 @@ alien.filters = [new Filters.TiltShiftFilter({ blur: 30, gradientBlur: 400 })];
 Twists the image around a center point, like a whirlpool.
 
 ```ts
-alien.filters = [new Filters.TwistFilter({ radius: 150, angle: 4 })];
+alien.filters = [new filters.TwistFilter({ radius: 150, angle: 4 })];
 ```
 
 </Accordion>
@@ -490,7 +514,7 @@ alien.filters = [new Filters.TwistFilter({ radius: 150, angle: 4 })];
 A radial zoom blur, as if rushing toward (or away from) a center point.
 
 ```ts
-alien.filters = [new Filters.ZoomBlurFilter({ strength: 0.2, innerRadius: 20 })];
+alien.filters = [new filters.ZoomBlurFilter({ strength: 0.2, innerRadius: 20 })];
 ```
 
 </Accordion>
