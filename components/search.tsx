@@ -1,5 +1,5 @@
 "use client";
-import { create } from "@orama/orama";
+import { create } from "zbsearch";
 import { useDocsSearch } from "fumadocs-core/search/client";
 import {
     SearchDialog,
