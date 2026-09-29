@@ -1,37 +1,9 @@
-import {
-    docs,
-    faqDocs,
-    inkDocs,
-    jsdocNqtrDocs,
-    jsdocPixiVnAiDocs,
-    jsdocPixiVnDocs,
-    jsdocPixiVnInkDocs,
-    jsdocPixiVnJsonDocs,
-    jsdocPixiVnLive2dDocs,
-    jsdocPixiVnSpineDocs,
-    nqtrDocs,
-    renpyDocs,
-} from "collections/server";
+import { docs, faqDocs, inkDocs, nqtrDocs, renpyDocs } from "collections/server";
 import { type InferPageType, loader } from "fumadocs-core/source";
 import { icons } from "lucide-react";
 import { createElement } from "react";
 import { i18n } from "./i18n";
-import {
-    docsContentRoute,
-    docsImageRoute,
-    faqRoute,
-    inkRoute,
-    jsdocNqtrRoute,
-    jsdocPixiVnAiRoute,
-    jsdocPixiVnInkRoute,
-    jsdocPixiVnJsonRoute,
-    jsdocPixiVnLive2dRoute,
-    jsdocPixiVnRoute,
-    jsdocPixiVnSpineRoute,
-    nqtrRoute,
-    renpyRoute,
-    startRoute,
-} from "./shared";
+import { docsContentRoute, docsImageRoute, faqRoute, inkRoute, nqtrRoute, renpyRoute, startRoute } from "./shared";
 
 // See https://fumadocs.dev/docs/headless/source-api for more info
 export const source = loader({
@@ -157,46 +129,6 @@ export const nqtrSource = loader({
     i18n,
 });
 
-function createJsdocLoader(
-    baseUrl: string,
-    docsSource: ReturnType<typeof jsdocPixiVnDocs.toFumadocsSource>,
-) {
-    return loader({
-        baseUrl,
-        source: docsSource,
-        plugins: [],
-        icon(icon) {
-            if (icon && icon in icons) return createElement(icons[icon as keyof typeof icons]);
-        },
-    });
-}
-
-export const jsdocPixiVnSource = createJsdocLoader(
-    jsdocPixiVnRoute,
-    jsdocPixiVnDocs.toFumadocsSource(),
-);
-export const jsdocPixiVnJsonSource = createJsdocLoader(
-    jsdocPixiVnJsonRoute,
-    jsdocPixiVnJsonDocs.toFumadocsSource(),
-);
-export const jsdocPixiVnInkSource = createJsdocLoader(
-    jsdocPixiVnInkRoute,
-    jsdocPixiVnInkDocs.toFumadocsSource(),
-);
-export const jsdocNqtrSource = createJsdocLoader(jsdocNqtrRoute, jsdocNqtrDocs.toFumadocsSource());
-export const jsdocPixiVnSpineSource = createJsdocLoader(
-    jsdocPixiVnSpineRoute,
-    jsdocPixiVnSpineDocs.toFumadocsSource(),
-);
-export const jsdocPixiVnLive2dSource = createJsdocLoader(
-    jsdocPixiVnLive2dRoute,
-    jsdocPixiVnLive2dDocs.toFumadocsSource(),
-);
-export const jsdocPixiVnAiSource = createJsdocLoader(
-    jsdocPixiVnAiRoute,
-    jsdocPixiVnAiDocs.toFumadocsSource(),
-);
-
 export function getPageImage(page: InferPageType<typeof source>) {
     const segments = [...page.slugs, "image.png"];
 
@@ -219,26 +151,6 @@ export function getPageMarkdownUrl(
     return {
         segments,
         url: url,
-    };
-}
-
-export function getJsdocPageMarkdownUrl(
-    page: { slugs: string[] },
-    lib:
-        | "pixi-vn"
-        | "pixi-vn-json"
-        | "pixi-vn-ink"
-        | "nqtr"
-        | "pixi-vn-spine"
-        | "pixi-vn-live2d"
-        | "pixi-vn-ai",
-) {
-    const segments = [...page.slugs, "content.md"];
-    const url = `${docsContentRoute}/jsdoc/${lib}/${segments.join("/")}`;
-
-    return {
-        segments,
-        url,
     };
 }
 

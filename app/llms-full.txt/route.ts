@@ -1,18 +1,4 @@
-import {
-    faqSource,
-    getLLMText,
-    inkSource,
-    jsdocNqtrSource,
-    jsdocPixiVnAiSource,
-    jsdocPixiVnInkSource,
-    jsdocPixiVnJsonSource,
-    jsdocPixiVnLive2dSource,
-    jsdocPixiVnSource,
-    jsdocPixiVnSpineSource,
-    nqtrSource,
-    renpySource,
-    source,
-} from "@/lib/source";
+import { faqSource, getLLMText, inkSource, nqtrSource, renpySource, source } from "@/lib/source";
 
 export const revalidate = false;
 
@@ -26,17 +12,7 @@ export async function GET() {
         .filter((v) => v.locale === "en")
         .map(getLLMText);
 
-    const jsdocScan = [
-        ...jsdocPixiVnSource.getPages(),
-        ...jsdocPixiVnJsonSource.getPages(),
-        ...jsdocPixiVnInkSource.getPages(),
-        ...jsdocNqtrSource.getPages(),
-        ...jsdocPixiVnSpineSource.getPages(),
-        ...jsdocPixiVnLive2dSource.getPages(),
-        ...jsdocPixiVnAiSource.getPages(),
-    ].map(getLLMText);
+    const scanned = await Promise.all(scan);
 
-    const [scanned, scannedJsdoc] = await Promise.all([Promise.all(scan), Promise.all(jsdocScan)]);
-
-    return new Response([...scanned, ...scannedJsdoc].join("\n\n").replaceAll("/en/", "/"));
+    return new Response(scanned.join("\n\n").replaceAll("/en/", "/"));
 }

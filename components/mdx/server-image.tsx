@@ -124,8 +124,7 @@ export default function ServerImage(
         );
     }
 
-    // Fall back to a native <img> when no explicit dimensions are provided
-    // (e.g. markdown images from auto-generated jsdoc content).
+    // Fall back to a native <img> when no explicit dimensions are provided.
     // Next.js <Image> requires width/height and would crash without them.
     if (!rest.width && !rest.height) {
         return (
