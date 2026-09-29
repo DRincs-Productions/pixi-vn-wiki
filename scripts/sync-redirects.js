@@ -4,18 +4,37 @@ const path = require("path");
 const root = path.join(__dirname, "..");
 const redirects = JSON.parse(fs.readFileSync(path.join(root, "redirects.json"), "utf-8"));
 
+// A redirect is "wildcard-preserving" when its destination reuses the same
+// /:name* capture declared in its source (e.g. source "/jsdoc/pixi-vn/:path*",
+// destination ".../pixi-vn/:path*") — the matched sub-path is carried over
+// instead of being dropped in favor of a fixed destination page.
+function wildcardName(source) {
+    const m = source.match(/\/:([\w]+)\*$/);
+    return m ? m[1] : null;
+}
+function preservesWildcard(source, destination) {
+    const name = wildcardName(source);
+    return name !== null && destination.includes(`:${name}*`);
+}
+
 // firebase.json: { source, destination, type: 301 }
-// Pattern conversion: /:param* → /**
+// Firebase Hosting supports reusing a named glob segment in the destination
+// (e.g. source "/blog/:post*" -> destination "/articles/:post*"), so
+// wildcard-preserving redirects keep the named capture as-is in source.
+// Non-preserving redirects fall back to the simpler /** glob (same matching
+// behavior, just non-capturing) since there's nothing to reuse.
 const firebasePath = path.join(root, "firebase.json");
 const firebase = JSON.parse(fs.readFileSync(firebasePath, "utf-8"));
 firebase.hosting.redirects = redirects.map(({ source, destination }) => ({
-    source: source.replace(/\/:[\w]+\*/g, "/**"),
+    source: preservesWildcard(source, destination) ? source : source.replace(/\/:[\w]+\*/g, "/**"),
     destination,
     type: 301,
 }));
 fs.writeFileSync(firebasePath, JSON.stringify(firebase, null, 2) + "\n");
 
 // vercel.json: { source, destination, permanent: true }
+// Vercel's path-to-regexp router supports reusing named captures in the
+// destination as-is, so source/destination pass through unchanged either way.
 const vercelPath = path.join(root, "vercel.json");
 const vercel = JSON.parse(fs.readFileSync(vercelPath, "utf-8"));
 vercel.redirects = redirects.map(({ source, destination }) => ({
@@ -25,16 +44,27 @@ vercel.redirects = redirects.map(({ source, destination }) => ({
 }));
 fs.writeFileSync(vercelPath, JSON.stringify(vercel, null, 2) + "\n");
 
-// netlify.toml: [[redirects]] section after the marker
+// netlify.toml / _redirects (Cloudflare Pages uses the same flat-file syntax):
+// Netlify's redirect engine has no named-parameter reuse — a wildcard capture
+// can only be carried into the destination via the anonymous `:splat`
+// placeholder — so wildcard-preserving redirects get their destination's
+// `:name*` rewritten to `:splat` to match.
 // Pattern conversion: /:param* → /*
+function toFlatRule({ source, destination }) {
+    const name = wildcardName(source);
+    const from = source.replace(/\/:[\w]+\*/g, "/*");
+    const to = preservesWildcard(source, destination) ? destination.replace(`:${name}*`, ":splat") : destination;
+    return { from, to };
+}
+
 const netlifyPath = path.join(root, "netlify.toml");
 const netlifyContent = fs.readFileSync(netlifyPath, "utf-8");
 const marker = "# [sync-redirects]";
 const staticPart = netlifyContent.slice(0, netlifyContent.indexOf(marker) + marker.length);
 const netlifyRedirects = redirects
-    .map(({ source, destination }) => {
-        const from = source.replace(/\/:[\w]+\*/g, "/*");
-        return `\n\n[[redirects]]\n  from = "${from}"\n  to = "${destination}"\n  status = 301`;
+    .map((r) => {
+        const { from, to } = toFlatRule(r);
+        return `\n\n[[redirects]]\n  from = "${from}"\n  to = "${to}"\n  status = 301`;
     })
     .join("");
 fs.writeFileSync(
@@ -43,12 +73,11 @@ fs.writeFileSync(
 );
 
 // _redirects (Cloudflare Pages / Netlify flat file format)
-// Pattern conversion: /:param* → /*
 const redirectsFilePath = path.join(root, "_redirects");
 const redirectsFileContent = redirects
-    .map(({ source, destination }) => {
-        const from = source.replace(/\/:[\w]+\*/g, "/*");
-        return `${from} ${destination} 301`;
+    .map((r) => {
+        const { from, to } = toFlatRule(r);
+        return `${from} ${to} 301`;
     })
     .join("\n");
 fs.writeFileSync(redirectsFilePath, `${redirectsFileContent}\n`);
