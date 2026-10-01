@@ -1,0 +1,113 @@
+---
+title: Sito web
+description: Questa pagina spiega come distribuire il tuo gioco Pixi'VN come sito web, incluse le opzioni di hosting, i passaggi di distribuzione e l'abilitazione delle funzionalità PWA per l'installazione.
+---
+
+Il tuo gioco Pixi'VN può essere distribuito come sito web, consentendo ai giocatori di accedervi direttamente tramite i loro browser web. Si tratta di un ottimo modo per raggiungere un pubblico più vasto, poiché non sono richiesti download o installazioni.\
+Per fare ciò, devi [ospitare il gioco su un server](#hosting-and-deploying).
+
+## Hosting e distribuzione
+
+You can use various hosting services like [Cloudflare Pages](https://pages.cloudflare.com/), [Vercel](https://vercel.com/), or [Netlify](https://www.netlify.com/). Queste piattaforme offrono piani gratuiti e hanno procedure di configurazione simili.
+
+<Accordions>
+
+<Accordion title="Cloudflare Pages" id="cloudflare-pages">
+
+This guide uses Cloudflare Pages as an example for hosting, deploying automatically via GitHub Actions whenever you push to a dedicated `deploy` branch.
+
+1. [Create a Cloudflare account](https://dash.cloudflare.com/sign-up) and a Pages project, if you haven't already.
+2. In your Cloudflare dashboard, generate an API token with the `Cloudflare Pages: Edit` permission, and note your Account ID.
+3. In your GitHub repository settings, add them as repository secrets named `CF_API_TOKEN` and `CF_ACCOUNT_ID`.
+4. Add the following workflow to your repository:
+
+```yaml title=".github/workflows/deploy.yml"
+name: Deploy to Cloudflare Pages
+
+on:
+    push:
+        branches: [deploy]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Use Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 20
+            - name: Install and build
+              run: |
+                  npm install
+                  npm run build
+            - name: Archive Build
+              uses: actions/upload-artifact@v4
+              with:
+                  name: dist
+                  path: dist
+
+    deploy:
+        name: Deploy
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Download Build
+              uses: actions/download-artifact@v4
+              with:
+                  name: dist
+                  path: dist
+            - name: Deploy
+              uses: cloudflare/wrangler-action@v3
+              with:
+                  apiToken: ${{ secrets.CF_API_TOKEN }}
+                  accountId: ${{ secrets.CF_ACCOUNT_ID }}
+                  command: pages deploy dist --project-name=your-project-name --branch=main
+```
+
+Replace `your-project-name` with your Cloudflare Pages project name, then push to the `deploy` branch to trigger your first deployment.
+
+</Accordion>
+
+</Accordions>
+
+## Altre funzionalità
+
+<Accordions>
+
+<Accordion title="Enable PWA features (Add to Home Screen)" id="pwa">
+
+![immagine](/pwa-plugin.png)
+
+Abilitando l'installazione come "applicazione browser" gli utenti potranno utilizzare il tuo gioco come app autonoma sul proprio dispositivo.
+
+Se utilizzi [Vite js](https://vitejs.dev/) come strumento di compilazione, puoi aggiungere il [PWA Vite Plugin](https://vite-pwa-org.netlify.app/).
+
+```ts title="vite.config.ts"
+import { defineConfig } from "vite";
+import { VitePWA } from "vite-plugin-pwa";
+
+export default defineConfig(() => ({
+    plugins: [
+        VitePWA({
+            manifest: {
+                name: "my-app-project-name",
+                short_name: "my-app-package-name",
+                description: "my-app-description",
+                theme_color: "#ffffff",
+                start_url: "/",
+                display: "fullscreen",
+                orientation: "landscape",
+                icons: [
+                    // ...
+                ],
+            },
+        }),
+    ],
+}));
+```
+
+</Accordion>
+
+</Accordions>

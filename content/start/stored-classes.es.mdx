@@ -1,0 +1,51 @@
+---
+title: Clases de almacenamiento
+description: |
+  Cómo crear clases cuyas propiedades se almacenan usando `StoredClassModel`.
+---
+
+Pixi’VN proporciona una clase abstracta [`StoredClassModel`](/jsdoc/pixi-vn/index/classes/StoredClassModel) que puedes usar para crear clases con propiedades guardadas en el almacenamiento del juego.
+
+```ts
+const CITY_CATEGORY = "city";
+
+export default class City extends StoredClassModel {
+    constructor(id: string, props: CityProps) {
+        super(CITY_CATEGORY, id);
+        // ...
+    }
+}
+```
+
+```ts
+const milan = new City("milan", {
+    // ...
+});
+```
+
+## Propiedades de almacenamiento
+
+Para almacenar las propiedades de una clase en el almacenamiento del juego, usa los helpers [`getStorageProperty`](/jsdoc/pixi-vn/index/classes/StoredClassModel#getstorageproperty) y [`setStorageProperty`](/jsdoc/pixi-vn/index/classes/StoredClassModel#setstorageproperty).
+
+```ts
+export default class City extends StoredClassModel {
+    constructor(id: string, props: CityProps) {
+        // ...
+    }
+
+    get inhabitants(): number {
+        return this.getStorageProperty<string>("inhabitants") || "";
+    }
+    set inhabitants(value: number) {
+        this.setStorageProperty("inhabitants", value);
+    }
+}
+```
+
+```ts
+const milan = new City("milan", {
+    // ...
+});
+
+milan.inhabitants = 100000;
+```

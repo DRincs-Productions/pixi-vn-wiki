@@ -1,0 +1,51 @@
+---
+title: Classes de stockage
+description: |
+  Comment créer des classes dont les propriétés sont stockées à l'aide de `StoredClassModel`.
+---
+
+Pixi’VN fournit une classe abstraite [`StoredClassModel`](/jsdoc/pixi-vn/index/classes/StoredClassModel) que vous pouvez utiliser pour créer des classes avec des propriétés enregistrées dans le stockage du jeu.
+
+```ts
+const CITY_CATEGORY = "city";
+
+export default class City extends StoredClassModel {
+    constructor(id: string, props: CityProps) {
+        super(CITY_CATEGORY, id);
+        // ...
+    }
+}
+```
+
+```ts
+const milan = new City("milan", {
+    // ...
+});
+```
+
+## Propriétés de stockage
+
+Pour stocker les propriétés d'une classe dans le stockage du jeu, utilisez les fonctions d'aide [`getStorageProperty`](/jsdoc/pixi-vn/index/classes/StoredClassModel#getstorageproperty) et [`setStorageProperty`](/jsdoc/pixi-vn/index/classes/StoredClassModel#setstorageproperty).
+
+```ts
+export default class City extends StoredClassModel {
+    constructor(id: string, props: CityProps) {
+        // ...
+    }
+
+    get inhabitants(): number {
+        return this.getStorageProperty<string>("inhabitants") || "";
+    }
+    set inhabitants(value: number) {
+        this.setStorageProperty("inhabitants", value);
+    }
+}
+```
+
+```ts
+const milan = new City("milan", {
+    // ...
+});
+
+milan.inhabitants = 100000;
+```
