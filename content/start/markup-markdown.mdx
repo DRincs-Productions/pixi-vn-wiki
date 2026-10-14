@@ -30,18 +30,14 @@ You can use this method with the _ink_ syntax. See more <DynamicLink href="/ink/
 Here are some examples of implementations of Markdown in the JavaScript ecosystem:
 
 ```tsx tab="React"
-// I use the react-markdown library to convert the Markdown to HTML
-// read more about it here: https://www.npmjs.com/package/react-markdown
-import Markdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
-import remarkGfm from "remark-gfm";
+// I use the @tanstack/markdown library to convert the Markdown to HTML
+// read more about it here: https://www.npmjs.com/package/@tanstack/markdown
+// Tables, strikethrough and task lists (GFM) are supported out of the box,
+// `allowHtml` enables raw HTML (e.g. <span style="color:blue">...</span>).
+import { Markdown } from "@tanstack/markdown/react";
 
 export default function MarkdownComponent({ text }: { text: string }) {
-    return (
-        <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
-            {text}
-        </Markdown>
-    );
+    return <Markdown allowHtml>{text}</Markdown>;
 }
 ```
 
@@ -127,24 +123,27 @@ export class MarkdownComponent {
 
 [React Markdown Typewriter](https://www.npmjs.com/package/react-markdown-typewriter) is a library that combines Markdown and Typewriter. This library was created by me for my need to add a Typewriter effect to the Markdown component in my React templates.
 
+Since version 2, it renders Markdown with [@tanstack/markdown](https://www.npmjs.com/package/@tanstack/markdown) and accepts its props. With `allowHtml`, raw HTML is typed out too, keeping its attributes: `<span style="color:blue">...</span>` is blue while it appears.
+
 If you are using React, I recommend you use it:
+
+```bash
+npm install react-markdown-typewriter@^2 motion
+```
 
 ```tsx title="React"
 import { MarkdownTypewriter } from "react-markdown-typewriter";
-import rehypeRaw from "rehype-raw";
-import remarkGfm from "remark-gfm";
 
 export default function MarkdownComponent({ text }: { text: string }) {
-    return (
-        <MarkdownTypewriter
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeRaw]}
-        >
-            {text}
-        </MarkdownTypewriter>
-    );
+    return <MarkdownTypewriter allowHtml>{text}</MarkdownTypewriter>;
 }
 ```
+
+:::tip[Upgrading from version 1]
+
+Version 1 was based on react-markdown: `remarkPlugins={[remarkGfm]}` is no longer needed (tables, strikethrough and task lists are built in) and `rehypePlugins={[rehypeRaw]}` becomes `allowHtml`. `MarkdownTypewriterHooks` and `MarkdownTypewriterAsync` have been replaced by `MarkdownTypewriter`. See the [migration guide](https://github.com/DRincs-Productions/react-markdown-typewriter#migrating-from-1x).
+
+:::
 
 <Sandbox
     template="rgjf6t"
