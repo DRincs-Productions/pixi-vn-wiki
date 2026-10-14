@@ -30,18 +30,14 @@ Pixi’VN не привязан ни к какой разметке и пред�
 Ниже приведены примеры реализации Markdown в экосистеме JavaScript:
 
 ```tsx tab="React"
-// I use the react-markdown library to convert the Markdown to HTML
-// read more about it here: https://www.npmjs.com/package/react-markdown
-import Markdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
-import remarkGfm from "remark-gfm";
+// I use the @tanstack/markdown library to convert the Markdown to HTML
+// read more about it here: https://www.npmjs.com/package/@tanstack/markdown
+// Tables, strikethrough and task lists (GFM) are supported out of the box,
+// `allowHtml` enables raw HTML (e.g. <span style="color:blue">...</span>).
+import { Markdown } from "@tanstack/markdown/react";
 
 export default function MarkdownComponent({ text }: { text: string }) {
-    return (
-        <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
-            {text}
-        </Markdown>
-    );
+    return <Markdown allowHtml>{text}</Markdown>;
 }
 ```
 
@@ -119,27 +115,37 @@ export class MarkdownComponent {
 
 <Sandbox template="4h8wst" entry="/src/components/MarkdownComponent.tsx" previewHeight={300} />
 
-## React Markdown Typewriter
+## Markdown Typewriter
 
-[React Markdown Typewriter](https://www.npmjs.com/package/react-markdown-typewriter) — это библиотека, сочетающая Markdown и эффект пишущей машинки. Эта библиотека была создана мной для удовлетворения моей потребности добавить эффект пишущей машинки к компоненту Markdown в моих шаблонах React.
+[Markdown Typewriter](https://www.npmjs.com/package/markdown-typewriter) is a library that combines Markdown and Typewriter. Эта библиотека была создана мной для удовлетворения моей потребности добавить эффект пишущей машинки к компоненту Markdown в моих шаблонах React.
+
+It renders Markdown with [@tanstack/markdown](https://www.npmjs.com/package/@tanstack/markdown) and accepts its props. With `allowHtml`, raw HTML is typed out too, keeping its attributes: `<span style="color:blue">...</span>` is blue while it appears.
+
+Like @tanstack/markdown, it has two entry points:
+
+* `markdown-typewriter/react`: the `MarkdownTypewriter` React component.
+* `markdown-typewriter/core`: the framework-agnostic part (no React), with the same Markdown extensions and typewriter timing rules (`createTypewriterSchedule`), to build the same effect with Vue, Svelte, Angular or plain JavaScript.
 
 Если вы используете React, я рекомендую её использовать:
 
+```bash
+npm install markdown-typewriter motion
+```
+
 ```tsx title="React"
-import { MarkdownTypewriter } from "react-markdown-typewriter";
-import rehypeRaw from "rehype-raw";
-import remarkGfm from "remark-gfm";
+import { MarkdownTypewriter } from "markdown-typewriter/react";
 
 export default function MarkdownComponent({ text }: { text: string }) {
-    return (
-        <MarkdownTypewriter
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeRaw]}
-        >
-            {text}
-        </MarkdownTypewriter>
-    );
+    return <MarkdownTypewriter allowHtml>{text}</MarkdownTypewriter>;
 }
 ```
+
+:::tip[Upgrading from react-markdown-typewriter]
+
+The library was previously published as `react-markdown-typewriter`, which is now deprecated: replace it with `markdown-typewriter` and import the component from `markdown-typewriter/react`.Version 1 was based on react-markdown: `remarkPlugins={[remarkGfm]}` is no longer needed (tables, strikethrough and task lists are built in) and `rehypePlugins={[rehypeRaw]}` becomes `allowHtml`. `MarkdownTypewriterHooks` and `MarkdownTypewriterAsync` have been replaced by `MarkdownTypewriter`. See the [migration guide](https://github.com/DRincs-Productions/react-markdown-typewriter#migrating-from-20).
+
+Version 1 was based on react-markdown: `remarkPlugins={[remarkGfm]}` is no longer needed (tables, strikethrough and task lists are built in) and `rehypePlugins={[rehypeRaw]}` becomes `allowHtml`. `MarkdownTypewriterHooks` and `MarkdownTypewriterAsync` have been replaced by `MarkdownTypewriter`. See the [migration guide](https://github.com/DRincs-Productions/react-markdown-typewriter#migrating-from-20).
+
+:::
 
 <Sandbox template="rgjf6t" entry="/src/components/MarkdownComponent.tsx" previewHeight={320} />
