@@ -4,31 +4,13 @@ title: Routine
 
 ## Initialisation
 
-To initialize a `commitment`, create a new instance of the `CommitmentBaseModel` class (or your [custom class](#custom-class)) and add it to the game commitment dictionary when the game is initialized.
+To initialize a `commitment`, create a new instance of the [`CommitmentBaseModel`](/jsdoc/nqtr/index/classes/CommitmentBaseModel) class (or your [custom class](#custom-class)) and add it to the game commitment dictionary when the game is initialized.
 
 <Callout type="info">
 
 It is recommended to import the instances at project startup, see the `src/main.ts` file.
 
 </Callout>
-
-To create a new instance of `CommitmentBaseModel`, you need the following parameters:
-
-* `id`: A unique identifier (string). Used to reference the `commitment` in the game (must be unique).
-* `character`: The character or characters that are in the commitment and so in the room. It can be a single character or an array of characters.
-* `props`: An object with the commitment's properties:
-  * `name`: The name of the commitment (Optional).
-  * `image`: The image of the commitment (Optional). It can be a string with the path to the image or a function that returns a `ContainerChild` (Optional).
-  * `icon`: The React icon of the commitment (Optional). It can be a React element or a function that returns a React element (Optional).
-  * `onRun`: A function that is called when the commitment is run. It receives two parameters:
-    * The `commitment` instance itself.
-    * `event`: The event that triggered the run. It is an instance of `OnRunEvent\<CommitmentInterface>`, which contains methods to navigate to other routes, jump to labels, and more.
-  * `disabled`: Whether the commitment is disabled. It can be a boolean or a function that returns a boolean (optional, default is `false`). If it is disabled, this commitment will not be taken into consideration, so the characters will not be in the room, but will be busy with other commitments.
-  * `hidden`: Whether the commitment is hidden. It can be a boolean or a function that returns a boolean (optional, default is `false`). If it is hidden, the commitment will not be displayed in the UI.
-  * `priority`: The priority of the commitment. The higher the number, the higher the priority (optional, default is `0`).
-  * `executionType`: The execution type of the commitment. It can be "automatic" or "interaction". If it is "automatic", the `onRun` function will be called automatically when the player is in the room. If it is "interaction", the player must interact with the character to run the `onRun` function (optional, default is "interaction").
-  * `dateScheduling`: Used to schedule what date it will be added and removed. It is an instance of `DateSchedulingInterface` (Optional).
-  * `timeSlot`: The time slot in which the commitment will be active. It is an instance of `TimeSchedulingInterface` (Optional).
 
 ```ts tab="values/routine.ts"
 import { CommitmentBaseModel, RegisteredCommitments } from "@drincs/nqtr";
@@ -132,7 +114,7 @@ RegisteredCommitments.add([aliceSleep]);
 
 You can also link a commitment to a room during the game. This feature is useful if you want to temporarily add a commitment. The list of routine added this way will be included in your game saves.
 
-To link a commitment to a room during the game, you can use the `addCommitment` method.
+To link a commitment to a room during the game, you can use the [`addCommitment`](/jsdoc/nqtr/index/classes/RoomBaseModel#addcommitment) method.
 
 ```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
 import { newLabel, showImageContainer } from "@drincs/pixi-vn";
@@ -180,7 +162,7 @@ To detach a `commitment` from a `room`, you must first consider how it was linke
 
 If it was linked during the game initialization, it cannot be removed. However, you can add another `commitment` with the same character at the same time slot, so the character will be occupied with the new `commitment` and therefore will no longer be present in the previous `room`. By default, priority is given to the `commitment` added during gameplay over the one added during initialization, but this behavior can be modified using the `priority` property.
 
-If it was linked during gameplay, it can be removed using the `removeCommitment` method.
+If it was linked during gameplay, it can be removed using the [`removeCommitment`](/jsdoc/nqtr/index/classes/RoomBaseModel#removecommitment) method.
 
 ```ts tab="Typescript" title="index.ts" groupId="narrative_language"
 import { aliceSmokes } from "../routine";
@@ -244,11 +226,11 @@ In all templates, the `Commitment` class is already defined in the file `models/
 
 </Callout>
 
-It is recommended to create your own class `Commitment` that extends `CommitmentStoredClass` and "override" the interface `CommitmentInterface` to add, edit, or remove properties or methods.
+It is recommended to create your own class `Commitment` that extends [`CommitmentStoredClass`](/jsdoc/nqtr/index/classes/CommitmentStoredClass) and "override" the interface [`CommitmentInterface`](/jsdoc/nqtr/index/interfaces/CommitmentInterface) to add, edit, or remove properties or methods.
 
-For example, if you want to create a class `Commitment`, you must "override" the interface `CommitmentInterface` to use your properties or methods. (See the file `nqtr.d.ts`)
+For example, if you want to create a class `Commitment`, you must "override" the interface [`CommitmentInterface`](/jsdoc/nqtr/index/interfaces/CommitmentInterface) to use your properties or methods. (See the file `nqtr.d.ts`)
 
-Now you can create a class `Commitment` that extends `CommitmentStoredClass` and implements the `CommitmentInterface`. (Pour plus d'informations sur la création d'une classe en TypeScript, lisez [la documentation officielle](https://www.typescriptlang.org/docs/handbook/2/classes.html))
+Now you can create a class `Commitment` that extends [`CommitmentStoredClass`](/jsdoc/nqtr/index/classes/CommitmentStoredClass) and implements the [`CommitmentInterface`](/jsdoc/nqtr/index/interfaces/CommitmentInterface). (Pour plus d'informations sur la création d'une classe en TypeScript, lisez [la documentation officielle](https://www.typescriptlang.org/docs/handbook/2/classes.html))
 
 To create a property that stores its value in the game storage, you can create [Getters/Setters](https://www.typescriptlang.org/docs/handbook/2/classes.html#getters--setters) and use the `this.getStorageProperty()` / `this.setStorageProperty()` methods. (See the file `Commitment.ts`)
 
