@@ -2,22 +2,24 @@
 title: Time system
 ---
 
-<Callout title="용어 설명" type="info">
+:::tip[Nomenclature]
 
 It was decided to use the very generic terms date and time. The reason is that, depending on what is being developed, time can correspond to hours, minutes, or a long period of time. The same applies to date.
 
-</Callout>
+:::
 
 The time system is composed of the following elements:
 
-* `date`: A counter used to determine the date of the game.
-* `time`: A counter is used to determine the time of day and which is reset every time date is incremented.
+| Element | 설명                                                                                                |
+| ------- | ------------------------------------------------------------------------------------------------- |
+| `date`  | A counter used to determine the date of the game.                                                 |
+| `time`  | A counter used to determine the time of day, which is reset every time the `date` is incremented. |
 
 You can use [`timeTracker`](/jsdoc/nqtr/index/variables/timeTracker) instance to manage your time system. It provides methods to initialize, get, increment time, etc. The time system is designed to be flexible and can be adapted to various game requirements.
 
 ## 초기화
 
-To initialize the time system, you need use the [`timeTracker.initialize`](/jsdoc/nqtr/index/variables/timeTracker) method.
+To initialize the time system, you need use the [`timeTracker.initialize`](/jsdoc/nqtr/index/interfaces/TimeHandlerInterface#initialize) method.
 
 ```ts title="main.ts"
 timeTracker.initialize({
@@ -49,7 +51,7 @@ timeTracker.initialize({
 
 ## 가져오기
 
-To get a current `time`, use the [`timeTracker.currentTime`](/jsdoc/nqtr/index/variables/timeTracker) property. It returns the current time as a number.
+To get a current `time`, use the [`timeTracker.currentTime`](/jsdoc/nqtr/index/interfaces/TimeHandlerInterface#currenttime) property. It returns the current time as a number.
 
 ```typescript
 import { timeTracker } from "@drincs/nqtr";
@@ -57,7 +59,7 @@ import { timeTracker } from "@drincs/nqtr";
 const currentTime: number = timeTracker.currentTime;
 ```
 
-To get a current `date`, use the [`timeTracker.currentDate`](/jsdoc/nqtr/index/variables/timeTracker) property. It returns the current date as a number.
+To get a current `date`, use the [`timeTracker.currentDate`](/jsdoc/nqtr/index/interfaces/TimeHandlerInterface#currentdate) property. It returns the current date as a number.
 
 ```typescript
 import { timeTracker } from "@drincs/nqtr";
@@ -67,7 +69,7 @@ const currentDate: number = timeTracker.currentDate;
 
 ## 설정
 
-To set a specific `time`, use the [`timeTracker.currentTime`](/jsdoc/nqtr/index/variables/timeTracker) property. It accepts a number representing the time to set.
+To set a specific `time`, use the [`timeTracker.currentTime`](/jsdoc/nqtr/index/interfaces/TimeHandlerInterface#currenttime) property. It accepts a number representing the time to set.
 
 ```ts tab="Typescript" title="index.ts" groupId="narrative_language"
 import { timeTracker } from "@drincs/nqtr";
@@ -83,7 +85,7 @@ timeTracker.currentTime = 12; // Set time to 12
 # set time 18:30 // if you prefer to use the colon as a separator, it will be converted to a dot internally
 ```
 
-To set a specific `date`, use the [`timeTracker.currentDate`](/jsdoc/nqtr/index/variables/timeTracker) property. It accepts a number representing the date to set.
+To set a specific `date`, use the [`timeTracker.currentDate`](/jsdoc/nqtr/index/interfaces/TimeHandlerInterface#currentdate) property. It accepts a number representing the date to set.
 
 ```ts tab="Typescript" title="index.ts" groupId="narrative_language"
 import { timeTracker } from "@drincs/nqtr";
@@ -98,11 +100,11 @@ timeTracker.currentDate = 5; // Set date to 5
 
 ## Increment
 
-[`timeTracker`](/jsdoc/nqtr/index/variables/timeTracker) has some functions to increment the time and date with some additional logic.
+`timeTracker` has some functions to increment the time and date with some additional logic.
 
-To increment the current `time` by a specific amount, use the [`timeTracker.increaseTime`](/jsdoc/nqtr/index/variables/timeTracker) method. In case that the new time exceeds the [`dayEndTime`](/jsdoc/nqtr/index/type-aliases/TimeSettings#dayendtime), it will automatically increment the date and reset the time to the [`dayStartTime`](/jsdoc/nqtr/index/type-aliases/TimeSettings#daystarttime) plus the overflow time.
+To increment the current `time` by a specific amount, use the [`timeTracker.increaseTime`](/jsdoc/nqtr/index/interfaces/TimeHandlerInterface#increasetime) method. In case that the new time exceeds the [`dayEndTime`](/jsdoc/nqtr/index/type-aliases/TimeSettings#dayendtime), it will automatically increment the date and reset the time to the [`dayStartTime`](/jsdoc/nqtr/index/type-aliases/TimeSettings#daystarttime) plus the overflow time.
 
-To increment the current `date` by a specific amount, use the [`timeTracker.increaseDate`](/jsdoc/nqtr/index/variables/timeTracker) method.
+To increment the current `date` by a specific amount, use the [`timeTracker.increaseDate`](/jsdoc/nqtr/index/interfaces/TimeHandlerInterface#increasedate) method.
 
 ```ts tab="Typescript" title="index.ts" groupId="narrative_language"
 import { timeTracker } from "@drincs/nqtr";
@@ -122,7 +124,7 @@ timeTracker.increaseDate(1, 8); // Increment date by 1 and set time to 8
 
 ## Is weekend
 
-To check if the current day is a weekend, use the [`timeTracker.isWeekend`](/jsdoc/nqtr/index/variables/timeTracker) property. It returns a boolean indicating whether the current day is a weekend.
+To check if the current day is a weekend, use the [`timeTracker.isWeekend`](/jsdoc/nqtr/index/interfaces/TimeHandlerInterface#isweekend) property. It returns a boolean indicating whether the current day is a weekend.
 
 ```ts tab="Example"
 import { timeTracker } from "@drincs/nqtr";
@@ -132,6 +134,8 @@ const isWeekend: boolean = timeTracker.isWeekend;
 
 ```ts tab="main.ts"
 timeTracker.initialize({
+    weekendStartDay: 6, // [!code focus]
+    weekLength: 7, // [!code focus]
     defaultTimeSpent: 1,
     dayStartTime: 0,
     dayEndTime: 24,
@@ -153,12 +157,10 @@ timeTracker.initialize({
         ];
         return weekDaysNames[weekDayNumber];
     },
-    weekendStartDay: 6, // [!code focus]
-    weekLength: 7, // [!code focus]
 });
 ```
 
-## FAQ
+## 기타 기능
 
 <Accordions>
 
