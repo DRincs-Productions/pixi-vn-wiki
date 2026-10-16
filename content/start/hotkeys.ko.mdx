@@ -1,0 +1,65 @@
+---
+title: 단축키
+description: TanStack Hotkeys를 사용하여 Pixi’VN에서 키보드 단축키(핫키)를 만드는 방법으로, 빠른 저장/불러오기 및 미니게임 조작 예제를 포함합니다.
+---
+
+단축키를 사용하면 플레이어는 빠른 저장, 대화 건너뛰기, <DynamicLink href="/start/minigames">미니게임</DynamicLink> 조작과 같은 동작을 키보드에서 직접 실행할 수 있습니다. `window.addEventListener("keydown", ...)` 호출을 직접 관리하는 대신, 범위, 시퀀스, 홀드 키, 충돌 감지 기능을 갖춘 타입 지정 명령 시스템으로 키보드 입력을 변환해 주는 라이브러리인 [TanStack Hotkeys](https://tanstack.com/hotkeys/latest)를 사용하는 것을 권장합니다.
+
+:::tip
+
+비주얼 노벨에서 흔히 사용되는 단축키 목록(빠른 저장, 빠른 불러오기, 기록, 설정 등) 은 <DynamicLink href="/faq#hotkeys">FAQ</DynamicLink>에서 확인할 수 있습니다.
+
+:::
+
+<Accordions>
+
+<Accordion title="Installation" id="installation">
+
+:::tip[템플릿]
+
+모든 템플릿에는 TanStack Hotkeys 패키지가 이미 설치되어 있습니다.
+
+:::
+
+TanStack Hotkeys는 프레임워크마다 별도의 패키지를 제공합니다. React 프로젝트의 경우 다음을 설치하세요:
+
+```npm
+npm install @tanstack/react-hotkeys
+```
+
+Vue, Angular, Lit용 어댑터도 제공되므로, 사용 중인 프레임워크의 패키지로 `@tanstack/react-hotkeys`를 교체하세요.
+
+</Accordion>
+
+</Accordions>
+
+## 사용법
+
+`useHotkey` 훅으로 단축키를 등록합니다:
+
+```tsx
+import { useHotkey } from "@tanstack/react-hotkeys";
+
+useHotkey("Mod+S", () => {
+    quickSave();
+});
+```
+
+`Mod` 수식자는 macOS에서는 자동으로 `Meta`(Cmd)로, Windows/Linux에서는 `Control`로 해석되므로, 동일한 코드가 모든 플랫폼에서 동작합니다.
+
+## 범위 지정 및 조건부 활성화
+
+`useHotkey`는 훅이므로 컴포넌트가 마운트될 때 단축키를 등록하고 언마운트될 때 자동으로 정리합니다 — 수동으로 사용하는 `window.addEventListener`와 달리 리스너를 직접 제거할 필요가 없습니다.
+
+`target` 옵션을 사용하면 단축키를 특정 요소로 제한할 수 있고, `enabled` 옵션을 사용하면 미니게임이 실행 중일 때와 같이 게임 상태에 따라 단축키를 켜거나 끌 수 있습니다:
+
+```tsx
+const panelRef = useRef<HTMLDivElement>(null);
+
+useHotkey("Escape", () => closePanel(), { target: panelRef });
+useHotkey("ArrowUp", () => setDirection(0, -1), { enabled: !gameOver });
+```
+
+## 더 알아보기
+
+TanStack Hotkeys는 키 시퀀스(예: "G 다음 D"), 홀드 키, 충돌 감지, 개발자 도구 패널도 지원합니다. 전체 기능 목록은 [공식 문서](https://tanstack.com/hotkeys/latest)를 참고하세요.

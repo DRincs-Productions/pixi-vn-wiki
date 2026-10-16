@@ -1,0 +1,154 @@
+---
+title: User Interface (UI)
+description: Wie man UI-Bildschirme in Pixi’VN mit externen JavaScript-Frameworks wie React, Vue und PixiJS erstellt und integriert.
+---
+
+<Accordions>
+
+<Accordion title="Was ist UI?" id="what-is-ui">
+
+UI steht für Benutzeroberfläche. Es bezieht sich auf die visuellen Elemente und interaktiven Komponenten, über die ein Benutzer mit einem digitalen Gerät, einer Anwendung oder einer Website interagiert. Die UI umfasst alles, womit Benutzer interagieren, wie Schaltflächen, Menüs, Symbole, Textfelder und Layout. Das Ziel des UI-Designs ist es, eine Oberfläche zu schaffen, die sowohl ästhetisch ansprechend als auch funktional ist und den Benutzern eine nahtlose und intuitive Erfahrung bietet.
+
+</Accordion>
+
+</Accordions>
+
+Pixi’VN stellt keine integrierten Komponenten zur Erstellung der Spiel-UI bereit und erfindet nicht neu, was im JavaScript-Ökosystem bereits existiert. Anstatt Sie an ein bestimmtes Framework zu binden, ermöglicht es Ihnen, jedes externe JavaScript-Framework Ihrer Wahl zu verwenden, um Ihre UI zu erstellen, sodass Sie Systeme wie React, Vue usw. nutzen können, um komplexe und leistungsstarke **UI-Bildschirme** zu erstellen.
+
+Diese Flexibilität macht Pixi’VN auch zu einer hervorragenden Wahl für KI-unterstützte Entwicklung: Da die UI mit standardmäßigen, weit verbreiteten Frameworks statt mit einem proprietären System erstellt wird, kennen KI-Coding-Assistenten diese Tools bereits gut und können UI-Code sehr effektiv generieren, verstehen und modifizieren.
+
+<Cards>
+    <DynamicLink className="no-underline @max-lg:col-span-full" href="/start/interface-react">
+        <Card title="React">
+            Integrieren Sie Pixi’VN mit React, einschließlich Einrichtung, Vorlagen und den besten UI-Bibliotheken.
+        </Card>
+    </DynamicLink>
+    <DynamicLink className="no-underline @max-lg:col-span-full" href="/start/interface-vue">
+        <Card title="Vue">
+            Integrieren Sie Pixi’VN mit Vue, einschließlich Einrichtung, Vorlagen und UI-Beispielen.
+        </Card>
+    </DynamicLink>
+    <DynamicLink className="no-underline @max-lg:col-span-full" href="/start/interface-pixijs">
+        <Card title="PixiJS">
+            Verwenden Sie PixiJS-Ebenen und -Komponenten, um benutzerdefinierte UI-Bildschirme zu erstellen, und kombinieren Sie sie mit HTML-UI.
+        </Card>
+    </DynamicLink>
+</Cards>
+
+Pixi’VN bietet Funktionen, um die Kompatibilität mit anderen JavaScript-Frameworks zu verbessern:
+
+<Accordions>
+
+<Accordion title="Hinzufügen von HTML-UI-Ebenen" id="adding-html-ui-layers">
+
+**Was ist eine HTML-UI-Ebene?** Eine HTML-UI-Ebene ist ein HTML-Element, das über dem PixiJS-Canvas hinzugefügt wird und die gleichen Abmessungen wie der Canvas hat. Dies ermöglicht es Ihnen, eine UI mit einem JavaScript-Framework wie React oder Vue zu erstellen.
+
+Um eine HTML-UI-Ebene hinzuzufügen, können Sie die Funktion [`canvas.htmlLayers.add`](/jsdoc/pixi-vn/index/interfaces/CanvasHtmlLayersInterface#add) verwenden.
+
+```ts tab="main.ts"
+const root = document.getElementById("root");
+if (!root) {
+    throw new Error("root element not found");
+}
+const htmlLayer = canvas.htmlLayers.add("ui", root, {
+    position: "absolute",
+    pointerEvents: "none",
+    userSelect: "none",
+});
+```
+
+```html tab="index.html"
+<!doctype html>
+<html lang="en">
+    <body>
+        <div id="root"></div>
+        <script type="module" src="/src/main.ts"></script>
+    </body>
+</html>
+```
+
+Um das HTML-Element der Ebene abzurufen, können Sie die Funktion [`canvas.htmlLayers.get`](/jsdoc/pixi-vn/index/interfaces/CanvasHtmlLayersInterface#get) verwenden.
+
+Um eine HTML-UI-Ebene zu entfernen, können Sie die Funktion [`canvas.htmlLayers.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasHtmlLayersInterface#remove) verwenden.
+
+</Accordion>
+
+<Accordion title="Wie aktiviert man die HTML-UI-Interaktion?" id="how-to-enable-ui-interaction">
+
+Standardmäßig haben alle HTML-Elemente der HTML-UI-Ebenen den Stil `pointer-events: none`. Das bedeutet, dass die HTML-Elemente keine Maus- oder Berührungsereignisse abfangen, sodass der PixiJS-Canvas alle Ereignisse empfangen kann. Dies ist nützlich, wenn Sie ein Bild oder ein Video im Canvas anzeigen möchten und nicht möchten, dass die UI dies beeinträchtigt.
+
+Daher müssen Sie den Stil `pointer-events: auto` nur für die Komponente festlegen, mit der der Benutzer interagieren soll.
+
+Zum Beispiel:
+
+```css tab="Shadcn - Tailwind CSS" title="styles.css"
+@layer components {
+    [data-slot="button"],
+    [data-slot="card"],
+    [data-slot="resizable-handle"],
+    [data-slot="scroll-area"],
+    [data-slot="scroll-area-scrollbar"],
+    [data-slot="toggle"] {
+        pointer-events: auto;
+    }
+}
+```
+
+```tsx tab="React"
+export default function NextButton() {
+    return (
+        <button
+            style={{
+                pointerEvents: "auto",
+            }}
+        >
+            Next
+        </button>
+    );
+}
+```
+
+```vue tab="Vue"
+<template>
+    <button style="pointer-events: auto;">Next</button>
+</template>
+```
+
+</Accordion>
+
+<Accordion title="Hinzufügen von PixiJS-UI-Ebenen" id="adding-pixijs-ui-layers">
+
+**Was ist eine PixiJS-UI-Ebene?** Es ist ein PixiJS-Container. Im Gegensatz zum Haupt-Container, der ausschließlich für Pixi’VN-Funktionen bestimmt ist:
+
+* Der aktuelle Zustand der UI wird nicht in Spielständen enthalten sein.
+* Es hat eine bessere Leistung. Pixi’VN führt keine Überprüfungen daran durch.
+* Sie können keine Pixi’VN-Funktionen verwenden.
+* Da es sich um eine PixiJS-Kernkomponente handelt, können Sie alle mit PixiJS kompatiblen Komponenten hinzufügen.
+
+Um eine PixiJS-UI-Ebene hinzuzufügen, können Sie die Funktion [`canvas.layers.add`](/jsdoc/pixi-vn/index/interfaces/CanvasLayersInterface#add) verwenden.
+
+Zum Beispiel:
+
+```ts title="src/main.ts"
+const container = canvas.layers.add("ui");
+```
+
+Um den PixiJS-Container der Ebene abzurufen, können Sie die Funktion [`canvas.layers.get`](/jsdoc/pixi-vn/index/interfaces/CanvasLayersInterface#get) verwenden.
+
+Um eine PixiJS-UI-Ebene zu entfernen, können Sie die Funktion [`canvas.layers.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasLayersInterface#remove) verwenden.
+
+</Accordion>
+
+</Accordions>
+
+{/* ![Architecture](/arch.png) */}
+
+## Unterschiede zwischen der UI und dem Canvas
+
+So wie Pixi’VN entworfen und konzipiert wurde, sind die UI und der Canvas zwei unterschiedliche und unabhängige Elemente. Die UI befindet sich über dem Canvas und wird verwendet, um Schaltflächen, Formulare usw. zu erstellen. Der Canvas wird verwendet, um Bilder, Videos usw. anzuzeigen.
+
+Alle Informationen über den aktuellen Zustand des Canvas sind im Spielstand enthalten, und es ist möglich, den Zustand eines vorherigen Schritts wiederherzustellen. Der aktuelle Zustand der UI wird nicht in den Spielständen enthalten sein. Daher müssen Sie <DynamicLink href="/start/interface-connect-storage">dies selbst verwalten, indem Sie die Informationen speichern</DynamicLink>, die Sie im <DynamicLink href="/start/storage">Spielspeicher</DynamicLink> oder im Browser-Speicher benötigen.
+
+Im Canvas können Sie während jedes Schritts Komponenten hinzufügen. In der UI können Sie das nicht tun, Sie können mehrere <DynamicLink href="/start/interface-connect-storage">„Bildschirme“ erstellen und zwischen ihnen navigieren</DynamicLink>.
+
+Im Canvas können Sie nur Pixi’VN-Komponenten hinzufügen. In der UI können Sie jede beliebige HTML/PixiJS-Komponente hinzufügen oder eine beliebige UI-Komponentenbibliothek verwenden, sodass Sie viel komplexere Oberflächen erstellen können.

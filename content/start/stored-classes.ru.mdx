@@ -1,0 +1,51 @@
+---
+title: Классы хранения
+description: |
+  Как создавать классы, свойства которых сохраняются с помощью `StoredClassModel`.
+---
+
+Pixi’VN предоставляет абстрактный класс [`StoredClassModel`](/jsdoc/pixi-vn/index/classes/StoredClassModel), который можно использовать для создания классов со свойствами, сохраняемыми в хранилище игры.
+
+```ts
+const CITY_CATEGORY = "city";
+
+export default class City extends StoredClassModel {
+    constructor(id: string, props: CityProps) {
+        super(CITY_CATEGORY, id);
+        // ...
+    }
+}
+```
+
+```ts
+const milan = new City("milan", {
+    // ...
+});
+```
+
+## Хранимые свойства
+
+Чтобы сохранить свойства класса в хранилище игры, используйте вспомогательные функции [`getStorageProperty`](/jsdoc/pixi-vn/index/classes/StoredClassModel#getstorageproperty) и [`setStorageProperty`](/jsdoc/pixi-vn/index/classes/StoredClassModel#setstorageproperty).
+
+```ts
+export default class City extends StoredClassModel {
+    constructor(id: string, props: CityProps) {
+        // ...
+    }
+
+    get inhabitants(): number {
+        return this.getStorageProperty<string>("inhabitants") || "";
+    }
+    set inhabitants(value: number) {
+        this.setStorageProperty("inhabitants", value);
+    }
+}
+```
+
+```ts
+const milan = new City("milan", {
+    // ...
+});
+
+milan.inhabitants = 100000;
+```

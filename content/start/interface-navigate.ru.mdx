@@ -1,0 +1,191 @@
+---
+title: Навигация/переключение между экранами UI
+---
+
+Для навигации между различными экранами UI необходимо использовать систему маршрутизации. Система маршрутизации позволяет определять маршруты (или пути) для разных экранов и управлять навигацией между ними.
+
+## TanStack Router
+
+<Accordions>
+
+<Accordion title="Что такое TanStack Router?" id="what-is-tanstack-router">
+
+TanStack Router — это система маршрутизации для веб-приложений, которая позволяет управлять навигацией между разными страницами или компонентами простым и эффективным способом. Она разработана так, чтобы быть гибкой и простой в использовании, предлагая расширенные функции, такие как поддержка динамических параметров, управление состоянием маршрутизатора и интеграция с библиотеками рендеринга, такими как React, Vue и Angular.
+
+</Accordion>
+
+</Accordions>
+
+Главное преимущество TanStack Router — это его способность автоматически генерировать обработку маршрутов с помощью `createFileRoute`. С помощью `createFileRoute` вы можете определять свои маршруты, просто создавая файлы в определённой структуре папок. Например, если вы создадите файл `about.tsx` в папке `src/routes`, TanStack Router автоматически сгенерирует маршрут для `/about`, который отображает компонент, определённый в `about.tsx`.
+
+```ts title="src/routes/about.tsx"
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/about")({ // [!code focus]
+    component: About, // [!code focus]
+}); // [!code focus]
+
+function About() {
+    return (
+        <main className="page-wrap px-4 py-12">
+            <section className="island-shell rounded-2xl p-6 sm:p-8">
+                <p className="island-kicker mb-2">About</p>
+                <h1 className="display-title mb-3 text-4xl font-bold text-[var(--sea-ink)] sm:text-5xl">
+                    A small starter with room to grow.
+                </h1>
+                <p className="m-0 max-w-3xl text-base leading-8 text-[var(--sea-ink-soft)]">
+                    TanStack Start gives you type-safe routing, server functions, and modern SSR defaults. Use this as a
+                    clean foundation, then layer in your own routes, styling, and add-ons.
+                </p>
+            </section>
+        </main>
+    );
+}
+```
+
+## Как переключаться между экранами/маршрутами?
+
+Чтобы переключаться между экранами/маршрутами, используйте функцию навигации, предоставляемую вашей системой маршрутизации.
+
+:::tip[Шаблоны]
+
+Во всех шаблонах интерфейс `StepLabelProps` уже расширен и включает функцию `navigate`. Его можно найти в файле `pixi-vn.d.ts`.
+
+:::
+
+<Accordions>
+
+<Accordion title="Инициализация" id="initialize">
+
+Чтобы это стало возможным, функция навигации должна быть включена в <DynamicLink href="/start/labels#steplabelprops">интерфейс `StepLabelProps`</DynamicLink>.
+
+```ts tab="pixi-vn.d.ts"
+import { narration } from "@drincs/pixi-vn";
+
+declare module "@drincs/pixi-vn" {
+    interface StepLabelProps {
+        navigate: (route: string) => void;
+    }
+}
+```
+
+```ts tab="hooks/useGameProps.ts"
+import { StepLabelProps } from "@drincs/pixi-vn";
+import useMyNavigate from "./useMyNavigate";
+
+export default function useGameProps(): StepLabelProps {
+    const navigate = useMyNavigate();
+
+    return {
+        navigate,
+    };
+}
+```
+
+</Accordion>
+
+</Accordions>
+
+<Callout title="Тестирование" type="info">
+
+Если `Game.testing` плагина Vite.js (см. раздел «Vite.js plugin» выше и Agent Skill `pixi-vn-testing`)
+используется для того, чтобы ИИ-агент мог протестировать игру, вызовите здесь также
+[`Game.testing.setProps`](/jsdoc/pixi-vn/index/namespaces/Game/namespaces/testing/functions/setProps)
+чтобы `navigate` (и всё остальное, что возвращает этот хук) оставалось доступным для тестовой сессии:
+
+```ts tab="hooks/useGameProps.ts"
+import { Game, StepLabelProps } from "@drincs/pixi-vn"; // [!code focus]
+import useMyNavigate from "./useMyNavigate";
+
+export default function useGameProps(): StepLabelProps {
+    const navigate = useMyNavigate();
+    const props = {
+        navigate,
+    };
+    Game.testing.setProps(props); // [!code focus]
+    return props;
+}
+```
+
+</Callout>
+
+<Callout title="ink" type="info">
+
+Во всех шаблонах *ink* была введена <DynamicLink href="/ink/hashtag">пользовательская команда с хэштегом</DynamicLink> для навигации между маршрутами. To do this, you need to use the following syntax:
+
+```ink title="ink"
+# navigate [route]
+```
+
+* `route`: путь/маршрут назначения. Например, `# navigate /new-route`.
+
+</Callout>
+
+Когда вы создаёте новый нарративный узел, вы можете использовать функцию `navigate`, чтобы переключаться между маршрутами:
+
+```ts tab="content/labels/start.label.ts"
+export const startLabel = newLabel("start", [
+    ({ navigate }) => {
+        navigate("/new-route");
+    },
+]);
+```
+
+## Другие возможности
+
+<Accordions>
+
+<Accordion title="Блокировка кнопок «назад» и «вперёд» браузера" id="block-back-forward">
+
+Использование кнопок «назад» и «вперёд» браузера может привести к тому, что игра окажется в несогласованном состоянии. Это связано с тем, что эти клавиши позволяют игроку перемещаться между маршрутами, а не между нарративными шагами (`steps`).
+
+Рекомендуется предотвращать изменение пути при нажатии кнопки «назад» браузера. Есть много способов сделать это, но предлагается следующий подход:
+
+Перехватите событие `popstate`, которое срабатывает после нажатия кнопки «назад» браузера, и вызовите `history.forward()`, чтобы отменить навигацию. Чтобы позволить пользователям перейти назад, если они дважды подряд нажмут кнопку «назад», мы можем добавлять новое состояние в стек истории при каждом изменении маршрута.
+
+Например:
+
+```ts title="hooks/useConfirmBackNavigation.ts"
+import { useLocation } from "@tanstack/react-router";
+import { useEffect } from "react";
+
+/**
+ * useConfirmBackNavigation
+ *
+ * Prevent accidental browser "back" navigation.
+ * Behavior:
+ * - On each `href` change it pushes a history state (`pushState`).
+ * - Listens for `popstate` and calls `history.forward()` to cancel a single
+ *   press of the browser back button.
+ * - If the user presses back twice in succession (i.e. the second press occurs
+ *   before the first is handled), the browser will navigate back.
+ *
+ * Usage: call this hook at the app root to avoid unintended back navigations
+ * (e.g. accidental taps or gestures). Returns `null`.
+ */
+export default function useConfirmBackNavigation() {
+    const { href } = useLocation();
+
+    useEffect(() => {
+        const isInIframe =
+            typeof window !== "undefined" && window.self !== window.top;
+        if (isInIframe) return;
+        const listener = () => {
+            window.history.forward();
+        };
+        window.addEventListener("popstate", listener);
+
+        return () => {
+            window.removeEventListener("popstate", listener);
+        };
+    }, []);
+
+    useEffect(() => {
+        window.history.pushState(null, href, href);
+    }, [href]);
+}
+```
+
+</Accordion>
+
+</Accordions>

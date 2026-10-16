@@ -1,0 +1,370 @@
+---
+title: Routine
+---
+
+## Initialisation
+
+To initialize a `commitment`, create a new instance of the [`CommitmentBaseModel`](/jsdoc/nqtr/index/classes/CommitmentBaseModel) class (or your [custom class](#custom-class)) and add it to the game commitment dictionary when the game is initialized.
+
+:::warning
+
+[`RegisteredCommitments.add`](/jsdoc/nqtr/index/namespaces/RegisteredCommitments/functions/add) is **required** to save the `commitments` in the game.
+
+:::
+
+```ts title="content/routine.ts"
+import { CommitmentBaseModel, RegisteredCommitments } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { NARRATION_ROUTE } from "../constans";
+import { TALK_SLEEP_LABEL_KEY } from "../labels/variousActionsLabelKeys";
+import { aliceTalkMenuLabel } from "../labels/variousActionsLabels";
+import { alice } from "./characters";
+
+export const aliceSleep = new CommitmentBaseModel("alice_sleep", alice, {
+    priority: 1,
+    timeSlot: {
+        from: 20,
+        to: 10,
+    },
+    onRun: async (_, event) => {
+        await event.navigate(NARRATION_ROUTE);
+        await narration.jump(TALK_SLEEP_LABEL_KEY, event);
+    },
+});
+
+export const aliceGoSchool = new CommitmentBaseModel("alice_go_school", alice, {
+    timeSlot: {
+        from: 8,
+        to: 14,
+    },
+    priority: 2,
+});
+
+export const aliceSmokes = new CommitmentBaseModel("alice_smokes", alice, {
+    timeSlot: {
+        from: 10,
+        to: 20,
+    },
+    onRun: async (_, event) => {
+        await event.navigate(NARRATION_ROUTE);
+        await narration.jump(aliceTalkMenuLabel, event);
+    },
+});
+
+RegisteredCommitments.add([aliceSleep, aliceGoSchool, aliceSmokes]);
+```
+
+You can also create a function to load `commitments`. The important thing is that it is called at least once before the `commitments` are used in the game, otherwise they will not be available.
+
+## Link
+
+For an `commitment` to be linked to a `room`, the `room` must be included in the `Commitment` instance. The relationship between a `commitment` and a `room` is one-to-many, meaning that a `rooms` can be linked to multiple `commitments`, but a `commitment` can only be linked to one `room` (a character cannot be in two places at the same time).
+
+There are two ways to do this:
+
+### During game initialization
+
+For a `commitment` to be available to the player, it must be linked to a `room`.
+
+```ts tab="values/rooms.ts"
+import { RegisteredRooms, RoomBaseModel } from "@drincs/nqtr";
+import { mcHome } from "./locations";
+import { aliceSleep } from "./routine";
+
+export const aliceRoom = new RoomBaseModel("alice_room", mcHome, {
+    name: "Alice room",
+    background: "location_aliceroom",
+    routine: [aliceSleep], // [!code ++]
+});
+
+RegisteredRooms.add([aliceRoom]);
+```
+
+```ts tab="values/routine.ts"
+import { CommitmentBaseModel, RegisteredCommitments } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { NARRATION_ROUTE } from "../constans";
+import { TALK_SLEEP_LABEL_KEY } from "../labels/variousActionsLabelKeys";
+import { alice } from "./characters";
+
+export const aliceSleep = new CommitmentBaseModel("alice_sleep", alice, {
+    priority: 1,
+    timeSlot: {
+        from: 20,
+        to: 10,
+    },
+    onRun: async (_, event) => {
+        await event.navigate(NARRATION_ROUTE);
+        await narration.jump(TALK_SLEEP_LABEL_KEY, event);
+    },
+});
+
+RegisteredCommitments.add([aliceSleep]);
+```
+
+### During the game
+
+You can also link a commitment to a room during the game. This feature is useful if you want to temporarily add a commitment. The list of routine added this way will be included in your game saves.
+
+To link a commitment to a room during the game, you can use the [`addCommitment`](/jsdoc/nqtr/index/classes/RoomBaseModel#addcommitment) method.
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+import { newLabel, showImageContainer } from "@drincs/pixi-vn";
+import { aliceSmokes } from "../routine";
+import { terrace } from "../rooms";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        terrace.addCommitment(aliceSmokes); // [!code focus]
+    },
+]);
+```
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+== start ==
+// {alice_smokes} is the id of the commitment
+# add routine {alice_smokes} in terrace
+```
+
+```ts tab="values/routine.ts"
+import { CommitmentBaseModel, RegisteredCommitments } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { NARRATION_ROUTE } from "../constans";
+import { aliceTalkMenuLabel } from "../labels/variousActionsLabels";
+import { alice } from "./characters";
+
+export const aliceSmokes = new CommitmentBaseModel("alice_smokes", alice, {
+    timeSlot: {
+        from: 10,
+        to: 20,
+    },
+    onRun: async (_, event) => {
+        await event.navigate(NARRATION_ROUTE);
+        await narration.jump(aliceTalkMenuLabel, event);
+    },
+});
+
+RegisteredCommitments.add([aliceSmokes]);
+```
+
+## Unlink
+
+To detach a `commitment` from a `room`, you must first consider how it was linked.
+
+If it was linked during the game initialization, it cannot be removed. However, you can add another `commitment` with the same character at the same time slot, so the character will be occupied with the new `commitment` and therefore will no longer be present in the previous `room`. By default, priority is given to the `commitment` added during gameplay over the one added during initialization, but this behavior can be modified using the `priority` property.
+
+If it was linked during gameplay, it can be removed using the [`removeCommitment`](/jsdoc/nqtr/index/classes/RoomBaseModel#removecommitment) method.
+
+```ts tab="Typescript" title="index.ts" groupId="narrative_language"
+import { aliceSmokes } from "../routine";
+import { routine } from "@drincs/nqtr";
+
+routine.remove(aliceSmokes);
+```
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+// {alice_smokes} is the id of the commitment
+# remove routine {alice_smokes}
+```
+
+```ts tab="values/routine.ts"
+import { CommitmentBaseModel, RegisteredCommitments } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { NARRATION_ROUTE } from "../constans";
+import { aliceTalkMenuLabel } from "../labels/variousActionsLabels";
+import { alice } from "./characters";
+import { terrace } from "./rooms";
+
+const aliceSmokes = new CommitmentBaseModel("alice_smokes", alice, terrace, {
+    timeSlot: {
+        from: 10,
+        to: 20,
+    },
+    onRun: (_, event) => {
+        event.navigate(NARRATION_ROUTE);
+        narration.jump(aliceTalkMenuLabel, event);
+    },
+});
+
+RegisteredCommitments.add([aliceSmokes]);
+```
+
+## Obtenir
+
+To get a `commitment` by its `id`, use the [`RegisteredCommitments.get`](/jsdoc/nqtr/index/namespaces/RegisteredCommitments/functions/get) function.
+
+```ts
+import { RegisteredCommitments } from "@drincs/nqtr";
+
+const aliceWorks = RegisteredCommitments.get("alice_works");
+```
+
+## Get all
+
+To get all `commitments`, use the [`RegisteredCommitments.values`](/jsdoc/nqtr/index/namespaces/RegisteredCommitments/functions/values) function.
+
+```ts
+import { RegisteredCommitments } from "@drincs/nqtr";
+
+const commitments = RegisteredCommitments.values();
+```
+
+## Classe personnalisée
+
+<Callout title="Modèles" type="info">
+
+In all templates, the `Commitment` class is already defined in the file `models/Commitment.ts`. Vous pouvez l'utiliser directement ou la modifier selon vos besoins.
+
+</Callout>
+
+It is recommended to create your own class `Commitment` that extends [`CommitmentStoredClass`](/jsdoc/nqtr/index/classes/CommitmentStoredClass) and "override" the interface [`CommitmentInterface`](/jsdoc/nqtr/index/interfaces/CommitmentInterface) to add, edit, or remove properties or methods.
+
+For example, if you want to create a class `Commitment`, you must "override" the interface [`CommitmentInterface`](/jsdoc/nqtr/index/interfaces/CommitmentInterface) to use your properties or methods. (See the file `nqtr.d.ts`)
+
+Now you can create a class `Commitment` that extends [`CommitmentStoredClass`](/jsdoc/nqtr/index/classes/CommitmentStoredClass) and implements the [`CommitmentInterface`](/jsdoc/nqtr/index/interfaces/CommitmentInterface). (Pour plus d'informations sur la création d'une classe en TypeScript, lisez [la documentation officielle](https://www.typescriptlang.org/docs/handbook/2/classes.html))
+
+To create a property that stores its value in the game storage, you can create [Getters/Setters](https://www.typescriptlang.org/docs/handbook/2/classes.html#getters--setters) and use the `this.getStorageProperty()` / `this.setStorageProperty()` methods. (See the file `Commitment.ts`)
+
+```ts tab="models/Commitment.ts"
+import {
+    ActiveScheduling,
+    CommitmentInterface,
+    CommitmentStoredClass,
+    CommitmentStoredClassProps,
+    OnRunAsyncFunction,
+    OnRunEvent,
+    OnRunProps,
+} from "@drincs/nqtr";
+import { CharacterInterface } from "@drincs/pixi-vn";
+import {
+    PixiUIParam,
+    PixiUIProp,
+    ReactUIParam,
+    ReactUIProp,
+} from "./ui-elements";
+
+export default class Commitment
+    extends CommitmentStoredClass
+    implements CommitmentInterface
+{
+    constructor(
+        id: string,
+        characters: CharacterInterface | CharacterInterface[],
+        props: {
+            name?: string;
+            image?: PixiUIParam<Commitment>;
+            background?: PixiUIParam<Commitment>;
+            icon?: ReactUIParam<Commitment>;
+            onRun?: OnRunEvent<CommitmentInterface>;
+            disabled?: boolean | (() => boolean);
+            hidden?: boolean | (() => boolean);
+        } & CommitmentStoredClassProps,
+    ) {
+        characters = Array.isArray(characters) ? characters : [characters];
+        super(id, characters, props.onRun, props);
+        this.name = props.name || "";
+        this._image = props.image;
+        this._background = props.background;
+        this._icon = props.icon;
+        this._defaultDisabled = props.disabled || false;
+        this._defaultHidden = props.hidden || false;
+    }
+    readonly name: string;
+    private readonly _image?: PixiUIParam<Commitment>;
+    get sprite(): PixiUIProp | undefined {
+        const image = this._image;
+        if (typeof image === "function") {
+            return (runProps: OnRunProps) => image(this, runProps);
+        }
+        return image;
+    }
+    private readonly _background?: PixiUIParam<Commitment>;
+    get background(): PixiUIProp | undefined {
+        const background = this._background;
+        if (typeof background === "function") {
+            return (runProps: OnRunProps) => background(this, runProps);
+        }
+        return background;
+    }
+    private readonly _icon?: ReactUIParam<Commitment>;
+    get icon(): ReactUIProp | undefined {
+        const icon = this._icon;
+        if (typeof icon === "function") {
+            return (runProps: OnRunProps) => icon(this, runProps);
+        }
+        return icon;
+    }
+    private _defaultDisabled: boolean | (() => boolean) = false;
+    get disabled(): boolean {
+        let value =
+            this.getStorageProperty<boolean>("disabled") ||
+            this._defaultDisabled;
+        if (typeof value === "function") {
+            return value();
+        }
+        return value;
+    }
+    set disabled(value: boolean) {
+        this.setStorageProperty("disabled", value);
+    }
+    private _defaultHidden: boolean | (() => boolean) = false;
+    get hidden(): boolean {
+        let value =
+            this.getStorageProperty<boolean>("hidden") || this._defaultHidden;
+        if (typeof value === "function") {
+            return value();
+        }
+        return value;
+    }
+    set hidden(value: boolean) {
+        this.setStorageProperty("hidden", value);
+    }
+    override isActive(options?: ActiveScheduling): boolean {
+        if (this.hidden) {
+            return false;
+        }
+        return super.isActive(options);
+    }
+    override get run(): OnRunAsyncFunction {
+        return async (runProps: OnRunProps) => {
+            const res = await super.run(runProps);
+            await runProps.invalidateInterfaceData();
+            return res;
+        };
+    }
+}
+```
+
+```ts tab="nqtr.d.ts"
+import { ReactElement } from "react";
+import { ContainerChild } from "@drincs/pixi-vn";
+
+declare module "@drincs/nqtr" {
+    interface CommitmentInterface {
+        /**
+         * The name of the commitment.
+         */
+        readonly name: string;
+        /**
+         * The sprite of the commitment.
+         */
+        readonly sprite?: PixiUIProp;
+        /**
+         * The background of the commitment.
+         */
+        readonly background?: PixiUIProp;
+        /**
+         * The React icon of the commitment.
+         */
+        readonly icon?: ReactUIProp;
+        /**
+         * Whether is disabled.
+         */
+        disabled: boolean;
+        /**
+         * Whether is hidden.
+         */
+        hidden: boolean;
+    }
+}
+```
