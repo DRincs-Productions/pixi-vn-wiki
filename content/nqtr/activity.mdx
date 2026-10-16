@@ -155,7 +155,7 @@ RegisteredActivities.add(orderProduct);
 
 ```ts tab="content/rooms.ts"
 import { RegisteredRooms, RoomBaseModel } from "@drincs/nqtr";
-import { mcHome } from "./locations";
+import { mcHome } from "@/content/locations";
 
 export const mcRoom = new RoomBaseModel("mc_room", mcHome, {
     name: "MC room",
@@ -169,21 +169,27 @@ RegisteredRooms.add(mcRoom);
 
 To unlink an activity from a navigation element, you can use the [`removeActivity`](/jsdoc/nqtr/index/classes/RoomBaseModel#removeactivity) method.
 
-```ts tab="Example"
-import { orderProduct } from "../activities";
-import { mcRoom } from "../rooms";
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+import { mcRoom } from "@/content/rooms";
 
-mcRoom.removeActivity(orderProduct);
+mcRoom.removeActivity("order_product");
 ```
 
-```ts tab="Typescript" title="index.ts" groupId="narrative_language"
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+// {order_product} is the id of the activity
+# remove activity {order_product} from mc_room
+```
+
+```ts tab="content/activities.ts"
 import { ActivityBaseModel, RegisteredActivities } from "@drincs/nqtr";
 import { narration } from "@drincs/pixi-vn";
-import { orderProductLabel } from "../labels/variousActionsLabels";
 
 export const orderProduct = new ActivityBaseModel(
     "order_product",
-    async (_, props) => await narration.jump(orderProductLabel, props),
+    async (_, props) => {
+        await props.navigate({ to: "/game/narration" });
+        await narration.jump("order_product", props);
+    },
     {
         name: "order_product",
     },
@@ -192,14 +198,9 @@ export const orderProduct = new ActivityBaseModel(
 RegisteredActivities.add(orderProduct);
 ```
 
-```ink tab="ink" title="index.ink" groupId="narrative_language"
-// {order_product} is the id of the activity
-# remove activity {order_product} from mc_room
-```
-
 ```ts tab="content/rooms.ts"
 import { RegisteredRooms, RoomBaseModel } from "@drincs/nqtr";
-import { mcHome } from "./locations";
+import { mcHome } from "@/content/locations";
 
 export const mcRoom = new RoomBaseModel("mc_room", mcHome, {
     name: "MC room",
