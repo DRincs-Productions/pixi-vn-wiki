@@ -213,14 +213,16 @@ To create a property that stores its value in the game storage, you can create [
 
 ```ts tab="models/Room.ts"
 import {
-    ActivityInterface,
-    CommitmentInterface,
-    LocationInterface,
-    OnRunProps,
-    RoomInterface,
+    type ActivityIdType,
+    type ActivityInterface,
+    type CommitmentIdType,
+    type CommitmentInterface,
+    type LocationInterface,
+    type OnRunProps,
+    type RoomInterface,
     RoomStoredClass,
 } from "@drincs/nqtr";
-import { PixiUIParam, PixiUIProp } from "@/models/ui-elements";
+import type { PixiUIParam, PixiUIProp } from "./ui-elements";
 
 export default class Room extends RoomStoredClass implements RoomInterface {
     constructor(
@@ -231,8 +233,8 @@ export default class Room extends RoomStoredClass implements RoomInterface {
             disabled?: boolean | (() => boolean);
             hidden?: boolean | (() => boolean);
             background: PixiUIParam<Room>;
-            activities?: ActivityInterface[];
-            routine?: CommitmentInterface[];
+            activities?: (ActivityInterface | ActivityIdType)[];
+            routine?: (CommitmentInterface | CommitmentIdType)[];
             isEntrance?: boolean;
         },
     ) {
@@ -258,9 +260,7 @@ export default class Room extends RoomStoredClass implements RoomInterface {
     readonly isEntrance: boolean;
     private _defaultDisabled: boolean | (() => boolean) = false;
     get disabled(): boolean {
-        let value =
-            this.getStorageProperty<boolean>("disabled") ||
-            this._defaultDisabled;
+        const value = this.getStorageProperty<boolean>("disabled") || this._defaultDisabled;
         if (typeof value === "function") {
             return value();
         }
@@ -271,8 +271,7 @@ export default class Room extends RoomStoredClass implements RoomInterface {
     }
     private _defaultHidden: boolean | (() => boolean) = false;
     get hidden(): boolean {
-        let value =
-            this.getStorageProperty<boolean>("hidden") || this._defaultHidden;
+        const value = this.getStorageProperty<boolean>("hidden") || this._defaultHidden;
         if (typeof value === "function") {
             return value();
         }
@@ -286,19 +285,16 @@ export default class Room extends RoomStoredClass implements RoomInterface {
 
 ```ts tab="models/Location.ts"
 import {
-    ActivityInterface,
-    LocationInterface,
+    type ActivityInterface,
+    type LocationInterface,
     LocationStoredClass,
-    MapInterface,
-    OnRunProps,
-    RoomInterface,
+    type MapInterface,
+    type OnRunProps,
+    type RoomInterface,
 } from "@drincs/nqtr";
-import { PixiUIParam, PixiUIProp } from "@/models/ui-elements";
+import type { PixiUIParam, PixiUIProp } from "./ui-elements";
 
-export default class Location
-    extends LocationStoredClass
-    implements LocationInterface
-{
+export default class Location extends LocationStoredClass implements LocationInterface {
     constructor(
         id: string,
         map: MapInterface,
@@ -319,7 +315,7 @@ export default class Location
     readonly name: string;
     private readonly _sprite: PixiUIParam<Location>;
     get sprite(): PixiUIProp {
-        let sprite = this._sprite;
+        const sprite = this._sprite;
         if (typeof sprite === "function") {
             return (runProps: OnRunProps) => sprite(this, runProps);
         }
@@ -327,9 +323,7 @@ export default class Location
     }
     private _defaultDisabled: boolean | (() => boolean) = false;
     get disabled(): boolean {
-        let value =
-            this.getStorageProperty<boolean>("disabled") ||
-            this._defaultDisabled;
+        const value = this.getStorageProperty<boolean>("disabled") || this._defaultDisabled;
         if (typeof value === "function") {
             return value();
         }
@@ -340,8 +334,7 @@ export default class Location
     }
     private _defaultHidden: boolean | (() => boolean) = false;
     get hidden(): boolean {
-        let value =
-            this.getStorageProperty<boolean>("hidden") || this._defaultHidden;
+        const value = this.getStorageProperty<boolean>("hidden") || this._defaultHidden;
         if (typeof value === "function") {
             return value();
         }
@@ -363,22 +356,22 @@ export default class Location
 ```
 
 ```ts tab="models/Map.ts"
+import type { PixiUIParam, PixiUIProp } from "@/models/ui-elements";
 import {
-    ActivityInterface,
-    LocationInterface,
-    MapInterface,
+    type ActivityInterface,
+    type LocationInterface,
+    type MapInterface,
     MapStoredClass,
-    OnRunProps,
+    type OnRunProps,
 } from "@drincs/nqtr";
-import { PixiUIParam, PixiUIProp } from "@/models/ui-elements";
 
-export default class Map extends MapStoredClass implements MapInterface {
+export default class MapClass extends MapStoredClass implements MapInterface {
     constructor(
         id: string,
         props: {
             activities?: ActivityInterface[];
             name: string;
-            background: PixiUIParam<Map>;
+            background: PixiUIParam<MapClass>;
         },
     ) {
         super(id, props.activities);
@@ -386,7 +379,7 @@ export default class Map extends MapStoredClass implements MapInterface {
         this._background = props.background;
     }
     readonly name: string;
-    private readonly _background: PixiUIParam<Map>;
+    private readonly _background: PixiUIParam<MapClass>;
     get background(): PixiUIProp {
         const background = this._background;
         if (typeof background === "function") {
@@ -401,19 +394,16 @@ export default class Map extends MapStoredClass implements MapInterface {
 ```
 
 ```ts tab="nqtr.d.ts"
-import { PixiUIProp } from "@/models/ui-elements";
+import type { StepLabelProps } from "@drincs/pixi-vn";
+import type { PixiUIProp, ReactUIProp } from "./models/ui-elements";
 
 declare module "@drincs/nqtr" {
-    interface RoomInterface {
+    interface OnRunProps extends StepLabelProps {}
+    interface ActivityInterface {
         /**
-         * The name.
-         * If you set undefined, it will return the initial value of name.
+         * The name of the activity.
          */
         readonly name: string;
-        /**
-         * The background of the room.
-         */
-        readonly background: PixiUIProp;
         /**
          * Whether is disabled.
          */
@@ -423,9 +413,39 @@ declare module "@drincs/nqtr" {
          */
         hidden: boolean;
         /**
-         * If is the entrance of the location. (the first room)
+         * The sprite of the activity.
          */
-        readonly isEntrance: boolean;
+        readonly sprite?: PixiUIProp;
+        /**
+         * The React icon of the activity.
+         */
+        readonly icon?: ReactUIProp;
+    }
+    interface CommitmentInterface {
+        /**
+         * The name of the commitment.
+         */
+        readonly name: string;
+        /**
+         * The sprite of the commitment.
+         */
+        readonly sprite?: PixiUIProp;
+        /**
+         * The background of the commitment.
+         */
+        readonly background?: PixiUIProp;
+        /**
+         * The React icon of the commitment.
+         */
+        readonly icon?: ReactUIProp;
+        /**
+         * Whether is disabled.
+         */
+        disabled: boolean;
+        /**
+         * Whether is hidden.
+         */
+        hidden: boolean;
     }
     interface LocationInterface {
         /**
