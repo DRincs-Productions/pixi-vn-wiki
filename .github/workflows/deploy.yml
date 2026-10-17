@@ -41,13 +41,13 @@ jobs:
         git merge origin/l10n_main --no-edit --allow-unrelated-histories -X ours
     - name: Sync redirects to firebase.json and vercel.json
       run: node scripts/sync-redirects.js
-    - name: npm install and build
+    - name: npm ci and build
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         CROWDIN_TOKEN: ${{ secrets.CROWDIN_TOKEN }}
         CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
       run: |
-        npm install
+        npm ci
         node scripts/fetch-schemas.js
         NODE_OPTIONS=--max-old-space-size=6096 npm run build && npm run export
     - name: Upload build artifact
@@ -199,8 +199,8 @@ jobs:
 
   update-cloudflare-dns:
 
-    needs: [deploy-firebase, deploy-vercel, deploy-netlify, deploy-cloudflare]
-    if: always()
+    needs: [build, deploy-firebase, deploy-vercel, deploy-netlify, deploy-cloudflare]
+    if: always() && needs.build.result == 'success'
     runs-on: ubuntu-latest
 
     steps:
