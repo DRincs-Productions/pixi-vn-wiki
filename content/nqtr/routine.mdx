@@ -142,10 +142,9 @@ If it was linked during the game initialization, it cannot be removed. However, 
 If it was linked during gameplay, it can be removed using the [`room.removeCommitment`](/jsdoc/nqtr/index/classes/RoomBaseModel#removecommitment) method.
 
 ```ts tab="Typescript" title="index.ts" groupId="narrative_language"
-import { aliceSmokes } from "../routine";
 import { routine } from "@drincs/nqtr";
 
-routine.remove(aliceSmokes);
+routine.remove("alice_smokes");
 ```
 
 ```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
@@ -154,25 +153,21 @@ routine.remove(aliceSmokes);
 ```
 
 ```ts tab="content/routine.ts"
-import { CommitmentBaseModel, RegisteredCommitments } from "@drincs/nqtr";
+import { RegisteredCommitments, CommitmentBaseModel } from "@drincs/nqtr";
 import { narration } from "@drincs/pixi-vn";
-import { NARRATION_ROUTE } from "../constans";
-import { aliceTalkMenuLabel } from "../labels/variousActionsLabels";
-import { alice } from "./characters";
-import { terrace } from "./rooms";
 
-const aliceSmokes = new CommitmentBaseModel("alice_smokes", alice, terrace, {
+export const aliceSmokes = new CommitmentBaseModel("alice_smokes", "alice", {
     timeSlot: {
         from: 10,
         to: 20,
     },
-    onRun: (_, event) => {
-        event.navigate(NARRATION_ROUTE);
-        narration.jump(aliceTalkMenuLabel, event);
+    onRun: async (_, props) => {
+        await props.navigate({ to: "/game/narration" });
+        await narration.jump("alice_talk_menu", props);
     },
 });
 
-RegisteredCommitments.add([aliceSmokes]);
+RegisteredCommitments.add(aliceSmokes);
 ```
 
 ## Get
@@ -197,11 +192,11 @@ const commitments = RegisteredCommitments.values();
 
 ## Custom class
 
-<Callout title="Templates" type="info">
+:::tip[Templates]
 
 In all templates, the `Commitment` class is already defined in the file `models/Commitment.ts`. You can use it directly or modify it to suit your needs.
 
-</Callout>
+:::
 
 It is recommended to create your own class `Commitment` that extends [`CommitmentStoredClass`](/jsdoc/nqtr/index/classes/CommitmentStoredClass) and "override" the interface [`CommitmentInterface`](/jsdoc/nqtr/index/interfaces/CommitmentInterface) to add, edit, or remove properties or methods.
 
