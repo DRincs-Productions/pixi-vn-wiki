@@ -60,40 +60,36 @@ There are two ways to do this:
 
 For a `commitment` to be available to the player, it must be linked to a `room`.
 
-```ts tab="values/rooms.ts"
+```ts tab="content/rooms.ts"
 import { RegisteredRooms, RoomBaseModel } from "@drincs/nqtr";
-import { mcHome } from "./locations";
-import { aliceSleep } from "./routine";
+import { mcHome } from "@/content/locations";
 
 export const aliceRoom = new RoomBaseModel("alice_room", mcHome, {
     name: "Alice room",
-    background: "location_aliceroom",
-    routine: [aliceSleep], // [!code ++]
+    image: "location_aliceroom",
+    routine: ["alice_sleep"], // [!code ++]
 });
 
-RegisteredRooms.add([aliceRoom]);
+RegisteredRooms.add(aliceRoom);
 ```
 
 ```ts tab="content/routine.ts"
-import { CommitmentBaseModel, RegisteredCommitments } from "@drincs/nqtr";
+import { RegisteredCommitments, CommitmentBaseModel } from "@drincs/nqtr";
 import { narration } from "@drincs/pixi-vn";
-import { NARRATION_ROUTE } from "../constans";
-import { TALK_SLEEP_LABEL_KEY } from "../labels/variousActionsLabelKeys";
-import { alice } from "./characters";
 
-export const aliceSleep = new CommitmentBaseModel("alice_sleep", alice, {
+export const aliceSleep = new CommitmentBaseModel("alice_sleep", "alice", {
     priority: 1,
     timeSlot: {
         from: 20,
         to: 10,
     },
-    onRun: async (_, event) => {
-        await event.navigate(NARRATION_ROUTE);
-        await narration.jump(TALK_SLEEP_LABEL_KEY, event);
+    onRun: async (_, props) => {
+        await props.navigate({ to: "/game/narration" });
+        await narration.jump("talk_alice_sleep", props);
     },
 });
 
-RegisteredCommitments.add([aliceSleep]);
+RegisteredCommitments.add(aliceSleep);
 ```
 
 ### During the game
