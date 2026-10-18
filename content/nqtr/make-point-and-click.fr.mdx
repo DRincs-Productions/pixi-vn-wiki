@@ -2,18 +2,30 @@
 title: Make your first Point & Click Adventure
 ---
 
-<Callout type="warn">
+:::warning
 
 Before continuing, it is important to consider that this page assumes the concepts explained in <DynamicLink href="/start/make-visual-novel">"Make your first Visual Novel"</DynamicLink>, and that all the features explained on that page can also be applied here. Additionally, having an intermediate knowledge of JS/TS (such as functions, classes, interfaces, and the use of `.d.ts` files) is essential.
 Do not continue if you do not have this knowledge.
 
-</Callout>
+:::
 
 This tutorial will guide you through the process of creating your first Point & Click Adventure.
 
-**What is a Point & Click Adventure?** A Point & Click Adventure is a story-driven game genre in which the player interacts with the environment and objects through mouse pointing and clicking. These games often feature puzzles, dialogues, and an engaging narrative.
+<Accordions>
 
-**How to implement it in a Pixi’VN project?** The Pixi’VN environment provides a utility library and base models, called `NQTR` (Navigation Quest Time Routine), which allow you to easily implement a navigation system, time management, and quests. The way NQTR works is based on creating class instances that comply with specific interfaces, which will be registered and provided by the NQTR utilities. In this way, it is possible to create a UI tailored to the game's needs. Alternatively, you can use the base models provided by NQTR and the UI included in the "Point & Click Adventure - React" template to create a complete game in a short time.
+<Accordion title="What is a Point & Click Adventure?" id="what-is-a-point-and-click-adventure">
+
+A Point & Click Adventure is a story-driven game genre in which the player interacts with the environment and objects through mouse pointing and clicking. These games often feature puzzles, dialogues, and an engaging narrative.
+
+</Accordion>
+
+<Accordion title="How to implement it in a Pixi’VN project?" id="how-to-implement-it-in-a-pixi-vn-project">
+
+The Pixi’VN environment provides a utility library and base models, called `NQTR` (Navigation Quest Time Routine), which allow you to easily implement a navigation system, time management, and quests. The way NQTR works is based on creating class instances that comply with specific interfaces, which will be registered and provided by the NQTR utilities. In this way, it is possible to create a UI tailored to the game's needs. Alternatively, you can use the base models provided by NQTR and the UI included in the "Point & Click Adventure - React" template to create a complete game in a short time.
+
+</Accordion>
+
+</Accordions>
 
 Additionally, it is very important to consider that elements can trigger `labels` (narratives), allowing you to switch to the narrative interface and back.
 
@@ -38,10 +50,16 @@ The main feature of a Point & Click Adventure is the ability to interact with th
 
 In the template we are using, when creating the elements that we will see later, there is the possibility to define graphical elements (such as an icon). These graphical elements can be defined using different types; based on this, the system will add the graphical element to the <DynamicLink href="/start/interface-pixijs">PixiJS UI</DynamicLink> or to the <DynamicLink href="/start/interface-react">React</DynamicLink> UI. In this way, it is possible to create clickable elements in a simple and fast way.
 
+<Accordions>
+
+<Accordion title="Asset alias" id="asset-alias">
+
 Usually, it is possible to define a graphical element as a string representing the asset alias. The template also provides the possibility to use the <DynamicLink href="/nqtr/time#image-time-period">`TimeSlotsImage`</DynamicLink> class, which allows you to define a different image depending on the time of day.
 
-```ts
-export const nightcityMap = new Map("nightcity_map", {
+```tsx title="content/maps.tsx"
+import MapClass from "@/models/Map";
+
+export const nightcityMap = new MapClass("nightcity_map", {
     name: "Nightcity",
     background: "map-nightcity", // [!code focus]
     neighboringMaps: {
@@ -50,72 +68,63 @@ export const nightcityMap = new Map("nightcity_map", {
 });
 ```
 
+</Accordion>
+
+<Accordion title="React element" id="react-element">
+
 Usually, it is possible to define a graphical element as a React element.
 
-```tsx
+```tsx title="content/activities.tsx"
+import { ActivityBaseButton } from "@/components/screens/navigation/activity-buttons";
+import Activity from "@/models/Activity";
+import { timeTracker } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { Bed } from "lucide-react";
+
 export const bed = new Activity(
     "bed",
     async (_, props) => {
-        await props.navigate(NARRATION_ROUTE);
+        await props.navigate({ to: "/game/narration" });
         if (timeTracker.nowIsBetween(5, 22)) {
-            await narration.jump(napLabel, props);
+            await narration.jump("nap", props);
         } else {
-            await narration.jump(sleepLabel, props);
+            await narration.jump("sleep", props);
         }
     },
     {
         name: "bed",
-        icon: (activity, props) => {
-            // [!code focus]
-            return (
-                // [!code focus]
-                <NqtrRoundIconButton // [!code focus]
+        icon: (activity, props) => { // [!code focus]
+            return ( // [!code focus]
+                <ActivityBaseButton // [!code focus]
                     disabled={activity.disabled} // [!code focus]
-                    onClick={() => {
-                        // [!code focus]
-                        activity.run(props).then(() => {
-                            // [!code focus]
-                            props.invalidateInterfaceData(); // [!code focus]
-                        }); // [!code focus]
-                    }} // [!code focus]
+                    onClick={() => activity.run(props)} // [!code focus]
                     ariaLabel={props.uiTransition(activity.name)} // [!code focus]
-                    variant="solid" // [!code focus]
-                    color="primary" // [!code focus]
-                >
-                    {" "}
-                    {/* [!code focus] */}
-                    <BedIcon // [!code focus]
-                        sx={{
-                            // [!code focus]
-                            fontSize: {
-                                sx: "1.5rem",
-                                sm: "2rem",
-                                md: "2.5rem",
-                                lg: "3rem",
-                                xl: "3.5rem",
-                            }, // [!code focus]
-                        }} // [!code focus]
-                    />{" "}
-                    {/* [!code focus] */}
-                </NqtrRoundIconButton> // [!code focus]
+                > {/* [!code focus] */}
+                    <Bed className="size-6 sm:size-8 md:size-10 lg:size-12 xl:size-14" /> {/* [!code focus] */}
+                </ActivityBaseButton> {/* [!code focus] */}
             ); // [!code focus]
         }, // [!code focus]
     },
 );
 ```
 
+</Accordion>
+
+<Accordion title="PixiJS element" id="pixijs-element">
+
 Additionally, when the `sprite` property is available, it is possible to define a graphical element as a PixiJS element.
 
-```ts
-import { Assets, Sprite, Texture } from "@drincs/pixi-vn/pixi.js";
+```tsx title="content/locations.tsx"
+import { mainMap } from "@/content/maps";
+import Location from "@/models/Location";
+import { navigator } from "@drincs/nqtr";
+import { Assets, Sprite, type Texture } from "@drincs/pixi-vn/pixi.js";
 
 export const mcHome = new Location("mc_home", mainMap, {
     name: "MC Home",
-    sprite: async (location, { navigate }) => {
-        // [!code focus]
+    sprite: async (location, { navigate }) => { // [!code focus]
         const texture = await Assets.load<Texture>("icon_location_home"); // [!code focus]
-        const icon = new Sprite({
-            // [!code focus]
+        const icon = new Sprite({ // [!code focus]
             texture, // [!code focus]
             x: 300, // [!code focus]
             y: 200, // [!code focus]
@@ -124,13 +133,11 @@ export const mcHome = new Location("mc_home", mainMap, {
             eventMode: "static", // [!code focus]
             cursor: "pointer", // [!code focus]
         }); // [!code focus]
-        icon.on("pointerdown", () => {
-            // [!code focus]
+        icon.on("pointerdown", () => { // [!code focus]
             const entrance = location.entrance; // [!code focus]
-            if (entrance) {
-                // [!code focus]
+            if (entrance) { // [!code focus]
                 navigator.currentRoom = entrance; // [!code focus]
-                navigate(NAVIGATION_ROUTE); // [!code focus]
+                navigate({ to: "/game/navigation" }); // [!code focus]
             } // [!code focus]
         }); // [!code focus]
         return icon; // [!code focus]
@@ -138,51 +145,59 @@ export const mcHome = new Location("mc_home", mainMap, {
 });
 ```
 
+</Accordion>
+
+</Accordions>
+
 ## Navigation and map
 
-<Callout type="info">
+:::tip
 
 You can find more detailed documentation about these elements <DynamicLink href="/nqtr/navigation">here</DynamicLink>.
 
-</Callout>
+:::
 
 The first step to create a Point & Click Adventure is to create the navigation elements. These elements allow the player to move within the game and interact with the environment.
 
 The navigation system is composed of the following elements:
 
-* `rooms`: The core elements of navigation, from which the position of the `mc` and `npc` is deduced.
-* `locations`: A container of `rooms`.
-* `maps`: A container of `locations`.
+| Element     | Description                                                                                |
+| ----------- | ------------------------------------------------------------------------------------------ |
+| `rooms`     | The core elements of navigation, from which the position of the `mc` and `npc` is deduced. |
+| `locations` | A container of `rooms`.                                                                    |
+| `maps`      | A container of `locations`.                                                                |
 
 Par exemple :
 
-```ts title="values/rooms.ts"
-import { RegisteredRooms } from "@drincs/nqtr";
-import TimeSlotsImage from "../models/TimeSlotsImage";
-import Room from "../models/nqtr/Room";
-import { bed } from "./activities";
-import { mcHome } from "./locations";
+```tsx title="content/rooms.tsx"
+import { mcHome } from "@/content/locations";
+import Room from "@/models/Room";
+import TimeSlotsImage from "@/models/TimeSlotsImage";
+import { navigator, RegisteredRooms } from "@drincs/nqtr";
 
+export const mcRoomBackground = new TimeSlotsImage({
+    morning: "location_myroom-0",
+    afternoon: "location_myroom-1",
+    evening: "location_myroom-2",
+    night: "location_myroom-3",
+});
 export const mcRoom = new Room("mc_room", mcHome, {
     name: "MC room",
-    background: new TimeSlotsImage({
-        morning: "location_myroom-0",
-        afternoon: "location_myroom-1",
-        evening: "location_myroom-2",
-        night: "location_myroom-3",
-    }),
-    activities: [bed],
+    background: mcRoomBackground,
+    activities: ["bed"],
 });
 
-RegisteredRooms.add([mcRoom]);
+RegisteredRooms.add(mcRoom);
+
+// default room to prevent errors when accessing navigator.currentRoom before any room is loaded.
+navigator.currentRoom = mcRoom;
 ```
 
-```ts title="values/locations.ts"
+```tsx title="content/locations.tsx"
+import { mainMap } from "@/content/maps";
+import Location from "@/models/Location";
 import { navigator, RegisteredLocations } from "@drincs/nqtr";
-import { Assets, Sprite, Texture } from "@drincs/pixi-vn/pixi.js";
-import { NAVIGATION_ROUTE } from "../constans";
-import Location from "../models/nqtr/Location";
-import { mainMap } from "./maps";
+import { Assets, Sprite, type Texture } from "@drincs/pixi-vn/pixi.js";
 
 export const mcHome = new Location("mc_home", mainMap, {
     name: "MC Home",
@@ -201,22 +216,22 @@ export const mcHome = new Location("mc_home", mainMap, {
             const entrance = location.entrance;
             if (entrance) {
                 navigator.currentRoom = entrance;
-                navigate(NAVIGATION_ROUTE);
+                navigate({ to: "/game/navigation" });
             }
         });
         return icon;
     },
 });
 
-RegisteredLocations.add([mcHome]);
+RegisteredLocations.add(mcHome);
 ```
 
-```ts title="values/maps.ts"
+```ts title="content/maps.ts"
 import { RegisteredMaps } from "@drincs/nqtr";
 import TimeSlotsImage from "../models/TimeSlotsImage";
-import Map from "../models/nqtr/Map";
+import Map from "../models/Map";
 
-export const mainMap = new Map("main_map", {
+export const mainMap = new MapClass("main_map", {
     name: "Main Map",
     background: new TimeSlotsImage({
         morning: "map-0",
@@ -236,11 +251,11 @@ Now, before you can use the navigation utilities, you need to set the current ro
 
 Additionally, it is important to keep in mind that the current `location` and `map` are deduced from the current `room`, so it is sufficient to set the `room` to obtain all the necessary information for navigation.
 
-<Callout type="info">
+:::tip
 
 You can find more detailed documentation on how to navigate between UI screens <DynamicLink href="/start/interface-navigate">here</DynamicLink>.
 
-</Callout>
+:::
 
 Par exemple :
 
@@ -259,7 +274,7 @@ import { navigator } from "@drincs/nqtr";
 import { narration, newLabel } from "@drincs/pixi-vn";
 import { mcRoom } from "../values/rooms";
 
-const startLabel = newLabel("start", [
+export const startLabel = newLabel("start", [
     async (props) => {
         await props.navigate("/narration");
         narration.dialogue = "Hello, welcome to the my first game!";
@@ -269,16 +284,15 @@ const startLabel = newLabel("start", [
         await props.navigate("/navigation");
     },
 ]);
-export default startLabel;
 ```
 
 ## Time system
 
-<Callout type="info">
+:::tip
 
 You can find more detailed documentation about these elements <DynamicLink href="/nqtr/time">here</DynamicLink>.
 
-</Callout>
+:::
 
 Now let's move on to another fundamental element: the time management system. The time management system is a key component in a Point & Click Adventure, as it allows you to create a dynamic and realistic world where the player's actions can have different consequences depending on the time of day.
 
@@ -340,7 +354,7 @@ export const timeSlots = {
 
 The main functionality of the time management system is the ability to advance time based on the player's actions.
 
-```ink tab="ink" title="index.ink" groupId="narrative_language"
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
 // {timeValue} is a number representing the amount of time to increment
 // {dateValue} is a number representing the amount of days to increment
 # wait {timeValue} // Increment time by {value}
@@ -358,24 +372,24 @@ timeTracker.increaseDate(1, 8); // Increment date by 1 and set time to 8
 
 ## Activity
 
-<Callout type="info">
+:::tip
 
 You can find more detailed documentation about these elements <DynamicLink href="/nqtr/activity">here</DynamicLink>.
 
-</Callout>
+:::
 
 A fundamental element in Point & Click Adventures is interactive elements, which allow the player to interact with the environment and progress the story. In NQTR, these elements are represented by `activity`. `activity` are elements that can be executed by the player and can have different consequences depending on the context in which they are performed.
 
 Par exemple :
 
-```ts tab="values/activities.tsx"
+```ts tab="content/activities.tsx"
 import { RegisteredActivities, timeTracker } from "@drincs/nqtr";
 import { narration } from "@drincs/pixi-vn";
 import BedIcon from "@mui/icons-material/Bed";
 import NqtrRoundIconButton from "../components/NqtrRoundIconButton";
 import { NARRATION_ROUTE } from "../constans";
 import { napLabel, sleepLabel } from "../labels/sleepNapLabels";
-import Activity from "../models/nqtr/Activity";
+import Activity from "../models/Activity";
 
 export const bed = new Activity(
     "bed",
@@ -416,11 +430,11 @@ export const bed = new Activity(
 RegisteredActivities.add([bed]);
 ```
 
-<Callout type="info">
+:::tip
 
 Activities are connected to rooms in a many-to-many relationship, meaning that an activity can be present in multiple rooms and a room can contain multiple activities.
 
-</Callout>
+:::
 
 To use them, you must link them to a `room` [through the `activities` property](#navigation-and-map). This way, when the player is in that room, they will be able to see the activity and interact with it.
 
@@ -438,21 +452,20 @@ import { newLabel, showImageContainer } from "@drincs/pixi-vn";
 import { bed } from "../activities";
 import { mcRoom } from "../rooms";
 
-const startLabel = newLabel("start", [
+export const startLabel = newLabel("start", [
     async () => {
         mcRoom.addActivity(bed); // [!code focus]
     },
 ]);
-export default startLabel;
 ```
 
 ## Routine
 
-<Callout type="info">
+:::tip
 
 You can find more detailed documentation about these elements <DynamicLink href="/nqtr/routine">here</DynamicLink>.
 
-</Callout>
+:::
 
 `Routine` refers to the set of elements that make up the daily routine of non-player characters (NPC).
 
@@ -460,14 +473,14 @@ The routine is composed of `commitment`, which represent a character’s obligat
 
 Par exemple :
 
-```ts tab="values/routine.tsx"
+```ts tab="content/routine.tsx"
 import { RegisteredCommitments } from "@drincs/nqtr";
 import { narration } from "@drincs/pixi-vn";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import NqtrRoundIconButton from "../components/NqtrRoundIconButton";
 import { NARRATION_ROUTE } from "../constans";
 import { TALK_SLEEP_LABEL_KEY } from "../labels/variousActionsLabelKeys";
-import Commitment from "../models/nqtr/Commitment";
+import Commitment from "../models/Commitment";
 import { alice } from "./characters";
 
 export const aliceSleep = new Commitment("alice_sleep", alice, {
@@ -507,11 +520,11 @@ export const aliceSleep = new Commitment("alice_sleep", alice, {
 RegisteredCommitments.add([aliceSleep]);
 ```
 
-<Callout type="info">
+:::tip
 
 Commitments are linked to rooms in a one-to-many relationship, meaning that a room can have multiple commitments, but a commitment is present in only one room (a character cannot be in multiple rooms at the same time).
 
-</Callout>
+:::
 
 To use them, you need to link them to a `room` [through the `commitments` property](#navigation-and-map). This will also set the NPC positions, as the position of a commitment is deduced from the room it is linked to. When the player is in that room, they will see the active commitments and be able to interact with them.
 
@@ -529,35 +542,34 @@ import { newLabel } from "@drincs/pixi-vn";
 import { aliceSleep } from "../routine";
 import { aliceRoom } from "../rooms";
 
-const startLabel = newLabel("start", [
+export const startLabel = newLabel("start", [
     async () => {
         aliceRoom.addCommitment(aliceSleep); // [!code focus]
     },
 ]);
-export default startLabel;
 ```
 
 ## Quests
 
-<Callout type="info">
+:::tip
 
 You can find more detailed documentation about these elements <DynamicLink href="/nqtr/quest">here</DynamicLink>.
 
-</Callout>
+:::
 
 `Quest` represent an objective or a series of objectives that the player can complete during the game. Quests are composed of `stage`, which represent the different phases of a quest. Each stage has a specific objective and can be completed in different ways depending on the player's choices.
 
 Par exemple :
 
-```ts tab="values/quests/aliceQuest.tsx"
+```ts tab="content/quests/aliceQuest.tsx"
 import { RegisteredCommitments, RegisteredQuests, routine } from "@drincs/nqtr";
 import { narration } from "@drincs/pixi-vn";
 import { NARRATION_ROUTE } from "../../constans";
 import { TALK_ALICE_QUEST_KEY } from "../../labels/variousActionsLabelKeys";
 import TimeSlotsImage from "../../models/TimeSlotsImage";
-import Commitment from "../../models/nqtr/Commitment";
-import Quest from "../../models/nqtr/Quest";
-import Stage from "../../models/nqtr/Stage";
+import Commitment from "../../models/Commitment";
+import Quest from "../../models/Quest";
+import Stage from "../../models/Stage";
 import { orderProduct, takeProduct } from "../activities";
 import { alice } from "../characters";
 import { mcRoom, terrace } from "../rooms";
@@ -646,14 +658,13 @@ Par exemple :
 
 ```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
 import { newLabel } from "@drincs/pixi-vn";
-import { aliceQuest } from "../values/quests";
+import { aliceQuest } from "@/content/quests/alice.quest";
 
-const startLabel = newLabel("start", [
+export const startLabel = newLabel("start", [
     async (props) => {
         await aliceQuest.start(props); // [!code focus]
     },
 ]);
-export default startLabel;
 ```
 
 To continue a quest that has already been started, you need to call the `continue` function on the quest itself. This will complete the current stage of the quest and move on to the next one.
@@ -667,23 +678,22 @@ Par exemple :
 
 ```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
 import { newLabel } from "@drincs/pixi-vn";
-import { aliceQuest } from "../values/quests";
+import { aliceQuest } from "@/content/quests/alice.quest";
 
-const startLabel = newLabel("start", [
+export const startLabel = newLabel("start", [
     async (props) => {
         await aliceQuest.continue(props); // [!code focus]
     },
 ]);
-export default startLabel;
 ```
 
 During gameplay or narrative sequences, it is very useful to perform checks on the state of a quest, such as verifying whether a quest has been completed or if a specific stage has been reached. To do this, you can use various query functions available in the `Quest` class, such as `completed` or `failed`.
 
-<Callout type="info">
+:::tip
 
 You can find a complete list of query functions in the `Quest` class documentation <DynamicLink href="/nqrt/quest#queries">here</DynamicLink>.
 
-</Callout>
+:::
 
 Par exemple :
 
@@ -724,7 +734,7 @@ alice: Thank you, I can finally read something new.
 
 ```ts tab="Typescript" title="labels/variousActionsLabels.ts" groupId="narrative_language"
 import { newLabel } from "@drincs/pixi-vn";
-import { aliceQuest } from "../values/quests";
+import { aliceQuest } from "@/content/quests/alice.quest";
 
 export const talkAliceQuest = newLabel(
     TALK_ALICE_QUEST_KEY,
