@@ -141,28 +141,31 @@ The navigation system is composed of the following elements:
 
 For example:
 
-```ts title="values/rooms.ts"
-import { RegisteredRooms } from "@drincs/nqtr";
-import TimeSlotsImage from "../models/TimeSlotsImage";
-import Room from "../models/Room";
-import { bed } from "./activities";
-import { mcHome } from "./locations";
+```tsx title="content/rooms.tsx"
+import { mcHome } from "@/content/locations";
+import Room from "@/models/Room";
+import TimeSlotsImage from "@/models/TimeSlotsImage";
+import { navigator, RegisteredRooms } from "@drincs/nqtr";
 
+export const mcRoomBackground = new TimeSlotsImage({
+    morning: "location_myroom-0",
+    afternoon: "location_myroom-1",
+    evening: "location_myroom-2",
+    night: "location_myroom-3",
+});
 export const mcRoom = new Room("mc_room", mcHome, {
     name: "MC room",
-    background: new TimeSlotsImage({
-        morning: "location_myroom-0",
-        afternoon: "location_myroom-1",
-        evening: "location_myroom-2",
-        night: "location_myroom-3",
-    }),
-    activities: [bed],
+    background: mcRoomBackground,
+    activities: ["bed"],
 });
 
-RegisteredRooms.add([mcRoom]);
+RegisteredRooms.add(mcRoom);
+
+// default room to prevent errors when accessing navigator.currentRoom before any room is loaded.
+navigator.currentRoom = mcRoom;
 ```
 
-```ts title="values/locations.ts"
+```ts title="content/locations.ts"
 import { navigator, RegisteredLocations } from "@drincs/nqtr";
 import { Assets, Sprite, Texture } from "@drincs/pixi-vn/pixi.js";
 import { NAVIGATION_ROUTE } from "../constans";
@@ -196,7 +199,7 @@ export const mcHome = new Location("mc_home", mainMap, {
 RegisteredLocations.add([mcHome]);
 ```
 
-```ts title="values/maps.ts"
+```ts title="content/maps.ts"
 import { RegisteredMaps } from "@drincs/nqtr";
 import TimeSlotsImage from "../models/TimeSlotsImage";
 import Map from "../models/Map";
@@ -443,7 +446,7 @@ The routine is composed of `commitment`, which represent a character’s obligat
 
 For example:
 
-```ts tab="values/routine.tsx"
+```ts tab="content/routine.tsx"
 import { RegisteredCommitments } from "@drincs/nqtr";
 import { narration } from "@drincs/pixi-vn";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
@@ -531,7 +534,7 @@ You can find more detailed documentation about these elements <DynamicLink href=
 
 For example:
 
-```ts tab="values/quests/aliceQuest.tsx"
+```ts tab="content/quests/aliceQuest.tsx"
 import { RegisteredCommitments, RegisteredQuests, routine } from "@drincs/nqtr";
 import { narration } from "@drincs/pixi-vn";
 import { NARRATION_ROUTE } from "../../constans";
