@@ -41,7 +41,9 @@ In the template we are using, when creating the elements that we will see later,
 Usually, it is possible to define a graphical element as a string representing the asset alias. The template also provides the possibility to use the <DynamicLink href="/nqtr/time#image-time-period">`TimeSlotsImage`</DynamicLink> class, which allows you to define a different image depending on the time of day.
 
 ```tsx title="content/maps.tsx"
-export const nightcityMap = new Map("nightcity_map", {
+import MapClass from "@/models/Map";
+
+export const nightcityMap = new MapClass("nightcity_map", {
     name: "Nightcity",
     background: "map-nightcity", // [!code focus]
     neighboringMaps: {
@@ -53,6 +55,12 @@ export const nightcityMap = new Map("nightcity_map", {
 Usually, it is possible to define a graphical element as a React element.
 
 ```tsx title="content/activities.tsx"
+import { ActivityBaseButton } from "@/components/screens/navigation/activity-buttons";
+import Activity from "@/models/Activity";
+import { timeTracker } from "@drincs/nqtr";
+import { narration } from "@drincs/pixi-vn";
+import { Bed } from "lucide-react";
+
 export const bed = new Activity(
     "bed",
     async (_, props) => {
@@ -82,16 +90,17 @@ export const bed = new Activity(
 
 Additionally, when the `sprite` property is available, it is possible to define a graphical element as a PixiJS element.
 
-```ts
-import { Assets, Sprite, Texture } from "@drincs/pixi-vn/pixi.js";
+```tsx title="content/locations.tsx"
+import { mainMap } from "@/content/maps";
+import Location from "@/models/Location";
+import { navigator } from "@drincs/nqtr";
+import { Assets, Sprite, type Texture } from "@drincs/pixi-vn/pixi.js";
 
 export const mcHome = new Location("mc_home", mainMap, {
     name: "MC Home",
-    sprite: async (location, { navigate }) => {
-        // [!code focus]
+    sprite: async (location, { navigate }) => { // [!code focus]
         const texture = await Assets.load<Texture>("icon_location_home"); // [!code focus]
-        const icon = new Sprite({
-            // [!code focus]
+        const icon = new Sprite({ // [!code focus]
             texture, // [!code focus]
             x: 300, // [!code focus]
             y: 200, // [!code focus]
@@ -100,13 +109,11 @@ export const mcHome = new Location("mc_home", mainMap, {
             eventMode: "static", // [!code focus]
             cursor: "pointer", // [!code focus]
         }); // [!code focus]
-        icon.on("pointerdown", () => {
-            // [!code focus]
+        icon.on("pointerdown", () => { // [!code focus]
             const entrance = location.entrance; // [!code focus]
-            if (entrance) {
-                // [!code focus]
+            if (entrance) { // [!code focus]
                 navigator.currentRoom = entrance; // [!code focus]
-                navigate(NAVIGATION_ROUTE); // [!code focus]
+                navigate({ to: "/game/navigation" }); // [!code focus]
             } // [!code focus]
         }); // [!code focus]
         return icon; // [!code focus]
@@ -192,7 +199,7 @@ import { RegisteredMaps } from "@drincs/nqtr";
 import TimeSlotsImage from "../models/TimeSlotsImage";
 import Map from "../models/Map";
 
-export const mainMap = new Map("main_map", {
+export const mainMap = new MapClass("main_map", {
     name: "Main Map",
     background: new TimeSlotsImage({
         morning: "map-0",
