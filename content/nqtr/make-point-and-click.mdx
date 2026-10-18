@@ -40,7 +40,7 @@ In the template we are using, when creating the elements that we will see later,
 
 Usually, it is possible to define a graphical element as a string representing the asset alias. The template also provides the possibility to use the <DynamicLink href="/nqtr/time#image-time-period">`TimeSlotsImage`</DynamicLink> class, which allows you to define a different image depending on the time of day.
 
-```ts
+```tsx title="content/maps.tsx"
 export const nightcityMap = new Map("nightcity_map", {
     name: "Nightcity",
     background: "map-nightcity", // [!code focus]
@@ -52,52 +52,28 @@ export const nightcityMap = new Map("nightcity_map", {
 
 Usually, it is possible to define a graphical element as a React element.
 
-```tsx
+```tsx title="content/activities.tsx"
 export const bed = new Activity(
     "bed",
     async (_, props) => {
-        await props.navigate(NARRATION_ROUTE);
+        await props.navigate({ to: "/game/narration" });
         if (timeTracker.nowIsBetween(5, 22)) {
-            await narration.jump(napLabel, props);
+            await narration.jump("nap", props);
         } else {
-            await narration.jump(sleepLabel, props);
+            await narration.jump("sleep", props);
         }
     },
     {
         name: "bed",
-        icon: (activity, props) => {
-            // [!code focus]
-            return (
-                // [!code focus]
-                <NqtrRoundIconButton // [!code focus]
+        icon: (activity, props) => { // [!code focus]
+            return ( // [!code focus]
+                <ActivityBaseButton // [!code focus]
                     disabled={activity.disabled} // [!code focus]
-                    onClick={() => {
-                        // [!code focus]
-                        activity.run(props).then(() => {
-                            // [!code focus]
-                            props.invalidateInterfaceData(); // [!code focus]
-                        }); // [!code focus]
-                    }} // [!code focus]
+                    onClick={() => activity.run(props)} // [!code focus]
                     ariaLabel={props.uiTransition(activity.name)} // [!code focus]
-                    variant="solid" // [!code focus]
-                    color="primary" // [!code focus]
-                >
-                    {" "}
-                    {/* [!code focus] */}
-                    <BedIcon // [!code focus]
-                        sx={{
-                            // [!code focus]
-                            fontSize: {
-                                sx: "1.5rem",
-                                sm: "2rem",
-                                md: "2.5rem",
-                                lg: "3rem",
-                                xl: "3.5rem",
-                            }, // [!code focus]
-                        }} // [!code focus]
-                    />{" "}
-                    {/* [!code focus] */}
-                </NqtrRoundIconButton> // [!code focus]
+                > {/* [!code focus] */}
+                    <Bed className="size-6 sm:size-8 md:size-10 lg:size-12 xl:size-14" /> {/* [!code focus] */}
+                </ActivityBaseButton> {/* [!code focus] */}
             ); // [!code focus]
         }, // [!code focus]
     },
