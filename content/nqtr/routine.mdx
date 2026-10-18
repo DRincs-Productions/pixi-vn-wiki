@@ -100,12 +100,11 @@ To link a commitment to a room during the game, you can use the [`room.addCommit
 
 ```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
 import { newLabel, showImageContainer } from "@drincs/pixi-vn";
-import { aliceSmokes } from "../routine";
-import { terrace } from "../rooms";
+import { terrace } from "@/content/rooms";
 
 export const startLabel = newLabel("start", [
     async () => {
-        terrace.addCommitment(aliceSmokes); // [!code focus]
+        terrace.addCommitment("alice_quest_talk"); // [!code focus]
     },
 ]);
 ```
@@ -117,24 +116,21 @@ export const startLabel = newLabel("start", [
 ```
 
 ```ts tab="content/routine.ts"
-import { CommitmentBaseModel, RegisteredCommitments } from "@drincs/nqtr";
+import { RegisteredCommitments, CommitmentBaseModel } from "@drincs/nqtr";
 import { narration } from "@drincs/pixi-vn";
-import { NARRATION_ROUTE } from "../constans";
-import { aliceTalkMenuLabel } from "../labels/variousActionsLabels";
-import { alice } from "./characters";
 
-export const aliceSmokes = new CommitmentBaseModel("alice_smokes", alice, {
+export const aliceSmokes = new CommitmentBaseModel("alice_smokes", "alice", {
     timeSlot: {
         from: 10,
         to: 20,
     },
-    onRun: async (_, event) => {
-        await event.navigate(NARRATION_ROUTE);
-        await narration.jump(aliceTalkMenuLabel, event);
+    onRun: async (_, props) => {
+        await props.navigate({ to: "/game/narration" });
+        await narration.jump("alice_talk_menu", props);
     },
 });
 
-RegisteredCommitments.add([aliceSmokes]);
+RegisteredCommitments.add(aliceSmokes);
 ```
 
 ## Unlink
