@@ -122,11 +122,9 @@ import { Assets, Sprite, type Texture } from "@drincs/pixi-vn/pixi.js";
 
 export const mcHome = new Location("mc_home", mainMap, {
     name: "MC Home",
-    sprite: async (location, { navigate }) => {
-        // [!code focus]
+    sprite: async (location, { navigate }) => { // [!code focus]
         const texture = await Assets.load<Texture>("icon_location_home"); // [!code focus]
-        const icon = new Sprite({
-            // [!code focus]
+        const icon = new Sprite({ // [!code focus]
             texture, // [!code focus]
             x: 300, // [!code focus]
             y: 200, // [!code focus]
@@ -135,11 +133,9 @@ export const mcHome = new Location("mc_home", mainMap, {
             eventMode: "static", // [!code focus]
             cursor: "pointer", // [!code focus]
         }); // [!code focus]
-        icon.on("pointerdown", () => {
-            // [!code focus]
+        icon.on("pointerdown", () => { // [!code focus]
             const entrance = location.entrance; // [!code focus]
-            if (entrance) {
-                // [!code focus]
+            if (entrance) { // [!code focus]
                 navigator.currentRoom = entrance; // [!code focus]
                 navigate({ to: "/game/navigation" }); // [!code focus]
             } // [!code focus]
@@ -386,52 +382,40 @@ A fundamental element in Point & Click Adventures is interactive elements, which
 
 For example:
 
-```ts tab="content/activities.tsx"
+```tsx tab="content/activities.tsx"
+import { ActivityBaseButton } from "@/components/screens/navigation/activity-buttons";
+import Activity from "@/models/Activity";
 import { RegisteredActivities, timeTracker } from "@drincs/nqtr";
 import { narration } from "@drincs/pixi-vn";
-import BedIcon from "@mui/icons-material/Bed";
-import NqtrRoundIconButton from "../components/NqtrRoundIconButton";
-import { NARRATION_ROUTE } from "../constans";
-import { napLabel, sleepLabel } from "../labels/sleepNapLabels";
-import Activity from "../models/Activity";
+import { Bed } from "lucide-react";
 
 export const bed = new Activity(
     "bed",
     async (_, props) => {
-        await props.navigate(NARRATION_ROUTE);
+        await props.navigate({ to: "/game/narration" });
         if (timeTracker.nowIsBetween(5, 22)) {
-            await narration.jump(napLabel, props);
+            await narration.jump("nap", props);
         } else {
-            await narration.jump(sleepLabel, props);
+            await narration.jump("sleep", props);
         }
     },
     {
         name: "bed",
         icon: (activity, props) => {
             return (
-                <NqtrRoundIconButton
+                <ActivityBaseButton
                     disabled={activity.disabled}
-                    onClick={() => {
-                        activity.run(props).then(() => {
-                            props.invalidateInterfaceData();
-                        });
-                    }}
+                    onClick={() => activity.run(props)}
                     ariaLabel={props.uiTransition(activity.name)}
-                    variant='solid'
-                    color='primary'
                 >
-                    <BedIcon
-                        sx={{
-                            fontSize: { sx: "1.5rem", sm: "2rem", md: "2.5rem", lg: "3rem", xl: "3.5rem" },
-                        }}
-                    />
-                </NqtrRoundIconButton>
+                    <Bed className="size-6 sm:size-8 md:size-10 lg:size-12 xl:size-14" />
+                </ActivityBaseButton>
             );
         },
     },
 );
 
-RegisteredActivities.add([bed]);
+RegisteredActivities.add(bed);
 ```
 
 :::tip
