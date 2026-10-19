@@ -1,0 +1,81 @@
+---
+title: Компоненты
+description: Обзор встроенных и пользовательских компонентов canvas в Pixi’VN, включая расширение и функции памяти.
+---
+
+Pixi’VN предоставляет набор компонентов canvas. Эти компоненты расширяют компоненты [Pixi.js](https://pixijs.com/), добавляя различные возможности, например способность сохранять своё текущее состояние.
+
+<Accordions>
+
+<Accordion title="Встроенные компоненты" id="base-components">
+
+* [`Sprite`](/jsdoc/pixi-vn/index/classes/Sprite) соответствует компоненту [`PixiJS.Sprite`](https://pixijs.com/8.x/guides/components/sprites).
+* [`Container`](/jsdoc/pixi-vn/index/classes/Container) соответствует компоненту [`PixiJS.Container`](https://pixijs.com/8.x/guides/components/containers).
+* <DynamicLink href="/start/canvas-image">`ImageSprite`</DynamicLink> — это компонент, представленный Pixi’VN.
+* <DynamicLink href="/start/canvas-image-container">`ImageContainer`</DynamicLink> — это компонент, представленный Pixi’VN.
+* <DynamicLink href="/start/canvas-video">`VideoSprite`</DynamicLink> — это компонент, представленный Pixi’VN.
+* <DynamicLink href="/start/canvas-text">`Text`</DynamicLink> — это компонент, представленный Pixi’VN.
+
+</Accordion>
+
+<Accordion title="Компоненты плагинов" id="additional-components">
+
+* <DynamicLink href="/start/canvas-spine2D">Spine 2D</DynamicLink> — это компонент, устанавливаемый через систему плагинов Pixi’VN. Он используется для рендеринга анимаций Spine 2D.
+
+</Accordion>
+
+</Accordions>
+
+## Другие возможности
+
+<Accordions>
+
+<Accordion title="Пользовательские компоненты" id="custom-components">
+
+Вы можете создавать пользовательские компоненты, расширяя базовые компоненты. Для этого необходимо использовать декоратор [`@canvasComponentDecorator`](/jsdoc/pixi-vn/index/functions/canvasComponentDecorator).
+
+Необходимо переопределить геттер [`memory`](/jsdoc/pixi-vn/index/classes/CanvasBaseItem#memory) и метод [`setMemory`](/jsdoc/pixi-vn/index/classes/CanvasBaseItem#setmemory) для хранения свойств пользовательского компонента.
+В `get memory()` очень важно возвращать свойство `className`; это свойство должно быть равно идентификатору, используемому в декораторе.
+
+Например, вы можете создать класс `AlienTinting`, расширяющий класс `Sprite`, для управления направлением и скоростью каждого отдельного инопланетянина в анимации.
+
+```ts title="canvas/components/AlienTinting.ts"
+const ALIEN_TINTING_TEST_ID = "AlienTintingTest";
+@canvasComponentDecorator({
+    name: ALIEN_TINTING_TEST_ID,
+})
+class AlienTintingTest extends Sprite<IAlienTintingMemory> {
+    readonly pixivnId: string = CANVAS_SPINE_ID;
+    override get memory() {
+        return {
+            ...super.memory,
+            pixivnId: CANVAS_SPINE_ID,
+            direction: this.direction,
+            turningSpeed: this.turningSpeed,
+            speed: this.speed,
+        };
+    }
+    override async setMemory(memory: IAlienTintingMemory) {
+        await super.setMemory(memory);
+        this.direction = memory.direction;
+        this.turningSpeed = memory.turningSpeed;
+        this.speed = memory.speed;
+    }
+    direction: number = 0;
+    turningSpeed: number = 0;
+    speed: number = 0;
+    static override from(
+        source: Texture | TextureSourceLike,
+        skipCache?: boolean,
+    ) {
+        let sprite = Sprite.from(source, skipCache);
+        let mySprite = new AlienTintingTest();
+        mySprite.texture = sprite.texture;
+        return mySprite;
+    }
+}
+```
+
+</Accordion>
+
+</Accordions>

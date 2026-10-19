@@ -1,0 +1,128 @@
+---
+title: Variables de UI
+description: Cómo conectar componentes de UI con la configuración, los datos de juego de solo lectura y las variables de almacenamiento del juego de lectura/escritura con TanStack Query/Store, y cómo mantener la UI sincronizada con storage.setStorageHandler.
+---
+
+En una UI de Pixi’VN, las variables que muestras o editas generalmente se dividen en tres categorías, y cada una tiene un patrón recomendado diferente. Las <DynamicLink href="/start/templates">plantillas</DynamicLink> de Pixi’VN ya utilizan estos patrones en todo `src/lib/stores/` y `src/lib/query/` — vale la pena abrirlas como ejemplos reales y funcionales.
+
+## Variables de configuración
+
+Cosas como la velocidad del texto, el tamaño de fuente o el retraso del avance automático **no** forman parte del <DynamicLink href="/start/storage">almacenamiento del juego</DynamicLink>: deben persistir en todas las partidas (incluso antes de que exista una partida guardada), por lo que se almacenan en `localStorage`, reflejados en un [TanStack Store](https://tanstack.com/store/latest) para que los componentes puedan reaccionar a los cambios.
+
+```ts title="src/lib/stores/auto-settings-store.ts"
+import { Store } from "@tanstack/store";
+
+type AutoSettingsStore = {
+    enabled: boolean;
+    time: number;
+};
+
+export namespace AutoSettings {
+    export const store = new Store<AutoSettingsStore>({
+        enabled: Boolean(localStorage.getItem("auto_forward_enabled") ?? false),
+        time: Number(localStorage.getItem("auto_forward_second") ?? 1),
+    });
+
+    export function setEnabled(value: boolean) {
+        localStorage.setItem("auto_forward_enabled", value.toString());
+        store.setState((state) => ({ ...state, enabled: value }));
+    }
+
+    export function setTime(value: number) {
+        localStorage.setItem("auto_forward_second", value.toString());
+        store.setState((state) => ({ ...state, time: value }));
+    }
+}
+```
+
+```tsx
+import { useSelector } from "@tanstack/react-store";
+import { AutoSettings } from "@/lib/stores/auto-settings-store";
+
+function AutoForwardToggle() {
+    const enabled = useSelector(AutoSettings.store, (state) => state.enabled);
+    return (
+        <Switch checked={enabled} onCheckedChange={AutoSettings.setEnabled} />
+    );
+}
+```
+
+## Variables de juego de solo lectura
+
+Para las variables que solo necesitas **mostrar** (una estadística, una bandera, un fragmento de diálogo), léelas directamente desde el <DynamicLink href="/start/storage">almacenamiento del juego</DynamicLink> dentro de un `queryFn` de [TanStack Query](https://tanstack.com/query/latest).
+
+```ts
+import { useQuery } from "@tanstack/react-query";
+import { storage } from "@drincs/pixi-vn";
+
+export function useQueryAffection() {
+    return useQuery({
+        queryKey: ["affection_use_query_key"],
+        queryFn: async () => storage.get<number>("affection") ?? 0,
+    });
+}
+```
+
+Las variables de almacenamiento del juego solo cambian durante un <DynamicLink href="/start/labels#continue-and-go-back">`step` / go back</DynamicLink>, al ejecutar una <DynamicLink href="/start/labels#run-a-label">`label`</DynamicLink>, o al <DynamicLink href="/start/save#load">cargar una partida guardada</DynamicLink> — Pixi’VN no tiene forma de saber que tienes una consulta que depende de esos datos, por lo que tu UI debe pedirle a TanStack Query que vuelva a obtener los datos después de esos eventos. En lugar de invalidar cada clave de consulta una por una, es más sencillo invalidar todo a la vez en un puñado de puntos de llamada (después de `narration.continue()`/`goNext`, `stepHistory.back()`, `narration.call()`/`jump`, y después de restaurar una partida guardada):
+
+```ts
+const queryClient = useQueryClient();
+
+narration.continue({}).then(() => {
+    queryClient.invalidateQueries();
+});
+```
+
+## Variables de juego de lectura/escritura
+
+Para las variables que la propia UI puede modificar (una opción seleccionada, un interruptor vinculado a una bandera de misión), usa el mismo wrapper de TanStack Store que para la configuración, pero respáldalo con el <DynamicLink href="/start/storage">almacenamiento del juego</DynamicLink> en lugar de `localStorage`, para que el valor sobreviva a las partidas guardadas y a `go back`:
+
+```ts
+import { storage } from "@drincs/pixi-vn";
+import { Store } from "@tanstack/store";
+
+const SELECTED_QUEST_KEY = "selectedQuestId";
+
+export namespace Memo {
+    export const store = new Store<{ selectedQuestId: string | undefined }>({
+        selectedQuestId: storage.get<string>(SELECTED_QUEST_KEY),
+    });
+
+    export function setSelectedQuestId(id: string | undefined) {
+        storage.set(SELECTED_QUEST_KEY, id);
+        store.setState((state) => ({ ...state, selectedQuestId: id }));
+    }
+}
+```
+
+Como el setter actualiza el Store directamente, la UI se mantiene sincronizada automáticamente para los cambios realizados **a través de este mismo setter** — no se necesita una actualización manual.
+
+## Mantener la UI sincronizada con cambios de almacenamiento realizados en otro lugar
+
+El patrón de Store anterior solo mantiene la UI sincronizada cuando es la propia UI la que llama a `storage.set`. Si una `label`, un `step`, o cualquier otra parte del juego cambia la misma variable de almacenamiento del juego, nada le indica a ese Store — ni a un `useQuery` que lea esa clave — que se actualice.
+
+Para capturar **cada** escritura de almacenamiento del juego en un solo lugar, usa [`storage.setStorageHandler`](/jsdoc/pixi-vn/index/interfaces/StorageManagerInterface#setstoragehandler). Te permite registrar callbacks que se activan cada vez que se establece o elimina una variable, o cuando expira una variable temporal — en cualquier parte del juego, no solo desde la UI:
+
+```ts
+import { storage } from "@drincs/pixi-vn";
+
+storage.setStorageHandler({
+    onSetVariable: (key, value) => {
+        queryClient.invalidateQueries();
+    },
+    onRemoveVariable: (key) => {
+        queryClient.invalidateQueries();
+    },
+    onClearOldTempVariable: (key) => {
+        queryClient.invalidateQueries();
+    },
+});
+```
+
+:::warning[Solo un handler a la vez]
+
+`setStorageHandler` no apila handlers — mantiene uno solo internamente, y cada llamada **reemplaza** al anterior. Si lo llamas desde varios archivos, solo el último registrado se ejecutará realmente; los anteriores dejan de activarse silenciosamente.Configúralo **una vez**, en un único lugar cercano al inicio de la aplicación (por ejemplo, tu provider raíz), con un handler que haga todo lo que la UI necesita (invalidar consultas, actualizar stores, etc.). Como se vuelve a ejecutar en cada escritura de almacenamiento en todo el juego, prefiere este handler amplio y centralizado en lugar de esparcir muchos handlers específicos — es fácil de razonar, y no hay riesgo de que uno sobrescriba a otro.
+
+Configúralo **una vez**, en un único lugar cercano al inicio de la aplicación (por ejemplo, tu provider raíz), con un handler que haga todo lo que la UI necesita (invalidar consultas, actualizar stores, etc.). Como se vuelve a ejecutar en cada escritura de almacenamiento en todo el juego, prefiere este handler amplio y centralizado en lugar de esparcir muchos handlers específicos — es fácil de razonar, y no hay riesgo de que uno sobrescriba a otro.
+
+:::

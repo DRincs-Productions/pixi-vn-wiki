@@ -1,0 +1,65 @@
+---
+title: Raccourcis clavier
+description: Comment créer des raccourcis clavier (hotkeys) dans Pixi’VN à l'aide de TanStack Hotkeys, avec des exemples de sauvegarde/chargement rapide et de contrôles de minijeu.
+---
+
+Les raccourcis clavier permettent aux joueurs de déclencher des actions directement depuis le clavier, comme la sauvegarde rapide, le passage des dialogues, ou le contrôle d'un <DynamicLink href="/start/minigames">minijeu</DynamicLink>. Plutôt que de gérer vous-même les appels à `window.addEventListener("keydown", ...)`, il est recommandé d'utiliser [TanStack Hotkeys](https://tanstack.com/hotkeys/latest), une bibliothèque qui transforme la saisie clavier en un système de commandes typé avec des portées, des séquences, des touches maintenues et une détection des conflits.
+
+:::tip
+
+Une liste des raccourcis clavier couramment utilisés dans les visual novels (sauvegarde rapide, chargement rapide, historique, paramètres, ...) est disponible dans la <DynamicLink href="/faq#hotkeys">FAQ</DynamicLink>.
+
+:::
+
+<Accordions>
+
+<Accordion title="Installation" id="installation">
+
+:::tip[Modèles]
+
+Dans tous les templates, le paquet TanStack Hotkeys est déjà installé.
+
+:::
+
+TanStack Hotkeys fournit un paquet séparé pour chaque framework. Pour un projet React, installez :
+
+```npm
+npm install @tanstack/react-hotkeys
+```
+
+Des adaptateurs pour Vue, Angular et Lit sont également disponibles — remplacez `@tanstack/react-hotkeys` par le paquet de votre framework.
+
+</Accordion>
+
+</Accordions>
+
+## Utilisation
+
+Enregistrez un raccourci clavier avec le hook `useHotkey` :
+
+```tsx
+import { useHotkey } from "@tanstack/react-hotkeys";
+
+useHotkey("Mod+S", () => {
+    quickSave();
+});
+```
+
+Le modificateur `Mod` se résout automatiquement en `Meta` (Cmd) sur macOS et en `Control` sur Windows/Linux, de sorte que le même code fonctionne sur toutes les plateformes.
+
+## Portée et activation conditionnelle
+
+`useHotkey` est un hook, il enregistre donc le raccourci lorsque le composant est monté et le nettoie automatiquement lorsque le composant est démonté — vous n'avez pas besoin de supprimer vous-même l'écouteur, contrairement à un `window.addEventListener` manuel.
+
+Utilisez l'option `target` pour limiter un raccourci clavier à un élément spécifique, et `enabled` pour l'activer ou le désactiver selon l'état de votre jeu, par exemple pendant qu'un minijeu est en cours :
+
+```tsx
+const panelRef = useRef<HTMLDivElement>(null);
+
+useHotkey("Escape", () => closePanel(), { target: panelRef });
+useHotkey("ArrowUp", () => setDirection(0, -1), { enabled: !gameOver });
+```
+
+## En savoir plus
+
+TanStack Hotkeys prend également en charge les séquences de touches (par exemple "G puis D"), les touches maintenues, la détection des conflits et un panneau devtools. Consultez la [documentation officielle](https://tanstack.com/hotkeys/latest) pour l'ensemble des fonctionnalités.

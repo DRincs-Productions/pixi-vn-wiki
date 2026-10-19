@@ -1,0 +1,56 @@
+---
+title: Text replacement
+description: |
+  Learn how to replace bracketed keys like [alice] in ink text with dynamic values using TextReplaces.add, or by hooking into the translation flow with onReplaceTextAfterTranslation and onReplaceTextBeforeTranslation.
+---
+
+In **native *ink*** it is possible to inject variables in the text as in the following example `Hello, {name}`. But in case you want to use the value of a JS/TS function, you cannot use the following syntax `{ key }`.
+
+In **Pixi’VN *ink*** you can use the following syntax to replace the text:
+
+```ink tab="ink"
+What do you want, [alice]?
+* Talk to \[bob\]
+```
+
+```ts tab="content/ink/text-replaces.ts"
+import { TextReplaces } from '@drincs/pixi-vn-ink'
+
+TextReplaces.add(() => "Alice", {
+    name: "Replace Alice",
+    validation: /alice/,
+    type: "after-translation",
+    i18nInterpolation: true,
+    description:
+        "Replaces the placeholder 'alice' with the name of the character Alice.",
+});
+TextReplaces.add(() => "Bob", {
+    name: "Replace Bob",
+    validation: /bob/,
+    type: "after-translation",
+    i18nInterpolation: true,
+    description:
+        "Replaces the placeholder 'bob' with the name of the character Bob.",
+});
+```
+
+In this case Pixi’VN checks if there is a value linked to the keys `alice` and `bob`. If there is a value linked to the key `alice`, the text `[alice]` will be replaced by the value, same for the key `bob`.
+
+To assign a value to a key you can use the [`TextReplaces.add`](/jsdoc/pixi-vn-ink/index/namespaces/TextReplaces/functions/add) function. Например:
+
+```ts title="content/ink/text-replaces.ts"
+import { TextReplaces } from '@drincs/pixi-vn-ink'
+
+TextReplaces.add(() => "Stephanie", {
+    name: "Replace Stephanie",
+    validation: /steph_fullname/,
+    type: "after-translation",
+    i18nInterpolation: true,
+    description:
+        "Replaces the placeholder 'steph_fullname' with the full name of the character Stephanie.",
+});
+```
+
+The `validation` option is a regular expression that Pixi’VN checks against the key found inside the brackets (e.g. `[steph_fullname]`): when the key matches the pattern, this handler is used to compute the replacement value.
+
+The first argument, `() => "Stephanie"`, is the function that returns the value to use as the replacement. It can contain any logic you need, as long as it returns the string to display in place of the key.
