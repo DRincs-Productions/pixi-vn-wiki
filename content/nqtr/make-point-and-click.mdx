@@ -122,9 +122,11 @@ import { Assets, Sprite, type Texture } from "@drincs/pixi-vn/pixi.js";
 
 export const mcHome = new Location("mc_home", mainMap, {
     name: "MC Home",
-    sprite: async (location, { navigate }) => { // [!code focus]
+    sprite: async (location, { navigate }) => {
+        // [!code focus]
         const texture = await Assets.load<Texture>("icon_location_home"); // [!code focus]
-        const icon = new Sprite({ // [!code focus]
+        const icon = new Sprite({
+            // [!code focus]
             texture, // [!code focus]
             x: 300, // [!code focus]
             y: 200, // [!code focus]
@@ -133,9 +135,11 @@ export const mcHome = new Location("mc_home", mainMap, {
             eventMode: "static", // [!code focus]
             cursor: "pointer", // [!code focus]
         }); // [!code focus]
-        icon.on("pointerdown", () => { // [!code focus]
+        icon.on("pointerdown", () => {
+            // [!code focus]
             const entrance = location.entrance; // [!code focus]
-            if (entrance) { // [!code focus]
+            if (entrance) {
+                // [!code focus]
                 navigator.currentRoom = entrance; // [!code focus]
                 navigate({ to: "/game/navigation" }); // [!code focus]
             } // [!code focus]
@@ -297,9 +301,15 @@ Now let's move on to another fundamental element: the time management system. Th
 
 Before you can use the time management features, it is necessary to initialize the `timeTracker` with the information required for the system to function. As shown in the following example, it is possible to define every aspect of the time management system, such as time slots, days of the week, the start and end time of the day, and so on.
 
-```ts tab="utils/nqtr-utility.ts"
+```ts title="content/time-data.ts"
 import { timeTracker } from "@drincs/nqtr";
-import { timeSlots } from "../constans";
+
+export const timeSlots = {
+    morning: { description: "morning", value: 5 },
+    afternoon: { description: "afternoon", value: 12 },
+    evening: { description: "evening", value: 18 },
+    night: { description: "night", value: 22 },
+};
 
 const weekDaysNames = [
     "monday",
@@ -310,45 +320,32 @@ const weekDaysNames = [
     "saturday",
     "sunday",
 ];
-export function initializeNQTR() {
-    timeTracker.initialize({
-        defaultTimeSpent: 1,
-        dayStartTime: 0,
-        dayEndTime: 24,
-        timeSlots: [
-            {
-                name: timeSlots.morning.description,
-                startTime: timeSlots.morning.value,
-            },
-            {
-                name: timeSlots.afternoon.description,
-                startTime: timeSlots.afternoon.value,
-            },
-            {
-                name: timeSlots.evening.description,
-                startTime: timeSlots.evening.value,
-            },
-            {
-                name: timeSlots.night.description,
-                startTime: timeSlots.night.value,
-            },
-        ],
-        getDayName: (weekDayNumber: number) => {
-            return weekDaysNames[weekDayNumber];
-        },
-        weekendStartDay: 6,
-        weekLength: 7,
-    });
-}
-```
 
-```ts tab="constans.ts"
-export const timeSlots = {
-    morning: { description: "morning", value: 5 },
-    afternoon: { description: "afternoon", value: 12 },
-    evening: { description: "evening", value: 18 },
-    night: { description: "night", value: 22 },
-};
+timeTracker.initialize({
+    defaultTimeSpent: 1,
+    dayStartTime: 0,
+    dayEndTime: 24,
+    timeSlots: [
+        {
+            name: timeSlots.morning.description,
+            startTime: timeSlots.morning.value,
+        },
+        {
+            name: timeSlots.afternoon.description,
+            startTime: timeSlots.afternoon.value,
+        },
+        {
+            name: timeSlots.evening.description,
+            startTime: timeSlots.evening.value,
+        },
+        { name: timeSlots.night.description, startTime: timeSlots.night.value },
+    ],
+    getDayName: (weekDayNumber: number) => {
+        return weekDaysNames[weekDayNumber];
+    },
+    weekendStartDay: 6,
+    weekLength: 7,
+});
 ```
 
 The main functionality of the time management system is the ability to advance time based on the player's actions.
