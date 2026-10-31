@@ -1,0 +1,133 @@
+---
+title: Interactive Fiction
+description: Create a book-like interactive story with Pixi’VN, using flowing prose, choices, links, and inline illustrations.
+---
+
+This guide shows how to create an interactive fiction project with Pixi’VN. The reader should feel as if they are reading a book: prose flows through paragraphs, and the player advances the story by reading, making choices, and following story links. Illustrations can appear between passages as vignettes.
+
+<Accordions>
+
+<Accordion title="What is Interactive Fiction?" id="what-is-interactive-fiction">
+
+In Pixi’VN, **Interactive Fiction** is a book-centered way to present an interactive story. The text is the main experience: the player reads a continuous page of narration, while choices, links, and occasional input let them influence how the story unfolds.
+
+It does not have to be text-only. The Interactive Fiction template can place illustrations inline with the prose, like pictures printed on a book page. Its standard narration screen is built with React and Markdown, so it does not need the Pixi’VN canvas to arrange story text, backgrounds, or character sprites.
+
+</Accordion>
+
+<Accordion title="How is it different from a Visual Novel?" id="interactive-fiction-vs-visual-novel">
+
+Both formats use Pixi’VN's narrative system: labels, dialogue, choices, characters, input, history, and saves. The main difference is how the story is presented.
+
+| | Visual Novel | Interactive Fiction |
+| --- | --- | --- |
+| Reading experience | Dialogue is presented in a visual-novel interface, often one beat at a time. | Paragraphs accumulate in a scrollable page, like a book. |
+| Visuals | Backgrounds and character sprites are commonly arranged on the Pixi’VN canvas. | Illustrations can be inserted in the prose as inline vignettes. |
+| Story interaction | Choices and inputs guide the player through the story. | Choices, inputs, and story links guide the reader through the book. |
+
+Choose Interactive Fiction when the reading flow should lead the experience. Choose Visual Novel when staged dialogue and composed character scenes are central. Either format can still use the same Pixi’VN narrative features.
+
+</Accordion>
+
+</Accordions>
+
+## Create a project
+
+Install the <DynamicLink href="/start#prerequisites">prerequisites</DynamicLink>, then create a project:
+
+```npm
+npm create pixi-vn@latest
+```
+
+Select the **Interactive Fiction** template. Open the generated project in your IDE, install its dependencies, and start the development server:
+
+```npm
+npm install
+npm start
+```
+
+For more information about project setup, VS Code tasks, and the generated project structure, see <DynamicLink href="/start/templates">Templates</DynamicLink>.
+
+## Write the first passage
+
+The same Pixi’VN building blocks used in a visual novel also form an interactive fiction story. A label contains the ordered steps of a scene; each step can add a paragraph to the narration.
+
+```ts
+import { newLabel, narration } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        narration.dialogue = "The rain had stopped by the time I reached the old station.";
+    },
+    () => {
+        narration.dialogue = "A light was still burning in the room above the ticket office.";
+    },
+]);
+```
+
+The book-style interface keeps earlier paragraphs on the page while revealing the latest one. Use paragraph breaks to control the rhythm of the reading experience. For more on labels, dialogue, and story flow, see <DynamicLink href="/start/make-visual-novel">How to make a Visual Novel</DynamicLink>, <DynamicLink href="/start/labels">Labels</DynamicLink>, and <DynamicLink href="/start/dialogue">Dialogue</DynamicLink>.
+
+## Add choices and story links
+
+Choices work the same way as in other Pixi’VN projects. They can jump to a new label or call a short passage and return to the current one.
+
+```ts
+import { newChoiceOption, newCloseChoiceOption, narration } from "@drincs/pixi-vn";
+
+narration.dialogue = "The light upstairs flickered. What should I do?";
+narration.choices = [
+    newChoiceOption("Go inside", "enter_station", {}),
+    newChoiceOption("Keep walking", "leave_station", {}),
+    newCloseChoiceOption("Wait a moment"),
+];
+```
+
+Use `narration.jump(label, props)` to move the story forward to a new section. Use `narration.call(label, props)` for a digression that should return to its caller.
+
+The Interactive Fiction template also renders links written in Markdown. A link whose target matches a registered label becomes an in-story link and jumps to that label; an ordinary URL remains an external link:
+
+```ts
+narration.dialogue = "I unfolded the [note](read_note) and began to read.";
+```
+
+In the template, `MarkdownLink` provides this behavior. If the reader must follow a link before continuing, the template also provides `requireLinkClickToContinue()`. These are template UI features, not built-in Pixi’VN rendering APIs. See the template's [Markdown story links guide](https://github.com/DRincs-Productions/interactive-fiction-react-template/blob/main/docs/markdown-story-links.md) for implementation details.
+
+See <DynamicLink href="/start/choices">Choices</DynamicLink> and <DynamicLink href="/start/labels-flow">Narration flow control</DynamicLink> for the shared engine features.
+
+## Add vignette illustrations
+
+The Interactive Fiction template's narration screen uses React and Markdown rather than arranging the story on the Pixi’VN canvas. Add an illustration in the flow of the book with standard Markdown image syntax:
+
+```ts
+narration.dialogue = `
+The path climbed above the trees.
+
+![The station on the hill at dusk](station_at_dusk)
+
+The windows were dark, except for the light above the ticket office.
+`;
+```
+
+The template's `MarkdownImage` renderer displays the image as an illustration in the page. A registered Pixi’VN asset alias such as `station_at_dusk` is resolved to its asset URL; a regular image URL can also be used.
+
+This inline image behavior belongs to the React template. Pixi’VN provides the narrative state and asset system; a custom interface needs its own Markdown image renderer to present vignettes. You can still use Pixi’VN's canvas in a project that intentionally adds a canvas-based scene, but the book layout does not depend on it.
+
+For asset registration and loading, see <DynamicLink href="/start/assets-management">Asset management</DynamicLink>.
+
+## Track chapters and use saves
+
+Use chapters to give the reader context and to label save slots. The Interactive Fiction template includes a helper that stores the current chapter name and counter in Pixi’VN storage:
+
+```ts
+import { setChapter } from "@/lib/utils/chapter-utility";
+
+setChapter("chapter_the_station");
+```
+
+Pass a translation key, so the chapter name can be translated when it is displayed. The template's save/load menu contains one quick-save slot and five manual slots. A save row can show its custom name or chapter, its date and time, and an excerpt from the latest dialogue.
+
+Chapter tracking and the six-slot menu are template features. For Pixi’VN's save API, see <DynamicLink href="/start/save">Save and load</DynamicLink>; for the template behavior, see its [chapters and saves guide](https://github.com/DRincs-Productions/interactive-fiction-react-template/blob/main/docs/chapters-and-saves.md).
+
+## Next steps
+
+Interactive Fiction and Visual Novel projects share Pixi’VN's narrative engine. The book template changes the reading presentation: prose is the page, and illustrations can punctuate it as vignettes. Continue with the shared guides for <DynamicLink href="/start/character">Characters</DynamicLink>, <DynamicLink href="/start/input">Input</DynamicLink>, <DynamicLink href="/start/history">History</DynamicLink>, and <DynamicLink href="/start/save">Save and load</DynamicLink>.

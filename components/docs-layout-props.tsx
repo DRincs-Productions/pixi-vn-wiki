@@ -99,6 +99,11 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                     },
                     {
                         type: "page",
+                        name: t("make-interactive-fiction"),
+                        url: `${preUrl}/start/make-interactive-fiction`,
+                    },
+                    {
+                        type: "page",
                         name: t("make-point-and-click"),
                         url: `${preUrl}/nqtr/make-point-and-click`,
                     },
@@ -630,6 +635,11 @@ export async function inkTree(lang?: string): Promise<DocsLayoutProps["tree"]> {
                     },
                     {
                         type: "page",
+                        name: t("make-interactive-fiction"),
+                        url: `${preUrl}/start/make-interactive-fiction`,
+                    },
+                    {
+                        type: "page",
                         name: t("make-point-and-click"),
                         url: `${preUrl}/nqtr/make-point-and-click`,
                     },
@@ -769,6 +779,10 @@ export async function homeLinks(lang?: string): Promise<LinkItemType[]> {
                     url: `${preUrl}/start/make-visual-novel`,
                 },
                 {
+                    text: t("make-interactive-fiction"),
+                    url: `${preUrl}/start/make-interactive-fiction`,
+                },
+                {
                     text: t("make-point-and-click"),
                     url: `${preUrl}/nqtr/make-point-and-click`,
                 },
@@ -832,6 +846,11 @@ export async function nqtrTree(lang?: string): Promise<DocsLayoutProps["tree"]> 
                         type: "page",
                         name: t("make-visual-novel"),
                         url: `${preUrl}/start/make-visual-novel`,
+                    },
+                    {
+                        type: "page",
+                        name: t("make-interactive-fiction"),
+                        url: `${preUrl}/start/make-interactive-fiction`,
                     },
                     {
                         type: "page",
