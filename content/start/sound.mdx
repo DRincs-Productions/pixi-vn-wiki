@@ -417,11 +417,25 @@ sound.channels.add("bgm", {
 
 There are also functions available for managing sounds in menus, such as in the settings screen.
 
-All changes made by these functions are not saved in game saves, so when a save is loaded, sounds will return to the state they were in before being modified by these functions.
+The `sound.unsaved` namespace manages playback that is not included in game save/export state.
 
 The [`sound.unsaved.pauseAll`](/jsdoc/pixi-vn/index/interfaces/SoundUnsavedInterface#pauseall) and [`sound.unsaved.resumeAll`](/jsdoc/pixi-vn/index/interfaces/SoundUnsavedInterface#resumeall) functions are intended to be used when opening and closing a menu, such as the settings. The first function pauses all sounds that are not already paused, while the second resumes all sounds that were paused by the first function.
 
-Meanwhile, the [`sound.unsaved.playTransient`](/jsdoc/pixi-vn/index/interfaces/SoundUnsavedInterface#playtransient) and [`sound.unsaved.stopTransientAll`](/jsdoc/pixi-vn/index/interfaces/SoundUnsavedInterface#stoptransientall) functions are intended for temporary sounds, such as UI interaction sounds. The first function plays a sound that will not be saved in game saves, while the second stops all sounds started with the first function.
+[`sound.unsaved.playTransient`](/jsdoc/pixi-vn/index/interfaces/SoundUnsavedInterface#playtransient) plays a transient sound that is not recorded in save/export state. It can be routed through an audio channel so channel volume, mute, pan, and filters still apply. This also works for looping background ambience that should use the BGM channel without being restored by a loaded save:
+
+```ts
+import { sound } from "@drincs/pixi-vn";
+
+const ambience = await sound.unsaved.playTransient("room-ambience", {
+    channel: "bgm",
+    loop: true,
+});
+
+// Stop this ambience when leaving the room or screen.
+ambience.stop();
+```
+
+The function returns the transient `Tone.Player`, so it can be stopped individually. [`sound.unsaved.stopTransientAll`](/jsdoc/pixi-vn/index/interfaces/SoundUnsavedInterface#stoptransientall) stops every transient player when individual references are not available.
 
 </Accordion>
 
