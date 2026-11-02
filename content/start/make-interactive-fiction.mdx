@@ -52,7 +52,14 @@ For more information about project setup, VS Code tasks, and the generated proje
 
 The same Pixi’VN building blocks used in a visual novel also form an interactive fiction story. A label contains the ordered steps of a scene; each step can add a paragraph to the narration.
 
-```ts
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+The rain had stopped by the time I reached the old station.
+A light was still burning in the room above the ticket office.
+-> DONE
+```
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
 import { newLabel, narration } from "@drincs/pixi-vn";
 
 export const startLabel = newLabel("start", [
@@ -65,13 +72,22 @@ export const startLabel = newLabel("start", [
 ]);
 ```
 
-The book-style interface keeps earlier paragraphs on the page while revealing the latest one. Use paragraph breaks to control the rhythm of the reading experience. For more on labels, dialogue, and story flow, see <DynamicLink href="/start/make-visual-novel">How to make a Visual Novel</DynamicLink>, <DynamicLink href="/start/labels">Labels</DynamicLink>, and <DynamicLink href="/start/dialogue">Dialogue</DynamicLink>.
+The book-style interface keeps earlier paragraphs on the page while revealing the latest one. Use paragraph breaks to control the rhythm of the reading experience. To continue the same paragraph in the next step, use the <DynamicLink href="/start/dialogue#dialogue-glue">glue feature</DynamicLink>: in Ink, start the next line with `<>`; in TypeScript, set `narration.dialogGlue = true`. For more on labels, dialogue, and story flow, see <DynamicLink href="/start/make-visual-novel">How to make a Visual Novel</DynamicLink>, <DynamicLink href="/start/labels">Labels</DynamicLink>, and <DynamicLink href="/start/dialogue">Dialogue</DynamicLink>.
 
 ## Add choices and story links
 
 Choices work the same way as in other Pixi’VN projects. They can jump to a new label or call a short passage and return to the current one.
 
-```ts
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+The light upstairs flickered. What should I do?
+* [Go inside]
+    -> enter_station
+* [Keep walking]
+    -> leave_station
+```
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
 import { newChoiceOption, newCloseChoiceOption, narration } from "@drincs/pixi-vn";
 
 narration.dialogue = "The light upstairs flickered. What should I do?";
@@ -82,15 +98,33 @@ narration.choices = [
 ];
 ```
 
-Use `narration.jump(label, props)` to move the story forward to a new section. Use `narration.call(label, props)` for a digression that should return to its caller.
+Use a jump (`-> label` in Ink, `narration.jump(label, props)` in TypeScript) to move the story forward to a new section. Use a call (`<- label` in Ink, `narration.call(label, props)` in TypeScript) for a digression that should return to its caller.
 
 The Interactive Fiction template also renders links written in Markdown. A link whose target matches a registered label becomes an in-story link and jumps to that label; an ordinary URL remains an external link:
 
-```ts
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+I unfolded the [note](read_note) and began to read.
+```
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
 narration.dialogue = "I unfolded the [note](read_note) and began to read.";
 ```
 
-In the template, `MarkdownLink` provides this behavior. If the reader must follow a link before continuing, the template also provides `requireLinkClickToContinue()`. These are template UI features, not built-in Pixi’VN rendering APIs. See the template's [Markdown story links guide](https://github.com/DRincs-Productions/interactive-fiction-react-template/blob/main/docs/markdown-story-links.md) for implementation details.
+In the template, `MarkdownLink` provides this behavior; it always jumps, never calls. If the reader must follow a link before continuing, use the template's `# require link` Ink command (or `requireLinkClickToContinue()` in TypeScript) in the same step as the link:
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+# require link
+I unfolded the [note](read_note) and began to read.
+```
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+import { requireLinkClickToContinue } from "@/lib/utils/continue-lock-utility";
+
+requireLinkClickToContinue();
+narration.dialogue = "I unfolded the [note](read_note) and began to read.";
+```
+
+These are template UI features, not built-in Pixi’VN rendering APIs. The lock is a storage flag that blocks every way of advancing (click, Space/Enter, skip, auto-play) and is cleared automatically when the link is followed.
 
 See <DynamicLink href="/start/choices">Choices</DynamicLink> and <DynamicLink href="/start/labels-flow">Narration flow control</DynamicLink> for the shared engine features.
 
@@ -98,7 +132,13 @@ See <DynamicLink href="/start/choices">Choices</DynamicLink> and <DynamicLink hr
 
 The Interactive Fiction template's narration screen uses React and Markdown rather than arranging the story on the Pixi’VN canvas. Add an illustration in the flow of the book with standard Markdown image syntax:
 
-```ts
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+The path climbed above the trees.
+![The station on the hill at dusk](station_at_dusk)
+The windows were dark, except for the light above the ticket office.
+```
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
 narration.dialogue = `
 The path climbed above the trees.
 
@@ -118,15 +158,23 @@ For asset registration and loading, see <DynamicLink href="/start/assets-managem
 
 Use chapters to give the reader context and to label save slots. The Interactive Fiction template includes a helper that stores the current chapter name and counter in Pixi’VN storage:
 
-```ts
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+# chapter chapter_the_station
+The rain had stopped by the time I reached the old station.
+```
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
 import { setChapter } from "@/lib/utils/chapter-utility";
 
 setChapter("chapter_the_station");
 ```
 
-Pass a translation key, so the chapter name can be translated when it is displayed. The template's save/load menu contains one quick-save slot and five manual slots. A save row can show its custom name or chapter, its date and time, and an excerpt from the latest dialogue.
+Pass a translation key, so the chapter name can be translated when it is displayed. To read the values back, use the Ink variables `chapter_counter` and `chapter_name`, or `getChapterCounter()` and `getChapterName()` in TypeScript.
 
-Chapter tracking and the six-slot menu are template features. For Pixi’VN's save API, see <DynamicLink href="/start/save">Save and load</DynamicLink>; for the template behavior, see its [chapters and saves guide](https://github.com/DRincs-Productions/interactive-fiction-react-template/blob/main/docs/chapters-and-saves.md).
+The template's save/load menu contains one quick-save slot and five manual slots. A save row can show its custom name or chapter, its date and time, and an excerpt from the latest dialogue.
+
+Chapter tracking, the Ink commands, and the six-slot menu are template features. For Pixi’VN's save API, see <DynamicLink href="/start/save">Save and load</DynamicLink>.
 
 ## Next steps
 
