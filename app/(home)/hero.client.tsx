@@ -44,6 +44,7 @@ const previewButtonVariants = cva(
 
 const demoUrls = [
     "https://pixi-vn-visual-novel-example.pages.dev/demo",
+    "https://pixi-vn-interactive-fiction-example.pages.dev/demo",
     "https://pixi-vn-point-and-click-example.pages.dev/demo",
 ];
 
@@ -193,7 +194,8 @@ function Preview() {
     const t = useTranslations("HomePage");
     const demos = [
         { label: t("demo_visual_novel"), url: demoUrls[0] },
-        { label: t("demo_point_and_click"), url: demoUrls[1] },
+        { label: "Interactive Fiction", url: demoUrls[1] },
+        { label: t("demo_point_and_click"), url: demoUrls[2] },
     ];
 
     return (
