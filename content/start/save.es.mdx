@@ -82,6 +82,45 @@ export async function loadSave(
 
 </Accordion>
 
+<Accordion title="Custom save data" id="custom-save-data">
+
+Use [`Game.addOnExportGameState`](/jsdoc/pixi-vn/index/namespaces/Game/functions/addOnExportGameState) and [`Game.addOnRestoreGameState`](/jsdoc/pixi-vn/index/namespaces/Game/functions/addOnRestoreGameState) to include state owned by your game or another library in Pixi’VN saves. This avoids wrapping `Game.exportGameState` and `Game.restoreGameState`.
+
+Extend the public [`GameState`](/jsdoc/pixi-vn/index/interfaces/GameState) interface with TypeScript module augmentation. Keep custom fields optional so saves made before the data was added remain valid:
+
+```ts
+import { Game } from "@drincs/pixi-vn";
+
+declare module "@drincs/pixi-vn" {
+    interface GameState {
+        myLibraryData?: { score: number };
+    }
+}
+
+Game.addOnExportGameState(async (state) => {
+    state.myLibraryData = { score: await myLibrary.getScore() };
+});
+
+// Default timing: before Pixi'VN restores its built-in state.
+Game.addOnRestoreGameState(async (state) => {
+    if (state.myLibraryData) {
+        await myLibrary.restore(state.myLibraryData);
+    }
+});
+
+// Use "after" when the custom state depends on the restored game or navigation.
+Game.addOnRestoreGameState(
+    () => myLibrary.refreshUi(),
+    { timing: "after" },
+);
+```
+
+Export handlers run whenever `Game.exportGameState()` is called. They receive the complete save object and can add or update properties. Restore handlers receive the save object passed to `Game.restoreGameState()`. Handlers may be synchronous or asynchronous; export handlers and restore handlers at the same timing are awaited sequentially in registration order. Errors propagate to the save or load caller.
+
+`timing: "before"` (the default) runs before Pixi’VN restores its built-in modules. `timing: "after"` runs after built-in restoration and navigation. Both registration methods return a disposer function. You can also remove a handler directly with [`Game.removeOnExportGameState`](/jsdoc/pixi-vn/index/namespaces/Game/functions/removeOnExportGameState) or [`Game.removeOnRestoreGameState`](/jsdoc/pixi-vn/index/namespaces/Game/functions/removeOnRestoreGameState).
+
+</Accordion>
+
 </Accordions>
 
 ## Otras funcionalidades
