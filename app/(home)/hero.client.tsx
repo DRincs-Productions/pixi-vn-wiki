@@ -194,7 +194,7 @@ function Preview() {
     const t = useTranslations("HomePage");
     const demos = [
         { label: t("demo_visual_novel"), url: demoUrls[0] },
-        { label: "Interactive Fiction", url: demoUrls[1] },
+        { label: t("demo_interactive_fiction"), url: demoUrls[1] },
         { label: t("demo_point_and_click"), url: demoUrls[2] },
     ];
 
