@@ -312,6 +312,11 @@ export async function startTree(lang?: string): Promise<DocsLayoutProps["tree"]>
                                         name: t("canvas-text"),
                                         url: `${preUrl}/start/canvas-text`,
                                     },
+                                    {
+                                        type: "page",
+                                        name: t("canvas-animated-sprite"),
+                                        url: `${preUrl}/start/canvas-animated-sprite`,
+                                    },
                                 ],
                             },
                             {

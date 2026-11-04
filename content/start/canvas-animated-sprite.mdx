@@ -1,0 +1,340 @@
+---
+title: Animation (`AnimatedSprite`)
+description: |
+    How to show, add, control and save frame-by-frame animations from a spritesheet on the canvas using the `AnimatedSprite` component (`showAnimatedSprite` / `addAnimatedSprite`, frame selection, per-frame durations, play/pause).
+---
+
+The [`AnimatedSprite`](/jsdoc/pixi-vn/index/classes/AnimatedSprite) component extends [`PixiJS.AnimatedSprite`](https://pixijs.com/8.x/examples/sprite/animated-sprite-jet), so you can use all of its methods and properties. It is used to display a frame-by-frame animation, usually taken from a **spritesheet** (a JSON file + an image, as exported by TexturePacker, Aseprite, AssetPack, ...).
+
+Unlike a plain PixiJS `AnimatedSprite`, the frames are described by an [`AnimatedSpriteSource`](/jsdoc/pixi-vn/index/interfaces/AnimatedSpriteSource): an object that contains only asset aliases and frame names. This is what Pixi’VN saves, so when the player loads a save or goes back, the animation is rebuilt with the same frames, the same current frame and the same playing state.
+
+```ts tab="main.ts"
+import { AnimatedSprite, canvas } from "@drincs/pixi-vn";
+
+const explosion = new AnimatedSprite(
+    {
+        anchor: 0.5,
+        align: 0.5,
+        animationSpeed: 0.5,
+        autoPlay: true,
+    },
+    { spritesheet: "explosion" },
+);
+
+await explosion.load();
+canvas.add("explosion", explosion);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "explosion",
+                    src: "https://pixijs.com/assets/spritesheet/mc.json",
+                },
+            ],
+        },
+    ],
+};
+```
+
+Compared to the [`Sprite`](/jsdoc/pixi-vn/index/classes/Sprite) component, [`AnimatedSprite`](/jsdoc/pixi-vn/index/classes/AnimatedSprite) adds the following features:
+
+- [`source`](/jsdoc/pixi-vn/index/classes/AnimatedSprite#source): The description of the frames (spritesheet, animation, frames).
+- [`load`](/jsdoc/pixi-vn/index/classes/AnimatedSprite#load): Method to load the frames described by `source`.
+- [`play`](/jsdoc/pixi-vn/index/classes/AnimatedSprite#play) and [`stop`](/jsdoc/pixi-vn/index/classes/AnimatedSprite#stop): Methods to play and pause the animation.
+- [`gotoAndPlay`](/jsdoc/pixi-vn/index/classes/AnimatedSprite#gotoandplay) and [`gotoAndStop`](/jsdoc/pixi-vn/index/classes/AnimatedSprite#gotoandstop): Methods to jump to a frame.
+- [`setFrame`](/jsdoc/pixi-vn/index/classes/AnimatedSprite#setframe): Like `gotoAndPlay`/`gotoAndStop`, but also works before the frames are loaded.
+- [`animationSpeed`](/jsdoc/pixi-vn/index/classes/AnimatedSprite#animationspeed): The speed of the animation (`1` = one frame per tick, at 60 fps).
+- [`loop`](/jsdoc/pixi-vn/index/classes/AnimatedSprite#loop): Indicates if the animation should restart after the last frame.
+- [`currentFrame`](/jsdoc/pixi-vn/index/classes/AnimatedSprite#currentframe), [`totalFrames`](/jsdoc/pixi-vn/index/classes/AnimatedSprite#totalframes) and [`playing`](/jsdoc/pixi-vn/index/classes/AnimatedSprite#playing): The state of the animation.
+
+## Show
+
+The simplest way to show an animation on the canvas is to use the [`showAnimatedSprite`](/jsdoc/pixi-vn/index/functions/showAnimatedSprite) function. This function combines [`load`](/jsdoc/pixi-vn/index/classes/AnimatedSprite#load) and [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add), and starts playing the animation (pass `autoPlay: false` to start it stopped).
+
+The second argument is the source of the frames: the alias (or URL) of a spritesheet, or an [`AnimatedSpriteSource`](/jsdoc/pixi-vn/index/interfaces/AnimatedSpriteSource). If you don't pass it, the alias of the component is used as the alias of the spritesheet.
+
+When only the spritesheet is set, all its frames are used, sorted in natural order (`frame2` comes before `frame10`).
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showAnimatedSprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        // "explosion" is both the alias of the component and of the spritesheet
+        await showAnimatedSprite("explosion", undefined, {
+            anchor: 0.5,
+            align: { x: 0.25, y: 0.5 },
+            animationSpeed: 0.5,
+        });
+        // a different alias for the component
+        await showAnimatedSprite("player", "fighter", {
+            anchor: 0.5,
+            align: { x: 0.75, y: 0.5 },
+            animationSpeed: 0.4,
+        });
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "explosion",
+                    src: "https://pixijs.com/assets/spritesheet/mc.json",
+                },
+                {
+                    alias: "fighter",
+                    src: "https://pixijs.com/assets/spritesheet/fighter.json",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<PixiVnExample path="animated-sprite/animated-sprite-show" />
+
+## Add
+
+To add an animation to the canvas, use the [`addAnimatedSprite`](/jsdoc/pixi-vn/index/functions/addAnimatedSprite) function. This function only adds the component to the canvas; it does **not** load its frames. Call [`load`](/jsdoc/pixi-vn/index/classes/AnimatedSprite#load) when you want to show it.
+
+```ts tab="content/labels/start.label.ts"
+import { addAnimatedSprite, AnimatedSprite, canvas, newLabel } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    () => {
+        addAnimatedSprite("fighter", undefined, {
+            anchor: 0.5,
+            align: 0.5,
+            animationSpeed: 0.4,
+        });
+    },
+    async () => {
+        const fighter = canvas.find<AnimatedSprite>("fighter");
+        if (fighter) {
+            await fighter.load();
+            fighter.play();
+        }
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "fighter",
+                    src: "https://pixijs.com/assets/spritesheet/fighter.json",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<PixiVnExample path="animated-sprite/animated-sprite-add" />
+
+## Remove
+
+As with other canvas components, you can remove this component using the [`canvas.remove`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#remove) function.
+
+## Play, pause and speed
+
+Use [`play`](/jsdoc/pixi-vn/index/classes/AnimatedSprite#play) and [`stop`](/jsdoc/pixi-vn/index/classes/AnimatedSprite#stop) to resume and pause the animation, [`animationSpeed`](/jsdoc/pixi-vn/index/classes/AnimatedSprite#animationspeed) to change its speed, and [`gotoAndStop`](/jsdoc/pixi-vn/index/classes/AnimatedSprite#gotoandstop) / [`gotoAndPlay`](/jsdoc/pixi-vn/index/classes/AnimatedSprite#gotoandplay) to jump to a frame.
+
+```ts tab="content/labels/start.label.ts"
+import { AnimatedSprite, canvas, narration, newLabel, showAnimatedSprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        narration.dialogue = "Play the animation";
+        await showAnimatedSprite("fighter", undefined, {
+            anchor: 0.5,
+            align: 0.5,
+            animationSpeed: 0.4,
+        });
+    },
+    () => {
+        narration.dialogue = "Pause the animation";
+        canvas.find<AnimatedSprite>("fighter")?.stop();
+    },
+    () => {
+        narration.dialogue = "Resume the animation, slower";
+        const fighter = canvas.find<AnimatedSprite>("fighter");
+        if (fighter) {
+            fighter.animationSpeed = 0.1;
+            fighter.play();
+        }
+    },
+    () => {
+        narration.dialogue = "Go to frame 15 and stop";
+        canvas.find<AnimatedSprite>("fighter")?.gotoAndStop(15);
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "fighter",
+                    src: "https://pixijs.com/assets/spritesheet/fighter.json",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<PixiVnExample path="animated-sprite/animated-sprite-play-pause" />
+
+To repeat the animation forever, keep [`loop`](/jsdoc/pixi-vn/index/classes/AnimatedSprite#loop) set to `true` (the default). With `loop: false` the animation stops on its last frame.
+
+## Choose the frames
+
+An [`AnimatedSpriteSource`](/jsdoc/pixi-vn/index/interfaces/AnimatedSpriteSource) can select which frames to use:
+
+- `{ spritesheet, animation }`: the frames of an animation defined in the `animations` field of the spritesheet JSON.
+- `{ spritesheet, frames }`: the listed frames of the spritesheet, in the given order.
+- `{ frames }`: without a spritesheet, each frame is the alias (or URL) of a separate image.
+
+Each item of `frames` can also be an object `{ texture, time }`, to set the duration of that frame in milliseconds.
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showAnimatedSprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        // Only some frames of the spritesheet, in the given order
+        await showAnimatedSprite(
+            "fighter",
+            {
+                spritesheet: "fighter",
+                frames: ["rollSequence0000.png", "rollSequence0010.png", "rollSequence0020.png"],
+            },
+            { anchor: 0.5, align: { x: 0.25, y: 0.5 }, animationSpeed: 0.05 },
+        );
+        // Frames with a custom duration (in milliseconds)
+        await showAnimatedSprite(
+            "countdown",
+            {
+                spritesheet: "digits",
+                frames: [
+                    { texture: "0123456789 3.ase", time: 1000 },
+                    { texture: "0123456789 2.ase", time: 1000 },
+                    { texture: "0123456789 1.ase", time: 1000 },
+                    { texture: "0123456789 0.ase", time: 2000 },
+                ],
+            },
+            { anchor: 0.5, align: { x: 0.75, y: 0.5 }, scale: 3 },
+        );
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "fighter",
+                    src: "https://pixijs.com/assets/spritesheet/fighter.json",
+                },
+                {
+                    alias: "digits",
+                    src: "https://pixijs.com/assets/spritesheet/0123456789.json",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<PixiVnExample path="animated-sprite/animated-sprite-frames" />
+
+## Frame durations (Aseprite)
+
+Some tools, such as [Aseprite](https://www.aseprite.org/) and TexturePacker, store the `duration` (in milliseconds) of each frame in the spritesheet JSON. Set `useFrameDurations: true` to use these durations instead of a fixed speed. A frame without a `duration` lasts [`DEFAULT_ANIMATED_SPRITE_FRAME_TIME`](/jsdoc/pixi-vn/index/variables/DEFAULT_ANIMATED_SPRITE_FRAME_TIME) (100 ms). [`animationSpeed`](/jsdoc/pixi-vn/index/classes/AnimatedSprite#animationspeed) still works as a multiplier.
+
+```ts tab="content/labels/start.label.ts"
+import { newLabel, showAnimatedSprite } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        // Each digit of this Aseprite export lasts 500 ms
+        await showAnimatedSprite(
+            "digits",
+            { spritesheet: "digits", useFrameDurations: true },
+            { anchor: 0.5, align: 0.5, scale: 3 },
+        );
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "digits",
+                    src: "https://pixijs.com/assets/spritesheet/0123456789.json",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<PixiVnExample path="animated-sprite/animated-sprite-durations" />
+
+## Save and history
+
+The memory of an [`AnimatedSprite`](/jsdoc/pixi-vn/index/classes/AnimatedSprite) contains its `source`, `currentFrame`, `playing`, `animationSpeed`, `loop` and all the usual position properties. When a save is loaded or the player goes back, the frames are loaded again from the `source`.
+
+<Callout type="warn">
+
+- An `AnimatedSprite` created directly from a `Texture[]` (without a `source`) is rendered correctly, but it can't be restored from a save.
+- The `onComplete`, `onFrameChange` and `onLoop` callbacks are not saved. For logic that must survive a save, use `.on(...)` with a handler registered with [`@eventDecorator`](/jsdoc/pixi-vn/index/functions/eventDecorator).
+
+</Callout>
+
+## Use the frames in a custom component
+
+If you are creating a custom component, [`getSpritesheet`](/jsdoc/pixi-vn/index/functions/getSpritesheet) loads a spritesheet from its alias, and [`getAnimatedSpriteFrames`](/jsdoc/pixi-vn/index/functions/getAnimatedSpriteFrames) turns an [`AnimatedSpriteSource`](/jsdoc/pixi-vn/index/interfaces/AnimatedSpriteSource) into the frames of a PixiJS `AnimatedSprite`.
+
+```ts
+import { getAnimatedSpriteFrames } from "@drincs/pixi-vn";
+
+const frames = await getAnimatedSpriteFrames({ spritesheet: "hero", animation: "walk" });
+```
