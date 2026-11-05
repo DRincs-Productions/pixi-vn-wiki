@@ -98,6 +98,8 @@ narration.choices = [
 ];
 ```
 
+When the choices appear, the template scrolls the page all the way to the bottom so the reader sees every option.
+
 Use a jump (`-> label` in Ink, `narration.jump(label, props)` in TypeScript) to move the story forward to a new section. Use a call (`<- label` in Ink, `narration.call(label, props)` in TypeScript) for a digression that should return to its caller.
 
 The Interactive Fiction template also renders links written in Markdown. A link whose target matches a registered label becomes an in-story link and jumps to that label; an ordinary URL remains an external link:
@@ -149,6 +151,29 @@ The windows were dark, except for the light above the ticket office.
 ```
 
 The template's `MarkdownImage` renderer displays the image as an illustration in the page. A registered Pixi’VN asset alias such as `station_at_dusk` is resolved to its asset URL; a regular image URL can also be used.
+
+### Size and alignment
+
+By default a vignette is full width. To make it narrower or align it to one side, add the options in the Markdown image **title**, separated by spaces and in any order:
+
+- **width**: a percentage (`50%`) or a size in pixels (`320px`, or just `320`);
+- **alignment**: `left`, `right`, or `center` (the default).
+
+The longer forms `width=50%` and `align=right` are also accepted.
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+![The station on the hill at dusk](station_at_dusk "40% right")The path climbed above the trees. The windows were dark, except for the light above the ticket office.
+```
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+narration.dialogue = `![The station on the hill at dusk](station_at_dusk "40% right")The path climbed above the trees. The windows were dark, except for the light above the ticket office.`;
+```
+
+A vignette narrower than the page and aligned `left` or `right` floats, and the text that follows it wraps beside it, like a picture set into a book column. Text wraps only while the free space beside the image is at least `VIGNETTE_MIN_WRAP_TEXT_WIDTH_PX` (160 px by default, in `src/constants.ts`). On narrower screens the vignette is shown on its own row instead, keeping its alignment. A centered vignette never has text beside it.
+
+<Callout type="info">
+Only the text written **after** the image wraps around it, so put a floating vignette at the start of the paragraph. In Ink, do not use `#` inside the image syntax: Ink reads it as the start of a tag.
+</Callout>
 
 This inline image behavior belongs to the React template. Pixi’VN provides the narrative state and asset system; a custom interface needs its own Markdown image renderer to present vignettes. You can still use Pixi’VN's canvas in a project that intentionally adds a canvas-based scene, but the book layout does not depend on it.
 
