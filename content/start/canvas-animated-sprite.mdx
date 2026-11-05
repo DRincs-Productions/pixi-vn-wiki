@@ -60,7 +60,10 @@ Compared to the [`Sprite`](/jsdoc/pixi-vn/index/classes/Sprite) component, [`Ani
 
 The simplest way to show an animation on the canvas is to use the [`showAnimatedSprite`](/jsdoc/pixi-vn/index/functions/showAnimatedSprite) function. This function combines [`load`](/jsdoc/pixi-vn/index/classes/AnimatedSprite#load) and [`canvas.add`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#add), and starts playing the animation (pass `autoPlay: false` to start it stopped).
 
-The second argument is the source of the frames: the alias (or URL) of a spritesheet, or an [`AnimatedSpriteSource`](/jsdoc/pixi-vn/index/interfaces/AnimatedSpriteSource). If you don't pass it, the alias of the component is used as the alias of the spritesheet.
+The function accepts two forms:
+
+- `showAnimatedSprite(alias, options)`: the alias of the component is also the alias of the spritesheet.
+- `showAnimatedSprite(alias, source, options)`: `source` is the alias (or URL) of a spritesheet, or an [`AnimatedSpriteSource`](/jsdoc/pixi-vn/index/interfaces/AnimatedSpriteSource). If `source` is `undefined`, or it has no `spritesheet` and no `frames` (for example `{ animation: "walk" }`), the alias of the component is used as the alias of the spritesheet.
 
 When only the spritesheet is set, all its frames are used, sorted in natural order (`frame2` comes before `frame10`).
 
@@ -70,7 +73,7 @@ import { newLabel, showAnimatedSprite } from "@drincs/pixi-vn";
 export const startLabel = newLabel("start", [
     async () => {
         // "explosion" is both the alias of the component and of the spritesheet
-        await showAnimatedSprite("explosion", undefined, {
+        await showAnimatedSprite("explosion", {
             anchor: 0.5,
             align: { x: 0.25, y: 0.5 },
             animationSpeed: 0.5,
@@ -118,7 +121,7 @@ import { addAnimatedSprite, AnimatedSprite, canvas, newLabel } from "@drincs/pix
 
 export const startLabel = newLabel("start", [
     () => {
-        addAnimatedSprite("fighter", undefined, {
+        addAnimatedSprite("fighter", {
             anchor: 0.5,
             align: 0.5,
             animationSpeed: 0.4,
@@ -168,7 +171,7 @@ import { AnimatedSprite, canvas, narration, newLabel, showAnimatedSprite } from 
 export const startLabel = newLabel("start", [
     async () => {
         narration.dialogue = "Play the animation";
-        await showAnimatedSprite("fighter", undefined, {
+        await showAnimatedSprite("fighter", {
             anchor: 0.5,
             align: 0.5,
             animationSpeed: 0.4,
@@ -320,6 +323,35 @@ export const manifest: AssetsManifest = {
 
 <PixiVnExample path="animated-sprite/animated-sprite-durations" />
 
+## Events
+
+To run some logic when the animation ends, restarts or changes frame, listen to these events with [`on`](/jsdoc/pixi-vn/index/classes/AnimatedSprite#on):
+
+- `"complete"`: the animation reached its last frame and stopped (only with `loop: false`). The listener receives the component.
+- `"loop"`: the animation restarted from the first frame (only with `loop: true`). The listener receives the component.
+- `"frameChange"`: the current frame changed. The listener receives the new frame index and the component.
+
+As for the other <DynamicLink href="/start/canvas-functions#add-a-listener-to-an-event">canvas events</DynamicLink>, the listener must be registered with [`@eventDecorator`](/jsdoc/pixi-vn/index/functions/eventDecorator), so it is saved and still works after loading a save or going back. The listeners are not called while the frames are loaded or a save is restored.
+
+```ts tab="content/labels/start.label.ts"
+import { AnimatedSprite, canvas, eventDecorator, newLabel, showAnimatedSprite } from "@drincs/pixi-vn";
+
+export class ExplosionEvents {
+    @eventDecorator()
+    static remove(component: AnimatedSprite) {
+        canvas.remove(component.label);
+    }
+}
+
+export const startLabel = newLabel("start", [
+    async () => {
+        const explosion = await showAnimatedSprite("explosion", { anchor: 0.5, align: 0.5, loop: false });
+        // remove the explosion when the animation ends
+        explosion.on("complete", ExplosionEvents.remove);
+    },
+]);
+```
+
 ## Save and history
 
 The memory of an [`AnimatedSprite`](/jsdoc/pixi-vn/index/classes/AnimatedSprite) contains its `source`, `currentFrame`, `playing`, `animationSpeed`, `loop` and all the usual position properties. When a save is loaded or the player goes back, the frames are loaded again from the `source`.
@@ -327,7 +359,7 @@ The memory of an [`AnimatedSprite`](/jsdoc/pixi-vn/index/classes/AnimatedSprite)
 <Callout type="warn">
 
 - The frames can only come from an [`AnimatedSpriteSource`](/jsdoc/pixi-vn/index/interfaces/AnimatedSpriteSource): you can't pass a `Texture[]`, and `AnimatedSprite.fromFrames`/`fromImages` throw an error, because loaded textures can't be saved.
-- The `onComplete`, `onFrameChange` and `onLoop` callbacks are not saved. For logic that must survive a save, use `.on(...)` with a handler registered with [`@eventDecorator`](/jsdoc/pixi-vn/index/functions/eventDecorator).
+- The `onComplete`, `onFrameChange` and `onLoop` callbacks of PixiJS are not saved. Use the [events](#events) instead.
 
 </Callout>
 
