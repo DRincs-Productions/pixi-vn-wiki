@@ -1,0 +1,81 @@
+---
+title: Komponenten
+description: Überblick über integrierte und benutzerdefinierte Canvas-Komponenten in Pixi’VN, einschließlich Erweiterungs- und Speicherfunktionen.
+---
+
+Pixi’VN stellt eine Reihe von Canvas-Komponenten bereit. Diese Komponenten erweitern die [Pixi.js](https://pixijs.com/)-Komponenten und fügen verschiedene Funktionen hinzu, wie z. B. die Möglichkeit, ihren aktuellen Zustand zu speichern.
+
+<Accordions>
+
+<Accordion title="Integrierte Komponenten" id="base-components">
+
+* [`Sprite`](/jsdoc/pixi-vn/index/classes/Sprite) entspricht der Komponente [`PixiJS.Sprite`](https://pixijs.com/8.x/guides/components/sprites).
+* [`Container`](/jsdoc/pixi-vn/index/classes/Container) entspricht der Komponente [`PixiJS.Container`](https://pixijs.com/8.x/guides/components/containers).
+* <DynamicLink href="/start/canvas-image">`ImageSprite`</DynamicLink> ist eine von Pixi’VN eingeführte Komponente.
+* <DynamicLink href="/start/canvas-image-container">`ImageContainer`</DynamicLink> ist eine von Pixi’VN eingeführte Komponente.
+* <DynamicLink href="/start/canvas-video">`VideoSprite`</DynamicLink> ist eine von Pixi’VN eingeführte Komponente.
+* <DynamicLink href="/start/canvas-text">`Text`</DynamicLink> ist eine Komponente, die von Pixi’VN eingeführt wurde.
+
+</Accordion>
+
+<Accordion title="Plugin-Komponenten" id="additional-components">
+
+* <DynamicLink href="/start/canvas-spine2D">Spine 2D</DynamicLink> ist eine Komponente, die über das Plugin-System von Pixi’VN installiert werden kann. Sie wird verwendet, um Spine-2D-Animationen darzustellen.
+
+</Accordion>
+
+</Accordions>
+
+## Weitere Funktionen
+
+<Accordions>
+
+<Accordion title="Benutzerdefinierte Komponenten" id="custom-components">
+
+Sie können benutzerdefinierte Komponenten erstellen, indem Sie die Basiskomponenten erweitern. Dazu müssen Sie den Decorator [`@canvasComponentDecorator`](/jsdoc/pixi-vn/index/functions/canvasComponentDecorator) verwenden.
+
+Es ist notwendig, den Getter [`memory`](/jsdoc/pixi-vn/index/classes/CanvasBaseItem#memory) und die Methode [`setMemory`](/jsdoc/pixi-vn/index/classes/CanvasBaseItem#setmemory) zu überschreiben, um die Eigenschaften der benutzerdefinierten Komponente zu speichern.
+In `get memory()` ist es sehr wichtig, die Eigenschaft `className` zurückzugeben; diese Eigenschaft muss gleich der im Decorator verwendeten ID sein.
+
+Sie können beispielsweise eine `AlienTinting`-Klasse erstellen, die die `Sprite`-Klasse erweitert, um die Richtung und Geschwindigkeit jedes einzelnen Aliens in einer Animation zu verwalten.
+
+```ts title="canvas/components/AlienTinting.ts"
+const ALIEN_TINTING_TEST_ID = "AlienTintingTest";
+@canvasComponentDecorator({
+    name: ALIEN_TINTING_TEST_ID,
+})
+class AlienTintingTest extends Sprite<IAlienTintingMemory> {
+    readonly pixivnId: string = CANVAS_SPINE_ID;
+    override get memory() {
+        return {
+            ...super.memory,
+            pixivnId: CANVAS_SPINE_ID,
+            direction: this.direction,
+            turningSpeed: this.turningSpeed,
+            speed: this.speed,
+        };
+    }
+    override async setMemory(memory: IAlienTintingMemory) {
+        await super.setMemory(memory);
+        this.direction = memory.direction;
+        this.turningSpeed = memory.turningSpeed;
+        this.speed = memory.speed;
+    }
+    direction: number = 0;
+    turningSpeed: number = 0;
+    speed: number = 0;
+    static override from(
+        source: Texture | TextureSourceLike,
+        skipCache?: boolean,
+    ) {
+        let sprite = Sprite.from(source, skipCache);
+        let mySprite = new AlienTintingTest();
+        mySprite.texture = sprite.texture;
+        return mySprite;
+    }
+}
+```
+
+</Accordion>
+
+</Accordions>

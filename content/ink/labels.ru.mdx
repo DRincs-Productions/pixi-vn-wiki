@@ -1,0 +1,247 @@
+---
+title: Knots
+description: |
+  Узнайте, как работают knots и labels в Pixi’VN, как запускать их из скриптов ink или JavaScript и чем нативный ink отличается от интеграции с Pixi’VN.
+---
+
+<Accordions>
+
+<Accordion title="Что такое `knot`?" id="what-is-a-knot">
+
+Как объясняется в [официальной документации](https://www.inklestudios.com/ink/web-tutorial/), история состоит из нескольких связанных разделов, которые в **терминологии *ink*** называются `knots`. В ***ink*** начало `knot` обозначается как минимум двумя знаками равенства слева от имени `knot`. Справа их тоже можно поставить, но это необязательно.
+
+```ink tab="ink"
+=== london ===
+```
+
+```txt tab="CLI"
+=== <knot_name> ===
+
+where:
+    knot_name = the name of the knot
+```
+
+</Accordion>
+
+<Accordion title="Есть ли различия между `label` и `knot`?" id="label-vs-knot">
+
+Нет, это одно и то же. В Pixi’VN при создании `knot` с помощью ***ink*** внутри создаётся `label` и сохраняется в реестре.
+
+</Accordion>
+
+</Accordions>
+
+## Выполнение knot
+
+Для выполнения `knot` можно использовать следующие способы:
+
+<Accordions>
+
+<Accordion title="Diverts `-> start` (переход к `label`)" id="jump">
+
+Выполнить `knot` можно с помощью оператора Divert, который записывается синтаксисом `-> start`. Это соответствует <DynamicLink href="/start/labels#jump-to-a-label">функции `jump`</DynamicLink> библиотеки Pixi’VN.
+
+```ink tab="ink"
+-> after
+```
+
+```txt tab="CLI"
+-> <knot_name>
+
+where:
+    knot_name = the name of the knot to jump to
+```
+
+Например:
+
+```ink title="ink/start.ink"
+=== start ===
+Start
+-> after
+
+=== after ===
+After
+End
+-> DONE
+```
+
+<PixiVnExample path="ink/narration/jump" ink />
+
+</Accordion>
+
+<Accordion title="Tunnels `-> start ->` или Threads `<- start`  (вызов `label`)" id="call">
+
+Выполнить `knot` можно с помощью оператора Tunnels, который записывается синтаксисом `-> start ->`. Это соответствует <DynamicLink href="/start/labels#call-to-a-label">функции `call`</DynamicLink> библиотеки Pixi’VN.
+
+```ink tab="ink"
+-> guard_dialogue ->
+```
+
+```txt tab="CLI"
+-> <knot_name> ->
+
+where:
+    knot_name = the name of the knot to call
+```
+
+Также можно использовать синтаксис Threads: напишите символ `\<-`, а затем имя `knot`:
+
+```ink tab="ink"
+<- guard_dialogue
+```
+
+```txt tab="CLI"
+<- <knot_name>
+
+where:
+    knot_name = the name of the knot to call
+```
+
+:::tip[Threads]
+
+В отличие от **нативного ink**, в **интеграции ink + Pixi’VN** «Threads» не поддерживаются, поэтому символ `\<-` соответствует вызову `knot`, а не оператору «Thread».
+
+:::
+
+:::tip
+
+Для простоты в **интеграции ink + Pixi’VN** и `->->`, и `-> DONE` корректно завершают `label`, поэтому они эквивалентны.
+
+:::
+
+Например:
+
+```ink title="ink/start.ink"
+VAR reputation = 0
+
+-> start
+=== start ===
+You are in the square.
+
+* [Talk to the guard]
+    -> guard_dialogue ->
+    You return to the square.
+    -> start
+    You don't see this line because you are sent back to the city before.
+
+* {reputation >= 1} [Ask for a favor]
+    The guard helps you.
+    -> END
+
+=== guard_dialogue ===
+The guard looks at you.
+
+* [Greet]
+    "Hello citizen."
+    ~ reputation += 1
+->->
+
+* [Insult]
+    "Hey you!"
+    ~ reputation -= 1
+
+->->
+```
+
+<PixiVnExample path="ink/narration/call" ink />
+
+</Accordion>
+
+</Accordions>
+
+## Другие возможности
+
+<Accordions>
+
+<Accordion title="Параметры" id="parameters">
+
+Особенно полезная разновидность временной переменной — **параметр**. Любой knot или stitch может принимать значение в качестве параметра, который рассматривается как локальная временная переменная внутри этого knot:
+
+```ink title="ink/start.ink"
+=== start ===
+*   [Accuse Hastings]
+        -> accuse("Hastings")
+*   [Accuse Mrs Black]
+        -> accuse("Claudia")
+*   [Accuse myself]
+        -> accuse("myself")
+
+=== accuse(who) ===
+    "I accuse {who}!" Poirot declared.
+    "Really?" Japp replied. "{who == "myself":You did it?|{who}?}"
+    "And why not?" Poirot shot back.
+```
+
+Параметры — правильный способ передавать временное значение из одного knot или stitch в другой, поскольку обычные переменные `temp` недоступны за пределами stitch, в котором они были объявлены.
+
+</Accordion>
+
+<Accordion title="Рекурсивные knots с параметрами" id="recursive-knots-with-parameters">
+
+Временные переменные (включая параметры) можно безопасно использовать в рекурсивных knots:
+
+```ink title="ink/start.ink"
+-> add_one_to_one_hundred(0, 1)
+
+=== add_one_to_one_hundred(total, x) ===
+    ~ total = total + x
+    { x == 100:
+        -> finished(total)
+    - else:
+        -> add_one_to_one_hundred(total, x + 1)
+    }
+
+=== finished(total) ===
+    "The result is {total}!" you announce.
+    -> END
+```
+
+</Accordion>
+
+<Accordion title="Передача целей перехода в качестве параметров" id="sending-divert-targets-as-parameters">
+
+Адреса knots также можно передавать в качестве параметров. Используйте `->`, чтобы указать, что параметр является целью перехода:
+
+```ink title="ink/start.ink"
+=== sleeping_in_hut ===
+    You lie down and close your eyes.
+    -> generic_sleep(-> waking_in_the_hut)
+
+=== generic_sleep(-> waking) ===
+    You sleep perchance to dream etc. etc.
+    -> waking
+
+=== waking_in_the_hut ===
+    You get back to your feet, ready to continue your journey.
+```
+
+</Accordion>
+
+<Accordion title="Переход в пределах одного `step`" id="diverting-in-the-same-step">
+
+По умолчанию переход к другому `knot` выполняется на следующем `step`, поэтому содержимое целевого knot отображается только после продолжения выполнения:
+
+```ink title="ink/start.ink"
+=== start ===
+It is, first and foremost...
+-> add2
+
+=== add2 ===
+...a story about the twelve labors of Hercules.
+-> DONE
+```
+
+Если переход разместить сразу после текста, без переноса строки, целевой `knot` выполнится на том же `step`, что и предшествующий текст, поэтому они отобразятся вместе:
+
+```ink title="ink/start.ink"
+=== start ===
+It is, first and foremost...-> add2
+
+=== add2 ===
+...a story about the twelve labors of Hercules.
+-> DONE
+```
+
+</Accordion>
+
+</Accordions>

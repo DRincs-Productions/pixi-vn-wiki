@@ -1,0 +1,96 @@
+---
+title: Menús de elección
+description: |
+  Cómo presentar y controlar los menús de elección en ink nativo, incluidas las elecciones de un solo uso, persistentes, condicionales y de reserva. Compatible con la integración de Pixi’VN.
+---
+
+:::tip
+
+La **integración de *ink* + Pixi’VN** admite las elecciones nativas de *ink* sin introducir nuevos tipos de elección. Para conocer todos los detalles sobre la sintaxis y el comportamiento de las elecciones, consulta la [documentación oficial de ink](https://www.inklestudios.com/ink/).
+
+:::
+
+Puedes pedir al jugador que tome una decisión en *ink* mediante una lista de opciones marcadas con `*` o `+`, seguidas del texto de la elección. El texto de la elección se muestra al jugador, que selecciona una opción para continuar la historia.
+
+* `*` indica una elección que solo puede hacerse una vez.
+* `+` indica una elección que puede hacerse varias veces (elección persistente).
+
+```ink title="ink/start.ink"
+=== start ===
+* Go to Paris
+  You decide to visit Paris. -> visit_paris
++ Go to London -> visit_london
+* Stay at home
+  You decide to stay at home. -> DONE
+```
+
+## Ocultar el texto de las elecciones
+
+De forma predeterminada, el texto de la opción elegida vuelve a aparecer en la salida. Si el texto visible de una elección aparece entre corchetes, solo se muestra en el menú de elecciones y no se imprime en la salida posterior.
+
+```ink title="ink/start.ink"
+=== start ===
+Hello world!
+* [Hello back!]
+ Nice to hear from you!
+```
+
+Los corchetes dividen el contenido de la opción: lo que aparece antes se muestra tanto en el menú como en la salida; lo que queda dentro solo aparece en el menú; y lo que sigue después solo aparece en la salida. Esto resulta útil para las elecciones de diálogo:
+
+```ink title="ink/start.ink"
+=== start ===
+"What's that?" my master asked.
+* "I am somewhat tired[."]," I repeated.
+ "Really," he responded. "How deleterious."
+```
+
+## Variaciones de las elecciones
+
+<Accordions>
+
+<Accordion title="Elecciones de reserva" id="fallback-choices">
+
+Las elecciones de reserva nunca se muestran al jugador, sino que el motor las selecciona automáticamente cuando no hay otras opciones disponibles.
+
+Una elección de reserva es simplemente una elección sin texto visible:
+
+```ink tab="ink"
+* -> out_of_options
+```
+
+```txt tab="CLI"
+* -> <knot_name>
+
+where:
+    knot_name = the name of the knot to jump to when no other choice is available
+```
+
+Por ejemplo:
+
+```ink title="ink/start.ink"
+=== start ===
+ You search desperately for a friendly face in the crowd.
+ * The woman in the hat[?] pushes you roughly aside. -> find_help
+ * The man with the briefcase[?] looks disgusted as you stumble past him. -> find_help
+ * -> // fallback
+  But it is too late: you collapse onto the station platform. This is the end.
+  -> END
+```
+
+</Accordion>
+
+<Accordion title="Elecciones condicionales" id="conditional-choices">
+
+Puedes habilitar o deshabilitar elecciones mediante condiciones. La comprobación más sencilla consiste en saber si el jugador ya ha visitado un `knot` o `stitch` determinado.
+
+```ink title="ink"
+* { not visit_paris }  [Go to Paris] -> visit_paris
++ { visit_paris }      [Return to Paris] -> visit_paris
+* { visit_paris.met_estelle } [Telephone Mme Estelle] -> phone_estelle
+```
+
+Nota: la comprobación `knot_name` es verdadera si se ha visitado cualquier `stitch` dentro de ese knot. Las condiciones no anulan el comportamiento de un solo uso de las opciones `*`; utiliza `+` para las opciones repetibles.
+
+</Accordion>
+
+</Accordions>

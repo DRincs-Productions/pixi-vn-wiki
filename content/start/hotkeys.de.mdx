@@ -1,0 +1,65 @@
+---
+title: Hotkeys
+description: Wie du in Pixi’VN mit TanStack Hotkeys Tastenkombinationen (Hotkeys) erstellst, mit Beispielen für Schnellspeichern/Schnellladen und Minispiel-Steuerungen.
+---
+
+Hotkeys ermöglichen es Spielern, Aktionen direkt über die Tastatur auszulösen, etwa Schnellspeichern, das Überspringen von Dialogen oder die Steuerung eines <DynamicLink href="/start/minigames">Minispiels</DynamicLink>. Anstatt selbst `window.addEventListener("keydown", ...)`-Aufrufe zu verwalten, empfiehlt es sich, [TanStack Hotkeys](https://tanstack.com/hotkeys/latest) zu verwenden, eine Bibliothek, die Tastatureingaben in ein typisiertes Befehlssystem mit Scopes, Sequenzen, gehaltenen Tasten und Konflikterkennung umwandelt.
+
+:::tip
+
+Eine Liste der Hotkeys, die häufig in Visual-Novels verwendet werden (Schnellspeichern, Schnellladen, Verlauf, Einstellungen, ...) ist in den <DynamicLink href="/faq#hotkeys">FAQ</DynamicLink> verfügbar.
+
+:::
+
+<Accordions>
+
+<Accordion title="Installation" id="installation">
+
+:::tip[Vorlagen]
+
+In allen Templates ist das TanStack-Hotkeys-Paket bereits installiert.
+
+:::
+
+TanStack Hotkeys liefert für jedes Framework ein eigenes Paket. Installiere für ein React-Projekt:
+
+```npm
+npm install @tanstack/react-hotkeys
+```
+
+Vue-, Angular- und Lit-Adapter sind ebenfalls verfügbar — ersetze `@tanstack/react-hotkeys` durch das Paket deines Frameworks.
+
+</Accordion>
+
+</Accordions>
+
+## Verwendung
+
+Registriere einen Hotkey mit dem `useHotkey`-Hook:
+
+```tsx
+import { useHotkey } from "@tanstack/react-hotkeys";
+
+useHotkey("Mod+S", () => {
+    quickSave();
+});
+```
+
+Der Modifikator `Mod` wird auf macOS automatisch zu `Meta` (Cmd) und unter Windows/Linux zu `Control` aufgelöst, sodass derselbe Code plattformübergreifend funktioniert.
+
+## Scoping und bedingtes Aktivieren
+
+`useHotkey` ist ein Hook, der die Tastenkombination beim Mounten der Komponente registriert und beim Unmounten automatisch wieder entfernt — anders als bei einem manuellen `window.addEventListener` musst du den Listener nicht selbst entfernen.
+
+Verwende die Option `target`, um einen Hotkey auf ein bestimmtes Element zu beschränken, und `enabled`, um ihn je nach Spielstatus ein- oder auszuschalten, zum Beispiel während ein Minispiel läuft:
+
+```tsx
+const panelRef = useRef<HTMLDivElement>(null);
+
+useHotkey("Escape", () => closePanel(), { target: panelRef });
+useHotkey("ArrowUp", () => setDirection(0, -1), { enabled: !gameOver });
+```
+
+## Mehr erfahren
+
+TanStack Hotkeys unterstützt außerdem Tastenfolgen (z. B. „G dann D“), gehaltene Tasten, Konflikterkennung und ein Devtools-Panel. Die vollständige Funktionsübersicht findest du in der [offiziellen Dokumentation](https://tanstack.com/hotkeys/latest).

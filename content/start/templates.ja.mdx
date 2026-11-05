@@ -1,0 +1,357 @@
+---
+title: テンプレート
+description: テンプレートから Pixi’VN プロジェクトを生成し、IDE で設定して実行・カスタマイズする方法と、プロジェクト構造について説明します。
+---
+
+次のコマンドを実行すると、テンプレートから新しいプロジェクトを生成できます：
+
+```npm
+npm create pixi-vn@latest
+```
+
+## インタラクティブデモ
+
+<Accordions>
+
+<Accordion title="ビジュアルノベル" id="visual-novel">
+
+<iframe
+src="https://pixi-vn-visual-novel-example.pages.dev/demo"
+title="ビジュアルノベル"
+style={{
+      width: "100%",
+      height: "400px",
+      border: "0",
+      borderRadius: "4px",
+      overflow: "hidden",
+  }}
+allowFullScreen={true}
+/>
+
+</Accordion>
+
+<Accordion title="Interactive Fiction" id="interactive-fiction">
+
+<iframe
+src="https://pixi-vn-interactive-fiction-example.pages.dev/demo"
+title="Interactive Fiction"
+style={{
+      width: "100%",
+      height: "400px",
+      border: "0",
+      borderRadius: "4px",
+      overflow: "hidden",
+  }}
+allowFullScreen={true}
+/>
+
+</Accordion>
+
+<Accordion title="Point & Click Adventure" id="point-click-adventure">
+
+<iframe
+src="https://pixi-vn-point-and-click-example.pages.dev/demo"
+title="Point & Click Adventure"
+style={{
+      width: "100%",
+      height: "400px",
+      border: "0",
+      borderRadius: "4px",
+      overflow: "hidden",
+  }}
+allowFullScreen={true}
+/>
+
+</Accordion>
+
+</Accordions>
+
+## テンプレートの使い方
+
+このページを読んでいる方は、すでにテンプレートからプロジェクトを生成していることでしょう。以下のセクションでは、プロジェクトを動作させるための最初の手順を説明します。
+
+### 初期設定
+
+IDE でプロジェクトフォルダーを開きます。以下の例では [Visual Studio Code](https://code.visualstudio.com/) を使用します。
+
+プロジェクトを開くと、VS Code がいくつかの操作を自動的に提案します：
+
+* **推奨拡張機能をインストール** — ワークスペースで推奨される拡張機能のインストールを求める通知が表示されます。インストールすることを強くおすすめします。通知が表示されない場合は、拡張機能パネルで[推奨拡張機能](https://code.visualstudio.com/docs/editor/extension-marketplace#_recommended-extensions)を絞り込んで手動でインストールできます。
+* **起動タスクを実行** — VS Code から、設定済みの起動タスクの実行を求められる場合があります。これによりプロジェクトのすべての依存関係がインストールされます。手動で実行する場合は、次のコマンドを使用します：
+
+```npm
+npm install
+```
+
+:::warning[マルチプラットフォーム]
+
+デスクトップまたはモバイル向けのテンプレートを選択した場合は、[Tauri](https://v2.tauri.app/start/prerequisites/) に必要な追加の依存関係（Rust ツールチェーンと各プラットフォーム固有のビルドツール）をインストールする必要があります。 Tauri はシステム環境と密接に連携するため、プロジェクトをデスクトップアプリとして起動できるようになるまで、**VS Code を 1 回以上再起動する**必要がある場合があります。
+
+:::
+
+<Accordions>
+
+<Accordion title="Rust のインストール" id="installing-rust">
+
+どのプラットフォームでも Rust をインストールする最も簡単な方法は、公式の Rust ツールチェーンインストーラーである [rustup](https://rustup.rs/) を使用することです。
+
+<Tabs items={["Windows", "macOS", "Linux"]} groupId="os">
+    <Tab>
+
+    [`rustup-init.exe`](https://win.rustup.rs/) をダウンロードして実行するか、ターミナルから `winget` を使用してインストールします：
+
+    ```powershell
+    winget install --id Rustlang.Rustup
+    ```
+
+    インストール後、`cargo` コマンドが `PATH` から利用できるように、ターミナル（および VS Code）を再起動してください。
+
+    </Tab>
+    <Tab>
+
+    ターミナルを開いて次を実行します：
+
+    ```bash
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    ```
+
+    画面上の指示に従ったあと、`cargo` コマンドが `PATH` から利用できるように、ターミナル（および VS Code）を再起動してください。 Xcode Command Line Tools も必要です：
+
+    ```bash
+    xcode-select --install
+    ```
+
+    </Tab>
+    <Tab>
+
+    ターミナルを開いて次を実行します：
+
+    ```bash
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    ```
+
+    画面上の指示に従ったあと、`cargo` コマンドが `PATH` から利用できるように、ターミナル（および VS Code）を再起動してください。ディストリビューションによっては、Tauri に必要なシステムパッケージ（`webkit2gtk`、`build-essential`、`libssl-dev` など）を追加でインストールする必要があります。使用しているディストリビューションの正確なパッケージについては、[Tauri の Linux 向け前提条件](https://v2.tauri.app/start/prerequisites/#linux)を参照してください。
+
+    </Tab>
+
+</Tabs>
+
+インストール後、次のコマンドで確認します：
+
+```bash
+rustc --version
+```
+
+</Accordion>
+
+</Accordions>
+
+### プロジェクトの実行
+
+テンプレートには、VS Code 用の事前設定された**起動構成**が用意されています。起動構成を初めて使う場合：これは VS Code にプロジェクトの起動方法（必要に応じてデバッガーの接続方法）を指示するショートカットです。毎回ターミナルにコマンドを入力する必要がなくなります。**実行とデバッグ**パネル（左側のサイドバーにある再生アイコン、または `F5` キー）からアクセスできます。パネル上部のドロップダウンから使用する構成を選択し、緑色の再生ボタンを押します。
+
+![実行とデバッグパネル](/launch-configuration-dropdown.png)
+
+次の構成が利用できます：
+
+* **Debug Game**：開発中に最もよく使用する設定です。ファイルを保存するたびに、ブラウザーが自動的に再読み込みされます。このモードでは、アニメーションが完全になめらかに動かない場合があり、アセットの読み込みも公開用の最終ビルドより遅くなることがあります。
+* **Debug Game Preview**：公開後のゲームの動作を忠実に再現します。アニメーションがなめらかになり、読み込み時間は実際に近く、最適化も有効になります。公開前に表示や動作が意図どおりかを確認したいときは、この構成を使用してください。
+* **Run as Desktop App (Dev)**：Rust/Tauri バックエンドをコンパイルし、ネイティブのデスクトップウィンドウでゲームを起動します。テンプレートがデスクトップまたはモバイル向けでない場合、この構成は表示されません。
+
+<Accordions>
+
+<Accordion title="コマンドライン" id="command-line">
+
+すべてのコマンドはプロジェクトのルートディレクトリから実行してください。
+
+**開発**
+
+| コマンド                        | 説明                                                                |
+| --------------------------- | ----------------------------------------------------------------- |
+| `npm run dev`               | Vite の開発サーバーを起動し、ブラウザーでゲームを開きます。                                  |
+| `npm run tauri:dev`         | ゲームを**デスクトップ**アプリとして起動します（マルチプラットフォームテンプレートと Tauri のインストールが必要です）。 |
+| `npm run tauri:android:dev` | 接続された Android 端末またはエミュレーターでゲームを起動します。                             |
+| `npm run tauri:ios:dev`     | 接続された iOS 端末またはシミュレーターでゲームを起動します。                                 |
+
+**ビルドとプレビュー**
+
+| コマンド                 | 説明                                                                |
+| -------------------- | ----------------------------------------------------------------- |
+| `npm run build:fast` | Web アプリのみをビルドします（Tauri は使用しません）。高速で、Web への公開に適しています。              |
+| `npm run build`      | 完全ビルド：TypeScript をコンパイルし、Web アプリをビルドして、Tauri デスクトップアプリをパッケージ化します。 |
+| `npm run preview`    | `build:fast` を実行した後、生成結果をローカルで配信し、公開済みの Web ゲームを再現します。            |
+
+**アセットとアイコン**
+
+| コマンド           | 説明                                                                          |
+| -------------- | --------------------------------------------------------------------------- |
+| `npm run icon` | `public/icon.png` からすべてのアイコン形式（PWA、デスクトップ、モバイル）を生成します。アイコンを差し替えた後に実行してください。 |
+
+**ユーザーインターフェース**
+
+| コマンド                | 説明                                                                                               |
+| ------------------- | ------------------------------------------------------------------------------------------------ |
+| `npm run ui:reinit` | [shadcn/ui](https://ui.shadcn.com/) を最初から初期化し直します（すべてのコンポーネントを強制再インストール）。その後、ソースファイルを再フォーマットします。 |
+
+**コード品質**
+
+| コマンド             | 説明                                                |
+| ---------------- | ------------------------------------------------- |
+| `npm run lint`   | [Biome](https://biomejs.dev/) を使用してコードのエラーを検査します。 |
+| `npm run check`  | Biome のすべての検査（lint とフォーマットの確認）を実行します。             |
+| `npm run format` | すべてのソースファイルを自動的にフォーマットします。                        |
+
+</Accordion>
+
+</Accordions>
+
+### スタイルのカスタマイズ
+
+テンプレートの UI はすべて [shadcn/ui](https://ui.shadcn.com/) で構築されているため、コンポーネントのコードを変更せずにカラーテーマをカスタマイズできます。
+
+[shadcn/ui のテーマビルダー](https://ui.shadcn.com/create?template=vite\&base=base\&preset=b1s9eyGkS)を開き、好みの色に調整してから、ページの **Copy** セクションに移動し、生成された CSS コマンドをコピーしてください。そのコマンドをプロジェクトのルートから実行します：
+
+```npm
+npx shadcn@latest add <paste-the-generated-command-here>
+```
+
+適用した後は、ソースファイルを再フォーマットすることをおすすめします：
+
+```npm
+npm run format
+```
+
+フォントやグローバルスタイルなど、さらにカスタマイズする方法については <DynamicLink href="/start/interface-font">スタイルとフォント</DynamicLink> を参照してください。
+
+### プロジェクト構造
+
+<Files>
+    <Folder name="project" defaultOpen>
+        <Folder name="ink" defaultOpen>
+            <File name="start.ink" />
+        </Folder>
+        <Folder name="public" defaultOpen>
+            <File name="icon.png" />
+        </Folder>
+        <Folder name="src" defaultOpen>
+            <Folder name="assets">
+                <File name="manifest.gen.json" />
+                <File name="ink-manifest.gen.json" />
+                <File name="index.ts" />
+            </Folder>
+            <Folder name="components" />
+            <Folder name="content" defaultOpen>
+                <Folder name="ink">
+                    <File name="hashtag-commands.ts" />
+                    <File name="text-replaces.ts" />
+                </Folder>
+                <Folder name="labels">
+                    <File name="start.label.ts" />
+                </Folder>
+                <File name="characters.ts" />
+                <File name="index.ts" />
+            </Folder>
+            <Folder name="lib">
+                <Folder name="hooks" />
+                <Folder name="query" />
+                <Folder name="stores" />
+                <Folder name="utils" />
+                <File name="i18n.ts" />
+                <File name="steam.ts" />
+            </Folder>
+            <Folder name="locales">
+                <File name="en.json" />
+            </Folder>
+            <Folder name="models">
+                <File name="Character.ts" />
+                <File name="GameSaveData.ts" />
+            </Folder>
+            <Folder name="routes">
+                <Folder name="game">
+                    <File name="narration.tsx" />
+                </Folder>
+                <File name="__root.tsx" />
+                <File name="game.tsx" />
+                <File name="index.tsx" />
+            </Folder>
+            <File name="constants.ts" />
+            <File name="main.tsx" />
+            <File name="pixi-vn.keys.gen.ts" />
+            <File name="pixi-vn.d.ts" />
+            <File name="styles.css" />
+        </Folder>
+        <Folder name="src-tauri" />
+    </Folder>
+</Files>
+
+<Accordions>
+
+<Accordion title="ナレーション" id="project-structure-narration">
+
+* `ink/` — ここに ***ink*** スクリプトでストーリーを記述します。テンプレートには、最初の参考になるサンプル `start.ink` が含まれています。
+* `src/content/` — 起動時に自動的にインポートされます。すべてのゲーム要素をここで定義します：
+  * `ink/hashtag-commands.ts` — ***ink*** スクリプトから使うカスタムハッシュタグコマンド。 <DynamicLink href="/ink/hashtag">***ink*** のハッシュタグコマンド</DynamicLink>を参照してください。
+  * `ink/text-replaces.ts` — ***ink*** のセリフに使用するテキストの置換設定。 <DynamicLink href="/ink/replacement">***ink*** のテキスト置換</DynamicLink>を参照してください。
+  * `labels/` — ゲームの進行やシーンを定義するラベル（命名規則は `.label.ts`）。
+  * `characters.ts` — キャラクターの定義。
+
+</Accordion>
+
+<Accordion title="アセット" id="project-structure-assets">
+
+* `src/assets/` — ゲームの元アセット（画像、音声、フォントなど）。 [Pixi Asset Pack](https://pixijs.io/assetpack/) によって自動解析されます。
+* `public/assets/` — 実行時にプロジェクトが使用する、自動生成された最適化済みアセット。
+* `public/icon.png` — 元のアイコン。これを差し替えて `npm run icon` を実行すると、すべての PWA／デスクトップ／モバイル用アイコンが再生成されます。
+* `src/assets/index.ts` — エンジン向けに自動生成されたアセットマニフェストを再エクスポートします。
+
+</Accordion>
+
+<Accordion title="ユーザーインターフェース" id="project-structure-ui">
+
+* `src/components/` — React の UI コンポーネント（画面、メニュー、ダイアログボックスなど）。
+* `src/routes/` — [TanStack Router](https://tanstack.com/router) のルート定義。<DynamicLink href="/start/interface-navigate">ナビゲーション</DynamicLink>を参照してください。
+* `src/styles.css` — グローバルスタイルシート（[shadcn/ui](https://ui.shadcn.com/)）。<DynamicLink href="/start/interface-font">フォントとスタイル</DynamicLink>を参照してください。
+
+</Accordion>
+
+<Accordion title="翻訳" id="project-structure-translations">
+
+* `src/lib/i18n.ts` — 国際化の設定。<DynamicLink href="/start/translate">翻訳</DynamicLink>を参照してください。
+* `src/locales/` — 言語ごとに 1 つの翻訳 JSON ファイル（例：`en.json`）。<DynamicLink href="/start/translate">翻訳</DynamicLink>を参照してください。
+
+</Accordion>
+
+<Accordion title="初期設定" id="project-structure-initial-setup">
+
+* `src/models/` — カスタムクラスと TypeScript の型。
+* `src/main.tsx` — アプリケーションのエントリーポイント。Pixi’VN を初期化します。
+* `src/pixi-vn.keys.gen.ts` — Pixi’VN API のすべてのキーに対応する TypeScript 型（`PixivnCharacterIds`、`PixivnLabelIds` など）が自動生成されたファイル。エンジンで作業するときに、型安全性と自動補完を提供します。
+* `src/pixi-vn.d.ts` — `@drincs/pixi-vn` の TypeScript 宣言を上書きするファイル。
+
+</Accordion>
+
+<Accordion title="マルチプラットフォーム" id="project-structure-multi-platform">
+
+* `src-tauri/` — Rust/Tauri のソース（マルチプラットフォームテンプレートのみ）。ネイティブのデスクトップ／モバイルビルドに対応します。
+
+</Accordion>
+
+<Accordion title="その他" id="project-structure-other">
+
+* `src/lib/` — ユーティリティと内部処理：
+  * `steam.ts` — Steam API（実績、クラウドセーブ）。 <DynamicLink href="/start/distribution-steam">Steam での配信</DynamicLink>を参照してください。
+* `src/constants.ts` — プロジェクト全体で使用する定数（画面サイズ、設定値など）。
+
+</Accordion>
+
+</Accordions>
+
+### テンプレートの画面
+
+テンプレートには、ビジュアルノベルに必要な基本機能をカバーする画面があらかじめ用意されています。各画面は、TanStack Router が管理するルートに接続された React コンポーネントです。
+
+* **メインメニュー**（`/`）— プレイヤーがゲームを起動したときに最初に表示される画面です。新しいゲームの開始、セーブデータからの再開、設定の表示ができます。
+* **ナレーション画面**（`/game/narration`）— ストーリーが表示されるゲームの中心となる画面です。セリフ、キャラクタースプライト、背景、選択肢を表示します。
+* **設定** — 設定パネルには専用のルートがありません。代わりに [Search Params](https://tanstack.com/router/latest/docs/framework/react/guide/search-params) を使って、現在表示中の画面の上に重ねて表示します。この方法なら URL を簡潔に保ちながら、プレイヤーはゲーム内のどこからでも設定を開き、音声、表示、言語などの設定項目を切り替えられます。また、元の画面の位置も保持されます。
+* **ナビゲーション画面**（`/game/navigation`）— *Point & Click* 専用です。プレイヤーは部屋を移動し、現在地で利用できるさまざまなアクションを実行できます。
+* **マップ画面**（`/game/map`）— *Point & Click* 専用です。地図を表示し、プレイヤーが別の場所へ移動できるようにします。複数の地図の管理にも対応しています。

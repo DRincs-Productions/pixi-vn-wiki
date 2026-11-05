@@ -1,0 +1,96 @@
+---
+title: Menus de choix
+description: |
+  Comment présenter et gérer les menus de choix dans ink natif, notamment les choix à usage unique, persistants, conditionnels et de repli. Compatible avec l'intégration de Pixi’VN.
+---
+
+:::tip
+
+L'**intégration *ink* + Pixi’VN** prend en charge les choix natifs d'*ink* sans introduire de nouveaux types de choix. Pour plus de détails sur la syntaxe et le fonctionnement des choix, consultez la [documentation officielle d'ink](https://www.inklestudios.com/ink/).
+
+:::
+
+Vous pouvez demander au joueur de faire un choix dans *ink* à l'aide d'une liste de puces `*` ou `+`, suivies du texte du choix. Le texte du choix est affiché au joueur, qui sélectionne une option pour poursuivre l'histoire.
+
+* `*` indique un choix qui ne peut être fait qu'une seule fois.
+* `+` indique un choix qui peut être fait plusieurs fois (choix persistant).
+
+```ink title="ink/start.ink"
+=== start ===
+* Go to Paris
+  You decide to visit Paris. -> visit_paris
++ Go to London -> visit_london
+* Stay at home
+  You decide to stay at home. -> DONE
+```
+
+## Masquer le texte des choix
+
+Par défaut, le texte de l'option choisie est affiché à nouveau dans la sortie. Si le texte visible du choix est placé entre crochets, il apparaît uniquement dans le menu des choix et n'est pas repris dans la sortie qui suit.
+
+```ink title="ink/start.ink"
+=== start ===
+Hello world!
+* [Hello back!]
+ Nice to hear from you!
+```
+
+Les crochets séparent le contenu de l'option : le texte avant les crochets apparaît dans le menu et dans la sortie ; celui entre crochets apparaît uniquement dans le menu ; celui après les crochets apparaît uniquement dans la sortie. C'est utile pour les choix de dialogue :
+
+```ink title="ink/start.ink"
+=== start ===
+"What's that?" my master asked.
+* "I am somewhat tired[."]," I repeated.
+ "Really," he responded. "How deleterious."
+```
+
+## Variantes de choix
+
+<Accordions>
+
+<Accordion title="Choix de repli" id="fallback-choices">
+
+Les choix de repli ne sont jamais affichés au joueur, mais le moteur les sélectionne automatiquement si aucune autre option n'est disponible.
+
+Un choix de repli est simplement un choix sans texte visible :
+
+```ink tab="ink"
+* -> out_of_options
+```
+
+```txt tab="CLI"
+* -> <knot_name>
+
+where:
+    knot_name = the name of the knot to jump to when no other choice is available
+```
+
+Par exemple :
+
+```ink title="ink/start.ink"
+=== start ===
+ You search desperately for a friendly face in the crowd.
+ * The woman in the hat[?] pushes you roughly aside. -> find_help
+ * The man with the briefcase[?] looks disgusted as you stumble past him. -> find_help
+ * -> // fallback
+  But it is too late: you collapse onto the station platform. This is the end.
+  -> END
+```
+
+</Accordion>
+
+<Accordion title="Choix conditionnels" id="conditional-choices">
+
+Vous pouvez activer ou désactiver des choix à l'aide de conditions. Le test le plus simple consiste à vérifier si le joueur a déjà visité un `knot` ou un `stitch` particulier.
+
+```ink title="ink"
+* { not visit_paris }  [Go to Paris] -> visit_paris
++ { visit_paris }      [Return to Paris] -> visit_paris
+* { visit_paris.met_estelle } [Telephone Mme Estelle] -> phone_estelle
+```
+
+Remarque : le test `knot_name` est vrai si un quelconque `stitch` à l'intérieur de ce knot a été visité. Les conditions n'annulent pas le caractère à usage unique des options `*` : utilisez `+` pour les options répétables.
+
+</Accordion>
+
+</Accordions>

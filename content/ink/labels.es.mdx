@@ -1,0 +1,247 @@
+---
+title: Knots
+description: |
+  Aprende cómo funcionan los knots y los labels en Pixi’VN, cómo ejecutarlos desde scripts de ink o JavaScript y qué diferencias hay entre ink nativo y su integración con Pixi’VN.
+---
+
+<Accordions>
+
+<Accordion title="¿Qué es un `knot`?" id="what-is-a-knot">
+
+Como se explica en la [documentación oficial](https://www.inklestudios.com/ink/web-tutorial/), la historia se compone de varias secciones enlazadas, llamadas `knots` en la **terminología de *ink***. En ***ink***, el inicio de un `knot` se indica con al menos dos signos de igual a la izquierda del nombre del `knot` y, opcionalmente, también a la derecha.
+
+```ink tab="ink"
+=== london ===
+```
+
+```txt tab="CLI"
+=== <knot_name> ===
+
+where:
+    knot_name = the name of the knot
+```
+
+</Accordion>
+
+<Accordion title="¿Hay diferencias entre `label` y `knot`?" id="label-vs-knot">
+
+No, son lo mismo. En Pixi’VN, cuando creas un `knot` con ***ink***, se crea internamente un `label` y se guarda en el registro.
+
+</Accordion>
+
+</Accordions>
+
+## Ejecutar un knot
+
+Para ejecutar un `knot`, puedes utilizar los siguientes métodos:
+
+<Accordions>
+
+<Accordion title="Divert `-> start` (saltar a un `label`)" id="jump">
+
+Puedes ejecutar un `knot` mediante el operador Divert, representado por la sintaxis `-> start`. Corresponde a la <DynamicLink href="/start/labels#jump-to-a-label">funcionalidad `jump`</DynamicLink> de la biblioteca Pixi’VN.
+
+```ink tab="ink"
+-> after
+```
+
+```txt tab="CLI"
+-> <knot_name>
+
+where:
+    knot_name = the name of the knot to jump to
+```
+
+Por ejemplo:
+
+```ink title="ink/start.ink"
+=== start ===
+Start
+-> after
+
+=== after ===
+After
+End
+-> DONE
+```
+
+<PixiVnExample path="ink/narration/jump" ink />
+
+</Accordion>
+
+<Accordion title="Tunnels `-> start ->` o Threads `<- start`  (llamar a un `label`)" id="call">
+
+Puedes ejecutar un `knot` mediante el operador Tunnels, representado por la sintaxis `-> start ->`. Corresponde a la <DynamicLink href="/start/labels#call-to-a-label">funcionalidad `call`</DynamicLink> de la biblioteca Pixi’VN.
+
+```ink tab="ink"
+-> guard_dialogue ->
+```
+
+```txt tab="CLI"
+-> <knot_name> ->
+
+where:
+    knot_name = the name of the knot to call
+```
+
+O bien, con la sintaxis Threads, escribe el símbolo `\<-` seguido del nombre del `knot`:
+
+```ink tab="ink"
+<- guard_dialogue
+```
+
+```txt tab="CLI"
+<- <knot_name>
+
+where:
+    knot_name = the name of the knot to call
+```
+
+:::tip[Threads]
+
+A diferencia de **ink nativo**, en **la integración de ink + Pixi’VN** no se admiten los «Threads», por lo que el símbolo `\<-` equivale a llamar a un `knot` en lugar de actuar como operador «Thread».
+
+:::
+
+:::tip
+
+Para simplificar, en **la integración de ink + Pixi’VN**, `->->` y `-> DONE` cierran correctamente el `label`, por lo que son equivalentes.
+
+:::
+
+Por ejemplo:
+
+```ink title="ink/start.ink"
+VAR reputation = 0
+
+-> start
+=== start ===
+You are in the square.
+
+* [Talk to the guard]
+    -> guard_dialogue ->
+    You return to the square.
+    -> start
+    You don't see this line because you are sent back to the city before.
+
+* {reputation >= 1} [Ask for a favor]
+    The guard helps you.
+    -> END
+
+=== guard_dialogue ===
+The guard looks at you.
+
+* [Greet]
+    "Hello citizen."
+    ~ reputation += 1
+->->
+
+* [Insult]
+    "Hey you!"
+    ~ reputation -= 1
+
+->->
+```
+
+<PixiVnExample path="ink/narration/call" ink />
+
+</Accordion>
+
+</Accordions>
+
+## Otras funcionalidades
+
+<Accordions>
+
+<Accordion title="Parámetros" id="parameters">
+
+Una forma especialmente útil de variable temporal es un **parámetro**. Cualquier knot o stitch puede recibir un valor como parámetro, que se trata como una variable temporal local dentro de ese knot:
+
+```ink title="ink/start.ink"
+=== start ===
+*   [Accuse Hastings]
+        -> accuse("Hastings")
+*   [Accuse Mrs Black]
+        -> accuse("Claudia")
+*   [Accuse myself]
+        -> accuse("myself")
+
+=== accuse(who) ===
+    "I accuse {who}!" Poirot declared.
+    "Really?" Japp replied. "{who == "myself":You did it?|{who}?}"
+    "And why not?" Poirot shot back.
+```
+
+Los parámetros son la forma correcta de pasar un valor temporal de un knot o stitch a otro, porque las variables `temp` normales no son accesibles fuera del stitch en el que se declararon.
+
+</Accordion>
+
+<Accordion title="Knots recursivos con parámetros" id="recursive-knots-with-parameters">
+
+Las variables temporales (incluidos los parámetros) pueden utilizarse de forma segura en knots recursivos:
+
+```ink title="ink/start.ink"
+-> add_one_to_one_hundred(0, 1)
+
+=== add_one_to_one_hundred(total, x) ===
+    ~ total = total + x
+    { x == 100:
+        -> finished(total)
+    - else:
+        -> add_one_to_one_hundred(total, x + 1)
+    }
+
+=== finished(total) ===
+    "The result is {total}!" you announce.
+    -> END
+```
+
+</Accordion>
+
+<Accordion title="Pasar destinos de desvío como parámetros" id="sending-divert-targets-as-parameters">
+
+Las direcciones de los knots también se pueden pasar como parámetros. Utiliza `->` para indicar que un parámetro es un destino de desvío:
+
+```ink title="ink/start.ink"
+=== sleeping_in_hut ===
+    You lie down and close your eyes.
+    -> generic_sleep(-> waking_in_the_hut)
+
+=== generic_sleep(-> waking) ===
+    You sleep perchance to dream etc. etc.
+    -> waking
+
+=== waking_in_the_hut ===
+    You get back to your feet, ready to continue your journey.
+```
+
+</Accordion>
+
+<Accordion title="Desvío en el mismo `step`" id="diverting-in-the-same-step">
+
+De forma predeterminada, un desvío hacia otro `knot` se ejecuta en el siguiente `step`, por lo que el contenido de destino solo se muestra cuando continúa el flujo:
+
+```ink title="ink/start.ink"
+=== start ===
+It is, first and foremost...
+-> add2
+
+=== add2 ===
+...a story about the twelve labors of Hercules.
+-> DONE
+```
+
+Si el desvío se coloca justo después del texto, sin salto de línea, el `knot` de destino se ejecuta en el mismo `step` que el texto anterior, por lo que ambos se muestran juntos:
+
+```ink title="ink/start.ink"
+=== start ===
+It is, first and foremost...-> add2
+
+=== add2 ===
+...a story about the twelve labors of Hercules.
+-> DONE
+```
+
+</Accordion>
+
+</Accordions>

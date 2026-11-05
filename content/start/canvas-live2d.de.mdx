@@ -1,0 +1,281 @@
+---
+title: Live2D
+description: So verwendest du die Live2D-Integration in Pixi’VN, um Modelle zu laden, Bewegungen abzuspielen, Ausdrücke zu wechseln und alles mit den Animationen von Pixi’VN zu kombinieren – ein Stil der Charakteranimation, der in Gal Games beliebt ist.
+---
+
+:::warning
+
+Die Live2D-Integration befindet sich derzeit in der Testphase, und ihre API kann sich in zukünftigen Versionen ändern.
+
+:::
+
+<Accordions>
+
+<Accordion title="Was ist Live2D?" id="what-is-live2d">
+
+Live2D ist eine Technologie, mit der sich 2D-Illustrationen natürlich bewegen lassen, sodass flüssige und ausdrucksstarke Animationen entstehen, ohne jedes Einzelbild neu zeichnen zu müssen. Anders als bei einem Knochenskelett (wie in Spine 2D) besteht ein Live2D-Modell aus einer einzigen Illustration, deren Teile mithilfe von **Parametern** (Winkel, Augenöffnung, Mundform usw.) verformt und überblendet werden. Gesteuert wird dies durch **Bewegungen** (vordefinierte Animationsclips) und **Ausdrücke** (vordefinierte Parametereinstellungen, z. B. für Gesichtsausdrücke).
+
+Die Technologie wird häufig in Visual Novels, Spielen und interaktiven Anwendungen (insbesondere von VTubern) eingesetzt, um Charaktere zum Leben zu erwecken.
+
+Weitere Informationen zu Live2D findest du auf der [offiziellen Live2D-Website](https://www.live2d.com/).
+
+</Accordion>
+
+</Accordions>
+
+In deinem **Pixi’VN**-Projekt kannst du die Live2D-Integration verwenden, um Live2D-Modelle deiner Charaktere darzustellen und zu animieren.
+Diese Integration ist eine Wrapper-Schicht um [untitled-pixi-live2d-engine](https://github.com/Untitled-Story/untitled-pixi-live2d-engine). Beachte, dass dies **kein offizielles PixiJS/Live2D-Plugin** ist, sondern eine von der Community gepflegte Engine, die Live2D mit PixiJS verbindet und deren Funktionen direkt in deinem Pixi’VN-Projekt verfügbar macht.
+
+## Installation
+
+Um das Live2D-Paket in einem bestehenden JavaScript-Projekt zu installieren, verwende einen der folgenden Befehle:
+
+```npm
+npm install @drincs/pixi-vn-live2d
+```
+
+:::danger
+
+`extensions.add(Live2DPlugin)` muss beim Start in deiner Hauptdatei aufgerufen werden, bevor `Game.init` aufgerufen wird.
+
+:::
+
+```ts title="main.ts"
+import { extensions } from "pixi.js";
+import { Live2DPlugin } from "@drincs/pixi-vn-live2d/core";
+extensions.add(Live2DPlugin);
+
+Game.init(body, {
+    // ...
+});
+```
+
+<Accordions>
+
+<Accordion title="ink" id="ink">
+
+Du kannst die Live2D-Hashtag-Befehle in deinen **ink**-Skripten mit der Funktion [`createLive2DHandler`](/jsdoc/pixi-vn-live2d/ink/functions/createLive2DHandler) aktivieren.
+
+```ts title="content/ink/hashtag-commands.ts"
+import { addBaseHashtagCommands } from "@drincs/pixi-vn-ink";
+import { createLive2DHandler } from "@drincs/pixi-vn-live2d/ink"; // [!code focus]
+
+addBaseHashtagCommands({ bundleIds, assetAliasIds });
+createLive2DHandler(); // [!code focus]
+```
+
+Die Hashtag-Befehle `show`, `edit` und `remove` können ebenso mit `live2d` verwendet werden wie mit jedem anderen Canvas-Element.
+
+</Accordion>
+
+</Accordions>
+
+## Verwendung
+
+Du kannst die Komponente [`Live2D`](/jsdoc/pixi-vn-live2d/index/classes/Live2D) wie jede andere Pixi’VN-Komponente verwenden. Anders als bei Spine muss ein Live2D-Modell nicht vorab mit `Assets.load` geladen werden: Es reicht, seinen Alias mit `Assets.add` zu registrieren, da `Live2D` das Modell selbst auflöst und abruft.
+
+Da dieser Abruf asynchron erfolgt, darfst du das Modell erst verwenden, nachdem sein [`ready`](/jsdoc/pixi-vn-live2d/index/classes/Live2D#ready)-Promise aufgelöst wurde. Warte direkt nach der Erstellung mit `await` darauf, bevor du vom geladenen Modell abhängige Werte (z. B. seine Größe) ausliest.
+
+Zum Beispiel:
+
+```ts tab="Typescript" title="main.ts" groupId="narrative_language"
+import { canvas } from "@drincs/pixi-vn";
+import { Live2D } from "@drincs/pixi-vn-live2d";
+
+const live2d = new Live2D({
+    source: "shizuku",
+    xAlign: 0.5,
+    yAlign: 1,
+    scale: 0.5,
+});
+await live2d.ready;
+canvas.add("shizuku", live2d);
+```
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+# show live2d shizuku xAlign 0.5 yAlign 1 scale 0.5
+-> DONE
+```
+
+```ts tab="src/assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "shizuku",
+                    src: "https://cdn.jsdelivr.net/gh/guansss/pixi-live2d-display/test/assets/shizuku/shizuku.model.json",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<PixiVnExample path="live2d/show" />
+
+<Accordions>
+
+<Accordion title="Bewegung" id="motion">
+
+Die Animationen eines Live2D-Modells sind in **Bewegungsgruppen** (z. B. `idle`, `tap_body`) organisiert, die jeweils einen oder mehrere Animationsclips enthalten. Mit der Funktion [`motion`](/jsdoc/pixi-vn-live2d/index/classes/Live2D#motion) kannst du eine Bewegung starten. Wenn du den Clip-Index weglässt, wird ein zufälliger Clip aus der Gruppe abgespielt.
+
+Standardmäßig spielt das Modell seine Bewegungsgruppe `idle` (Cubism 2) bzw. `Idle` (Cubism 4) automatisch in einer Endlosschleife ab. Dieses Verhalten lässt sich über die Option `idleMotionGroup` konfigurieren. Daher musst du `motion` nur für eine gezielt ausgelöste, einmalige Animation aufrufen, etwa als Reaktion auf ein Tippen oder Klicken.
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+import { canvas, newLabel } from "@drincs/pixi-vn";
+import { Live2D } from "@drincs/pixi-vn-live2d";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        const live2d = new Live2D({
+            source: "shizuku",
+            xAlign: 0.5,
+            yAlign: 1,
+            scale: 0.5,
+        });
+        await live2d.ready;
+        canvas.add("shizuku", live2d);
+    },
+    () => {
+        canvas.find<Live2D>("shizuku")?.motion("tap_body");
+    },
+]);
+```
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+# show live2d shizuku xAlign 0.5 yAlign 1 scale 0.5
+# pause
+# play motion tap_body on live2d shizuku
+# pause
+-> DONE
+```
+
+<PixiVnExample path="live2d/motion" />
+
+</Accordion>
+
+<Accordion title="Ausdruck" id="expression">
+
+Ein Live2D-Modell kann mehrere **Ausdrücke** definieren – voreingestellte Parameterwerte, die typischerweise für Gesichtsausdrücke verwendet werden. Mit der Funktion [`expression`](/jsdoc/pixi-vn-live2d/index/classes/Live2D#expression) kannst du zur Laufzeit zwischen ihnen wechseln. Wie bei `motion` wird ein zufälliger Ausdruck ausgewählt, wenn du die ID weglässt.
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+import { canvas, newLabel } from "@drincs/pixi-vn";
+import { Live2D } from "@drincs/pixi-vn-live2d";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        const live2d = new Live2D({
+            source: "shizuku",
+            xAlign: 0.5,
+            yAlign: 1,
+            scale: 0.5,
+        });
+        await live2d.ready;
+        canvas.add("shizuku", live2d);
+    },
+    () => {
+        canvas.find<Live2D>("shizuku")?.expression("f01");
+    },
+]);
+```
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+# show live2d shizuku xAlign 0.5 yAlign 1 scale 0.5
+# pause
+# change expression f01 on live2d shizuku
+# pause
+-> DONE
+```
+
+<PixiVnExample path="live2d/expression" />
+
+</Accordion>
+
+<Accordion title="Live2D + motion.js-Animationen" id="motion-js">
+
+Du kannst Live2D-Bewegungen mit den klassischen bewegungsbasierten Animationen von Pixi’VN ([`canvas.animate`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#animate)) kombinieren, wie das folgende Beispiel zeigt.
+
+Für anspruchsvollere Spiele kannst du Live2D auch direkt über einen Ticker steuern, der durch Ereignisse wie einen Tastendruck ausgelöst wird, statt dich nur auf vordefinierte Abläufe zu verlassen.
+
+```ts title="content/labels/start.label.ts" groupId="narrative_language"
+import { canvas, newLabel } from "@drincs/pixi-vn";
+import { Live2D } from "@drincs/pixi-vn-live2d";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        const live2d = new Live2D({
+            source: "shizuku",
+            xAlign: 0.3,
+            yAlign: 1,
+            scale: 0.5,
+        });
+        await live2d.ready;
+        canvas.add("shizuku", live2d);
+        canvas.animate(
+            live2d,
+            [
+                [{ x: canvas.width * 0.7 }, { duration: 2, ease: "linear" }],
+                [{ x: canvas.width * 0.3 }, { duration: 2, ease: "linear" }],
+            ],
+            { repeat: Infinity },
+        );
+    },
+]);
+```
+
+<PixiVnExample path="live2d/motion-js" />
+
+</Accordion>
+
+<Accordion title="Bewegungen stoppen" id="stop-motions">
+
+Mit der Funktion [`stopMotions`](/jsdoc/pixi-vn-live2d/index/classes/Live2D#stopmotions) kannst du alle gerade auf einem Modell abgespielten Bewegungen sowie sämtliche Audiodaten zur Lippensynchronisation stoppen.
+
+```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
+import { canvas, newLabel } from "@drincs/pixi-vn";
+import { Live2D } from "@drincs/pixi-vn-live2d";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        const live2d = new Live2D({
+            source: "shizuku",
+            xAlign: 0.5,
+            yAlign: 1,
+            scale: 0.5,
+        });
+        await live2d.ready;
+        canvas.add("shizuku", live2d);
+        live2d.motion("tap_body");
+    },
+    () => {
+        canvas.find<Live2D>("shizuku")?.stopMotions();
+    },
+]);
+```
+
+```ink tab="ink" title="ink/start.ink" groupId="narrative_language"
+=== start ===
+# show live2d shizuku xAlign 0.5 yAlign 1 scale 0.5
+# play motion tap_body on live2d shizuku
+# pause
+# stop motions on live2d shizuku
+# pause
+-> DONE
+```
+
+<PixiVnExample path="live2d/stop-motions" />
+
+</Accordion>
+
+</Accordions>

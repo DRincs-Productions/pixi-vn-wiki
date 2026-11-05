@@ -1,0 +1,119 @@
+---
+title: Временное хранилище
+description: Узнайте, как определять, задавать и получать временные переменные, действующие внутри knot или stitch в ink, с помощью хранилища Pixi’VN.
+---
+
+:::tip
+
+Подробнее о временных переменных в ink можно прочитать в [официальной документации](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#4-temporary-variables).
+
+:::
+
+Иногда глобальная переменная оказывается неудобной. В ***ink*** предусмотрены **временные переменные** для быстрых локальных вычислений. В отличие от глобальных переменных (`VAR`), временная переменная **удаляется, как только история выходит из knot или stitch, где она была определена**.
+
+При **интеграции *ink* с Pixi’VN** переменные `temp` соответствуют <DynamicLink href="/start/storage#temporary-storage">временным переменным в хранилище</DynamicLink>.
+
+## Define
+
+:::tip
+
+В JavaScript/TypeScript эта возможность соответствует <DynamicLink href="/start/storage#temporary-storage">временным переменным в хранилище</DynamicLink>.
+
+:::
+
+Объявите временную переменную с помощью ключевого слова `temp` в логической строке `~`:
+
+```ink tab="ink"
+~ temp myTemp = 42
+```
+
+```txt tab="CLI"
+~ temp <variable_name> = <value>
+
+where:
+    variable_name = the name of the temporary variable
+    value = the initial value of the variable
+```
+
+Можно использовать любой тип, поддерживаемый ***ink***: целое число, число с плавающей точкой, логическое значение или строку.
+
+```ink title="ink/start.ink"
+=== near_north_pole ===
+    ~ temp number_of_warm_things = 0
+    { blanket:
+        ~ number_of_warm_things++
+    }
+    { ear_muffs:
+        ~ number_of_warm_things++
+    }
+    { gloves:
+        ~ number_of_warm_things++
+    }
+    { number_of_warm_things > 2:
+        Despite the snow, I felt incorrigibly snug.
+    - else:
+        That night I was colder than I have ever been.
+    }
+```
+
+Переменная `number_of_warm_things` создаётся при входе в knot и удаляется при выходе из него.
+
+## Установка
+
+:::tip
+
+В JavaScript/TypeScript эта возможность соответствует <DynamicLink href="/start/storage#set">`storage.set`</DynamicLink>.
+
+:::
+
+После объявления временной переменной можно повторно присвоить ей значение, используя тот же синтаксис `~` (без повторения ключевого слова `temp`):
+
+```ink tab="ink"
+~ score = score + 10
+```
+
+```txt tab="CLI"
+~ <variable_name> = <expression>
+
+where:
+    variable_name = the name of an already declared temporary variable
+    expression = the new value, which can reference the variable itself
+```
+
+Например:
+
+```ink title="ink"
+~ temp score = 0
+~ score = score + 10
+~ score++
+```
+
+## Получить
+
+Чтобы получить значение временной переменной, используйте обычную <DynamicLink href="/ink/storage#get">функцию `storage.get`</DynamicLink>.
+
+В самом ***ink*** временная переменная читается так же, как и любая другая: по её имени в выражении, при выводе текста внутри строки или в условии:
+
+```ink tab="ink"
+The duration is: {duration}
+```
+
+```txt tab="CLI"
+{<variable_name>}
+
+where:
+    variable_name = the name of the temporary variable to print or evaluate
+```
+
+Например:
+
+```ink title="ink"
+~ temp duration = 3
+
+The duration is: {duration}
+{ duration > 2:
+    It's a long scene.
+- else:
+    It's a short scene.
+}
+```

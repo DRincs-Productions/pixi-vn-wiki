@@ -1,0 +1,81 @@
+---
+title: Componentes
+description: Descripción general de los componentes de canvas integrados y personalizados en Pixi’VN, incluyendo extensión y características de memoria.
+---
+
+Pixi’VN proporciona un conjunto de componentes de canvas. Estos componentes extienden los componentes de [Pixi.js](https://pixijs.com/), añadiendo diversas funcionalidades, como la capacidad de guardar su estado actual.
+
+<Accordions>
+
+<Accordion title="Componentes integrados" id="base-components">
+
+* [`Sprite`](/jsdoc/pixi-vn/index/classes/Sprite) corresponde al componente [`PixiJS.Sprite`](https://pixijs.com/8.x/guides/components/sprites).
+* [`Container`](/jsdoc/pixi-vn/index/classes/Container) corresponde al componente [`PixiJS.Container`](https://pixijs.com/8.x/guides/components/containers).
+* <DynamicLink href="/start/canvas-image">`ImageSprite`</DynamicLink> es un componente introducido por Pixi’VN.
+* <DynamicLink href="/start/canvas-image-container">`ImageContainer`</DynamicLink> es un componente introducido por Pixi’VN.
+* <DynamicLink href="/start/canvas-video">`VideoSprite`</DynamicLink> es un componente introducido por Pixi’VN.
+* <DynamicLink href="/start/canvas-text">`Text`</DynamicLink> es un componente introducido por Pixi’VN.
+
+</Accordion>
+
+<Accordion title="Componentes de plugin" id="additional-components">
+
+* <DynamicLink href="/start/canvas-spine2D">Spine 2D</DynamicLink> es un componente instalable a través del sistema de plugins de Pixi’VN. Se utiliza para renderizar animaciones de Spine 2D.
+
+</Accordion>
+
+</Accordions>
+
+## Otras funcionalidades
+
+<Accordions>
+
+<Accordion title="Componentes personalizados" id="custom-components">
+
+Puedes crear componentes personalizados extendiendo los componentes base. Para ello, es necesario usar el decorador [`@canvasComponentDecorator`](/jsdoc/pixi-vn/index/functions/canvasComponentDecorator).
+
+Es necesario sobreescribir el getter [`memory`](/jsdoc/pixi-vn/index/classes/CanvasBaseItem#memory) y el método [`setMemory`](/jsdoc/pixi-vn/index/classes/CanvasBaseItem#setmemory) para almacenar las propiedades del componente personalizado.
+En `get memory()`, es muy importante devolver la propiedad `className`; esta propiedad debe ser igual al id utilizado en el decorador.
+
+Por ejemplo, puedes crear una clase `AlienTinting` que extienda la clase `Sprite` para gestionar la dirección y la velocidad de cada alien individual en una animación.
+
+```ts title="canvas/components/AlienTinting.ts"
+const ALIEN_TINTING_TEST_ID = "AlienTintingTest";
+@canvasComponentDecorator({
+    name: ALIEN_TINTING_TEST_ID,
+})
+class AlienTintingTest extends Sprite<IAlienTintingMemory> {
+    readonly pixivnId: string = CANVAS_SPINE_ID;
+    override get memory() {
+        return {
+            ...super.memory,
+            pixivnId: CANVAS_SPINE_ID,
+            direction: this.direction,
+            turningSpeed: this.turningSpeed,
+            speed: this.speed,
+        };
+    }
+    override async setMemory(memory: IAlienTintingMemory) {
+        await super.setMemory(memory);
+        this.direction = memory.direction;
+        this.turningSpeed = memory.turningSpeed;
+        this.speed = memory.speed;
+    }
+    direction: number = 0;
+    turningSpeed: number = 0;
+    speed: number = 0;
+    static override from(
+        source: Texture | TextureSourceLike,
+        skipCache?: boolean,
+    ) {
+        let sprite = Sprite.from(source, skipCache);
+        let mySprite = new AlienTintingTest();
+        mySprite.texture = sprite.texture;
+        return mySprite;
+    }
+}
+```
+
+</Accordion>
+
+</Accordions>

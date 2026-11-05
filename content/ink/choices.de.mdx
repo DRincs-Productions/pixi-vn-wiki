@@ -1,0 +1,96 @@
+---
+title: Auswahlmenüs
+description: |
+  So stellst du Auswahlmenüs in nativem ink dar und steuerst sie – einschließlich einmaliger, dauerhafter, bedingter und Auffangoptionen. Kompatibel mit der Pixi’VN-Integration.
+---
+
+:::tip
+
+Die **Integration von *ink* + Pixi’VN** unterstützt die nativen Auswahlmöglichkeiten von *ink*, ohne neue Auswahltypen einzuführen. Ausführliche Informationen zur Auswahlsyntax und ihrem Verhalten findest du in der [offiziellen ink-Dokumentation](https://www.inklestudios.com/ink/).
+
+:::
+
+In *ink* kannst du den Spieler eine Auswahl treffen lassen, indem du eine Liste von Optionen mit `*` oder `+` als Aufzählungszeichen und dem jeweiligen Auswahltext erstellst. Der Auswahltext wird dem Spieler angezeigt, der eine Option auswählt, um die Geschichte fortzusetzen.
+
+* `*` kennzeichnet eine Option, die nur einmal gewählt werden kann.
+* `+` kennzeichnet eine Option, die mehrfach gewählt werden kann (dauerhafte Auswahl).
+
+```ink title="ink/start.ink"
+=== start ===
+* Go to Paris
+  You decide to visit Paris. -> visit_paris
++ Go to London -> visit_london
+* Stay at home
+  You decide to stay at home. -> DONE
+```
+
+## Auswahltext unterdrücken
+
+Standardmäßig wird der Text einer gewählten Option in der Ausgabe erneut angezeigt. Wenn der sichtbare Auswahltext in eckigen Klammern steht, wird er nur im Auswahlmenü angezeigt und nicht in der anschließenden Ausgabe ausgegeben.
+
+```ink title="ink/start.ink"
+=== start ===
+Hello world!
+* [Hello back!]
+ Nice to hear from you!
+```
+
+Die eckigen Klammern teilen den Inhalt der Option auf: Der Text davor erscheint sowohl im Menü als auch in der Ausgabe; der Text innerhalb der Klammern erscheint nur im Menü; der Text danach erscheint nur in der Ausgabe. Das ist bei Dialogauswahlen nützlich:
+
+```ink title="ink/start.ink"
+=== start ===
+"What's that?" my master asked.
+* "I am somewhat tired[."]," I repeated.
+ "Really," he responded. "How deleterious."
+```
+
+## Varianten von Auswahlmöglichkeiten
+
+<Accordions>
+
+<Accordion title="Auffangoptionen" id="fallback-choices">
+
+Auffangoptionen werden dem Spieler nie angezeigt, sondern von der Engine automatisch gewählt, wenn keine anderen Optionen verfügbar sind.
+
+Eine Auffangoption ist einfach eine Auswahl ohne sichtbaren Auswahltext:
+
+```ink tab="ink"
+* -> out_of_options
+```
+
+```txt tab="CLI"
+* -> <knot_name>
+
+where:
+    knot_name = the name of the knot to jump to when no other choice is available
+```
+
+Zum Beispiel:
+
+```ink title="ink/start.ink"
+=== start ===
+ You search desperately for a friendly face in the crowd.
+ * The woman in the hat[?] pushes you roughly aside. -> find_help
+ * The man with the briefcase[?] looks disgusted as you stumble past him. -> find_help
+ * -> // fallback
+  But it is too late: you collapse onto the station platform. This is the end.
+  -> END
+```
+
+</Accordion>
+
+<Accordion title="Bedingte Auswahlmöglichkeiten" id="conditional-choices">
+
+Du kannst Auswahlmöglichkeiten durch Bedingungen aktivieren oder deaktivieren. Die einfachste Prüfung besteht darin, festzustellen, ob der Spieler einen bestimmten `knot` oder `stitch` bereits besucht hat.
+
+```ink title="ink"
+* { not visit_paris }  [Go to Paris] -> visit_paris
++ { visit_paris }      [Return to Paris] -> visit_paris
+* { visit_paris.met_estelle } [Telephone Mme Estelle] -> phone_estelle
+```
+
+Hinweis: Die Prüfung `knot_name` ergibt wahr, wenn irgendein `stitch` innerhalb dieses knot bereits besucht wurde. Bedingungen heben die Einmaligkeit von `*`-Optionen nicht auf – verwende `+` für wiederholbare Optionen.
+
+</Accordion>
+
+</Accordions>
