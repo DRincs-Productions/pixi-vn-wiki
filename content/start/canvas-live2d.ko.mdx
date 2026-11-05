@@ -1,34 +1,34 @@
 ---
 title: Live2D
-description: How to use the Live2D integration in Pixi’VN to load models, play motions, switch expressions, and combine them with Pixi’VN's own animations — the character animation style popular in Gal Games.
+description: Pixi’VN에서 Live2D 연동을 사용해 모델을 불러오고, 모션을 재생하고, 표정을 전환하고, Pixi’VN 자체 애니메이션과 결합하는 방법을 설명합니다. Gal Games에서 널리 쓰이는 캐릭터 애니메이션 방식입니다.
 ---
 
 :::warning
 
-The Live2D integration is currently in a testing phase and its API may change in future releases.
+Live2D 연동 기능은 현재 테스트 단계이며, 향후 릴리스에서 API가 변경될 수 있습니다.
 
 :::
 
 <Accordions>
 
-<Accordion title="What is Live2D?" id="what-is-live2d">
+<Accordion title="Live2D란 무엇인가요?" id="what-is-live2d">
 
-Live2D is a technology that allows 2D illustrations to move naturally, creating fluid and expressive animations without the need to redraw every frame. Instead of a bone skeleton (as in Spine 2D), a Live2D model is a single illustration whose parts are deformed and blended by **parameters** (angle, eye openness, mouth shape, ...), driven by **motions** (predefined animation clips) and **expressions** (predefined parameter presets, e.g. facial expressions).
+Live2D는 2D 일러스트가 자연스럽게 움직이도록 만들어, 매 프레임을 다시 그리지 않고도 부드럽고 풍부한 표현의 애니메이션을 제작할 수 있는 기술입니다. Spine 2D처럼 뼈대 골격을 사용하는 대신 Live2D 모델은 하나의 일러스트로 이루어지며, 각 부분을 **매개변수**(각도, 눈의 개폐 정도, 입 모양 등)로 변형하고 혼합합니다. 이러한 변화는 **모션**(미리 정의된 애니메이션 클립)과 **표정**(얼굴 표정 등에 쓰이는 미리 정의된 매개변수 설정)으로 제어됩니다.
 
-It is widely used in visual novels, games, and interactive applications (especially VTubers) to bring characters to life.
+캐릭터에 생동감을 불어넣기 위해 비주얼 노벨, 게임, 인터랙티브 애플리케이션(특히 VTuber 관련 분야)에서 널리 사용됩니다.
 
-You can learn more about Live2D on the [official Live2D website](https://www.live2d.com/).
+Live2D에 관한 자세한 내용은 [Live2D 공식 웹사이트](https://www.live2d.com/)에서 확인할 수 있습니다.
 
 </Accordion>
 
 </Accordions>
 
-Within your **Pixi’VN** project, you can use the Live2D integration to display and animate Live2D models for your characters.
-This integration is a wrapper around [untitled-pixi-live2d-engine](https://github.com/Untitled-Story/untitled-pixi-live2d-engine) — note that this is **not an official PixiJS/Live2D plugin**, but a community-maintained engine that bridges Live2D with PixiJS — allowing you to use its features directly inside your Pixi’VN project.
+**Pixi’VN** 프로젝트에서 Live2D 연동 기능을 사용하면 캐릭터의 Live2D 모델을 표시하고 애니메이션을 적용할 수 있습니다.
+이 연동은 [untitled-pixi-live2d-engine](https://github.com/Untitled-Story/untitled-pixi-live2d-engine)을 감싸는 래퍼입니다. 이는 **공식 PixiJS/Live2D 플러그인이 아니라**, Live2D와 PixiJS를 연결하는 커뮤니티 유지 관리 엔진으로, 해당 기능을 Pixi’VN 프로젝트에서 직접 사용할 수 있게 합니다.
 
-## Installation
+## 설치
 
-To install the Live2D package in an existing JavaScript project, use one of the following commands:
+기존 JavaScript 프로젝트에 Live2D 패키지를 설치하려면 다음 명령어 중 하나를 사용하세요:
 
 ```npm
 npm install @drincs/pixi-vn-live2d
@@ -36,7 +36,7 @@ npm install @drincs/pixi-vn-live2d
 
 :::danger
 
-`extensions.add(Live2DPlugin)` must be called at startup, in your main file, before `Game.init` is called.
+메인 파일에서 시작 시 `Game.init`을 호출하기 전에 `extensions.add(Live2DPlugin)`을 호출해야 합니다.
 
 :::
 
@@ -54,7 +54,7 @@ Game.init(body, {
 
 <Accordion title="ink" id="ink">
 
-You can enable Live2D hashtag commands in your **ink** scripts by using the [`createLive2DHandler`](/jsdoc/pixi-vn-live2d/ink/functions/createLive2DHandler) function.
+[`createLive2DHandler`](/jsdoc/pixi-vn-live2d/ink/functions/createLive2DHandler) 함수를 사용하면 **ink** 스크립트에서 Live2D 해시태그 명령을 활성화할 수 있습니다.
 
 ```ts title="content/ink/hashtag-commands.ts"
 import { addBaseHashtagCommands } from "@drincs/pixi-vn-ink";
@@ -64,7 +64,7 @@ addBaseHashtagCommands({ bundleIds, assetAliasIds });
 createLive2DHandler(); // [!code focus]
 ```
 
-The `show`, `edit`, and `remove` hashtag commands can also be used with `live2d`, just like with any other canvas element.
+다른 캔버스 요소와 마찬가지로 `live2d`에도 `show`, `edit`, `remove` 해시태그 명령을 사용할 수 있습니다.
 
 </Accordion>
 
@@ -72,9 +72,9 @@ The `show`, `edit`, and `remove` hashtag commands can also be used with `live2d`
 
 ## 사용법
 
-You can use the [`Live2D`](/jsdoc/pixi-vn-live2d/index/classes/Live2D) component just like any other Pixi’VN component. Unlike Spine, a Live2D model doesn't need to be pre-loaded through `Assets.load` — registering the alias with `Assets.add` is enough, since `Live2D` resolves and fetches the model itself.
+[`Live2D`](/jsdoc/pixi-vn-live2d/index/classes/Live2D) 컴포넌트는 다른 Pixi’VN 컴포넌트와 동일한 방식으로 사용할 수 있습니다. Spine과 달리 Live2D 모델은 `Assets.load`로 미리 불러올 필요가 없습니다. `Assets.add`로 별칭을 등록하기만 하면 `Live2D`가 모델을 직접 찾아서 가져옵니다.
 
-Because that fetch is asynchronous, the model isn't safe to use until its [`ready`](/jsdoc/pixi-vn-live2d/index/classes/Live2D#ready) promise resolves — `await` it right after construction, before reading anything derived from the loaded model (e.g. its size).
+모델을 가져오는 작업은 비동기식이므로 [`ready`](/jsdoc/pixi-vn-live2d/index/classes/Live2D#ready) 프로미스가 완료되기 전에는 안전하게 사용할 수 없습니다. 모델을 생성한 직후 `await`로 완료를 기다리고, 로드된 모델에 의존하는 정보(예: 크기)를 읽기 전에 준비가 끝났는지 확인하세요.
 
 예를 들어:
 
@@ -124,11 +124,11 @@ export const manifest: AssetsManifest = {
 
 <Accordions>
 
-<Accordion title="Motion" id="motion">
+<Accordion title="모션" id="motion">
 
-A Live2D model's animations are grouped into **motion groups** (e.g. `idle`, `tap_body`), each containing one or more motion clips. You can start one with the [`motion`](/jsdoc/pixi-vn-live2d/index/classes/Live2D#motion) function; omitting the clip index plays a random clip from the group.
+Live2D 모델의 애니메이션은 **모션 그룹**(예: `idle`, `tap_body`)으로 구성되며, 각 그룹에는 하나 이상의 모션 클립이 포함됩니다. [`motion`](/jsdoc/pixi-vn-live2d/index/classes/Live2D#motion) 함수로 모션을 재생할 수 있습니다. 클립 인덱스를 생략하면 해당 그룹의 클립 중 하나가 무작위로 재생됩니다.
 
-By default, the model automatically loops its `idle` motion group (Cubism 2) or `Idle` group (Cubism 4) on its own — configurable via the `idleMotionGroup` option — so you only need to call `motion` for a deliberate, one-off animation such as reacting to a tap or a click.
+기본적으로 모델은 `idle`(Cubism 2) 또는 `Idle`(Cubism 4) 모션 그룹을 자동으로 반복 재생합니다. 이 동작은 `idleMotionGroup` 옵션으로 설정할 수 있으므로, 탭이나 클릭에 반응하는 일회성 애니메이션처럼 특정 동작을 실행할 때만 `motion`을 호출하면 됩니다.
 
 ```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
 import { canvas, newLabel } from "@drincs/pixi-vn";
@@ -164,9 +164,9 @@ export const startLabel = newLabel("start", [
 
 </Accordion>
 
-<Accordion title="Expression" id="expression">
+<Accordion title="표정" id="expression">
 
-A Live2D model can define multiple **expressions** — presets of parameter values, typically used for facial expressions — which you can switch between at runtime with the [`expression`](/jsdoc/pixi-vn-live2d/index/classes/Live2D#expression) function. As with `motion`, omitting the id picks a random expression.
+Live2D 모델은 여러 **표정**을 정의할 수 있습니다. 이는 일반적으로 얼굴 표정에 사용되는 매개변수 값의 프리셋이며, [`expression`](/jsdoc/pixi-vn-live2d/index/classes/Live2D#expression) 함수를 사용하여 실행 중에 전환할 수 있습니다. `motion`과 마찬가지로 ID를 생략하면 무작위 표정이 선택됩니다.
 
 ```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
 import { canvas, newLabel } from "@drincs/pixi-vn";
@@ -202,11 +202,11 @@ export const startLabel = newLabel("start", [
 
 </Accordion>
 
-<Accordion title="Live2D + motion.js animations" id="motion-js">
+<Accordion title="Live2D + motion.js 애니메이션" id="motion-js">
 
-You can combine Live2D motions with Pixi’VN's classic motion-based animations ([`canvas.animate`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#animate)), as shown in the example below.
+아래 예시처럼 Live2D 모션을 Pixi’VN의 전통적인 모션 기반 애니메이션([`canvas.animate`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#animate))과 결합할 수 있습니다.
 
-For more advanced games, you can also drive Live2D directly from a ticker triggered by events, such as a button press, instead of relying only on predefined sequences.
+더 고급 게임에서는 미리 정의된 시퀀스에만 의존하지 않고 버튼 누르기 등의 이벤트로 실행되는 티커를 통해 Live2D를 직접 제어할 수도 있습니다.
 
 ```ts title="content/labels/start.label.ts" groupId="narrative_language"
 import { canvas, newLabel } from "@drincs/pixi-vn";
@@ -238,9 +238,9 @@ export const startLabel = newLabel("start", [
 
 </Accordion>
 
-<Accordion title="Stop motions" id="stop-motions">
+<Accordion title="모션 중지" id="stop-motions">
 
-You can stop every motion currently playing on a model — as well as any lipsync audio — with the [`stopMotions`](/jsdoc/pixi-vn-live2d/index/classes/Live2D#stopmotions) function.
+[`stopMotions`](/jsdoc/pixi-vn-live2d/index/classes/Live2D#stopmotions) 함수를 사용하면 모델에서 현재 재생 중인 모든 모션과 립싱크 오디오를 중지할 수 있습니다.
 
 ```ts tab="Typescript" title="content/labels/start.label.ts" groupId="narrative_language"
 import { canvas, newLabel } from "@drincs/pixi-vn";
