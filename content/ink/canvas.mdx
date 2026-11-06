@@ -6,6 +6,26 @@ description: |
 
 The **_ink_ + Pixi’VN integration** introduces a "# script" that allows you to show, edit, remove, and animate a <DynamicLink href="/start/canvas-components">canvas component</DynamicLink>.
 
+## Animated sprites
+
+Starting with **@drincs/pixi-vn-ink v1.4.0**, you can use the <DynamicLink href="/start/canvas-animated-sprite">AnimatedSprite component</DynamicLink> from ink, with **@drincs/pixi-vn v1.9.9 or later**. The commands are compiled into static operations and executed by `@drincs/pixi-vn-json` (v1.16.0 or later).
+
+Use `asprite` as the component type. A spritesheet can come from AssetPack, TexturePacker, or the Aseprite/LibreSprite conversion plugin described on the component page.
+
+```ink
+# show asprite hero heroSheet animation walk useFrameDurations true
+# show asprite blink heroSheet frames [ eyes_open.png eyes_closed.png ]
+# pause asprite hero
+# resume asprite hero
+# edit asprite hero animationSpeed 0.5 loop false
+# goto asprite hero 2
+# remove asprite hero with moveout duration 1
+```
+
+The show command uses the component alias as its spritesheet alias when a separate source is omitted. `animation`, `frames`, `spritesheet`, and `useFrameDurations` describe the frames, while display properties such as `anchor`, `align`, `scale`, `animationSpeed`, and `loop` configure the component. `pause` stops playback and `resume` starts it again.
+
+`goto` selects a zero-based frame index and preserves the playing state. Editing source properties reloads the frames. Show and remove commands support the existing `with <transition> [<key> <value> ...]` syntax. Ink maps these commands to static `asprite` operations in the compiled JSON; `@drincs/pixi-vn-json` handles their execution at runtime.
+
 ```ink tab="ink/start.ink"
 === start ===
 # show image eggHead x 20 y 20

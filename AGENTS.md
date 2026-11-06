@@ -34,6 +34,10 @@ Translations are managed on Crowdin (project `764947`, configured in `crowdin.ym
 - To write a translated sibling file locally (`page.mdx` → `page.it.mdx`), follow `content/CLAUDE.md`.
 - To translate directly on Crowdin through its REST API, follow `CROWDIN.md`. It covers authentication (token in the git-ignored `.env.crowdin`, never print it), master vs. hidden strings (only translate strings where `isHidden` is `false`), and the two request modes (full retranslate / fill gaps only), working one file at a time.
 
+## Build and run commands
+
+Do not start the wiki, run its development or preview server, or run a build/export command unless the user explicitly requests it. This includes commands such as `npm run dev`, `npm run build`, and `npm run export`.
+
 ## pixi-vn-examples
 
 `pixi-vn-examples/` is a separate project (Vite + React) with runnable examples of Pixi'VN features, each on its own route. It is untracked in this repo and has its own `CLAUDE.md` and `README.md` with the conventions to follow (unique label ids, per-route characters, anime-style assets, etc.).
