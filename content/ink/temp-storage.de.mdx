@@ -1,0 +1,119 @@
+---
+title: Temporärer Speicher
+description: Erfahre, wie du in ink temporäre Variablen innerhalb eines knot oder stitch mithilfe des Speichers von Pixi’VN definierst, setzt und abrufst.
+---
+
+:::tip
+
+Weitere Informationen zu temporären Variablen in ink findest du in der [offiziellen Dokumentation](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#4-temporary-variables).
+
+:::
+
+Manchmal ist eine globale Variable unpraktisch. ***ink*** stellt **temporäre Variablen** für schnelle, lokale Berechnungen bereit. Anders als globale Variablen (`VAR`) wird eine temporäre Variable **verworfen, sobald die Geschichte den knot oder stitch verlässt, in dem sie definiert wurde**.
+
+Bei der **Integration von *ink* und Pixi’VN** entsprechen `temp`-Variablen den <DynamicLink href="/start/storage#temporary-storage">temporären Variablen im Speicher</DynamicLink>.
+
+## Define
+
+:::tip
+
+In JavaScript/TypeScript entspricht diese Funktion den <DynamicLink href="/start/storage#temporary-storage">temporären Variablen im Speicher</DynamicLink>.
+
+:::
+
+Deklariere eine temporäre Variable mit dem Schlüsselwort `temp` innerhalb einer Logikzeile mit `~`:
+
+```ink tab="ink"
+~ temp myTemp = 42
+```
+
+```txt tab="CLI"
+~ temp <variable_name> = <value>
+
+where:
+    variable_name = the name of the temporary variable
+    value = the initial value of the variable
+```
+
+Du kannst jeden von ***ink*** unterstützten Typ verwenden: Ganzzahl, Gleitkommazahl, boolescher Wert oder Zeichenfolge.
+
+```ink title="ink/start.ink"
+=== near_north_pole ===
+    ~ temp number_of_warm_things = 0
+    { blanket:
+        ~ number_of_warm_things++
+    }
+    { ear_muffs:
+        ~ number_of_warm_things++
+    }
+    { gloves:
+        ~ number_of_warm_things++
+    }
+    { number_of_warm_things > 2:
+        Despite the snow, I felt incorrigibly snug.
+    - else:
+        That night I was colder than I have ever been.
+    }
+```
+
+Die Variable `number_of_warm_things` wird beim Betreten des knot erstellt und beim Verlassen wieder verworfen.
+
+## Setzen
+
+:::tip
+
+In JavaScript/TypeScript entspricht diese Funktion <DynamicLink href="/start/storage#set">`storage.set`</DynamicLink>.
+
+:::
+
+Nach der ersten Deklaration kannst du einer temporären Variablen mit derselben `~`-Syntax erneut einen Wert zuweisen (ohne das Schlüsselwort `temp` zu wiederholen):
+
+```ink tab="ink"
+~ score = score + 10
+```
+
+```txt tab="CLI"
+~ <variable_name> = <expression>
+
+where:
+    variable_name = the name of an already declared temporary variable
+    expression = the new value, which can reference the variable itself
+```
+
+Zum Beispiel:
+
+```ink title="ink"
+~ temp score = 0
+~ score = score + 10
+~ score++
+```
+
+## Abrufen
+
+Um den Wert einer temporären Variablen abzurufen, verwende die übliche <DynamicLink href="/ink/storage#get">Funktion `storage.get`</DynamicLink>.
+
+In ***ink*** selbst liest du eine temporäre Variable genauso wie jede andere Variable aus – indem du ihren Namen in einem Ausdruck, einer Inline-Ausgabe oder einer Bedingung verwendest:
+
+```ink tab="ink"
+The duration is: {duration}
+```
+
+```txt tab="CLI"
+{<variable_name>}
+
+where:
+    variable_name = the name of the temporary variable to print or evaluate
+```
+
+Zum Beispiel:
+
+```ink title="ink"
+~ temp duration = 3
+
+The duration is: {duration}
+{ duration > 2:
+    It's a long scene.
+- else:
+    It's a short scene.
+}
+```

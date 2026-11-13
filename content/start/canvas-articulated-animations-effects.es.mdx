@@ -1,0 +1,429 @@
+---
+title: Animaciones articuladas
+description: Aprende a usar las animaciones articuladas, funciones basadas en canvas.animate para crear efectos complejos como el temblor en los componentes canvas de Pixi’VN.
+---
+
+Las animaciones articuladas son funciones que utilizan la función [`canvas.animate`](/jsdoc/pixi-vn/index/interfaces/CanvasManagerInterface#animate) para crear animaciones que se pueden aplicar a los componentes canvas. Estas funciones se utilizan normalmente para crear efectos como el temblor, el rebote u otras animaciones complejas que involucran múltiples pasos o componentes.
+
+<Accordions>
+
+<Accordion title="Temblor" id="shake">
+
+The [`effects.shakeEffect`](/jsdoc/pixi-vn/index/namespaces/effects/functions/shakeEffect) function is an articulated animation that shakes a component.
+
+```ts tab="content/labels/start.label.ts"
+import {
+    CANVAS_APP_GAME_LAYER_ALIAS,
+    effects,
+    newLabel,
+    showImage,
+} from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("bg", "bg", { scale: 1.3 });
+        await showImage("alien", "alien", { align: 0.5 });
+        effects.shakeEffect("alien"); // [!code focus]
+    },
+    async () => {
+        effects.shakeEffect(CANVAS_APP_GAME_LAYER_ALIAS); // [!code focus]
+    },
+]);
+```
+
+```ts tab="assets/index.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+export const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "alien",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+                {
+                    alias: "bg",
+                    src: "https://pixijs.com/assets/bg_grass.jpg",
+                },
+            ],
+        },
+    ],
+};
+```
+
+<PixiVnExample path="canvas/shake" />
+
+</Accordion>
+
+<Accordion title="Bounce" id="bounce">
+
+> This animation was introduced in version v1.9.5.
+
+The [`effects.bounceEffect`](/jsdoc/pixi-vn/index/namespaces/effects/functions/bounceEffect) function displaces a component towards a direction and back, decaying over a number of bounces - like it's hopping on the spot.
+
+```ts tab="content/labels/start.label.ts"
+import { effects, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("alien", "alien", { align: 0.5 });
+        await effects.bounceEffect("alien"); // [!code focus]
+    },
+    async () => {
+        await effects.bounceEffect("alien", { direction: "left", distance: 50, bounces: 4 }); // [!code focus]
+    },
+]);
+```
+
+<PixiVnExample path="canvas/bounce" />
+
+</Accordion>
+
+<Accordion title="Pulse" id="pulse">
+
+> This animation was introduced in version v1.9.5.
+
+The [`effects.pulseEffect`](/jsdoc/pixi-vn/index/namespaces/effects/functions/pulseEffect) function scales a component up and back down to its original size, decaying over a number of pulses - a "heartbeat" style emphasis.
+
+```ts tab="content/labels/start.label.ts"
+import { effects, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("alien", "alien", { align: 0.5 });
+        await effects.pulseEffect("alien"); // [!code focus]
+    },
+    async () => {
+        await effects.pulseEffect("alien", { pulses: 1, scale: 1.5 }); // [!code focus]
+    },
+]);
+```
+
+<PixiVnExample path="canvas/pulse" />
+
+</Accordion>
+
+<Accordion title="Hop" id="hop">
+
+> This animation was introduced in version v1.9.5.
+
+The [`effects.hopEffect`](/jsdoc/pixi-vn/index/namespaces/effects/functions/hopEffect) function performs a single primary hop towards a direction, optionally followed by smaller decaying secondary hops.
+
+```ts tab="content/labels/start.label.ts"
+import { effects, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("alien", "alien", { align: 0.5 });
+        await effects.hopEffect("alien"); // [!code focus]
+    },
+    async () => {
+        await effects.hopEffect("alien", { distance: 60, secondaryHops: 3 }); // [!code focus]
+    },
+]);
+```
+
+<PixiVnExample path="canvas/hop" />
+
+</Accordion>
+
+<Accordion title="Wiggle" id="wiggle">
+
+> This animation was introduced in version v1.9.5.
+
+The [`effects.wiggleEffect`](/jsdoc/pixi-vn/index/namespaces/effects/functions/wiggleEffect) function rocks a component's rotation back and forth around its current angle, decaying over a number of repetitions.
+
+```ts tab="content/labels/start.label.ts"
+import { effects, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("alien", "alien", { align: 0.5 });
+        await effects.wiggleEffect("alien"); // [!code focus]
+    },
+    async () => {
+        await effects.wiggleEffect("alien", { angle: 25, repetitions: 6 }); // [!code focus]
+    },
+]);
+```
+
+<PixiVnExample path="canvas/wiggle" />
+
+</Accordion>
+
+<Accordion title="Nod" id="nod">
+
+> This animation was introduced in version v1.9.5.
+
+The [`effects.nodEffect`](/jsdoc/pixi-vn/index/namespaces/effects/functions/nodEffect) function oscillates a component back and forth along an axis (horizontal or vertical), decaying over a number of repetitions - like a nodding or shaking-head gesture.
+
+```ts tab="content/labels/start.label.ts"
+import { effects, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("alien", "alien", { align: 0.5 });
+        await effects.nodEffect("alien"); // [!code focus]
+    },
+    async () => {
+        await effects.nodEffect("alien", { axis: "vertical", distance: 25 }); // [!code focus]
+    },
+]);
+```
+
+<PixiVnExample path="canvas/nod" />
+
+</Accordion>
+
+<Accordion title="Sway" id="sway">
+
+> This animation was introduced in version v1.9.5.
+
+The [`effects.swayEffect`](/jsdoc/pixi-vn/index/namespaces/effects/functions/swayEffect) function drifts a component's position and rotation back and forth, decaying over a number of repetitions - a gentle, idle-motion sway.
+
+```ts tab="content/labels/start.label.ts"
+import { effects, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("alien", "alien", { align: 0.5 });
+        await effects.swayEffect("alien"); // [!code focus]
+    },
+    async () => {
+        await effects.swayEffect("alien", { distance: 40, angle: 10 }); // [!code focus]
+    },
+]);
+```
+
+<PixiVnExample path="canvas/sway" />
+
+</Accordion>
+
+<Accordion title="Punch" id="punch">
+
+> This animation was introduced in version v1.9.5.
+
+The [`effects.punchEffect`](/jsdoc/pixi-vn/index/namespaces/effects/functions/punchEffect) function is a single one-shot attack-and-recover animation (not decaying like the effects above) on a component's `scale`, `x`, `y`, or `rotation`, with an optional overshoot on the recovery.
+
+```ts tab="content/labels/start.label.ts"
+import { effects, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("alien", "alien", { align: 0.5 });
+        await effects.punchEffect("alien"); // [!code focus]
+    },
+    async () => {
+        await effects.punchEffect("alien", { mode: "scale", strength: 0.5 }); // [!code focus]
+    },
+]);
+```
+
+<PixiVnExample path="canvas/punch" />
+
+</Accordion>
+
+<Accordion title="Glitch" id="glitch-effect">
+
+> This animation was introduced in version v1.9.5.
+
+The [`effects.glitchEffect`](/jsdoc/pixi-vn/index/namespaces/effects/functions/glitchEffect) function plays one or more digital-corruption bursts (displaced slices, plus an optional RGB channel split) on a component, without removing or showing it. Works best on detailed, high-contrast images - it barely reads on flat colors.
+
+```ts tab="content/labels/start.label.ts"
+import { effects, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("alien", "alien", { align: 0.5 });
+        await effects.glitchEffect("alien"); // [!code focus]
+    },
+    async () => {
+        await effects.glitchEffect("alien", { strength: 80, bursts: 5, rgbSplit: 12 }); // [!code focus]
+    },
+]);
+```
+
+<PixiVnExample path="canvas/glitch" />
+
+</Accordion>
+
+<Accordion title="Chromatic aberration" id="chromatic-aberration">
+
+> This animation was introduced in version v1.9.5.
+
+The [`effects.chromaticAberrationEffect`](/jsdoc/pixi-vn/index/namespaces/effects/functions/chromaticAberrationEffect) function splits the red/blue channels apart and back together, decaying over a number of bursts - a lens-distortion/glitch flourish.
+
+```ts tab="content/labels/start.label.ts"
+import { effects, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("alien", "alien", { align: 0.5 });
+        await effects.chromaticAberrationEffect("alien"); // [!code focus]
+    },
+    async () => {
+        await effects.chromaticAberrationEffect("alien", { strength: 15, bursts: 3 }); // [!code focus]
+    },
+]);
+```
+
+<PixiVnExample path="canvas/chromatic-aberration" />
+
+</Accordion>
+
+<Accordion title="Shockwave" id="shockwave-effect">
+
+> This animation was introduced in version v1.9.5.
+
+The [`effects.shockwaveEffect`](/jsdoc/pixi-vn/index/namespaces/effects/functions/shockwaveEffect) function is a single one-shot ring of water-like distortion expanding outward from an origin point on a component.
+
+```ts tab="content/labels/start.label.ts"
+import { effects, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("alien", "alien", { align: 0.5 });
+        await effects.shockwaveEffect("alien"); // [!code focus]
+    },
+    async () => {
+        await effects.shockwaveEffect("alien", { origin: { x: 0.5, y: 0.5 }, amplitude: 40 }); // [!code focus]
+    },
+]);
+```
+
+<PixiVnExample path="canvas/shockwave" />
+
+</Accordion>
+
+<Accordion title="Radial blur" id="radial-blur-effect">
+
+> This animation was introduced in version v1.9.5.
+
+The [`effects.radialBlurEffect`](/jsdoc/pixi-vn/index/namespaces/effects/functions/radialBlurEffect) function bursts a zoom-blur in and out from a center point on a component, decaying over a number of bursts.
+
+```ts tab="content/labels/start.label.ts"
+import { effects, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("alien", "alien", { align: 0.5 });
+        await effects.radialBlurEffect("alien"); // [!code focus]
+    },
+    async () => {
+        await effects.radialBlurEffect("alien", { strength: 0.9, bursts: 2 }); // [!code focus]
+    },
+]);
+```
+
+<PixiVnExample path="canvas/radial-blur" />
+
+</Accordion>
+
+<Accordion title="Blur pulse" id="blur-pulse-effect">
+
+> This animation was introduced in version v1.9.5.
+
+The [`effects.blurPulseEffect`](/jsdoc/pixi-vn/index/namespaces/effects/functions/blurPulseEffect) function pulses a component in and out of blur, decaying over a number of pulses.
+
+```ts tab="content/labels/start.label.ts"
+import { effects, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("alien", "alien", { align: 0.5 });
+        await effects.blurPulseEffect("alien"); // [!code focus]
+    },
+    async () => {
+        await effects.blurPulseEffect("alien", { strength: 12, pulses: 3 }); // [!code focus]
+    },
+]);
+```
+
+<PixiVnExample path="canvas/blur-pulse" />
+
+</Accordion>
+
+<Accordion title="Vignette pulse" id="vignette-pulse-effect">
+
+> This animation was introduced in version v1.9.5.
+
+The [`effects.vignettePulseEffect`](/jsdoc/pixi-vn/index/namespaces/effects/functions/vignettePulseEffect) function pulses a darkening vignette in from a component's corners and back out, decaying over a number of pulses. Needs a full-frame background/image to be visible - it darkens the element's own corners, so a character sprite with transparent margins around it won't show much.
+
+```ts tab="content/labels/start.label.ts"
+import {
+    CANVAS_APP_GAME_LAYER_ALIAS,
+    effects,
+    newLabel,
+    showImage,
+} from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("background", "bg_grass");
+        await effects.vignettePulseEffect(CANVAS_APP_GAME_LAYER_ALIAS); // [!code focus]
+    },
+    async () => {
+        await effects.vignettePulseEffect(CANVAS_APP_GAME_LAYER_ALIAS, { radius: 0.7, blur: 0.6, pulses: 3 }); // [!code focus]
+    },
+]);
+```
+
+<PixiVnExample path="canvas/vignette-pulse" />
+
+</Accordion>
+
+<Accordion title="Desaturate" id="desaturate-effect">
+
+> This animation was introduced in version v1.9.5.
+
+The [`effects.desaturateEffect`](/jsdoc/pixi-vn/index/namespaces/effects/functions/desaturateEffect) function is a single one-shot dip into (and recovery from) reduced saturation, with an optional hold at the trough - for a shock/fear/flashback beat.
+
+```ts tab="content/labels/start.label.ts"
+import { effects, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("alien", "alien", { align: 0.5 });
+        await effects.desaturateEffect("alien"); // [!code focus]
+    },
+    async () => {
+        await effects.desaturateEffect("alien", { amount: 0, holdDuration: 0.5 }); // [!code focus]
+    },
+]);
+```
+
+<PixiVnExample path="canvas/desaturate" />
+
+</Accordion>
+
+<Accordion title="Glow pulse" id="glow-pulse-effect">
+
+> This animation was introduced in version v1.9.5.
+
+The [`effects.glowPulseEffect`](/jsdoc/pixi-vn/index/namespaces/effects/functions/glowPulseEffect) function pulses an outward glow on a component, decaying over a number of pulses - for a "power up" or magical highlight.
+
+```ts tab="content/labels/start.label.ts"
+import { effects, newLabel, showImage } from "@drincs/pixi-vn";
+
+export const startLabel = newLabel("start", [
+    async () => {
+        await showImage("alien", "alien", { align: 0.5 });
+        await effects.glowPulseEffect("alien"); // [!code focus]
+    },
+    async () => {
+        await effects.glowPulseEffect("alien", { color: 0x00ffff, pulses: 3 }); // [!code focus]
+    },
+]);
+```
+
+<PixiVnExample path="canvas/glow-pulse" />
+
+</Accordion>
+
+</Accordions>

@@ -1,0 +1,119 @@
+---
+title: Stockage temporaire
+description: Découvrez comment définir, modifier et récupérer les variables temporaires propres à un knot ou à un stitch dans ink à l’aide du stockage de Pixi’VN.
+---
+
+:::tip
+
+Vous pouvez en savoir plus sur les variables temporaires dans ink dans la [documentation officielle](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#4-temporary-variables).
+
+:::
+
+Une variable globale n’est pas toujours pratique à utiliser. ***ink*** propose des **variables temporaires** pour effectuer des calculs locaux rapides. Contrairement aux variables globales (`VAR`), une variable temporaire est **supprimée dès que l’histoire quitte le knot ou le stitch dans lequel elle a été définie**.
+
+Dans l’**intégration de *ink* avec Pixi’VN**, les variables `temp` correspondent aux <DynamicLink href="/start/storage#temporary-storage">variables temporaires du stockage</DynamicLink>.
+
+## Define
+
+:::tip
+
+En JavaScript/TypeScript, cette fonctionnalité correspond aux <DynamicLink href="/start/storage#temporary-storage">variables temporaires du stockage</DynamicLink>.
+
+:::
+
+Déclarez une variable temporaire avec le mot-clé `temp` sur une ligne de logique `~` :
+
+```ink tab="ink"
+~ temp myTemp = 42
+```
+
+```txt tab="CLI"
+~ temp <variable_name> = <value>
+
+where:
+    variable_name = the name of the temporary variable
+    value = the initial value of the variable
+```
+
+Vous pouvez utiliser n’importe quel type pris en charge par ***ink*** : entier, nombre à virgule flottante, booléen ou chaîne de caractères.
+
+```ink title="ink/start.ink"
+=== near_north_pole ===
+    ~ temp number_of_warm_things = 0
+    { blanket:
+        ~ number_of_warm_things++
+    }
+    { ear_muffs:
+        ~ number_of_warm_things++
+    }
+    { gloves:
+        ~ number_of_warm_things++
+    }
+    { number_of_warm_things > 2:
+        Despite the snow, I felt incorrigibly snug.
+    - else:
+        That night I was colder than I have ever been.
+    }
+```
+
+La variable `number_of_warm_things` est créée à l’entrée dans le knot et supprimée à sa sortie.
+
+## Définir
+
+:::tip
+
+En JavaScript/TypeScript, cette fonctionnalité correspond à <DynamicLink href="/start/storage#set">`storage.set`</DynamicLink>.
+
+:::
+
+Après la déclaration initiale, vous pouvez réaffecter une valeur à une variable temporaire avec la même syntaxe `~` (sans répéter le mot-clé `temp`) :
+
+```ink tab="ink"
+~ score = score + 10
+```
+
+```txt tab="CLI"
+~ <variable_name> = <expression>
+
+where:
+    variable_name = the name of an already declared temporary variable
+    expression = the new value, which can reference the variable itself
+```
+
+Par exemple :
+
+```ink title="ink"
+~ temp score = 0
+~ score = score + 10
+~ score++
+```
+
+## Obtenir
+
+Pour récupérer la valeur d’une variable temporaire, utilisez la <DynamicLink href="/ink/storage#get">fonction `storage.get`</DynamicLink> habituelle.
+
+Dans ***ink*** même, une variable temporaire se lit comme n’importe quelle autre variable : en utilisant son nom dans une expression, un affichage en ligne ou une condition :
+
+```ink tab="ink"
+The duration is: {duration}
+```
+
+```txt tab="CLI"
+{<variable_name>}
+
+where:
+    variable_name = the name of the temporary variable to print or evaluate
+```
+
+Par exemple :
+
+```ink title="ink"
+~ temp duration = 3
+
+The duration is: {duration}
+{ duration > 2:
+    It's a long scene.
+- else:
+    It's a short scene.
+}
+```

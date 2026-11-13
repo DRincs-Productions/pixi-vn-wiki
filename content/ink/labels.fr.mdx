@@ -1,0 +1,247 @@
+---
+title: Knots
+description: |
+  Découvrez le fonctionnement des knots et des labels dans Pixi’VN, comment les exécuter depuis des scripts ink ou JavaScript, ainsi que les différences entre ink natif et l’intégration avec Pixi’VN.
+---
+
+<Accordions>
+
+<Accordion title="Qu’est-ce qu’un `knot` ?" id="what-is-a-knot">
+
+Comme l’explique la [documentation officielle](https://www.inklestudios.com/ink/web-tutorial/), l’histoire se compose de plusieurs sections reliées entre elles, appelées `knots` dans la **terminologie de *ink***. Dans ***ink***, le début d’un `knot` est indiqué par au moins deux signes égal à gauche du nom du `knot`, et éventuellement aussi à droite.
+
+```ink tab="ink"
+=== london ===
+```
+
+```txt tab="CLI"
+=== <knot_name> ===
+
+where:
+    knot_name = the name of the knot
+```
+
+</Accordion>
+
+<Accordion title="Y a-t-il une différence entre `label` et `knot` ?" id="label-vs-knot">
+
+Non, c’est la même chose. Dans Pixi’VN, lorsque vous créez un `knot` avec ***ink***, un `label` est créé en interne et enregistré dans le registre.
+
+</Accordion>
+
+</Accordions>
+
+## Exécuter un knot
+
+Pour exécuter un `knot`, vous pouvez utiliser les méthodes suivantes :
+
+<Accordions>
+
+<Accordion title="Divert `-> start` (saut vers un `label`)" id="jump">
+
+Vous pouvez exécuter un `knot` à l’aide de l’opérateur Divert, représenté par la syntaxe `-> start`. Cela correspond à la <DynamicLink href="/start/labels#jump-to-a-label">fonctionnalité `jump`</DynamicLink> de la bibliothèque Pixi’VN.
+
+```ink tab="ink"
+-> after
+```
+
+```txt tab="CLI"
+-> <knot_name>
+
+where:
+    knot_name = the name of the knot to jump to
+```
+
+Par exemple :
+
+```ink title="ink/start.ink"
+=== start ===
+Start
+-> after
+
+=== after ===
+After
+End
+-> DONE
+```
+
+<PixiVnExample path="ink/narration/jump" ink />
+
+</Accordion>
+
+<Accordion title="Tunnels `-> start ->` ou Threads `<- start`  (appel d’un `label`)" id="call">
+
+Vous pouvez exécuter un `knot` avec l’opérateur Tunnels, représenté par la syntaxe `-> start ->`. Cela correspond à la <DynamicLink href="/start/labels#call-to-a-label">fonctionnalité `call`</DynamicLink> de la bibliothèque Pixi’VN.
+
+```ink tab="ink"
+-> guard_dialogue ->
+```
+
+```txt tab="CLI"
+-> <knot_name> ->
+
+where:
+    knot_name = the name of the knot to call
+```
+
+Vous pouvez aussi utiliser la syntaxe Threads en écrivant le symbole `\<-` suivi du nom du `knot` :
+
+```ink tab="ink"
+<- guard_dialogue
+```
+
+```txt tab="CLI"
+<- <knot_name>
+
+where:
+    knot_name = the name of the knot to call
+```
+
+:::tip[Threads]
+
+Contrairement à **ink natif**, les « Threads » ne sont pas pris en charge dans **l’intégration ink + Pixi’VN**. Le symbole `\<-` correspond donc à l’appel d’un `knot` plutôt qu’à l’opérateur « Thread ».
+
+:::
+
+:::tip
+
+Par souci de simplicité, dans **l’intégration ink + Pixi’VN**, `->->` et `-> DONE` ferment correctement le `label` et sont donc équivalents.
+
+:::
+
+Par exemple :
+
+```ink title="ink/start.ink"
+VAR reputation = 0
+
+-> start
+=== start ===
+You are in the square.
+
+* [Talk to the guard]
+    -> guard_dialogue ->
+    You return to the square.
+    -> start
+    You don't see this line because you are sent back to the city before.
+
+* {reputation >= 1} [Ask for a favor]
+    The guard helps you.
+    -> END
+
+=== guard_dialogue ===
+The guard looks at you.
+
+* [Greet]
+    "Hello citizen."
+    ~ reputation += 1
+->->
+
+* [Insult]
+    "Hey you!"
+    ~ reputation -= 1
+
+->->
+```
+
+<PixiVnExample path="ink/narration/call" ink />
+
+</Accordion>
+
+</Accordions>
+
+## Autres fonctionnalités
+
+<Accordions>
+
+<Accordion title="Paramètres" id="parameters">
+
+Une forme particulièrement utile de variable temporaire est le **paramètre**. Tout knot ou stitch peut recevoir une valeur en paramètre, qui est traitée comme une variable temporaire locale à ce knot :
+
+```ink title="ink/start.ink"
+=== start ===
+*   [Accuse Hastings]
+        -> accuse("Hastings")
+*   [Accuse Mrs Black]
+        -> accuse("Claudia")
+*   [Accuse myself]
+        -> accuse("myself")
+
+=== accuse(who) ===
+    "I accuse {who}!" Poirot declared.
+    "Really?" Japp replied. "{who == "myself":You did it?|{who}?}"
+    "And why not?" Poirot shot back.
+```
+
+Les paramètres permettent de transmettre une valeur temporaire d’un knot ou d’un stitch à un autre, car les variables `temp` ordinaires ne sont pas accessibles en dehors du stitch dans lequel elles ont été déclarées.
+
+</Accordion>
+
+<Accordion title="Knots récursifs avec paramètres" id="recursive-knots-with-parameters">
+
+Les variables temporaires (y compris les paramètres) peuvent être utilisées sans risque dans les knots récursifs :
+
+```ink title="ink/start.ink"
+-> add_one_to_one_hundred(0, 1)
+
+=== add_one_to_one_hundred(total, x) ===
+    ~ total = total + x
+    { x == 100:
+        -> finished(total)
+    - else:
+        -> add_one_to_one_hundred(total, x + 1)
+    }
+
+=== finished(total) ===
+    "The result is {total}!" you announce.
+    -> END
+```
+
+</Accordion>
+
+<Accordion title="Passer des cibles de redirection en paramètres" id="sending-divert-targets-as-parameters">
+
+Les adresses des knots peuvent également être transmises en paramètres. Utilisez `->` pour indiquer qu’un paramètre est une cible de redirection :
+
+```ink title="ink/start.ink"
+=== sleeping_in_hut ===
+    You lie down and close your eyes.
+    -> generic_sleep(-> waking_in_the_hut)
+
+=== generic_sleep(-> waking) ===
+    You sleep perchance to dream etc. etc.
+    -> waking
+
+=== waking_in_the_hut ===
+    You get back to your feet, ready to continue your journey.
+```
+
+</Accordion>
+
+<Accordion title="Redirection dans le même `step`" id="diverting-in-the-same-step">
+
+Par défaut, une redirection vers un autre `knot` est exécutée au `step` suivant. Le contenu ciblé ne s’affiche donc que lorsque le déroulement reprend :
+
+```ink title="ink/start.ink"
+=== start ===
+It is, first and foremost...
+-> add2
+
+=== add2 ===
+...a story about the twelve labors of Hercules.
+-> DONE
+```
+
+Si la redirection est placée immédiatement après le texte, sans saut de ligne, le `knot` ciblé s’exécute dans le même `step` que le texte précédent, et les deux s’affichent ensemble :
+
+```ink title="ink/start.ink"
+=== start ===
+It is, first and foremost...-> add2
+
+=== add2 ===
+...a story about the twelve labors of Hercules.
+-> DONE
+```
+
+</Accordion>
+
+</Accordions>

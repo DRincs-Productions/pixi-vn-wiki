@@ -1,0 +1,119 @@
+---
+title: 一時ストレージ
+description: Pixi’VN のストレージを使って、ink の knot または stitch 内で有効な一時変数を定義・設定・取得する方法を学びます。
+---
+
+:::tip
+
+ink の一時変数について詳しくは、[公式ドキュメント](https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#4-temporary-variables)を参照してください。
+
+:::
+
+グローバル変数が扱いにくい場合があります。 ***ink*** では、手軽なローカル計算のために**一時変数**を使用できます。グローバル変数（`VAR`）とは異なり、一時変数は**定義された knot または stitch から物語の進行が離れた時点で破棄されます**。
+
+***ink* と Pixi’VN の連携**では、`temp` 変数は <DynamicLink href="/start/storage#temporary-storage">ストレージの一時変数</DynamicLink>に相当します。
+
+## Define
+
+:::tip
+
+JavaScript/TypeScript では、この機能は <DynamicLink href="/start/storage#temporary-storage">ストレージの一時変数</DynamicLink>に相当します。
+
+:::
+
+`~` のロジック行内で `temp` キーワードを使い、一時変数を宣言します。
+
+```ink tab="ink"
+~ temp myTemp = 42
+```
+
+```txt tab="CLI"
+~ temp <variable_name> = <value>
+
+where:
+    variable_name = the name of the temporary variable
+    value = the initial value of the variable
+```
+
+***ink*** が対応する型はすべて使用できます。整数、浮動小数点数、真偽値、文字列です。
+
+```ink title="ink/start.ink"
+=== near_north_pole ===
+    ~ temp number_of_warm_things = 0
+    { blanket:
+        ~ number_of_warm_things++
+    }
+    { ear_muffs:
+        ~ number_of_warm_things++
+    }
+    { gloves:
+        ~ number_of_warm_things++
+    }
+    { number_of_warm_things > 2:
+        Despite the snow, I felt incorrigibly snug.
+    - else:
+        That night I was colder than I have ever been.
+    }
+```
+
+変数 `number_of_warm_things` は knot に入ったときに作成され、そこを離れると破棄されます。
+
+## 設定
+
+:::tip
+
+JavaScript/TypeScript では、この機能は <DynamicLink href="/start/storage#set">`storage.set`</DynamicLink> に相当します。
+
+:::
+
+最初の宣言後は、`temp` キーワードを繰り返さずに、同じ `~` 構文で一時変数に値を再代入できます。
+
+```ink tab="ink"
+~ score = score + 10
+```
+
+```txt tab="CLI"
+~ <variable_name> = <expression>
+
+where:
+    variable_name = the name of an already declared temporary variable
+    expression = the new value, which can reference the variable itself
+```
+
+例：
+
+```ink title="ink"
+~ temp score = 0
+~ score = score + 10
+~ score++
+```
+
+## 取得
+
+一時変数の値を取得するには、通常の <DynamicLink href="/ink/storage#get">`storage.get` 関数</DynamicLink>を使用します。
+
+***ink*** 内では、一時変数も他の変数と同様に、式、インライン出力、条件式で変数名を指定して値を読み取れます。
+
+```ink tab="ink"
+The duration is: {duration}
+```
+
+```txt tab="CLI"
+{<variable_name>}
+
+where:
+    variable_name = the name of the temporary variable to print or evaluate
+```
+
+例：
+
+```ink title="ink"
+~ temp duration = 3
+
+The duration is: {duration}
+{ duration > 2:
+    It's a long scene.
+- else:
+    It's a short scene.
+}
+```
