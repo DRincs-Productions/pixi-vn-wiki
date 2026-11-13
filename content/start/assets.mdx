@@ -134,13 +134,12 @@ Once processing is complete, it generates optimized files in `public/assets` and
 ```
 
 ```ts tab=".assetpack.ts"
-import fs from "node:fs/promises";
 import type { AssetPackConfig, AssetPipe } from "@assetpack/core";
 import { path } from "@assetpack/core";
 import { pixiPipes } from "@assetpack/core/pixi";
+import fs from "node:fs/promises";
 
-// TAURI_ENV_TARGET_TRIPLE is set by `tauri build` before running beforeBuildCommand
-const isTauri = !!process.env.TAURI_ENV_TARGET_TRIPLE;
+const isNativeBuild = !process.env.ROVES_BUILD;
 
 const manifestOutput = "src/assets/manifest.gen.json";
 
@@ -154,21 +153,14 @@ const manifestOutput = "src/assets/manifest.gen.json";
  * in "default". Runs after the manifest has been written to disk, so it
  * re-reads and rewrites the file.
  */
-function groupBundlesByFolder(options: {
-    output: string;
-}): AssetPipe<{ output: string }> {
+function groupBundlesByFolder(options: { output: string }): AssetPipe<{ output: string }> {
     return {
         name: "group-bundles-by-folder",
         defaultOptions: options,
         async finish(_asset, opts) {
-            const manifest = JSON.parse(
-                await fs.readFile(opts.output, "utf-8"),
-            );
+            const manifest = JSON.parse(await fs.readFile(opts.output, "utf-8"));
 
-            const bundles = new Map<
-                string,
-                { name: string; assets: unknown[] }
-            >();
+            const bundles = new Map<string, { name: string; assets: unknown[] }>();
             for (const bundle of manifest.bundles) {
                 if (bundle.name !== "default") {
                     bundles.set(bundle.name, bundle);
@@ -177,10 +169,7 @@ function groupBundlesByFolder(options: {
                 for (const asset of bundle.assets) {
                     const folder = path.dirname(asset.src[0]).split("/")[0];
                     const bundleName = folder === "." ? "default" : folder;
-                    const target = bundles.get(bundleName) ?? {
-                        name: bundleName,
-                        assets: [],
-                    };
+                    const target = bundles.get(bundleName) ?? { name: bundleName, assets: [] };
                     target.assets.push(asset);
                     bundles.set(bundleName, target);
                 }
@@ -202,24 +191,18 @@ function groupBundlesByFolder(options: {
  * prefixed with its bundle name (e.g. "yard_yard_yard1") to keep aliases
  * unique across the whole manifest.
  */
-function normalizeAliases(options: {
-    output: string;
-}): AssetPipe<{ output: string }> {
+function normalizeAliases(options: { output: string }): AssetPipe<{ output: string }> {
     return {
         name: "normalize-aliases",
         defaultOptions: options,
         async finish(_asset, opts) {
-            const manifest = JSON.parse(
-                await fs.readFile(opts.output, "utf-8"),
-            );
+            const manifest = JSON.parse(await fs.readFile(opts.output, "utf-8"));
 
             const seen = new Set<string>();
             for (const bundle of manifest.bundles) {
                 for (const asset of bundle.assets) {
                     asset.alias = asset.alias.map((alias: string) => {
-                        const normalized = path
-                            .trimExt(alias)
-                            .replaceAll("/", "_");
+                        const normalized = path.trimExt(alias).replaceAll("/", "_");
                         const unique = seen.has(normalized)
                             ? `${bundle.name}_${normalized}`
                             : normalized;
@@ -246,15 +229,11 @@ const config: AssetPackConfig = {
                 output: manifestOutput,
                 createShortcuts: true,
             },
-            // For Tauri: skip @0.5x mipmaps (unused on desktop, WebView handles DPR)
-            resolutions: isTauri ? { default: 1 } : undefined,
-            // For Tauri: raise WebP quality — files are local so bandwidth is not a concern
-            compression: isTauri
-                ? {
-                      png: true,
-                      jpg: true,
-                      webp: { quality: 88, alphaQuality: 88 },
-                  }
+            // Native builds: skip @0.5x mipmaps (unused on desktop, WebView/Servo handle DPR)
+            resolutions: isNativeBuild ? { default: 1 } : undefined,
+            // Native builds: raise WebP quality — files are local so bandwidth is not a concern
+            compression: isNativeBuild
+                ? { png: true, jpg: true, webp: { quality: 88, alphaQuality: 88 } }
                 : undefined,
         }),
         groupBundlesByFolder({ output: manifestOutput }),
