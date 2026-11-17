@@ -1,0 +1,248 @@
+---
+title: 캐릭터
+description: |
+  Pixi’VN의 ink 스크립트에서 캐릭터를 정의하고 사용하며 사용자 지정하는 방법을 알아보세요. 대사에 캐릭터 연결하기, 이름 치환, 이름 변경 및 감정 설정을 다룹니다.
+---
+
+:::tip
+
+이 섹션을 읽기 전에 <DynamicLink href="/start/character#initialize">Pixi’VN에서 캐릭터를 만들고 사용하는 방법</DynamicLink>을 읽어 보시기 바랍니다.
+
+:::
+
+## 사용법
+
+### 대사에 캐릭터 연결하기
+
+***ink***&#xC5D0;서 캐릭터를 대사와 연결할 수 있습니다. To do this, you need to use the following syntax:
+
+```ink tab="ink"
+mc: Hello
+```
+
+```txt tab="CLI"
+<character_id>: <text>
+
+where:
+    character_id = character identifier
+    text = any text message
+```
+
+예를 들어:
+
+```ink tab="ink/start.ink"
+=== start ===
+mc: Hello, I'm Liam.
+-> DONE
+```
+
+```ts tab="values/characters.ts"
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
+
+export const mc = new CharacterBaseModel("mc", {
+    name: "Liam",
+});
+
+RegisteredCharacters.add(mc);
+```
+
+<PixiVnExample path="ink/character/dialogue" ink />
+
+### 대사 텍스트에서 캐릭터 이름 사용하기
+
+대사에서 캐릭터의 이름을 사용할 수 있습니다. To do this, you need to use the following syntax:
+
+```ink tab="ink"
+Hello, [mc].
+```
+
+```txt tab="CLI"
+[<character_id>]
+
+where:
+    character_id = character identifier
+```
+
+예를 들어:
+
+```ink tab="ink/start.ink"
+=== start ===
+Hello, [mc].
+-> DONE
+```
+
+```ts tab="values/characters.ts"
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
+
+export const mc = new CharacterBaseModel("mc", {
+    name: "Liam",
+});
+
+RegisteredCharacters.add(mc);
+```
+
+<Accordions>
+
+<Accordion title="구현" id="replace-implementation">
+
+이 구문을 사용하려면 캐릭터 ID를 캐릭터 이름으로 바꾸는 <DynamicLink href="/ink/replacement">텍스트 치환</DynamicLink>을 등록해야 합니다.
+
+:::tip[템플릿]
+
+이 텍스트 치환은 모든 템플릿에 이미 포함되어 있습니다.
+
+:::
+
+예를 들어 다음 텍스트 치환을 추가할 수 있습니다:
+
+```ts title="content/ink/text-replaces.ts"
+import { TextReplaces } from "@drincs/pixi-vn-ink";
+import { RegisteredCharacters } from "@drincs/pixi-vn/characters";
+
+TextReplaces.add((key) => RegisteredCharacters.get(key)?.name, {
+    name: "character name",
+    validation: "characterId",
+    type: "after-translation",
+    i18nInterpolation: true,
+    description:
+        "Replaces a character ID with the character's name in the game.",
+});
+```
+
+</Accordion>
+
+</Accordions>
+
+<PixiVnExample path="ink/character/dialogue-text" ink />
+
+## 편집
+
+***ink***&#xC5D0;서는 캐릭터 정보를 편집할 수 있습니다. 예를 들어 캐릭터의 이름을 변경할 수 있습니다. To do this, you need to use the following syntax:
+
+```ink tab="ink"
+# rename mc Liam
+```
+
+```txt tab="CLI"
+# rename <character_id> <new_name>
+
+where:
+    character_id = character identifier
+    new_name = the new name for the character
+```
+
+예를 들어:
+
+```ink tab="ink/start.ink"
+=== start ===
+mc: Hello, I'm [mc].
+# request input string
+mc: My name is:
+# rename mc {_input_value_}
+mc: My name is [mc]
+-> DONE
+```
+
+```ts tab="values/characters.ts"
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
+
+export const mc = new CharacterBaseModel("mc", {
+    name: "Liam",
+});
+
+RegisteredCharacters.add(mc);
+```
+
+<Accordions>
+
+<Accordion title="구현" id="rename-implementation">
+
+이 구문을 사용하려면 캐릭터의 이름을 변경하는 <DynamicLink href="/ink/hashtag">해시태그 명령</DynamicLink>을 등록해야 합니다.
+
+:::tip[템플릿]
+
+이 해시태그 명령은 모든 템플릿에 이미 포함되어 있습니다.
+
+:::
+
+예를 들어 다음 해시태그 명령을 추가할 수 있습니다:
+
+```ts title="content/ink/hashtag-commands.ts"
+import { characterIdsEnum } from "@/pixi-vn.keys.gen";
+import { HashtagCommands } from "@drincs/pixi-vn-ink";
+import { RegisteredCharacters } from "@drincs/pixi-vn/characters";
+import zod from "zod";
+
+HashtagCommands.add(
+    async (script) => {
+        const character = RegisteredCharacters.get(script[1]);
+        if (character) {
+            character.name = script[2];
+        }
+        return true;
+    },
+    {
+        name: "character rename",
+        description: `Renames a character in the game.
+
+\`\`\`ink
+# rename <characterId> <newName>
+\`\`\``,
+        validation: zod.tuple([
+            zod.literal("rename"),
+            zod.enum(characterIdsEnum),
+            zod.string(),
+        ]),
+    },
+);
+```
+
+</Accordion>
+
+</Accordions>
+
+<PixiVnExample path="ink/character/edit" ink />
+
+## 캐릭터 감정
+
+***ink***&#xC5D0;서 <DynamicLink href="/start/character#character-emotions">캐릭터 감정</DynamicLink>을 사용할 수 있습니다. 이를 위해 캐릭터 ID, 구분 기호 `@`, 감정으로 구성된 특수 ID를 사용하면 됩니다:
+
+```ink tab="ink"
+mc@happy: Hi, I'm Liam. I'm very happy today.
+```
+
+```txt tab="CLI"
+<character_id>@<emotion>: <text>
+
+where:
+    character_id = character identifier
+    emotion = the emotion defined in JavaScript/TypeScript
+    text = any text message
+```
+
+예를 들어:
+
+```ink tab="ink/start.ink"
+=== start ===
+mc@happy: Hi, I'm Liam. I'm very happy today.
+-> DONE
+```
+
+```ts tab="values/characters.ts"
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
+
+export const mc = new CharacterBaseModel("mc", {
+    name: "Liam",
+});
+
+export const mcHappy = new CharacterBaseModel(
+    { id: "mc", emotion: "happy" },
+    {
+        name: "Liam happy",
+    },
+);
+
+RegisteredCharacters.add([mc, mcHappy]);
+```
+
+<PixiVnExample path="ink/character/emotions" ink />

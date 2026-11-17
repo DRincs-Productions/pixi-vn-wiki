@@ -1,0 +1,263 @@
+---
+title: Steam
+description: How to integrate Steam into your game using the built-in Tauri + Steamworks support included in this template.
+---
+
+:::tip[Mobile]
+
+Steam is not supported on iOS or Android — the feature is automatically disabled on those targets.
+
+:::
+
+The multiplatform template includes a **ready-to-use Steam integration** built on [Tauri](https://tauri.app/) and the Rust crate [`steamworks`](https://crates.io/crates/steamworks) (a wrapper around the Steamworks SDK). Everything is opt-in: the feature is excluded from the build by default and adds zero overhead when unused.
+
+## Enabling Steam support
+
+Edit `steam_appid.txt` in the repo root and replace the value with your real Steam App ID.\
+Use `480` (Spacewar) for local testing without a published app.
+
+```txt title="steam_appid.txt"
+480
+```
+
+Open `src-tauri/Cargo.toml` and add `steam` to the default features list:
+
+```toml title="src-tauri/Cargo.toml"
+default = ["steam"]
+```
+
+Alternatively, pass `--features steam` to any `cargo` or `tauri build` command without touching the file.
+
+The `steamworks` Rust crate already ships the native redistributable libraries for all platforms — **nothing to download manually**. The `build.rs` in this template copies the correct file into `src-tauri/` automatically during compilation.
+
+### Bundling for distribution
+
+To include the library in the final installer you need to tell Tauri to bundle it. Create a platform-specific config file for the platform you are targeting — you only need the one(s) that apply to you:
+
+```json tab="Windows" title="src-tauri/tauri.windows.conf.json"
+{
+    "bundle": { "resources": ["steam_api64.dll"] }
+}
+```
+
+```json tab="MacOS" title="src-tauri/tauri.macos.conf.json"
+{
+    "bundle": { "resources": ["libsteam_api.dylib"] }
+}
+```
+
+```json tab="Linux" title="src-tauri/tauri.linux.conf.json"
+{
+    "bundle": { "resources": ["libsteam_api.so"] }
+}
+```
+
+Tauri v2 merges the matching file into `tauri.conf.json` automatically at build time. Create only the files for the platforms you want to distribute on — one, two, or all three.
+
+## API
+
+Import the `steam` namespace from `@/lib/steam` and call any function directly.\
+All functions are safe to call even when Steam is unavailable or the app runs in a browser: they simply return `null` / `false` / `0` without throwing.
+
+<Accordions>
+
+<Accordion title="`General`" id="general">
+
+**`steam.isAvailable()`** returns `true` when the Steam client is running and the SDK is initialised. Use it to gate any Steam-specific UI or logic.
+
+```ts tab="JavaScript/TypeScript"
+import { steam } from "@/lib/steam";
+
+const available = await steam.isAvailable();
+if (available) {
+    console.log("Steam is running");
+}
+```
+
+**`steam.getPlayerName()`** returns the display name of the logged-in Steam user, or `null` if Steam is unavailable.
+
+```ts tab="JavaScript/TypeScript"
+import { steam } from "@/lib/steam";
+
+const name = await steam.getPlayerName();
+if (name) {
+    console.log(`Welcome, ${name}!`);
+}
+```
+
+**`steam.getAppId()`** returns the numeric App ID of the running application as registered on Steamworks, or `null` if Steam is unavailable.
+
+```ts tab="JavaScript/TypeScript"
+import { steam } from "@/lib/steam";
+
+const appId = await steam.getAppId();
+console.log(`Running app: ${appId}`);
+```
+
+</Accordion>
+
+<Accordion title="Achievements" id="achievements">
+
+**`steam.unlockAchievement(id)`** unlocks and persists an achievement. The `id` must match the API Name set in the Steamworks Partner dashboard.
+
+```ts tab="JavaScript/TypeScript"
+import { steam } from "@/lib/steam";
+
+await steam.unlockAchievement("FIRST_WIN");
+```
+
+```ts tab="***ink***"
+# unlock achievement {achievementId}
+```
+
+**`steam.isAchievementUnlocked(id)`** returns `true` if the user has already unlocked the given achievement. Use it to avoid showing unlock animations more than once.
+
+```ts tab="JavaScript/TypeScript"
+import { steam } from "@/lib/steam";
+
+const unlocked = await steam.isAchievementUnlocked("FIRST_WIN");
+if (!unlocked) {
+    await steam.unlockAchievement("FIRST_WIN");
+}
+```
+
+**`steam.clearAchievement(id)`** resets an achievement back to locked. This is intended for development and QA only — do not call it in production.
+
+```ts tab="JavaScript/TypeScript"
+import { steam } from "@/lib/steam";
+
+await steam.clearAchievement("FIRST_WIN");
+```
+
+</Accordion>
+
+<Accordion title="Stats" id="stats">
+
+**`steam.setStatInt(name, value)`** writes an integer stat. Changes are staged locally; call `storeStats()` to commit them to Steam.
+
+```ts tab="JavaScript/TypeScript"
+import { steam } from "@/lib/steam";
+
+await steam.setStatInt("TOTAL_KILLS", 42);
+await steam.storeStats();
+```
+
+**`steam.getStatInt(name)`** reads an integer stat. Returns `0` if the stat does not exist or Steam is unavailable.
+
+```ts tab="JavaScript/TypeScript"
+import { steam } from "@/lib/steam";
+
+const kills = await steam.getStatInt("TOTAL_KILLS");
+console.log(`Total kills: ${kills}`);
+```
+
+**`steam.setStatFloat(name, value)`** writes a float stat. Same staging behaviour as `setStatInt` — requires `storeStats()` to persist.
+
+```ts tab="JavaScript/TypeScript"
+import { steam } from "@/lib/steam";
+
+await steam.setStatFloat("ACCURACY", 0.87);
+await steam.storeStats();
+```
+
+**`steam.getStatFloat(name)`** reads a float stat. Returns `0` if the stat does not exist or Steam is unavailable.
+
+```ts tab="JavaScript/TypeScript"
+import { steam } from "@/lib/steam";
+
+const accuracy = await steam.getStatFloat("ACCURACY");
+console.log(`Accuracy: ${(accuracy * 100).toFixed(1)}%`);
+```
+
+**`steam.storeStats()`** commits all pending stat changes to Steam. Achievement unlock functions call this automatically, but you must call it manually after `setStatInt` or `setStatFloat`.
+
+```ts tab="JavaScript/TypeScript"
+import { steam } from "@/lib/steam";
+
+await steam.setStatInt("GAMES_PLAYED", current + 1);
+await steam.storeStats();
+```
+
+</Accordion>
+
+<Accordion title="DLC" id="dlc">
+
+**`steam.isDlcInstalled(appId)`** returns `true` if the user owns and has installed the DLC identified by the given App ID. Use it to gate DLC content at runtime.
+
+```ts tab="JavaScript/TypeScript"
+import { steam } from "@/lib/steam";
+
+const hasDlc = await steam.isDlcInstalled(1234560);
+if (hasDlc) {
+    // unlock DLC chapter
+}
+```
+
+</Accordion>
+
+<Accordion title="Overlay" id="overlay">
+
+**`steam.openOverlay(dialog)`** opens the Steam overlay to a specific page. Accepted values are `"achievements"`, `"friends"`, `"community"`, `"stats"`, `"settings"`, `"officialgamegroup"`, and `"players"`.
+
+```ts tab="JavaScript/TypeScript"
+import { steam } from "@/lib/steam";
+
+await steam.openOverlay("achievements");
+```
+
+**`steam.openStore(appId?)`** opens the Steam Store page for this game. Pass a different `appId` to link to another app, for example a DLC or a sequel.
+
+```ts tab="JavaScript/TypeScript"
+import { steam } from "@/lib/steam";
+
+// Open the store page for this game
+await steam.openStore();
+
+// Open the store page for a specific DLC
+await steam.openStore(1234560);
+```
+
+</Accordion>
+
+</Accordions>
+
+## Base implementation
+
+For reference, the base implementation is located in `src-tauri/src/steam.rs` and the API is exposed to the frontend via Tauri's `invoke` system in `src-tauri/src/lib.rs`.
+
+```toml tab="src-tauri/Cargo.toml"
+[features]
+default = []          # change to ["steam"] to enable
+steam = ["dep:steamworks"]
+
+[dependencies]
+steamworks = { version = "0.13", optional = true }
+```
+
+```rust tab="src-tauri/src/lib.rs"
+#[cfg(all(feature = "steam", not(target_os = "ios"), not(target_os = "android")))]
+mod steam;
+
+// inside run():
+#[cfg(all(feature = "steam", not(target_os = "ios"), not(target_os = "android")))]
+{
+    builder = builder
+        .manage(steam::SteamClient { client: Mutex::new(steam::try_init()) })
+        .invoke_handler(tauri::generate_handler![
+            steam::steam_is_available,
+            steam::steam_get_player_name,
+            steam::steam_get_app_id,
+            steam::steam_unlock_achievement,
+            steam::steam_is_achievement_unlocked,
+            steam::steam_clear_achievement,
+            steam::steam_set_stat_int,
+            steam::steam_get_stat_int,
+            steam::steam_set_stat_float,
+            steam::steam_get_stat_float,
+            steam::steam_store_stats,
+            steam::steam_is_dlc_installed,
+            steam::steam_open_overlay,
+            steam::steam_open_store,
+        ]);
+}
+```

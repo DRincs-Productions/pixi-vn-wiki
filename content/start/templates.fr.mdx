@@ -1,0 +1,357 @@
+---
+title: Modèles
+description: Découvrez comment générer un projet Pixi’VN à partir d'un template, le configurer dans votre IDE, l'exécuter, le personnaliser et comprendre sa structure.
+---
+
+Vous pouvez générer un nouveau projet à partir d'un template en exécutant :
+
+```npm
+npm create pixi-vn@latest
+```
+
+## Démo interactive
+
+<Accordions>
+
+<Accordion title="Visual Novel" id="visual-novel">
+
+<iframe
+src="https://pixi-vn-visual-novel-example.pages.dev/demo"
+title="Visual Novel"
+style={{
+      width: "100%",
+      height: "400px",
+      border: "0",
+      borderRadius: "4px",
+      overflow: "hidden",
+  }}
+allowFullScreen={true}
+/>
+
+</Accordion>
+
+<Accordion title="Interactive Fiction" id="interactive-fiction">
+
+<iframe
+src="https://pixi-vn-interactive-fiction-example.pages.dev/demo"
+title="Interactive Fiction"
+style={{
+      width: "100%",
+      height: "400px",
+      border: "0",
+      borderRadius: "4px",
+      overflow: "hidden",
+  }}
+allowFullScreen={true}
+/>
+
+</Accordion>
+
+<Accordion title="Point & Click Adventure" id="point-click-adventure">
+
+<iframe
+src="https://pixi-vn-point-and-click-example.pages.dev/demo"
+title="Point & Click Adventure"
+style={{
+      width: "100%",
+      height: "400px",
+      border: "0",
+      borderRadius: "4px",
+      overflow: "hidden",
+  }}
+allowFullScreen={true}
+/>
+
+</Accordion>
+
+</Accordions>
+
+## Comment utiliser un template
+
+Vous consultez cette page parce que vous avez probablement déjà créé un projet à partir d'un template. Les sections suivantes vous guideront dans les premières étapes pour le faire fonctionner.
+
+### Configuration initiale
+
+Ouvrez le dossier du projet dans votre IDE. Les exemples ci-dessous utilisent [Visual Studio Code](https://code.visualstudio.com/).
+
+Une fois le projet ouvert, VS Code proposera automatiquement plusieurs actions :
+
+* **Installer les extensions recommandées** — une notification vous invitera à installer les extensions recommandées pour l'espace de travail. Il est vivement conseillé d'accepter. Si cette notification ne s'affiche pas, installez-les vous-même depuis le panneau Extensions en affichant les [extensions recommandées](https://code.visualstudio.com/docs/editor/extension-marketplace#_recommended-extensions).
+* **Exécuter les tâches de démarrage** — VS Code peut vous proposer d'exécuter les tâches de démarrage configurées, qui installeront toutes les dépendances du projet. Pour le faire vous-même, lancez :
+
+```npm
+npm install
+```
+
+:::warning[Multiplateforme]
+
+Si vous avez choisi un template destiné aux plateformes de bureau ou mobiles, vous devrez installer les dépendances supplémentaires requises par [Tauri](https://v2.tauri.app/start/prerequisites/) (chaîne d'outils Rust et outils de compilation propres à chaque plateforme). Comme Tauri s'intègre étroitement à l'environnement système, vous devrez probablement **redémarrer VS Code une ou plusieurs fois** avant de pouvoir lancer le projet comme application de bureau.
+
+:::
+
+<Accordions>
+
+<Accordion title="Installation de Rust" id="installing-rust">
+
+Le moyen le plus simple d'installer Rust sur n'importe quelle plateforme est d'utiliser [rustup](https://rustup.rs/), le programme d'installation officiel de la chaîne d'outils Rust.
+
+<Tabs items={["Windows", "macOS", "Linux"]} groupId="os">
+    <Tab>
+
+    Téléchargez et exécutez [`rustup-init.exe`](https://win.rustup.rs/), ou installez-le depuis le terminal avec `winget` :
+
+    ```powershell
+    winget install --id Rustlang.Rustup
+    ```
+
+    Après l'installation, redémarrez votre terminal (et VS Code) pour que la commande `cargo` soit disponible dans le `PATH`.
+
+    </Tab>
+    <Tab>
+
+    Ouvrez un terminal et exécutez :
+
+    ```bash
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    ```
+
+    Suivez les instructions à l'écran, puis redémarrez votre terminal (et VS Code) pour que la commande `cargo` soit disponible dans le `PATH`. Vous aurez également besoin des outils en ligne de commande de Xcode :
+
+    ```bash
+    xcode-select --install
+    ```
+
+    </Tab>
+    <Tab>
+
+    Ouvrez un terminal et exécutez :
+
+    ```bash
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    ```
+
+    Suivez les instructions à l'écran, puis redémarrez votre terminal (et VS Code) pour que la commande `cargo` soit disponible dans le `PATH`. Selon votre distribution, vous devrez peut-être installer d'autres paquets système nécessaires à Tauri (par exemple `webkit2gtk`, `build-essential`, `libssl-dev`) — consultez les [prérequis de Tauri pour Linux](https://v2.tauri.app/start/prerequisites/#linux) pour connaître les paquets exacts de votre distribution.
+
+    </Tab>
+
+</Tabs>
+
+Une fois l'installation terminée, vérifiez-la avec :
+
+```bash
+rustc --version
+```
+
+</Accordion>
+
+</Accordions>
+
+### Lancer le projet
+
+Le template comprend plusieurs **configurations de lancement** préconfigurées pour VS Code. Si vous ne les connaissez pas, les configurations de lancement sont des raccourcis qui indiquent à VS Code comment démarrer votre projet (et éventuellement y attacher un débogueur), pour éviter de saisir des commandes dans le terminal à chaque fois. Vous pouvez y accéder depuis le panneau **Exécuter et déboguer** (l'icône de lecture dans la barre latérale gauche, ou en appuyant sur `F5`). Sélectionnez la configuration souhaitée dans le menu déroulant en haut du panneau, puis cliquez sur le bouton de lecture vert.
+
+![Panneau Exécuter et déboguer](/launch-configuration-dropdown.png)
+
+Les configurations suivantes sont disponibles :
+
+* **Debug Game** : c’est la configuration que vous utiliserez le plus souvent pendant le développement : chaque fois que vous enregistrez un fichier, le navigateur s’actualise automatiquement. Notez que, dans ce mode, les animations peuvent être moins fluides et le chargement des assets plus lent que dans la version finale publiée.
+* **Debug Game Preview** : cette configuration simule fidèlement le comportement du jeu après publication : les animations sont fluides, les temps de chargement réalistes et les optimisations actives. Utilisez cette configuration pour vérifier que tout s'affiche et fonctionne comme prévu avant la publication.
+* **Run as Desktop App (Dev)** : compile le backend Rust/Tauri et lance le jeu dans une fenêtre de bureau native. Si votre template ne cible pas les plateformes de bureau ou mobiles, cette configuration ne sera pas proposée.
+
+<Accordions>
+
+<Accordion title="Ligne de commande" id="command-line">
+
+Toutes les commandes doivent être exécutées depuis la racine du projet.
+
+**Développement**
+
+| Commande                    | Description                                                                                                             |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`               | Démarre le serveur de développement Vite et ouvre le jeu dans le navigateur.                                            |
+| `npm run tauri:dev`         | Lance le jeu sous forme d'application **de bureau** (nécessite le template multiplateforme et l'installation de Tauri). |
+| `npm run tauri:android:dev` | Lance le jeu sur un appareil Android connecté ou un émulateur.                                                          |
+| `npm run tauri:ios:dev`     | Lance le jeu sur un appareil iOS connecté ou un simulateur.                                                             |
+
+**Compilation et aperçu**
+
+| Commande             | Description                                                                                                                |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `npm run build:fast` | Compile uniquement l'application web (sans Tauri). Rapide, adapté à la publication sur le web.                             |
+| `npm run build`      | Compilation complète : compile TypeScript, construit l'application web et crée le paquet de l'application de bureau Tauri. |
+| `npm run preview`    | Exécute `build:fast`, puis sert le résultat localement — simule le jeu web publié.                                         |
+
+**Assets et icônes**
+
+| Commande       | Description                                                                                                                                     |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run icon` | Génère toutes les variantes d'icônes (PWA, bureau, mobile) à partir de `public/icon.png`. Exécutez cette commande après avoir remplacé l'icône. |
+
+**Interface utilisateur**
+
+| Commande            | Description                                                                                                                                      |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `npm run ui:reinit` | Réinitialise [shadcn/ui](https://ui.shadcn.com/) à partir de zéro (réinstalle de force tous les composants), puis reformate les fichiers source. |
+
+**Qualité du code**
+
+| Commande         | Description                                                                  |
+| ---------------- | ---------------------------------------------------------------------------- |
+| `npm run lint`   | Vérifie le code à la recherche d'erreurs avec [Biome](https://biomejs.dev/). |
+| `npm run check`  | Exécute toutes les vérifications Biome (lint et vérification du formatage).  |
+| `npm run format` | Formate automatiquement tous les fichiers source.                            |
+
+</Accordion>
+
+</Accordions>
+
+### Personnaliser le style
+
+L'interface utilisateur du template repose entièrement sur [shadcn/ui](https://ui.shadcn.com/), ce qui permet de personnaliser les couleurs du thème sans modifier le code des composants.
+
+Ouvrez le [générateur de thèmes shadcn/ui](https://ui.shadcn.com/create?template=vite\&base=base\&preset=b1s9eyGkS), ajustez les couleurs à votre goût, puis accédez à la section **Copy** de la page pour copier la commande CSS générée. Exécutez cette commande depuis la racine du projet :
+
+```npm
+npx shadcn@latest add <paste-the-generated-command-here>
+```
+
+Après l'avoir appliquée, il est conseillé de reformater les fichiers source :
+
+```npm
+npm run format
+```
+
+Pour aller plus loin — polices, styles globaux et autres — consultez <DynamicLink href="/start/interface-font">Styles et polices</DynamicLink>.
+
+### Structure du projet
+
+<Files>
+    <Folder name="project" defaultOpen>
+        <Folder name="ink" defaultOpen>
+            <File name="start.ink" />
+        </Folder>
+        <Folder name="public" defaultOpen>
+            <File name="icon.png" />
+        </Folder>
+        <Folder name="src" defaultOpen>
+            <Folder name="assets">
+                <File name="manifest.gen.json" />
+                <File name="ink-manifest.gen.json" />
+                <File name="index.ts" />
+            </Folder>
+            <Folder name="components" />
+            <Folder name="content" defaultOpen>
+                <Folder name="ink">
+                    <File name="hashtag-commands.ts" />
+                    <File name="text-replaces.ts" />
+                </Folder>
+                <Folder name="labels">
+                    <File name="start.label.ts" />
+                </Folder>
+                <File name="characters.ts" />
+                <File name="index.ts" />
+            </Folder>
+            <Folder name="lib">
+                <Folder name="hooks" />
+                <Folder name="query" />
+                <Folder name="stores" />
+                <Folder name="utils" />
+                <File name="i18n.ts" />
+                <File name="steam.ts" />
+            </Folder>
+            <Folder name="locales">
+                <File name="en.json" />
+            </Folder>
+            <Folder name="models">
+                <File name="Character.ts" />
+                <File name="GameSaveData.ts" />
+            </Folder>
+            <Folder name="routes">
+                <Folder name="game">
+                    <File name="narration.tsx" />
+                </Folder>
+                <File name="__root.tsx" />
+                <File name="game.tsx" />
+                <File name="index.tsx" />
+            </Folder>
+            <File name="constants.ts" />
+            <File name="main.tsx" />
+            <File name="pixi-vn.keys.gen.ts" />
+            <File name="pixi-vn.d.ts" />
+            <File name="styles.css" />
+        </Folder>
+        <Folder name="src-tauri" />
+    </Folder>
+</Files>
+
+<Accordions>
+
+<Accordion title="Narration" id="project-structure-narration">
+
+* `ink/` — écrivez ici votre histoire dans des scripts ***ink***. Le template inclut un fichier d'exemple `start.ink` pour commencer.
+* `src/content/` — importé automatiquement au démarrage ; définissez ici tous les éléments du jeu :
+  * `ink/hashtag-commands.ts` — commandes hashtag personnalisées provenant des scripts ***ink***. Consultez les <DynamicLink href="/ink/hashtag">commandes hashtag ***ink***</DynamicLink>.
+  * `ink/text-replaces.ts` — remplacements de texte pour les dialogues ***ink***. Consultez les <DynamicLink href="/ink/replacement">remplacements de texte ***ink***</DynamicLink>.
+  * `labels/` — labels définissant le déroulement du jeu et les scènes (utilisez la convention de nommage `.label.ts`).
+  * `characters.ts` — définitions des personnages.
+
+</Accordion>
+
+<Accordion title="Assets" id="project-structure-assets">
+
+* `src/assets/` — assets source du jeu (images, sons, polices, etc.). Analysés automatiquement par [Pixi Asset Pack](https://pixijs.io/assetpack/).
+* `public/assets/` — assets optimisés générés automatiquement et utilisés par le projet à l'exécution.
+* `public/icon.png` — icône source. Remplacez-la, puis exécutez `npm run icon` pour régénérer toutes les variantes PWA/bureau/mobile.
+* `src/assets/index.ts` — réexporte le manifeste des assets généré automatiquement pour le moteur.
+
+</Accordion>
+
+<Accordion title="Interface utilisateur" id="project-structure-ui">
+
+* `src/components/` — composants React de l'interface utilisateur (écrans, menus, boîtes de dialogue, etc.).
+* `src/routes/` — définitions des routes de [TanStack Router](https://tanstack.com/router). Consultez <DynamicLink href="/start/interface-navigate">Navigation</DynamicLink>.
+* `src/styles.css` — feuille de style globale ([shadcn/ui](https://ui.shadcn.com/)). Consultez <DynamicLink href="/start/interface-font">Polices et styles</DynamicLink>.
+
+</Accordion>
+
+<Accordion title="Traductions" id="project-structure-translations">
+
+* `src/lib/i18n.ts` — configuration de l'internationalisation. Consultez <DynamicLink href="/start/translate">Traductions</DynamicLink>.
+* `src/locales/` — un fichier JSON de traduction par langue (par exemple `en.json`). Consultez <DynamicLink href="/start/translate">Traductions</DynamicLink>.
+
+</Accordion>
+
+<Accordion title="Configuration initiale" id="project-structure-initial-setup">
+
+* `src/models/` — classes personnalisées et types TypeScript.
+* `src/main.tsx` — point d'entrée de l'application ; initialise Pixi’VN.
+* `src/pixi-vn.keys.gen.ts` — fichier généré automatiquement contenant les types TypeScript de toutes les clés de l'API Pixi’VN (par exemple `PixivnCharacterIds`, `PixivnLabelIds`, etc.). Utilisé pour la sûreté des types et l'autocomplétion lors de l'utilisation du moteur.
+* `src/pixi-vn.d.ts` — substitutions des déclarations TypeScript pour `@drincs/pixi-vn`.
+
+</Accordion>
+
+<Accordion title="Multiplateforme" id="project-structure-multi-platform">
+
+* `src-tauri/` — code source Rust/Tauri (templates multiplateformes uniquement) ; permet de créer des versions natives pour les plateformes de bureau et mobiles.
+
+</Accordion>
+
+<Accordion title="Autres" id="project-structure-other">
+
+* `src/lib/` — utilitaires et composants internes :
+  * `steam.ts` — API Steam (succès, sauvegardes dans le cloud). Consultez <DynamicLink href="/start/distribution-steam">Distribution sur Steam</DynamicLink>.
+* `src/constants.ts` — constantes communes au projet (dimensions des écrans, valeurs de configuration, etc.).
+
+</Accordion>
+
+</Accordions>
+
+### Écrans du template
+
+Le template contient plusieurs écrans prédéfinis qui couvrent les éléments essentiels d'un visual novel. Chaque écran est un composant React associé à une route gérée par TanStack Router.
+
+* **Menu principal** (`/`) — le premier écran affiché au joueur lors du lancement du jeu. Il permet de démarrer une nouvelle partie, de reprendre une sauvegarde et d'ouvrir les paramètres.
+* **Écran de narration** (`/game/narration`) — l'écran de jeu principal où s'affiche l'histoire. Il affiche les dialogues, les sprites des personnages, les arrière-plans et les choix.
+* **Paramètres** — le panneau des paramètres ne possède pas de route dédiée. Il utilise plutôt les [Search Params](https://tanstack.com/router/latest/docs/framework/react/guide/search-params) pour se superposer à l'écran actuellement actif. Cette approche permet de conserver une URL simple, tout en autorisant le joueur à ouvrir les paramètres depuis n'importe quel écran du jeu et à naviguer entre leurs différentes sections (audio, affichage, langue, etc.) sans perdre le contexte de navigation précédent.
+* **Écran de navigation** (`/game/navigation`) — uniquement pour *Point & Click*. Il permet au joueur de se déplacer entre les pièces et d'effectuer les différentes actions disponibles à l'emplacement actuel.
+* **Écran de carte** (`/game/map`) — uniquement pour *Point & Click*. Il affiche la carte et permet au joueur de se déplacer d'un endroit à un autre. Il permet également de gérer plusieurs cartes.

@@ -1,0 +1,191 @@
+---
+title: Navigare/cambiare tra le schermate UI
+---
+
+Per navigare tra diverse schermate UI, è necessario utilizzare un sistema di routing. Un sistema di routing consente di definire route (o percorsi) per le diverse schermate e gestire la navigazione tra di esse.
+
+## TanStack Router
+
+<Accordions>
+
+<Accordion title="Cos'è TanStack Router?" id="what-is-tanstack-router">
+
+TanStack Router è un sistema di routing per applicazioni web che consente di gestire la navigazione tra diverse pagine o componenti in modo semplice ed efficiente. È progettato per essere flessibile e facile da usare, offrendo funzionalità avanzate come il supporto per parametri dinamici, la gestione dello stato del router e l'integrazione con librerie di rendering come React, Vue e Angular.
+
+</Accordion>
+
+</Accordions>
+
+Il principale vantaggio di TanStack Router è la sua capacità di generare automaticamente la gestione delle route utilizzando `createFileRoute`. Con `createFileRoute`, puoi definire le tue route semplicemente creando file in una struttura di cartelle specifica. Ad esempio, se crei un file `about.tsx` nella cartella `src/routes`, TanStack Router genererà automaticamente una route per `/about` che esegue il rendering del componente definito in `about.tsx`.
+
+```ts title="src/routes/about.tsx"
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/about")({ // [!code focus]
+    component: About, // [!code focus]
+}); // [!code focus]
+
+function About() {
+    return (
+        <main className="page-wrap px-4 py-12">
+            <section className="island-shell rounded-2xl p-6 sm:p-8">
+                <p className="island-kicker mb-2">About</p>
+                <h1 className="display-title mb-3 text-4xl font-bold text-[var(--sea-ink)] sm:text-5xl">
+                    A small starter with room to grow.
+                </h1>
+                <p className="m-0 max-w-3xl text-base leading-8 text-[var(--sea-ink-soft)]">
+                    TanStack Start gives you type-safe routing, server functions, and modern SSR defaults. Use this as a
+                    clean foundation, then layer in your own routes, styling, and add-ons.
+                </p>
+            </section>
+        </main>
+    );
+}
+```
+
+## Come navigare tra schermate/route?
+
+Per navigare tra schermate/route, utilizza la funzione di navigazione fornita dal tuo sistema di routing.
+
+:::tip[Modelli]
+
+In tutti i template, l'interfaccia `StepLabelProps` è già estesa per includere una funzione `navigate`. Puoi trovarla nel file `pixi-vn.d.ts`.
+
+:::
+
+<Accordions>
+
+<Accordion title="Inizializzazione" id="initialize">
+
+Per abilitare questo, la funzione di navigazione deve essere inclusa nell'<DynamicLink href="/start/labels#steplabelprops">interfaccia `StepLabelProps`</DynamicLink>.
+
+```ts tab="pixi-vn.d.ts"
+import { narration } from "@drincs/pixi-vn";
+
+declare module "@drincs/pixi-vn" {
+    interface StepLabelProps {
+        navigate: (route: string) => void;
+    }
+}
+```
+
+```ts tab="hooks/useGameProps.ts"
+import { StepLabelProps } from "@drincs/pixi-vn";
+import useMyNavigate from "./useMyNavigate";
+
+export default function useGameProps(): StepLabelProps {
+    const navigate = useMyNavigate();
+
+    return {
+        navigate,
+    };
+}
+```
+
+</Accordion>
+
+</Accordions>
+
+<Callout title="Test" type="info">
+
+Se il `Game.testing` del plugin Vite.js (vedi la sezione "Vite.js plugin" sopra e l'
+Agent Skill `pixi-vn-testing`) viene usato per far testare il gioco a un agente IA, chiama
+[`Game.testing.setProps`](/jsdoc/pixi-vn/index/namespaces/Game/namespaces/testing/functions/setProps)
+anche qui, così che `navigate` (e qualsiasi altra cosa restituita da questo hook) rimanga disponibile per una sessione di test:
+
+```ts tab="hooks/useGameProps.ts"
+import { Game, StepLabelProps } from "@drincs/pixi-vn"; // [!code focus]
+import useMyNavigate from "./useMyNavigate";
+
+export default function useGameProps(): StepLabelProps {
+    const navigate = useMyNavigate();
+    const props = {
+        navigate,
+    };
+    Game.testing.setProps(props); // [!code focus]
+    return props;
+}
+```
+
+</Callout>
+
+<Callout title="ink" type="info">
+
+In tutti i template *ink*, è stato introdotto un <DynamicLink href="/ink/hashtag">comando hashtag personalizzato</DynamicLink> per navigare tra le route. To do this, you need to use the following syntax:
+
+```ink title="ink"
+# navigate [route]
+```
+
+* `route`: la route/percorso di destinazione. Ad esempio, `# navigate /new-route`.
+
+</Callout>
+
+Quando crei una nuova label, puoi usare la funzione `navigate` per passare tra le route:
+
+```ts tab="content/labels/start.label.ts"
+export const startLabel = newLabel("start", [
+    ({ navigate }) => {
+        navigate("/new-route");
+    },
+]);
+```
+
+## Altre funzionalità
+
+<Accordions>
+
+<Accordion title="Blocca i pulsanti indietro e avanti del browser" id="block-back-forward">
+
+L'utilizzo dei pulsanti indietro e avanti del browser può causare uno stato incoerente del gioco. Questo perché questi tasti consentono al giocatore di navigare tra le route, non tra gli `steps` narrativi.
+
+Si consiglia di impedire che il percorso cambi quando viene premuto il pulsante indietro del browser. Ci sono molti modi per farlo, ma si consiglia il seguente approccio:
+
+Intercetta l'evento `popstate`, che viene attivato dopo che è stato premuto il pulsante indietro del browser, e chiama `history.forward()` per annullare la navigazione. Per consentire agli utenti di tornare indietro se premono il pulsante indietro due volte di seguito, possiamo inserire un nuovo stato nello stack della cronologia a ogni cambio di route.
+
+Ad esempio:
+
+```ts title="hooks/useConfirmBackNavigation.ts"
+import { useLocation } from "@tanstack/react-router";
+import { useEffect } from "react";
+
+/**
+ * useConfirmBackNavigation
+ *
+ * Prevent accidental browser "back" navigation.
+ * Behavior:
+ * - On each `href` change it pushes a history state (`pushState`).
+ * - Listens for `popstate` and calls `history.forward()` to cancel a single
+ *   press of the browser back button.
+ * - If the user presses back twice in succession (i.e. the second press occurs
+ *   before the first is handled), the browser will navigate back.
+ *
+ * Usage: call this hook at the app root to avoid unintended back navigations
+ * (e.g. accidental taps or gestures). Returns `null`.
+ */
+export default function useConfirmBackNavigation() {
+    const { href } = useLocation();
+
+    useEffect(() => {
+        const isInIframe =
+            typeof window !== "undefined" && window.self !== window.top;
+        if (isInIframe) return;
+        const listener = () => {
+            window.history.forward();
+        };
+        window.addEventListener("popstate", listener);
+
+        return () => {
+            window.removeEventListener("popstate", listener);
+        };
+    }, []);
+
+    useEffect(() => {
+        window.history.pushState(null, href, href);
+    }, [href]);
+}
+```
+
+</Accordion>
+
+</Accordions>

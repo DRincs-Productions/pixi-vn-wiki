@@ -1,0 +1,95 @@
+---
+title: Интернационализация
+description: Узнайте, как переводить текст ink в Pixi’VN с помощью библиотеки, например i18next, и функции onInkTranslate.
+---
+
+Как подробнее объясняется <DynamicLink href="/start/translate">здесь</DynamicLink>, Pixi’VN позволяет переводить игровой текст с помощью библиотеки, например [i18next](https://www.i18next.com/). При **интеграции *ink* и Pixi’VN** также можно использовать библиотеку для перевода текста ***ink***.
+
+Pixi’VN позволяет разработчикам перехватывать событие перевода с помощью функции [`onInkTranslate`](/jsdoc/pixi-vn-ink/index/functions/onInkTranslate).
+
+```ts tab="lib/hooks/ink-hooks.tsx"
+import { onInkTranslate } from "@drincs/pixi-vn-ink";
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
+
+export default function useInkInitialization() {
+    const { t } = useTranslation(["narration"]);
+    useEffect(() => {
+        onInkTranslate(t);
+    }, [t]);
+
+    return null;
+}
+```
+
+```ink tab="ink/start.ink"
+=== start ===
+Hello, my name is [joe]
+-> DONE
+```
+
+```json tab="locales/es.json"
+{
+    "narration": {
+        "Hello, my name is [joe]": "Hola, mi nombre es {{joe}}"
+        // ...
+    }
+}
+```
+
+## Автоматическое создание файлов перевода
+
+<Callout title="Шаблоны" type="info">
+
+Во всех шаблонах можно воспользоваться следующей кнопкой в настройках, чтобы автоматически создать JSON-файл, используемый для перевода.
+![dowload-translate](/dowload-translate.png)
+
+</Callout>
+
+Чтобы упростить создание файлов перевода, вы можете использовать функцию [`generateJsonInkTranslation`](/jsdoc/pixi-vn-ink/index/functions/generateJsonInkTranslation) для автоматического формирования структуры JSON на основе текста ink.
+
+```ts title="lib/i18n.ts"
+import { generateJsonInkTranslation } from "@drincs/pixi-vn-ink";
+import i18n from "i18next";
+import { convertInkToJson } from "./utils/ink-utility";
+
+function getLocalesResource(
+    lng: string,
+): Promise<Record<string, Record<string, string>>> {
+    return import(`./../locales/${lng}.json`);
+}
+
+async function generateResourceToTranslate(lng: string): Promise<any> {
+    let res = await getLocalesResource(lng);
+    res = { ...res };
+    if (!res) {
+        res = {};
+    }
+    if (!res.narration) {
+        res.narration = {};
+    }
+    if (res.default) {
+        delete res.default;
+    }
+    const manifest = await import("@/assets/ink-manifest.gen.json");
+    for (const path of manifest.default) {
+        const element = await fetch(path).then((r) => r.json());
+        element && (await generateJsonInkTranslation(element, res.narration));
+    }
+    return res;
+}
+
+export async function downloadResourceToTranslate() {
+    const lng = i18n.options.fallbackLng?.toString() || "en";
+    const data = await generateResourceToTranslate(lng);
+    const jsonString = JSON.stringify(data);
+    // download the save data as a JSON file
+    const blob = new Blob([jsonString], { type: "application/json" });
+    // download the file
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `strings_${lng}.json`;
+    a.click();
+}
+```

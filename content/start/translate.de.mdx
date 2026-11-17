@@ -1,0 +1,227 @@
+---
+title: Internationalisierung
+description: Diese Seite erklärt, wie Sie mit i18next mehrsprachige Unterstützung zu Ihrem Pixi’VN-Spiel hinzufügen, einschließlich Übersetzungsstrategien für die Benutzeroberfläche und die Erzählung. Wie übersetzt man die Visual Novel?
+---
+
+In Visual Novels und ähnlichen Spielen ist es üblich, den Spielern die Auswahl ihrer Muttersprache zu ermöglichen.
+
+Für Ihr Pixi’VN-Projekt sollten Sie eine externe Bibliothek zur Verwaltung von Übersetzungen verwenden. Dies gibt Ihnen die Flexibilität, die Implementierung zu wählen, die am besten zu Ihren Anforderungen passt.
+
+Die beliebteste und am weitesten kompatible Bibliothek ist **i18next**.
+
+<Accordions>
+
+<Accordion title="Was ist i18next?" id="what-is-i18next">
+
+i18next ist ein Internationalisierungsframework für JavaScript. Um es zu verwenden, müssen Sie es installieren und initialisieren. Mehr erfahren Sie auf der [i18next-Website](https://www.i18next.com/).
+
+</Accordion>
+
+</Accordions>
+
+:::tip[Vorlagen]
+
+In allen Vorlagen ist i18next bereits enthalten und konfiguriert. Sie können sofort mit der Übersetzung Ihres Spiels beginnen.
+
+:::
+
+Übersetzungen werden in mehreren JSON-Dateien (eine pro Sprache) als Schlüssel-Wert-Paare gespeichert. Der Schlüssel ist eine eindeutige Kennung für den Text, und der Wert ist die übersetzte Zeichenkette.
+
+<Accordions>
+
+<Accordion title="Initialisierung" id="initialize">
+
+```ts title="lib/i18n.ts"
+import i18n, { type ReadCallback } from "i18next";
+import LanguageDetector from "i18next-browser-languagedetector";
+import ChainedBackend from "i18next-chained-backend";
+import { initReactI18next } from "react-i18next";
+
+class Backend extends ChainedBackend {
+    override async read(lng: string, ns: string, callback: ReadCallback) {
+        try {
+            const object = await getLocalesResource(lng);
+            const result = object[ns];
+            callback(null, result);
+        } catch (error) {
+            callback(error as Error, { data: null });
+        }
+    }
+}
+
+export const useI18n = async () => {
+    if (!i18n.isInitialized) {
+        return await i18n
+            .use(Backend)
+            .use(LanguageDetector)
+            .use(initReactI18next)
+            .init({
+                debug: false,
+                fallbackLng: "en",
+                supportedLngs: ["en"],
+                interpolation: {
+                    escapeValue: false,
+                },
+                load: "currentOnly",
+                detection: {
+                    order: ["localStorage"],
+                    caches: ["localStorage"],
+                },
+                missingInterpolationHandler(_text, value, _options) {
+                    return value[1];
+                },
+            });
+    }
+};
+
+function getLocalesResource(
+    lng: string,
+): Promise<Record<string, Record<string, string>>> {
+    return import(`./../locales/${lng}.json`);
+}
+```
+
+</Accordion>
+
+<Accordion title="Die Benutzeroberfläche übersetzen" id="translate-ui">
+
+Um die Benutzeroberfläche zu übersetzen, verwenden Sie die von i18next bereitgestellte `t`-Funktion. Übergeben Sie den Übersetzungsschlüssel an `t`, um den entsprechenden Text in der Sprache des Spielers zu erhalten.
+
+Zum Beispiel:
+
+```tsx tab="React"
+import { useTranslation } from "react-i18next";
+
+export default function MyComponent() {
+    const { t } = useTranslation("ui");
+
+    return (
+        <div>
+            <Button>{t("text_speed")}</Button>
+        </div>
+    );
+}
+```
+
+```vue tab="Vue"
+<script setup>
+import { useTranslation } from "i18next-vue";
+const { t } = useTranslation("ui");
+</script>
+
+<template>
+    <div>
+        <button>{{ t("text_speed") }}</button>
+    </div>
+</template>
+```
+
+```svelte tab="Svelte"
+<script>
+    import { useTranslation } from 'svelte-i18n';
+    const { t } = useTranslation("ui");
+</script>
+
+<div>
+    <button>{t('text_speed')}</button>
+</div>
+```
+
+</Accordion>
+
+<Accordion title="Die Erzählung übersetzen (TypeScript/JavaScript)" id="translate-narration">
+
+:::tip[Vorlagen]
+
+In allen Vorlagen enthält das `StepLabelProps`-Interface bereits eine `t`-Funktion. Siehe `pixi-vn.d.ts`.
+
+:::
+
+:::tip
+
+Es wird empfohlen, `t` innerhalb des <DynamicLink href="/start/labels">label</DynamicLink> zu verwenden und nicht direkt in der Benutzeroberfläche, um von der [i18n-Interpolation](https://i18next.com/translation-function/interpolation) zu profitieren.
+
+:::
+
+In Pixi’VN-Projekten müssen Sie oft Erzählungstext in TypeScript/JavaScript-<DynamicLink href="/start/labels">`labels`</DynamicLink> übersetzen. Dazu muss die Übersetzungsfunktion im <DynamicLink href="/start/labels#steplabelprops">`StepLabelProps`-Interface</DynamicLink> enthalten sein.
+
+Es wird empfohlen, die Originalzeichenkette als Übersetzungsschlüssel zu verwenden.
+
+```ts tab="content/labels/start.label.ts"
+export const startLabel = newLabel("start", [
+    ({ t }) => {
+        narration.dialogue = {
+            character: liam,
+            text: t("Hello, my name is {{name}}", { name: "Liam" }),
+        };
+    },
+]);
+```
+
+```ts tab="pixi-vn.d.ts"
+import type { TFunction } from "i18next";
+
+declare module "@drincs/pixi-vn" {
+    interface StepLabelProps {
+        /**
+         * Translate a key to a string.
+         * @param key The key to translate.
+         * @returns The translated string.
+         */
+        t: TFunction<[string], undefined>;
+        // ...
+    }
+}
+```
+
+```ts tab="locales/es.json"
+{
+    "narration": {
+        "Hello, my name is {{name}}": "Hola, mi nombre es {{name}}"
+        // ...
+    }
+}
+```
+
+```ts tab="lib/hooks/props-hooks.ts"
+import { useTranslation } from "react-i18next";
+
+export function useGameProps(): StepLabelProps {
+    const { t } = useTranslation(["narration"]);
+
+    return {
+        // ...
+        t,
+    };
+}
+```
+
+</Accordion>
+
+</Accordions>
+
+## Erstellen
+
+:::tip[*ink*]
+
+Wenn Sie *ink* verwenden, können Sie Zeichenketten automatisch aus *ink*-Text für die Übersetzung extrahieren. Mehr erfahren Sie <DynamicLink href="/ink/translate">hier</DynamicLink>.
+
+:::
+
+Übersetzungs-JSON-Dateien müssen manuell erstellt werden. Es wird empfohlen, Übersetzungen in zwei Abschnitte aufzuteilen (siehe `es.json`):
+
+* UI-Texte: für Bildschirme, Einstellungen, Schnelltasten usw.—alles, was nicht zur Erzählung gehört.
+* Erzählungstexte: für Dialoge, Auswahlmenüs usw.
+
+```json tab="locales/es.json"
+{
+    "ui": {
+        "text_speed": "Velocidad del texto"
+        // ...
+    },
+    "narration": {
+        "Hello, my name is {{name}}": "Hola, mi nombre es {{name}}"
+        // ...
+    }
+}
+```

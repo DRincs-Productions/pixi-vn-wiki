@@ -1,0 +1,96 @@
+---
+title: 选择菜单
+description: |
+  了解如何在原生 ink 中显示和控制选择菜单，包括一次性选择、可重复选择、条件选择和后备选择。兼容 Pixi’VN 集成。
+---
+
+:::tip
+
+***ink* + Pixi’VN 集成**支持 *ink* 原生的选择机制，无需引入新的选择类型。有关选择语法和行为的详细信息，请参阅 [ink 官方文档](https://www.inklestudios.com/ink/)。
+
+:::
+
+在 *ink* 中，你可以使用以 `*` 或 `+` 开头的项目列表，并在符号后写上选项文本，让玩家做出选择。选项文本会显示给玩家，玩家选择其中一项后即可继续推进故事。
+
+* `*` 表示只能选择一次的选项。
+* `+` 表示可以多次选择的选项（可重复选择）。
+
+```ink title="ink/start.ink"
+=== start ===
+* Go to Paris
+  You decide to visit Paris. -> visit_paris
++ Go to London -> visit_london
+* Stay at home
+  You decide to stay at home. -> DONE
+```
+
+## 隐藏选项文本的后续输出
+
+默认情况下，被选中选项的文本会在后续输出中再次显示。如果将选项的可见文本放在方括号中，该文本就只会显示在选择菜单中，而不会出现在后续输出里。
+
+```ink title="ink/start.ink"
+=== start ===
+Hello world!
+* [Hello back!]
+ Nice to hear from you!
+```
+
+方括号会将选项内容分成几个部分：括号前的文本会同时显示在菜单和后续输出中；括号内的文本仅显示在菜单中；括号后的文本仅显示在后续输出中。这对对话选项很有用：
+
+```ink title="ink/start.ink"
+=== start ===
+"What's that?" my master asked.
+* "I am somewhat tired[."]," I repeated.
+ "Really," he responded. "How deleterious."
+```
+
+## 选择选项的变化形式
+
+<Accordions>
+
+<Accordion title="后备选择" id="fallback-choices">
+
+后备选项不会向玩家显示，但如果没有其他可用选项，引擎就会自动选择它。
+
+后备选项就是没有可见选项文本的选择：
+
+```ink tab="ink"
+* -> out_of_options
+```
+
+```txt tab="CLI"
+* -> <knot_name>
+
+where:
+    knot_name = the name of the knot to jump to when no other choice is available
+```
+
+例如：
+
+```ink title="ink/start.ink"
+=== start ===
+ You search desperately for a friendly face in the crowd.
+ * The woman in the hat[?] pushes you roughly aside. -> find_help
+ * The man with the briefcase[?] looks disgusted as you stumble past him. -> find_help
+ * -> // fallback
+  But it is too late: you collapse onto the station platform. This is the end.
+  -> END
+```
+
+</Accordion>
+
+<Accordion title="条件选择" id="conditional-choices">
+
+你可以通过条件启用或禁用选项。最简单的检测方法是判断玩家之前是否访问过某个 `knot` 或 `stitch`。
+
+```ink title="ink"
+* { not visit_paris }  [Go to Paris] -> visit_paris
++ { visit_paris }      [Return to Paris] -> visit_paris
+* { visit_paris.met_estelle } [Telephone Mme Estelle] -> phone_estelle
+```
+
+注意：如果已经访问过该 knot 内的任意 `stitch`，那么 `knot_name` 检测结果为真。条件不会改变 `*` 选项只能选择一次的规则；对于可重复选择的选项，请使用 `+`。
+
+</Accordion>
+
+</Accordions>

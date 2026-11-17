@@ -1,0 +1,333 @@
+---
+title: Integrazione di ink (Inkle)
+description: Scrivi visual novel con ink, il linguaggio di scripting di Inkle per storie ramificate (utilizzato in 80 Days e Heaven's Vault), integrato nel motore per visual novel Pixi’VN.
+---
+
+Pixi’VN ti permette di scrivere narrazioni interattive usando ***ink***, un linguaggio di scripting progettato per storie con percorsi ramificati.
+
+<Accordions>
+
+<Accordion title="Che cos'è ink?" id="what-is-ink">
+
+***ink*** è un semplice linguaggio di scripting per storie interattive, utilizzato in giochi come 80 Days, Heaven's Vault e Sorcery! Scopri di più sul [sito web di *ink*](https://www.inklestudios.com/ink/).
+
+</Accordion>
+
+<Accordion title="Perché usare ink?" id="why-use-ink">
+
+Scrivere la narrazione direttamente in **JavaScript/TypeScript** può essere lento e complesso, soprattutto per chi è agli inizi. ***ink*** è molto più facile da imparare e da utilizzare per scrivere.
+
+Chi è alle prime armi può iniziare con un <DynamicLink href="/start#project-initialization">modello *ink*</DynamicLink> e poi imparare gradualmente JavaScript/TypeScript per le funzionalità avanzate.
+
+</Accordion>
+
+</Accordions>
+
+L'**integrazione tra *ink* e Pixi’VN** utilizza [inkjs](https://github.com/inkle/inkjs) e [PixiVNJson](/jsdoc/pixi-vn-json) per analizzare il **codice *ink*** e generare JSON che Pixi’VN può interpretare. Questo significa che JavaScript/TypeScript e ***ink*** condividono lo stesso archivio dati e canvas e che puoi avviare i `knots` (o `labels`) di ***ink*** da JavaScript/TypeScript e viceversa. Puoi sfruttare i vantaggi di entrambi: scrivere la narrazione in ***ink*** e utilizzare JavaScript/TypeScript per minigiochi o animazioni avanzate.
+
+```ink title="ink/start.ink"
+=== start ===
+We arrived into London at 9.45pm exactly.
+
+* "There is not a moment to lose!"[] I declared.
+ -> hurry_outside
+
+* "Monsieur, let us savour this moment!"[] I declared.
+ My master clouted me firmly around the head and dragged me out of the door.
+ -> dragged_outside
+
+* [We hurried home] -> hurry_outside
+
+=== hurry_outside ===
+We hurried home to Savile Row -> as_fast_as_we_could
+
+=== dragged_outside ===
+He insisted that we hurried home to Savile Row
+-> as_fast_as_we_could
+
+=== as_fast_as_we_could ===
+<> as fast as we could.
+-> start
+```
+
+<PixiVnExample path="ink/getting-started" ink />
+
+## Installazione
+
+:::tip[Modelli]
+
+Stai iniziando un nuovo progetto Pixi’VN? Usa un <DynamicLink href="/start#project-initialization">modello</DynamicLink> che include già *ink*.
+
+:::
+
+Per installare il pacchetto *ink* in un progetto JavaScript esistente, usa uno dei seguenti comandi:
+
+```npm
+npm install @drincs/pixi-vn @drincs/pixi-vn-ink
+```
+
+### Inizializzazione
+
+Dopo l'installazione, usa [`importInkText`](/jsdoc/pixi-vn-ink/index/functions/importInkText) per caricare il tuo **script *ink***:
+
+```typescript title="main.ts"
+import { importInkText } from '@drincs/pixi-vn-ink'
+
+const inkText = `
+=== start ===
+Hello
+-> END
+`
+
+importInkText([inkText, ...])
+```
+
+Ora puoi eseguire un **`knot` di *ink*** (o `label`) usando le <DynamicLink href="/start/labels#run-a-label">funzioni di Pixi’VN</DynamicLink>:
+
+```typescript title="main.ts"
+import { narration } from "@drincs/pixi-vn";
+
+narration.call(`start`, {});
+```
+
+<Accordions>
+
+<Accordion title="Importare testo da file .ink" id="import-ink-files">
+
+:::tip
+
+Questa guida utilizza [Vite](https://vitejs.dev/), ma la stessa logica si applica anche altrove.
+
+:::
+
+Per importare file `.ink`, devi configurare il progetto in modo che li gestisca come file di testo.
+
+Ecco i passaggi da seguire:
+
+* Dichiara il modulo `*.ink` in `ink.d.ts`.
+* Aggiungi `.ink` a `assetsInclude` in `vite.config.ts`.
+* Importa il file con `?raw` per ottenerne il contenuto testuale.
+
+```ts tab="main.ts"
+import { importInkText } from '@drincs/pixi-vn-ink'
+import startLabel from './ink/start.ink?raw'
+
+importInkText([startLabel, ...])
+```
+
+```ts tab="vite.config.ts"
+export default defineConfig({
+    // ...
+    assetsInclude: ["**/*.ink"],
+});
+```
+
+```ts tab="ink.d.ts"
+declare module "*.ink" {
+    const value: string;
+    export default value;
+}
+```
+
+</Accordion>
+
+<Accordion title="Plugin Vite.js" id="vite-plugin">
+
+Per un'esperienza di sviluppo migliore, usa [`vitePluginInk`](https://pixi-vn.com/jsdoc/pixi-vn-ink/vite/functions/vitePluginInk):
+
+```ts tab="vite.config.ts"
+import { defineConfig } from "vite";
+import { vitePluginInk } from "@drincs/pixi-vn-ink/vite";
+export default defineConfig({
+    // ...
+    plugins: [
+        // other plugins...
+        vitePluginInk(),
+    ],
+});
+```
+
+```ts tab="main.ts"
+import { setupInkHmrListener } from "@drincs/pixi-vn-ink/vite-listener";
+
+setupInkHmrListener();
+```
+
+```ts tab="utils/ink-utility.ts"
+async function getInkText() {
+    const files = import.meta.glob<string>("../ink/*.ink", {
+        eager: true,
+        import: "default",
+    });
+    return await Promise.all(
+        Object.values(files).map(async (importFile) => {
+            return importFile;
+        }),
+    );
+}
+```
+
+</Accordion>
+
+<Accordion title="Abilitare i comandi hashtag di base" id="base-hashtag-commands">
+
+Pixi’VN include una serie di <DynamicLink href="/ink/hashtag">Hashtag Commands</DynamicLink> integrati (i comandi predefiniti con `#` per interagire con il canvas, come `# show`, `# moveIn` e così via), ma **non vengono registrati automaticamente**. Chiama [`addBaseHashtagCommands`](/jsdoc/pixi-vn-ink/index/functions/addBaseHashtagCommands) una volta durante la configurazione dell'app per abilitarli.
+
+```ts title="content/ink/hashtag-commands.ts"
+import { addBaseHashtagCommands } from "@drincs/pixi-vn-ink";
+
+addBaseHashtagCommands();
+```
+
+</Accordion>
+
+<Accordion title="Agent Skills" id="agent-skills">
+
+Pixi’VN include una serie di [Agent Skills](https://www.skills.sh/) che insegnano agli assistenti di programmazione basati sull'IA come utilizzare correttamente ogni parte del motore.
+
+> In LM Studio Bionic, chiedi all'agente di installare le skill da `https://github.com/DRincs-Productions/pixi-vn-ink`, oppure aggiungi i file delle skill in **Settings → Skills**. Per riutilizzare le skill installate per Codex o Claude Code, attiva **Settings → Skills → Use skills found in other apps**.
+
+**Codex**:
+
+```npm
+npx skills@latest add DRincs-Productions/pixi-vn-ink@latest --skill '*' --agent codex -g -y
+```
+
+**Claude Code**:
+
+```npm
+npx skills@latest add DRincs-Productions/pixi-vn-ink@latest --skill '*' --agent claude-code -g -y
+```
+
+**Altri agenti (universale)**:
+
+```npm
+npx skills@latest add DRincs-Productions/pixi-vn-ink@latest --skill '*' --agent universal -g -y
+```
+
+</Accordion>
+
+</Accordions>
+
+## Funzionalità in arrivo
+
+Queste funzionalità sono in fase di sviluppo.
+
+:::tip
+
+Se ti interessano, scrivi pure nella chat qui sotto!
+
+:::
+
+* `CHOICE_COUNT()`
+* `TURNS()`
+* `TURNS_SINCE()`
+* `SEED_RANDOM()`
+* `LIST_RANDOM()`
+* `LIST_COUNT()`
+* `LIST_INVERT()`
+* `LIST_ALL()`
+* `LIST_RANGE()`
+* `LIST_MIN()`
+* `LIST_MAX()`
+* `LIST_VALUE()`
+
+## Sintassi ignorata da Pixi’VN
+
+Alcune istruzioni della sintassi *ink* vengono ignorate da Pixi’VN. Puoi usarle nel tuo **script *ink*** (ad esempio per eseguire test nell'editor Inky), ma Pixi’VN le ignorerà.
+
+<Accordions>
+
+<Accordion title="INCLUDE" id="include">
+
+`INCLUDE` è un'istruzione di *ink* che serve a includere un altro file *ink*. In Pixi’VN, usa invece [`importInkText`](/jsdoc/pixi-vn-ink/index/functions/importInkText) per caricare più file *ink*, quindi `INCLUDE` viene ignorato.
+
+</Accordion>
+
+<Accordion title="Definizioni delle funzioni" id="function-definitions">
+
+Le definizioni delle funzioni vengono ignorate da Pixi’VN; puoi trovare maggiori informazioni nella pagina <DynamicLink href="/ink/functions">Funzioni</DynamicLink>.
+
+</Accordion>
+
+<Accordion title="Narrazione al di fuori dei knots" id="narration-outside-the-knots">
+
+La narrazione al di fuori dei `knots` (o `labels`) viene ignorata, ad eccezione delle variabili.
+
+Ad esempio:
+
+```ink title="ink"
+VAR my_var = false // ✅ This will be handled (because it is a variable)
+Hello // ❌ This will be ignored  [!code warning]
+-> start // ❌ This will be ignored [!code warning]
+=== start === // ✅ This will be handled
+My name is John // ✅ This will be handled
+-> DONE // ✅ This will be handled
+```
+
+</Accordion>
+
+</Accordions>
+
+## Altre funzionalità
+
+<Accordions>
+
+<Accordion title="Differenze tra ink nativo e ink di Pixi’VN" id="ink-differences">
+
+* **Accesso agli elementi LIST**: in ***ink*** nativo puoi fare riferimento a un elemento di una lista tramite il nome breve (ad esempio `sword`) o quello completo (ad esempio `items.sword`): sono equivalenti. In ***ink* di Pixi’VN** devi usare **sempre** la forma completa `items.sword`. Scrivere soltanto `sword` fa riferimento a una normale voce dell'archivio dati con chiave `"sword"`: **non** all'elemento della lista. Questo vale per tutte le dichiarazioni `LIST`.
+
+* Poiché i "Threads" non sono supportati da Pixi’VN, il simbolo `\<-` corrisponde alla <DynamicLink href="/ink/labels#call">chiamata di un knot</DynamicLink>.
+
+* In questo caso:
+
+  ```ink title="ink"
+  { shuffle:
+    -  2 of Diamonds.
+      'You lose this time!' crowed the croupier.
+  }
+  ```
+
+  **In *ink* nativo** vedrai due dialoghi distinti: il primo sarà `2 of Diamonds.` e il secondo `'You lose this time!' crowed the croupier.`.
+
+  **In *ink* di Pixi’VN** non vedrai due dialoghi distinti, ma il seguente dialogo: `2 of Diamonds.\n\n'You lose this time!' crowed the croupier.`. In <DynamicLink href="/ink/markup#markdown-on-ink">Markdown</DynamicLink> sarà visualizzato così:
+
+  ```txt
+  2 of Diamonds.
+  'You lose this time!' crowed the croupier.
+  ```
+
+* Se un `weave` (nell'esempio seguente, `shove`) è associato a una scelta utilizzabile una sola volta e viene aperto con `-> shove`, la scelta non viene invalidata. Per invalidarla, dovrai selezionare la scelta come al solito.
+
+  Ecco un esempio:
+
+  ```ink title="ink"
+  -> start
+  === start ===
+  * [1] -> shove
+  * (shove) [2] 2
+  * {shove} [3] -> END
+  -  -> start
+  -> DONE
+  ```
+
+  Se scegli l'opzione `1`, la seconda volta che verrà aperto `start`:
+
+  * se usi ***ink* nativo**, potrai scegliere soltanto l'opzione `3`. La scelta `2` è nascosta perché ***ink* nativo** sa che hai già effettuato questa scelta con `-> shove`, essendo utilizzabile una sola volta.
+  * se usi ***ink* di Pixi’VN**, potrai scegliere l'opzione `2` oppure `3`. La scelta `2` non è nascosta perché ***ink* di Pixi’VN** non sa che `shove` è associato a una scelta.
+
+  Per ottenere la stessa logica di `start` sia in ***ink* nativo** sia in ***ink* di Pixi’VN**, dovrai scrivere il seguente codice:
+
+  ```ink title="ink"
+  -> start
+  === start ===
+  * [1] -> shove
+  * (shove) {!shove} [2] 2
+  * {shove} [3] -> END
+  -  -> start
+  -> DONE
+  ```
+
+</Accordion>
+
+</Accordions>

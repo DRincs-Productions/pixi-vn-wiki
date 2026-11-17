@@ -1,0 +1,96 @@
+---
+title: Меню выбора
+description: |
+  Как отображать меню выбора и управлять им в нативном ink, включая одноразовые, повторяемые, условные и резервные варианты выбора. Совместимо с интеграцией Pixi’VN.
+---
+
+:::tip
+
+**Интеграция *ink* + Pixi’VN** поддерживает исходные варианты выбора *ink* без добавления новых типов выбора. Подробности о синтаксисе и поведении вариантов выбора см. в [официальной документации ink](https://www.inklestudios.com/ink/).
+
+:::
+
+В *ink* можно предложить игроку сделать выбор, создав список вариантов с маркерами `*` или `+`, за которыми следует текст варианта. Текст варианта показывается игроку, который выбирает одну из возможностей для продолжения истории.
+
+* `*` обозначает вариант, который можно выбрать только один раз.
+* `+` обозначает вариант, который можно выбирать многократно (повторяемый выбор).
+
+```ink title="ink/start.ink"
+=== start ===
+* Go to Paris
+  You decide to visit Paris. -> visit_paris
++ Go to London -> visit_london
+* Stay at home
+  You decide to stay at home. -> DONE
+```
+
+## Скрытие текста выбранного варианта
+
+По умолчанию текст выбранного варианта повторно выводится в результате. Если видимый текст варианта заключён в квадратные скобки, он отображается только в меню выбора и не выводится после выбора.
+
+```ink title="ink/start.ink"
+=== start ===
+Hello world!
+* [Hello back!]
+ Nice to hear from you!
+```
+
+Квадратные скобки разделяют содержимое варианта: текст перед скобками выводится и в меню, и после выбора; текст в скобках появляется только в меню; текст после скобок — только в выводе после выбора. Это полезно при выборе реплик в диалогах:
+
+```ink title="ink/start.ink"
+=== start ===
+"What's that?" my master asked.
+* "I am somewhat tired[."]," I repeated.
+ "Really," he responded. "How deleterious."
+```
+
+## Различные виды выбора
+
+<Accordions>
+
+<Accordion title="Резервные варианты выбора" id="fallback-choices">
+
+Резервные варианты выбора никогда не показываются игроку, но движок автоматически выбирает их, если другие варианты недоступны.
+
+Резервный вариант выбора — это просто вариант без видимого текста:
+
+```ink tab="ink"
+* -> out_of_options
+```
+
+```txt tab="CLI"
+* -> <knot_name>
+
+where:
+    knot_name = the name of the knot to jump to when no other choice is available
+```
+
+Например:
+
+```ink title="ink/start.ink"
+=== start ===
+ You search desperately for a friendly face in the crowd.
+ * The woman in the hat[?] pushes you roughly aside. -> find_help
+ * The man with the briefcase[?] looks disgusted as you stumble past him. -> find_help
+ * -> // fallback
+  But it is too late: you collapse onto the station platform. This is the end.
+  -> END
+```
+
+</Accordion>
+
+<Accordion title="Условные варианты выбора" id="conditional-choices">
+
+Можно включать и отключать варианты выбора с помощью условий. Самая простая проверка — выяснить, посещал ли игрок ранее определённый `knot` или `stitch`.
+
+```ink title="ink"
+* { not visit_paris }  [Go to Paris] -> visit_paris
++ { visit_paris }      [Return to Paris] -> visit_paris
+* { visit_paris.met_estelle } [Telephone Mme Estelle] -> phone_estelle
+```
+
+Примечание: проверка `knot_name` возвращает истину, если был посещён хотя бы один `stitch` внутри этого knot. Условия не отменяют одноразовый характер вариантов `*` — для повторяемых вариантов используйте `+`.
+
+</Accordion>
+
+</Accordions>

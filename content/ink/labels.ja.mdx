@@ -1,0 +1,247 @@
+---
+title: Knots
+description: |
+  Pixi’VN における knot と label の仕組み、ink スクリプトや JavaScript からの実行方法、ink 本来の仕様と Pixi’VN との連携の違いを学びます。
+---
+
+<Accordions>
+
+<Accordion title="`knot` とは何ですか？" id="what-is-a-knot">
+
+[公式ドキュメント](https://www.inklestudios.com/ink/web-tutorial/)で説明されているように、ストーリーは相互にリンクされた複数のセクションで構成され、***ink* の用語**ではこれらを `knots` と呼びます。 ***ink*** では、`knot` の名前の左側に等号を少なくとも 2 つ記述すると、その `knot` の開始を示せます。右側にも等号を記述できますが、省略可能です。
+
+```ink tab="ink"
+=== london ===
+```
+
+```txt tab="CLI"
+=== <knot_name> ===
+
+where:
+    knot_name = the name of the knot
+```
+
+</Accordion>
+
+<Accordion title="`label` と `knot` に違いはありますか？" id="label-vs-knot">
+
+いいえ、同じものです。 Pixi’VN では、***ink*** で `knot` を作成すると、内部的に `label` が作成され、レジストリに保存されます。
+
+</Accordion>
+
+</Accordions>
+
+## knot を実行する
+
+`knot` を実行するには、次の方法があります：
+
+<Accordions>
+
+<Accordion title="Diverts `-> start`（`label` へのジャンプ）" id="jump">
+
+Divert 演算子を使うと、`-> start` という構文で `knot` を実行できます。これは Pixi’VN ライブラリの <DynamicLink href="/start/labels#jump-to-a-label">`jump` 機能</DynamicLink>に相当します。
+
+```ink tab="ink"
+-> after
+```
+
+```txt tab="CLI"
+-> <knot_name>
+
+where:
+    knot_name = the name of the knot to jump to
+```
+
+例：
+
+```ink title="ink/start.ink"
+=== start ===
+Start
+-> after
+
+=== after ===
+After
+End
+-> DONE
+```
+
+<PixiVnExample path="ink/narration/jump" ink />
+
+</Accordion>
+
+<Accordion title="Tunnels `-> start ->` または Threads `<- start`  （`label` の呼び出し）" id="call">
+
+Tunnels 演算子を使うと、`-> start ->` という構文で `knot` を実行できます。これは Pixi’VN ライブラリの <DynamicLink href="/start/labels#call-to-a-label">`call` 機能</DynamicLink>に相当します。
+
+```ink tab="ink"
+-> guard_dialogue ->
+```
+
+```txt tab="CLI"
+-> <knot_name> ->
+
+where:
+    knot_name = the name of the knot to call
+```
+
+また、Threads 構文では、`\<-` 記号の後に `knot` の名前を記述します：
+
+```ink tab="ink"
+<- guard_dialogue
+```
+
+```txt tab="CLI"
+<- <knot_name>
+
+where:
+    knot_name = the name of the knot to call
+```
+
+:::tip[Threads]
+
+**本来の ink** とは異なり、**ink + Pixi’VN 連携**では「Threads」がサポートされていません。そのため、`\<-` 記号は「Thread」演算子ではなく、`knot` の呼び出しに相当します。
+
+:::
+
+:::tip
+
+簡潔にするため、**ink + Pixi’VN 連携**では `->->` と `-> DONE` のどちらでも `label` を正しく終了でき、同じ意味になります。
+
+:::
+
+例：
+
+```ink title="ink/start.ink"
+VAR reputation = 0
+
+-> start
+=== start ===
+You are in the square.
+
+* [Talk to the guard]
+    -> guard_dialogue ->
+    You return to the square.
+    -> start
+    You don't see this line because you are sent back to the city before.
+
+* {reputation >= 1} [Ask for a favor]
+    The guard helps you.
+    -> END
+
+=== guard_dialogue ===
+The guard looks at you.
+
+* [Greet]
+    "Hello citizen."
+    ~ reputation += 1
+->->
+
+* [Insult]
+    "Hey you!"
+    ~ reputation -= 1
+
+->->
+```
+
+<PixiVnExample path="ink/narration/call" ink />
+
+</Accordion>
+
+</Accordions>
+
+## その他の機能
+
+<Accordions>
+
+<Accordion title="パラメータ" id="parameters">
+
+一時変数の中でも特に便利なのが、**パラメーター**です。どの knot や stitch も値をパラメーターとして受け取れます。受け取った値は、その knot 内のローカル一時変数として扱われます：
+
+```ink title="ink/start.ink"
+=== start ===
+*   [Accuse Hastings]
+        -> accuse("Hastings")
+*   [Accuse Mrs Black]
+        -> accuse("Claudia")
+*   [Accuse myself]
+        -> accuse("myself")
+
+=== accuse(who) ===
+    "I accuse {who}!" Poirot declared.
+    "Really?" Japp replied. "{who == "myself":You did it?|{who}?}"
+    "And why not?" Poirot shot back.
+```
+
+ある knot や stitch から別の knot や stitch に一時的な値を渡すには、パラメーターを使用するのが適切です。通常の `temp` 変数は、宣言された stitch の外からアクセスできないためです。
+
+</Accordion>
+
+<Accordion title="パラメーターを持つ再帰的な knots" id="recursive-knots-with-parameters">
+
+一時変数（パラメーターを含む）は、再帰的な knot でも安全に使用できます：
+
+```ink title="ink/start.ink"
+-> add_one_to_one_hundred(0, 1)
+
+=== add_one_to_one_hundred(total, x) ===
+    ~ total = total + x
+    { x == 100:
+        -> finished(total)
+    - else:
+        -> add_one_to_one_hundred(total, x + 1)
+    }
+
+=== finished(total) ===
+    "The result is {total}!" you announce.
+    -> END
+```
+
+</Accordion>
+
+<Accordion title="ジャンプ先をパラメーターとして渡す" id="sending-divert-targets-as-parameters">
+
+knot のアドレスもパラメーターとして渡せます。 `->` を使って、パラメーターがジャンプ先であることを示します：
+
+```ink title="ink/start.ink"
+=== sleeping_in_hut ===
+    You lie down and close your eyes.
+    -> generic_sleep(-> waking_in_the_hut)
+
+=== generic_sleep(-> waking) ===
+    You sleep perchance to dream etc. etc.
+    -> waking
+
+=== waking_in_the_hut ===
+    You get back to your feet, ready to continue your journey.
+```
+
+</Accordion>
+
+<Accordion title="同じ `step` 内でのジャンプ" id="diverting-in-the-same-step">
+
+デフォルトでは、別の `knot` へのジャンプは次の `step` で実行されるため、ジャンプ先の内容は処理が再開されてから表示されます：
+
+```ink title="ink/start.ink"
+=== start ===
+It is, first and foremost...
+-> add2
+
+=== add2 ===
+...a story about the twelve labors of Hercules.
+-> DONE
+```
+
+テキストの直後に改行を挟まずにジャンプを記述すると、ジャンプ先の `knot` が直前のテキストと同じ `step` で実行され、両方がまとめて表示されます：
+
+```ink title="ink/start.ink"
+=== start ===
+It is, first and foremost...-> add2
+
+=== add2 ===
+...a story about the twelve labors of Hercules.
+-> DONE
+```
+
+</Accordion>
+
+</Accordions>

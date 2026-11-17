@@ -1,0 +1,102 @@
+---
+title: その他の物語表現機能
+description: |
+  `pause` や `continue` などの機能と、それらが `steps` や会話の進行に与える影響を説明します。
+---
+
+## 一時停止
+
+「# script」を実行すると、システムは <DynamicLink href="/start/labels-flow#continue">`continue`</DynamicLink> を実行して次の `step` に進みます。例えば、この場合は画像と会話テキストが表示されます。
+
+```ink title="ink/start.ink"
+=== start ===
+# show image alien eggHead
+Hello, world!
+-> DONE
+```
+
+`# pause` を使うと、次の `step` への進行を停止し、処理が再開されるまで会話テキストを消去できます。会話を表示せずに画像を表示したり、状態を変更したりする場合に便利です。
+
+構文は次のとおりです。
+
+```ink tab="ink"
+# pause
+```
+
+```txt tab="CLI"
+# pause
+```
+
+例：
+
+```ink tab="ink/start.ink"
+=== start ===
+# show image alien eggHead
+# pause
+Hello, world!
+-> DONE
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "eggHead",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<PixiVnExample path="ink/narration/pause" ink />
+
+## 進む
+
+通常、会話の後に選択肢が表示される場合、物語の進行には二つの `steps` が使われます。最初は会話のみ、次は会話と選択肢の両方が表示されます。
+
+```ink title="ink/start.ink"
+=== start ===
+Who are we going to rescue: the kitten or the wizard?
+* [workplace_midground_kitten] 
+    -> END
+* [workplace_midground_wizard]
+    -> END
+```
+
+会話と選択肢を一つの `step` で表示するには、会話の行末に `<># continue` を追加します。これにより、余分な `step` を省けます。
+
+```ink tab="ink"
+Who are we going to rescue: the kitten or the wizard?<># continue
+```
+
+```txt tab="CLI"
+<text><># continue
+
+where:
+    text = the dialogue text
+```
+
+例：
+
+```ink title="ink/start.ink"
+=== start ===
+Who are we going to rescue: the kitten or the wizard?<># continue
+* [workplace_midground_kitten] 
+    -> END
+* [workplace_midground_wizard]
+    -> END
+```
+
+<PixiVnExample path="ink/narration/continue" ink />
