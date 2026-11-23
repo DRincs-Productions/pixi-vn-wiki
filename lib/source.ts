@@ -196,7 +196,8 @@ export const nqtrSource = loader({
 // One `llms()` per source: it renders the `.md` files of that source (llms.txt, llms-full.txt, <page>.md)
 function createLlms<C extends LoaderConfig>(input: LoaderOutput<C>) {
     return llms(input, {
-        renderPage: async (page) => `# ${page.data.title} (${page.url})
+        // English is served at the root of the site, so its URLs must not have the `/en` prefix
+        renderPage: async (page) => `# ${page.data.title} (${page.url.replace(/^\/en\//, "/")})
 
 ${await (page.data as { getText: (type: "processed" | "raw") => Promise<string> }).getText("processed")}`,
         // link to the files under `/llms.mdx`
@@ -207,7 +208,12 @@ ${await (page.data as { getText: (type: "processed" | "raw") => Promise<string> 
 // `llms.txt` and `llms-full.txt` at the root of the site describe the main (start) source
 export const docsLlms = createLlms(source);
 
-const sectionLlms = [createLlms(inkSource), createLlms(faqSource), createLlms(nqtrSource), createLlms(renpySource)];
+export const inkLlms = createLlms(inkSource);
+export const faqLlms = createLlms(faqSource);
+export const nqtrLlms = createLlms(nqtrSource);
+export const renpyLlms = createLlms(renpySource);
+
+const sectionLlms = [inkLlms, faqLlms, nqtrLlms, renpyLlms];
 
 /** Serve a file under `/llms.mdx` (e.g. `/it/ink/intro.md`), from whichever source owns it. */
 export async function serveLlmsFile(path: string) {
