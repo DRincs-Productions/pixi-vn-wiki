@@ -1,6 +1,6 @@
 "use client";
+import { useStaticSearch, type SearchResultItem } from "fumadocs-core/search/client";
 import { create } from "zbsearch";
-import { useDocsSearch } from "fumadocs-core/search/client";
 import {
     SearchDialog,
     SearchDialogClose,
@@ -14,7 +14,7 @@ import {
 } from "fumadocs-ui/components/dialog/search";
 import { useI18n } from "fumadocs-ui/contexts/i18n";
 
-function initOrama() {
+function initDB() {
     return create({
         schema: { _: "string" },
         // https://docs.orama.com/docs/orama-js/supported-languages
@@ -22,33 +22,33 @@ function initOrama() {
     });
 }
 
+const stripEnPath = (value: string) => value.replaceAll("/en/", "/");
+
+function stripEn(item: SearchResultItem): SearchResultItem {
+    if (item.type === "table") {
+        return {
+            ...item,
+            id: stripEnPath(item.id),
+            rows: item.rows.map((row) => ({ ...row, id: stripEnPath(row.id), url: stripEnPath(row.url) })),
+        };
+    }
+    return { ...item, id: stripEnPath(item.id), url: stripEnPath(item.url) };
+}
+
 export default function DefaultSearchDialog(props: SharedProps) {
     const { locale } = useI18n(); // (optional) for i18n
-    const { search, setSearch, query } = useDocsSearch({
-        type: "static",
-        initOrama,
+    const search = useStaticSearch({
         locale,
+        initDB,
     });
-    let items = query.data;
-    switch (locale) {
-        case "en":
-            if (Array.isArray(items)) {
-                items = items.map((item) => ({
-                    ...item,
-                    id: item.id.replaceAll("/en/", "/"),
-                    url: item.url.replaceAll("/en/", "/"),
-                }));
-            }
-            break;
+    let data = search.data;
+    if (locale === "en" && data) {
+        // the default language has no "/en" prefix in the URLs
+        data = { ...data, items: data.items.map(stripEn) };
     }
 
     return (
-        <SearchDialog
-            search={search}
-            onSearchChange={setSearch}
-            isLoading={query.isLoading}
-            {...props}
-        >
+        <SearchDialog {...search} data={data} {...props}>
             <SearchDialogOverlay />
             <SearchDialogContent>
                 <SearchDialogHeader>
@@ -56,7 +56,7 @@ export default function DefaultSearchDialog(props: SharedProps) {
                     <SearchDialogInput />
                     <SearchDialogClose />
                 </SearchDialogHeader>
-                <SearchDialogList items={items !== "empty" ? items : null} />
+                <SearchDialogList />
             </SearchDialogContent>
         </SearchDialog>
     );
