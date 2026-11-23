@@ -6,9 +6,9 @@ const withNextIntl = createNextIntlPlugin();
 
 /** @type {import('next').NextConfig} */
 const config = {
-    serverExternalPackages: ['@takumi-rs/image-response'],
     output: "export",
     reactStrictMode: true,
+    serverExternalPackages: ["@takumi-rs/core"],
     images: {
         remotePatterns: [
             { protocol: "https", hostname: "pixijs.io" },
