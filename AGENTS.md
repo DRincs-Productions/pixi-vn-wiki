@@ -45,3 +45,7 @@ Do not start the wiki, run its development or preview server, or run a build/exp
 ## Language
 
 The main language of the documentation is **English**. Write all new content, and any text you add to existing pages, in English.
+
+## Commits
+
+All commit messages must be written in **English** (subject and body), regardless of the language used in the conversation. Only commit when the user explicitly asks for it.
