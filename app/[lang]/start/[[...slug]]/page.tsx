@@ -15,7 +15,8 @@ export default async function Page({
 }
 
 export async function generateStaticParams() {
-    return source.generateParams();
+    // English is served at the root of the site (see `app/<section>`), not under `/en`
+    return source.generateParams().filter((params) => params.lang !== "en");
 }
 
 export async function generateMetadata({

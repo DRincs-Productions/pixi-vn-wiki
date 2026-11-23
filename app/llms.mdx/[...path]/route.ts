@@ -1,4 +1,4 @@
-import { getLlmsFiles, serveLlmsFile } from "@/lib/source";
+import { getMarkdownPaths, serveMarkdown } from "@/lib/source";
 
 export const revalidate = false;
 // other paths are 404s, never cached responses
@@ -6,14 +6,17 @@ export const dynamicParams = false;
 
 export async function GET(_req: Request, { params }: RouteContext<"/llms.mdx/[...path]">) {
     const { path } = await params;
-    return (await serveLlmsFile(`/${path.join("/")}`)) ?? new Response(null, { status: 404 });
+    const markdown = await serveMarkdown(path);
+    if (markdown === undefined) return new Response(null, { status: 404 });
+
+    // English is served at the root of the site, so its URLs must not have the `/en` prefix
+    return new Response(markdown.replaceAll("/en/", "/"), {
+        headers: {
+            "Content-Type": "text/markdown",
+        },
+    });
 }
 
-export async function generateStaticParams() {
-    const params: { path: string[] }[] = [];
-    for (const file of await getLlmsFiles()) {
-        // `/llms.txt` and `/llms-full.txt` have their own routes
-        if (!/^\/llms(-full)?\.txt$/.test(file)) params.push({ path: decodeURI(file).slice(1).split("/") });
-    }
-    return params;
+export function generateStaticParams() {
+    return getMarkdownPaths().map((path) => ({ path }));
 }

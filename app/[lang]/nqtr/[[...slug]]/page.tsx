@@ -15,7 +15,8 @@ export default async function Page({
 }
 
 export async function generateStaticParams() {
-    return nqtrSource.generateParams();
+    // English is served at the root of the site (see `app/<section>`), not under `/en`
+    return nqtrSource.generateParams().filter((params) => params.lang !== "en");
 }
 
 export async function generateMetadata({

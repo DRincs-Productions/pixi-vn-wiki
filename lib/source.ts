@@ -193,54 +193,79 @@ export const nqtrSource = loader({
     i18n,
 });
 
-// One `llms()` per source: it renders the `.md` files of that source (llms.txt, llms-full.txt, <page>.md)
-function createLlms<C extends LoaderConfig>(input: LoaderOutput<C>) {
-    return llms(input, {
-        // English is served at the root of the site, so its URLs must not have the `/en` prefix
+export type MarkdownSection = "start" | "ink" | "faq" | "nqtr" | "renpy";
+
+// The `.md` files of a source (llms.txt, llms-full.txt, one per page) come from its `llms()`.
+// English is served at the root of the site, so its URLs must not have the `/en` prefix.
+function createSection<C extends LoaderConfig>(input: LoaderOutput<C>) {
+    const output = llms(input, {
         renderPage: async (page) => `# ${page.data.title} (${page.url.replace(/^\/en\//, "/")})
 
 ${await (page.data as { getText: (type: "processed" | "raw") => Promise<string> }).getText("processed")}`,
-        // link to the files under `/llms.mdx`
-        renderUrl: (item) => (/^\/.*\.(md|txt)$/.test(item.url) ? `/llms.mdx${item.url}` : item.url),
+        // no per-folder `llms-full.txt` files: only the files of the pages are served (see `getPageMarkdownUrl`)
+        section: () => false,
+        // link to the markdown route of a page, e.g. `/en/ink/intro.md` -> `/llms.mdx/docs/ink/intro/content.md`
+        renderUrl: (item) => markdownUrlFromPageUrl(item.url) ?? item.url,
     });
+
+    return {
+        llms: output,
+        /** slugs of the English pages */
+        getSlugs: () => input.getPages("en").map((page) => page.slugs),
+        /** markdown of the English page with these slugs, `undefined` if there is none */
+        render: async (slugs: string[]) => {
+            const page = input.getPage(slugs, "en");
+            return page ? output.page(page) : undefined;
+        },
+    };
 }
+
+const sections = {
+    start: createSection(source),
+    ink: createSection(inkSource),
+    faq: createSection(faqSource),
+    nqtr: createSection(nqtrSource),
+    renpy: createSection(renpySource),
+} satisfies Record<MarkdownSection, unknown>;
 
 // `llms.txt` and `llms-full.txt` at the root of the site describe the main (start) source
-export const docsLlms = createLlms(source);
-
-export const inkLlms = createLlms(inkSource);
-export const faqLlms = createLlms(faqSource);
-export const nqtrLlms = createLlms(nqtrSource);
-export const renpyLlms = createLlms(renpySource);
-
-const sectionLlms = [inkLlms, faqLlms, nqtrLlms, renpyLlms];
-
-/** Serve a file under `/llms.mdx` (e.g. `/it/ink/intro.md`), from whichever source owns it. */
-export async function serveLlmsFile(path: string) {
-    for (const item of [docsLlms, ...sectionLlms]) {
-        const response = await item.serve(path);
-        if (response) return response;
-    }
-}
-
-/** Paths of every file served under `/llms.mdx`, for `generateStaticParams`. */
-export async function getLlmsFiles() {
-    const files = new Set<string>();
-    for (const [index, item] of [docsLlms, ...sectionLlms].entries()) {
-        for (const file of await item.files()) {
-            // the root `/llms.txt` and `/llms-full.txt` belong to the main source only (they have their own routes)
-            if (index > 0 && /^\/llms(-full)?\.txt$/.test(file)) continue;
-            files.add(file);
-        }
-    }
-    return Array.from(files);
-}
+export const docsLlms = sections.start.llms;
+export const inkLlms = sections.ink.llms;
+export const faqLlms = sections.faq.llms;
+export const nqtrLlms = sections.nqtr.llms;
+export const renpyLlms = sections.renpy.llms;
 
 /**
- * URL of the markdown version of a page. `page.url` already holds the section and the language
- * (e.g. `/ink/intro`, `/it/start/why`), so it works for every source.
+ * Markdown version of a page, served by `app/llms.mdx/[...path]`:
+ * `/llms.mdx/docs/<slug>/content.md` for `start`, `/llms.mdx/docs/<section>/<slug>/content.md` for the others.
+ * It is always the English one (also for the translated pages).
  */
-export function getPageMarkdownUrl(page: { url: string }) {
-    const segments = `${page.url.replace(/\/$/, "") || "/index"}.md`.split("/").filter(Boolean);
+export function getPageMarkdownUrl(page: { slugs: string[] }, section: MarkdownSection) {
+    const segments = ["docs", ...(section === "start" ? [] : [section]), ...page.slugs, "content.md"];
     return { segments, url: `/llms.mdx/${segments.join("/")}` };
+}
+
+/** `/en/ink/intro.md` (a file of `llms()`) -> `/llms.mdx/docs/ink/intro/content.md`, `undefined` if it is not a page. */
+function markdownUrlFromPageUrl(url: string) {
+    const match = /^\/en\/(start|ink|faq|nqtr|renpy)((?:\/.*)?)\.md$/.exec(url);
+    if (!match) return;
+    const slugs = match[2].split("/").filter(Boolean);
+    return getPageMarkdownUrl({ slugs }, match[1] as MarkdownSection).url;
+}
+
+/** Content of a file served under `/llms.mdx` (path split in segments), `undefined` if there is none. */
+export async function serveMarkdown(path: string[]) {
+    if (path[0] !== "docs" || path.at(-1) !== "content.md") return;
+    const middle = path.slice(1, -1);
+    // `docs/ink/...` is the `ink` section, anything else belongs to `start`
+    const section = middle[0] in sections && middle[0] !== "start" ? (middle[0] as MarkdownSection) : "start";
+    const slugs = section === "start" ? middle : middle.slice(1);
+    return sections[section].render(slugs);
+}
+
+/** Path (segments) of every file served under `/llms.mdx`, for `generateStaticParams`. */
+export function getMarkdownPaths() {
+    return (Object.keys(sections) as MarkdownSection[]).flatMap((section) =>
+        sections[section].getSlugs().map((slugs) => getPageMarkdownUrl({ slugs }, section).segments),
+    );
 }

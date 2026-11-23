@@ -5,6 +5,7 @@ module.exports = {
     outDir: "./out",
     exclude: ["*/en/*"],
     transform: async (config, path) => {
+        // Markdown versions of the pages (`/llms.mdx/docs/<page>/content.md`, see app/llms.mdx)
         const isContentMdRoute = path.endsWith("content.md");
 
         return {
