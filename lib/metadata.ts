@@ -1,4 +1,5 @@
-import { getPageImage, source } from "@/lib/source";
+import { getPageImageUrl } from "@/lib/shared";
+import { source } from "@/lib/source";
 import type { Metadata } from "next/types";
 
 export function createMetadata(
@@ -13,7 +14,9 @@ export function createMetadata(
     // lookup for the homepage so it always gets the SEO-focused fallback
     // below, instead of inheriting the "Quick start" page's metadata.
     const page = params.isHome ? undefined : source.getPage(slug);
-    const images = page ? `${baseUrl}${getPageImage(page).url}` : `${baseUrl}/og_image.png`;
+    const images = page
+        ? `${baseUrl}${getPageImageUrl({ slugs: page.slugs }).url}`
+        : `${baseUrl}/og_image.png`;
     const title = page
         ? `Pixi'VN - ${page.data.title}`
         : "Pixi'VN - Visual Novel Engine for React, JavaScript & TypeScript";

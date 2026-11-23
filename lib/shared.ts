@@ -2,6 +2,7 @@ import { inkLanguage } from "@/lib/syntaxes";
 import dark from "@shikijs/themes/github-dark";
 import light from "@shikijs/themes/github-light";
 import type { RehypeCodeOptions } from "fumadocs-core/mdx-plugins";
+import { createGetUrl } from "fumadocs-core/source";
 
 export const appName = "Pixi’VN";
 export const startRoute = "/start";
@@ -10,7 +11,6 @@ export const nqtrRoute = "/nqtr";
 export const faqRoute = "/faq";
 export const renpyRoute = "/renpy";
 export const docsImageRoute = "/og/docs";
-export const docsContentRoute = "/llms.mdx/docs";
 
 // fill this with your actual GitHub info, for example:
 export const gitConfig = {
@@ -18,6 +18,14 @@ export const gitConfig = {
     repo: "pixi-vn",
     branch: "main",
 };
+
+const getImageUrl = createGetUrl(docsImageRoute);
+
+export function getPageImageUrl(page: { slugs: string[]; locale?: string }) {
+    const segments = [...page.slugs, "image.webp"];
+
+    return { segments, url: getImageUrl(segments, page.locale) };
+}
 
 // repos scanned to build the "contributed on GitHub" avatar list on the homepage
 export const contributorRepos = [

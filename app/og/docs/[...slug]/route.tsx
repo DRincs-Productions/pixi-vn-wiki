@@ -1,5 +1,6 @@
-import { getPageImage, source } from "@/lib/source";
-import { ImageResponse } from "@takumi-rs/image-response";
+import { getPageImageUrl } from "@/lib/shared";
+import { source } from "@/lib/source";
+import { ImageResponse } from "takumi-js/response";
 import { notFound } from "next/navigation";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -114,6 +115,6 @@ export async function GET(_req: Request, { params }: RouteContext<"/og/docs/[...
 export function generateStaticParams() {
     return source.getPages().map((page) => ({
         lang: page.locale,
-        slug: getPageImage(page).segments,
+        slug: getPageImageUrl({ slugs: page.slugs }).segments,
     }));
 }

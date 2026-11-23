@@ -1,18 +1,14 @@
-import { faqSource, getLLMText, inkSource, nqtrSource, renpySource, source } from "@/lib/source";
+import { docsLlms, faqLlms, inkLlms, nqtrLlms, renpyLlms } from "@/lib/source";
 
 export const revalidate = false;
 
 export async function GET() {
-    const scan = source
-        .getPages()
-        .concat(inkSource.getPages())
-        .concat(renpySource.getPages())
-        .concat(nqtrSource.getPages())
-        .concat(faqSource.getPages())
-        .filter((v) => v.locale === "en")
-        .map(getLLMText);
+    // every page (English only) of every source, rendered as markdown
+    const parts = await Promise.all(
+        [docsLlms, inkLlms, renpyLlms, nqtrLlms, faqLlms].map((source) => source.full("en")),
+    );
 
-    const scanned = await Promise.all(scan);
-
-    return new Response(scanned.join("\n\n").replaceAll("/en/", "/"));
+    return new Response(parts.join("\n\n").replaceAll("/en/", "/"), {
+        headers: { "Content-Type": "text/plain; charset=utf-8" },
+    });
 }
