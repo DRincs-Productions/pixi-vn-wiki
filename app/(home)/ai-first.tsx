@@ -1,7 +1,15 @@
 "use client";
 
 import { cardVariants, headingVariants } from "@/components/ui/button";
-import { CloudeIcon, CodexIcon, ComfyUiIcon, CopilotIcon, CursorIcon } from "@/components/ui/icons";
+import {
+    CloudeIcon,
+    CodexIcon,
+    ComfyUiIcon,
+    CopilotIcon,
+    CursorIcon,
+    OpenCodeIcon,
+    VeniceIcon,
+} from "@/components/ui/icons";
 import { Markdown } from "@/components/ui/markdown";
 import { cn } from "@/lib/cn";
 import { useIsVisible } from "@/lib/useIsVisible";
@@ -65,6 +73,22 @@ export function AiFirst() {
                     className={iconLinkClassName}
                 >
                     <CopilotIcon className="size-6" />
+                </a>
+                <a
+                    href="https://opencode.ai/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={iconLinkClassName}
+                >
+                    <OpenCodeIcon className="size-6" />
+                </a>
+                <a
+                    href="https://venice.ai/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={iconLinkClassName}
+                >
+                    <VeniceIcon className="size-6" />
                 </a>
                 <a
                     href="https://www.comfy.org/"
