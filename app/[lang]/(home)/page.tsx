@@ -17,5 +17,5 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
     const { lang } = await params;
 
-    return createMetadata({}, { lang, isHome: true });
+    return createMetadata({ lang });
 }

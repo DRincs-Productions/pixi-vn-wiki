@@ -26,5 +26,5 @@ export async function generateMetadata({
 }) {
     const { slug, lang } = await params;
 
-    return createMetadata({}, { slug: slug ? ["nqtr", ...slug] : undefined, lang });
+    return createMetadata({ section: "nqtr", slug, lang });
 }

@@ -26,5 +26,5 @@ export async function generateMetadata({
 }) {
     const { slug, lang } = await params;
 
-    return createMetadata({}, { slug: slug, lang });
+    return createMetadata({ section: "start", slug, lang });
 }

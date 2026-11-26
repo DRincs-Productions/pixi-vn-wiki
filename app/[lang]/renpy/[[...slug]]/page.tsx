@@ -26,5 +26,5 @@ export async function generateMetadata({
 }) {
     const { slug, lang } = await params;
 
-    return createMetadata({}, { slug: slug ? ["renpy", ...slug] : undefined, lang });
+    return createMetadata({ section: "renpy", slug, lang });
 }

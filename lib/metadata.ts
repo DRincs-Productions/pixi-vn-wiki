@@ -1,31 +1,54 @@
-import { getPageImageUrl } from "@/lib/shared";
-import { source } from "@/lib/source";
+import { i18n } from "@/lib/i18n";
+import { appName } from "@/lib/shared";
+import {
+    getPageImagePath,
+    getPageMarkdownUrl,
+    getPagePath,
+    type MarkdownSection,
+    sectionSources,
+} from "@/lib/source";
 import type { Metadata } from "next/types";
 
-export function createMetadata(
-    props: Metadata,
-    params: { lang?: string; slug?: string[]; isHome?: boolean },
-): Metadata {
-    const slug = params.slug;
-    const slugString = slug ? `/${slug.join("/")}` : "";
-    const lang = params.lang ? `/${params.lang}` : "";
-    // The homepage route has no slug of its own, which collides with the
-    // `/start` index page (also reached with an empty slug). Skip the page
-    // lookup for the homepage so it always gets the SEO-focused fallback
-    // below, instead of inheriting the "Quick start" page's metadata.
-    const page = params.isHome ? undefined : source.getPage(slug);
-    const images = page
-        ? `${baseUrl}${getPageImageUrl({ slugs: page.slugs }).url}`
-        : `${baseUrl}/og_image.png`;
-    const title = page
-        ? `Pixi'VN - ${page.data.title}`
-        : "Pixi'VN - Visual Novel Engine for React, JavaScript & TypeScript";
-    const description = page
-        ? page.data.description
-        : "Create your own visual novel or story-driven game with Pixi'VN, a React/JavaScript/TypeScript visual novel engine with ink (Inkle) support, built on the PixiJS rendering library.";
-    return {
-        title: title,
-        description: description,
+export const baseUrl = "https://pixi-vn.com";
+
+const homeTitle = `${appName} - Visual Novel Engine for React, JavaScript & TypeScript`;
+export const homeDescription =
+    "Create your own visual novel or story-driven game with Pixi’VN, a React/JavaScript/TypeScript visual novel engine with ink (Inkle) support, built on the PixiJS rendering library.";
+
+/** Title of a page without the Markdown syntax (e.g. "Image (`ImageSprite`)" -> "Image (ImageSprite)") */
+export function plainTitle(title: string) {
+    return title.replaceAll("`", "").trim();
+}
+
+/** Absolute URL of a public path (the homepage is `https://pixi-vn.com`, without the trailing slash) */
+export function absoluteUrl(path: string) {
+    return path === "/" ? baseUrl : `${baseUrl}${path}`;
+}
+
+/** Canonical URL of the page in each language, plus `x-default` (English) */
+function languageAlternates(getPath: (lang: string) => string) {
+    const languages: Record<string, string> = {};
+    for (const lang of i18n.languages) languages[lang] = absoluteUrl(getPath(lang));
+    languages["x-default"] = absoluteUrl(getPath(i18n.defaultLanguage));
+    return languages;
+}
+
+/**
+ * Metadata of a page of the wiki.
+ * - `section` + `slug`: a docs page (e.g. `ink` + `["hashtag"]` is `/ink/hashtag`, an empty slug is the index of the section);
+ * - no `section`: the homepage.
+ */
+export function createMetadata({
+    section,
+    slug = [],
+    lang = i18n.defaultLanguage,
+}: {
+    section?: MarkdownSection;
+    slug?: string[];
+    lang?: string;
+}): Metadata {
+    const common: Metadata = {
+        metadataBase: new URL(baseUrl),
         icons: {
             icon: [
                 { url: "/favicon.ico", sizes: "any" },
@@ -34,56 +57,73 @@ export function createMetadata(
             shortcut: "/favicon.ico",
             apple: "/icon-192.png",
         },
-        keywords: [
-            "pixi-vn",
-            "pixivn",
-            "Pixi'VN",
-            "PixiVN",
-            "pixi vn",
-            "visual novel engine",
-            "visual novel react",
-            "react visual novel",
-            "2D game engine",
-            "story-driven game engine",
-            "PixiJS",
-            "Point & Click Adventure",
-            "React",
-            "JavaScript",
-            "Node.js",
-            "ink",
-            "inkle",
-            "renpy alternatives",
-            "ren'py alternatives",
-        ],
+    };
+
+    const source = section ? sectionSources[section] : undefined;
+    // the translated page (title and description in that language), or the English one
+    const page = source ? (source.getPage(slug, lang) ?? source.getPage(slug)) : undefined;
+
+    if (!section || !page) {
+        const homePath = (l: string) => (l === i18n.defaultLanguage ? "/" : `/${l}`);
+        return {
+            ...common,
+            title: homeTitle,
+            description: homeDescription,
+            alternates: {
+                canonical: absoluteUrl(homePath(lang)),
+                languages: languageAlternates(homePath),
+            },
+            openGraph: {
+                title: homeTitle,
+                description: homeDescription,
+                url: absoluteUrl(homePath(lang)),
+                images: `${baseUrl}/og_image.png`,
+                siteName: appName,
+                type: "website",
+                locale: lang,
+            },
+            twitter: {
+                card: "summary_large_image",
+                creator: "@money_is_shark",
+                title: homeTitle,
+                description: homeDescription,
+                images: `${baseUrl}/og_image.png`,
+            },
+        };
+    }
+
+    const title = `${plainTitle(page.data.title)} | ${appName}`;
+    const description = page.data.description;
+    const url = absoluteUrl(getPagePath(section, slug, lang));
+    const image = `${baseUrl}${getPageImagePath(section, slug).url}`;
+
+    return {
+        ...common,
+        title,
+        description,
+        alternates: {
+            canonical: url,
+            languages: languageAlternates((l) => getPagePath(section, slug, l)),
+            types: {
+                // Markdown version of the page, for AI agents (see `app/llms.mdx`)
+                "text/markdown": absoluteUrl(getPageMarkdownUrl({ slugs: slug }, section).url),
+            },
+        },
         openGraph: {
-            title: title,
-            description: description ?? undefined,
-            url: baseUrl,
-            images,
-            siteName: "Pixi'VN Wiki",
-            type: "website",
+            title,
+            description,
+            url,
+            images: image,
+            siteName: appName,
+            type: "article",
+            locale: lang,
         },
         twitter: {
             card: "summary_large_image",
             creator: "@money_is_shark",
-            title: title ?? undefined,
-            description: description ?? undefined,
-            images: images,
-        },
-        alternates: {
-            canonical: `${baseUrl}${lang}${slugString}`,
-            languages: {
-                en: `${baseUrl}${slugString}`,
-                it: `${baseUrl}/it${slugString}`,
-                ru: `${baseUrl}/ru${slugString}`,
-                zh: `${baseUrl}/zh${slugString}`,
-                ja: `${baseUrl}/ja${slugString}`,
-                es: `${baseUrl}/es${slugString}`,
-                fr: `${baseUrl}/fr${slugString}`,
-                ko: `${baseUrl}/ko${slugString}`,
-            },
+            title,
+            description,
+            images: image,
         },
     };
 }
-
-export const baseUrl = "https://pixi-vn.com";

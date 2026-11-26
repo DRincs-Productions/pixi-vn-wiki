@@ -8,7 +8,8 @@ import { Terminal } from "@/app/(home)/terminal";
 import { Wrappers } from "@/app/(home)/wrappers";
 import { AnybodyCanWrite } from "@/app/(home)/writing";
 import { Markdown } from "@/components/ui/markdown";
-import { createMetadata } from "@/lib/metadata";
+import { HomeJsonLd } from "@/components/json-ld";
+import { createMetadata, homeDescription } from "@/lib/metadata";
 import { source } from "@/lib/source";
 import { getTranslations } from "next-intl/server";
 
@@ -40,10 +41,11 @@ export default async function Home() {
                 </div>
             </div>
             <Contributing />
+            <HomeJsonLd description={homeDescription} />
         </main>
     );
 }
 
 export async function generateMetadata() {
-    return createMetadata({}, {});
+    return createMetadata({});
 }

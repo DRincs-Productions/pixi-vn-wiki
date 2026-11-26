@@ -1,5 +1,10 @@
-import { getPageImageUrl } from "@/lib/shared";
-import { source } from "@/lib/source";
+import { plainTitle } from "@/lib/metadata";
+import {
+    getPageImagePath,
+    type MarkdownSection,
+    markdownSections,
+    sectionSources,
+} from "@/lib/source";
 import { ImageResponse } from "takumi-js/response";
 import { notFound } from "next/navigation";
 import { readFileSync } from "node:fs";
@@ -18,7 +23,10 @@ const iconBase64 = `data:image/png;base64,${readFileSync(join(process.cwd(), "pu
 
 export async function GET(_req: Request, { params }: RouteContext<"/og/docs/[...slug]">) {
     const { slug } = await params;
-    const page = source.getPage(slug.slice(0, -1));
+    // `/og/docs/<section>/<slug>/image.webp` (see `getPageImagePath`)
+    const [section, ...slugs] = slug.slice(0, -1);
+    if (!markdownSections.includes(section as MarkdownSection)) notFound();
+    const page = sectionSources[section as MarkdownSection].getPage(slugs);
     if (!page) notFound();
 
     return new ImageResponse(
@@ -72,7 +80,7 @@ export async function GET(_req: Request, { params }: RouteContext<"/og/docs/[...
                             lineHeight: 1.1,
                         }}
                     >
-                        {page.data.title}
+                        {plainTitle(page.data.title)}
                     </p>
                 </div>
                 {page.data.description && (
@@ -113,8 +121,10 @@ export async function GET(_req: Request, { params }: RouteContext<"/og/docs/[...
 }
 
 export function generateStaticParams() {
-    return source.getPages().map((page) => ({
-        lang: page.locale,
-        slug: getPageImageUrl({ slugs: page.slugs }).segments,
-    }));
+    // English only: the images of the translated pages are the English ones
+    return markdownSections.flatMap((section) =>
+        sectionSources[section]
+            .getPages("en")
+            .map((page) => ({ slug: getPageImagePath(section, page.slugs).segments })),
+    );
 }

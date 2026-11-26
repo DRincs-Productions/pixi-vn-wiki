@@ -14,6 +14,7 @@ import {
     DocsPage,
     DocsTitle,
     EditOnGitHub,
+    PageLastUpdate,
 } from "fumadocs-ui/layouts/docs/page";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import { Edit } from "lucide-react";
@@ -21,6 +22,7 @@ import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { ViewOptionsPopover } from "./ai/page-actions";
 import { GiscusComments } from "./giscus-comments";
+import { DocsPageJsonLd } from "./json-ld";
 import { KofiButton, TranslateButton } from "./page-actions";
 
 export default async function MDXPage({
@@ -66,7 +68,7 @@ export default async function MDXPage({
     const t = await getTranslations({ locale: lang ?? routing.defaultLocale, namespace: "common" });
 
     // the collections are `async` (see `lib/source.ts`): the compiled content is loaded on demand
-    const { body: MDX, toc } = await page.data.load();
+    const { body: MDX, toc, lastModified } = await page.data.load();
     const markdownUrl = getPageMarkdownUrl(page, folther).url;
 
     return (
@@ -92,7 +94,16 @@ export default async function MDXPage({
                     })}
                 />
             </DocsBody>
+            {lastModified && <PageLastUpdate date={lastModified} />}
             <GiscusComments lang={lang} folther={folther} slug={slug} />
+            <DocsPageJsonLd
+                section={folther}
+                slug={slug}
+                lang={lang ?? routing.defaultLocale}
+                title={page.data.title}
+                description={page.data.description}
+                lastModified={lastModified}
+            />
         </DocsPage>
     );
 }

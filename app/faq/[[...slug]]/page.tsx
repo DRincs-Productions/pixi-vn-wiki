@@ -17,5 +17,5 @@ export async function generateStaticParams() {
 export async function generateMetadata(props: { params: Promise<{ slug?: string[] }> }) {
     const params = await props.params;
 
-    return createMetadata({}, { slug: params.slug ? ["faq", ...params.slug] : undefined });
+    return createMetadata({ section: "faq", slug: params.slug });
 }

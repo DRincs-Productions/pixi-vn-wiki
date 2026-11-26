@@ -22,6 +22,7 @@ import {
 // Each collection sets its own `mdxOptions` (that replaces the default ones).
 // `async: true` compiles the content of a page only when it is used (`page.data.load()`), not every page at once:
 // it keeps the dev server fast and light, since every route imports this file.
+// `lastModified: true` exposes the date of the last git commit of each page (`(await page.data.load()).lastModified`).
 const postprocess = {
     // only needed by the llms files; light local development uses the raw file (see `lib/dev-mode.ts`)
     includeProcessedMarkdown: !isLightDev,
@@ -47,6 +48,7 @@ const startDocs = defineDocs({
     dir: "content/start",
     docs: {
         async: true,
+        lastModified: true,
         schema: pageSchema,
         postprocess,
         mdxOptions: defaultPreset([remarkDirective, remarkDirectiveAdmonition, remarkMdxFiles]),
@@ -58,6 +60,7 @@ const inkDocs = defineDocs({
     dir: "content/ink",
     docs: {
         async: true,
+        lastModified: true,
         schema: pageSchema,
         postprocess,
         mdxOptions: defaultPreset([remarkDirective, remarkDirectiveAdmonition]),
@@ -69,6 +72,7 @@ const faqDocs = defineDocs({
     dir: "content/faq",
     docs: {
         async: true,
+        lastModified: true,
         schema: pageSchema,
         postprocess,
         mdxOptions: defaultPreset([remarkDirective, remarkDirectiveAdmonition]),
@@ -80,6 +84,7 @@ const nqtrDocs = defineDocs({
     dir: "content/nqtr",
     docs: {
         async: true,
+        lastModified: true,
         schema: pageSchema,
         postprocess,
         mdxOptions: defaultPreset([remarkDirective, remarkDirectiveAdmonition]),
@@ -91,6 +96,7 @@ const renpyDocs = defineDocs({
     dir: "content/renpy",
     docs: {
         async: true,
+        lastModified: true,
         schema: pageSchema,
         postprocess,
         mdxOptions: applyMdxPreset({
@@ -220,6 +226,33 @@ export const nqtrSource = loader({
 
 export type MarkdownSection = "start" | "ink" | "faq" | "nqtr" | "renpy";
 
+/** the source (loader) of each section of the docs */
+export const sectionSources = {
+    start: source,
+    ink: inkSource,
+    faq: faqSource,
+    nqtr: nqtrSource,
+    renpy: renpySource,
+} satisfies Record<MarkdownSection, unknown>;
+
+export const markdownSections = Object.keys(sectionSources) as MarkdownSection[];
+
+/**
+ * Public path of a page, e.g. `/start/canvas-image` (English) or `/it/ink/hashtag`.
+ * English is served at the root of the site, without the `/en` prefix.
+ */
+export function getPagePath(section: MarkdownSection, slugs: string[] = [], lang?: string) {
+    const prefix = lang && lang !== i18n.defaultLanguage ? `/${lang}` : "";
+    // `prefix` is "" or "/it": joining it with "/" always gives an absolute path
+    return [prefix, section, ...slugs].join("/");
+}
+
+/** Open Graph image of a page (English only), served by `app/og/docs`: `/og/docs/<section>/<slug>/image.webp` */
+export function getPageImagePath(section: MarkdownSection, slugs: string[] = []) {
+    const segments = [section, ...slugs, "image.webp"];
+    return { segments, url: `/og/docs/${segments.join("/")}` };
+}
+
 // The `.md` files of a source (llms.txt, llms-full.txt, one per page) come from its `llms()`.
 // English is served at the root of the site, so its URLs must not have the `/en` prefix.
 function createSection<C extends LoaderConfig>(input: LoaderOutput<C>) {
@@ -266,7 +299,12 @@ export const renpyLlms = sections.renpy.llms;
  * It is always the English one (also for the translated pages).
  */
 export function getPageMarkdownUrl(page: { slugs: string[] }, section: MarkdownSection) {
-    const segments = ["docs", ...(section === "start" ? [] : [section]), ...page.slugs, "content.md"];
+    const segments = [
+        "docs",
+        ...(section === "start" ? [] : [section]),
+        ...page.slugs,
+        "content.md",
+    ];
     return { segments, url: `/llms.mdx/${segments.join("/")}` };
 }
 
@@ -283,7 +321,8 @@ export async function serveMarkdown(path: string[]) {
     if (path[0] !== "docs" || path.at(-1) !== "content.md") return;
     const middle = path.slice(1, -1);
     // `docs/ink/...` is the `ink` section, anything else belongs to `start`
-    const section = middle[0] in sections && middle[0] !== "start" ? (middle[0] as MarkdownSection) : "start";
+    const section =
+        middle[0] in sections && middle[0] !== "start" ? (middle[0] as MarkdownSection) : "start";
     const slugs = section === "start" ? middle : middle.slice(1);
     return sections[section].render(slugs);
 }
@@ -291,6 +330,8 @@ export async function serveMarkdown(path: string[]) {
 /** Path (segments) of every file served under `/llms.mdx`, for `generateStaticParams`. */
 export function getMarkdownPaths() {
     return (Object.keys(sections) as MarkdownSection[]).flatMap((section) =>
-        sections[section].getSlugs().map((slugs) => getPageMarkdownUrl({ slugs }, section).segments),
+        sections[section]
+            .getSlugs()
+            .map((slugs) => getPageMarkdownUrl({ slugs }, section).segments),
     );
 }
