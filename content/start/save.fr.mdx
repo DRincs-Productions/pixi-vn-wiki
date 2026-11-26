@@ -626,4 +626,44 @@ export async function quickSaveGameToIndexDB(): Promise<
 
 </Accordion>
 
+<Accordion title="Loading a save after a game update" id="game-update">
+
+:::warning
+
+This feature was introduced in version 1.9.10.
+
+:::
+
+Players keep their saves when you release a new version of your game, but the labels they saved in may have changed in the meantime. Pixi’VN handles this automatically when [`Game.restoreGameState`](/jsdoc/pixi-vn/index/namespaces/Game/functions/restoreGameState) is called: you don't need to write any migration code.
+
+Each save stores, for every opened label, the index of the current step **and a fingerprint (sha1) of that step's code**. When the save is loaded, every opened label is compared with the version of the label in the current release:
+
+| What changed since the save                                                                  | What happens on load                                                                                                                                                                                                                                                                                       |
+| -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Nothing, or only steps the player has already passed                                         | The save is restored exactly as it was.                                                                                                                                                                                                                                                                    |
+| Steps were added or removed **before** the current step                                      | The current step is found by its fingerprint and the player resumes from it, without repeating or skipping any step.                                                                                                                                                                                       |
+| The current step was changed or removed, or a label the player was in was deleted or renamed | Pixi’VN goes back through the save's <DynamicLink href="/start/history">history</DynamicLink> to the most recent step that still exists unchanged. This happens internally: storage, canvas and sound are restored only once, directly to that step, and the next step the player sees is the new content. |
+| As above, but the history doesn't go back far enough                                         | Only the narration position is repaired: deleted labels are closed, and a changed current step runs the next time the player continues.                                                                                                                                                                    |
+| Nothing valid is left (for example, the first label of the story was deleted)                | The error handlers receive a `PixiError` with code `"obsolete_save"`, and no label is left open.                                                                                                                                                                                                           |
+
+How far Pixi’VN can go back depends on the history saved with the game: see [`stepHistory.stepLimitSaved`](/jsdoc/pixi-vn/index/interfaces/HistoryManagerInterface#steplimitsaved).
+
+You can handle the last case with [`Game.addOnError`](/jsdoc/pixi-vn/index/namespaces/Game/functions/addOnError), for example to tell the player that the save is no longer compatible and send them back to the main menu:
+
+```ts title="main.ts"
+import { Game, PixiError } from "@drincs/pixi-vn";
+
+Game.addOnError((error) => {
+    if (error instanceof PixiError && error.code === "obsolete_save") {
+        showObsoleteSaveMessage();
+    }
+});
+```
+
+<Callout type="warn">
+Renaming a label changes its id, so it counts as deleting it. Keep label ids stable across releases.
+</Callout>
+
+</Accordion>
+
 </Accordions>
