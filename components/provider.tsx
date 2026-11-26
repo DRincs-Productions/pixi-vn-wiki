@@ -1,6 +1,7 @@
 "use client";
 import SearchDialog from "@/components/search";
 import { useBrowserLanguage } from "@/hooks/useBrowserLanguage";
+import { isLightDev } from "@/lib/dev-mode";
 import { locales } from "@/lib/shared";
 import { translations } from "@/messages/translations";
 import { RootProvider } from "fumadocs-ui/provider/next";
@@ -15,7 +16,8 @@ export function Provider({ children, locale }: { children: ReactNode; locale?: s
             i18n={{
                 locale: locale || "en",
                 onLocaleChange: changeLanguage,
-                locales: locales,
+                // only English in light local development (see `lib/dev-mode.ts`)
+                locales: isLightDev ? locales.filter((l) => l.locale === "en") : locales,
                 translations: translations[locale as string],
             }}
         >

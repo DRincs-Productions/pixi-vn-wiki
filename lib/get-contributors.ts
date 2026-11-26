@@ -1,3 +1,4 @@
+import { isLightDev } from "@/lib/dev-mode";
 import { kofiApiUrl } from "@/lib/shared";
 
 export interface Contributor {
@@ -7,6 +8,8 @@ export interface Contributor {
 }
 
 async function fetchContributors(owner: string, repo: string): Promise<Contributor[]> {
+    // no remote data in light local development (see `lib/dev-mode.ts`)
+    if (isLightDev) return [];
     try {
         const headers = new Headers();
         if (process.env.GITHUB_TOKEN)
@@ -63,7 +66,7 @@ interface CrowdinMember {
 export async function fetchCrowdinTranslators(): Promise<Translator[]> {
     const token = process.env.CROWDIN_TOKEN;
     const projectId = process.env.CROWDIN_PROJECT_ID;
-    if (!token || !projectId) return [];
+    if (isLightDev || !token || !projectId) return [];
 
     try {
         const response = await fetch(
@@ -102,6 +105,7 @@ export interface KofiSupporter {
 }
 
 export async function fetchKofiSupporters(): Promise<KofiSupporter[]> {
+    if (isLightDev) return [];
     try {
         const response = await fetch(kofiApiUrl, {
             next: { revalidate: 60 * 60 },

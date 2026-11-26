@@ -7,6 +7,7 @@ import { defineDocs } from "fumadocs-mdx/macro";
 import { icons } from "lucide-react";
 import { createElement } from "react";
 import remarkDirective from "remark-directive";
+import { isLightDev } from "./dev-mode";
 import { i18n } from "./i18n";
 import {
     faqRoute,
@@ -17,15 +18,14 @@ import {
     startRoute,
 } from "./shared";
 
-// `dir` must be a string literal: the macro is analyzed statically at build time.
+// The options of `defineDocs` cannot be spread and `dir`/`async` must be literals: the macro is analyzed statically.
 // Each collection sets its own `mdxOptions` (that replaces the default ones).
-const docsOptions = (mdxOptions: ReturnType<typeof applyMdxPreset>) => ({
-    schema: pageSchema,
-    postprocess: {
-        includeProcessedMarkdown: true,
-    },
-    mdxOptions,
-});
+// `async: true` compiles the content of a page only when it is used (`page.data.load()`), not every page at once:
+// it keeps the dev server fast and light, since every route imports this file.
+const postprocess = {
+    // only needed by the llms files; light local development uses the raw file (see `lib/dev-mode.ts`)
+    includeProcessedMarkdown: !isLightDev,
+};
 
 const defaultPreset = (
     remarkPlugins: Extract<
@@ -34,7 +34,9 @@ const defaultPreset = (
     >,
 ) =>
     applyMdxPreset({
-        rehypeCodeOptions: fullRehypeCodeOptions,
+        // syntax highlighting multiplies the size of the compiled pages (every token becomes an element):
+        // light local development shows plain code blocks (see `lib/dev-mode.ts`)
+        rehypeCodeOptions: isLightDev ? false : fullRehypeCodeOptions,
         remarkCodeTabOptions: {
             parseMdx: true,
         },
@@ -43,37 +45,60 @@ const defaultPreset = (
 
 const startDocs = defineDocs({
     dir: "content/start",
-    docs: docsOptions(defaultPreset([remarkDirective, remarkDirectiveAdmonition, remarkMdxFiles])),
+    docs: {
+        async: true,
+        schema: pageSchema,
+        postprocess,
+        mdxOptions: defaultPreset([remarkDirective, remarkDirectiveAdmonition, remarkMdxFiles]),
+    },
     meta: { schema: metaSchema },
 });
 
 const inkDocs = defineDocs({
     dir: "content/ink",
-    docs: docsOptions(defaultPreset([remarkDirective, remarkDirectiveAdmonition])),
+    docs: {
+        async: true,
+        schema: pageSchema,
+        postprocess,
+        mdxOptions: defaultPreset([remarkDirective, remarkDirectiveAdmonition]),
+    },
     meta: { schema: metaSchema },
 });
 
 const faqDocs = defineDocs({
     dir: "content/faq",
-    docs: docsOptions(defaultPreset([remarkDirective, remarkDirectiveAdmonition])),
+    docs: {
+        async: true,
+        schema: pageSchema,
+        postprocess,
+        mdxOptions: defaultPreset([remarkDirective, remarkDirectiveAdmonition]),
+    },
     meta: { schema: metaSchema },
 });
 
 const nqtrDocs = defineDocs({
     dir: "content/nqtr",
-    docs: docsOptions(defaultPreset([remarkDirective, remarkDirectiveAdmonition])),
+    docs: {
+        async: true,
+        schema: pageSchema,
+        postprocess,
+        mdxOptions: defaultPreset([remarkDirective, remarkDirectiveAdmonition]),
+    },
     meta: { schema: metaSchema },
 });
 
 const renpyDocs = defineDocs({
     dir: "content/renpy",
-    docs: docsOptions(
-        applyMdxPreset({
+    docs: {
+        async: true,
+        schema: pageSchema,
+        postprocess,
+        mdxOptions: applyMdxPreset({
             rehypeCodeOptions: false,
             remarkCodeTabOptions: false,
             remarkPlugins: [remarkDirective, remarkDirectiveAdmonition],
         }),
-    ),
+    },
     meta: { schema: metaSchema },
 });
 
@@ -201,7 +226,7 @@ function createSection<C extends LoaderConfig>(input: LoaderOutput<C>) {
     const output = llms(input, {
         renderPage: async (page) => `# ${page.data.title} (${page.url.replace(/^\/en\//, "/")})
 
-${await (page.data as { getText: (type: "processed" | "raw") => Promise<string> }).getText("processed")}`,
+${await (page.data as { getText: (type: "processed" | "raw") => Promise<string> }).getText(isLightDev ? "raw" : "processed")}`,
         // no per-folder `llms-full.txt` files: only the files of the pages are served (see `getPageMarkdownUrl`)
         section: () => false,
         // link to the markdown route of a page, e.g. `/en/ink/intro.md` -> `/llms.mdx/docs/ink/intro/content.md`

@@ -65,11 +65,12 @@ export default async function MDXPage({
     if (!page || !pageBase) notFound();
     const t = await getTranslations({ locale: lang ?? routing.defaultLocale, namespace: "common" });
 
-    const MDX = page.data.body;
+    // the collections are `async` (see `lib/source.ts`): the compiled content is loaded on demand
+    const { body: MDX, toc } = await page.data.load();
     const markdownUrl = getPageMarkdownUrl(page, folther).url;
 
     return (
-        <DocsPage toc={page.data.toc} full={page.data.full}>
+        <DocsPage toc={toc} full={page.data.full}>
             <DocsTitle>{page.data.title}</DocsTitle>
             <DocsDescription className="mb-0">{page.data.description}</DocsDescription>
             <div className="flex flex-row gap-2 items-center border-b pb-6">

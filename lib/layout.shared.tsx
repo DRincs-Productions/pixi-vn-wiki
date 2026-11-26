@@ -1,6 +1,7 @@
 import LogoImg from "@/app/icon.png";
 import LogoWordmarkImg from "@/public/logo.png";
 import { DiscordIcon, KofiIcon } from "@/components/ui/icons";
+import { isLightDev } from "@/lib/dev-mode";
 import { i18n } from "@/lib/i18n";
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import Image from "next/image";
@@ -33,7 +34,8 @@ export function baseOptions(variant: "home" | "docs" = "home"): BaseLayoutProps 
                 ),
         },
         githubUrl: `https://github.com/${gitConfig.user}/${gitConfig.repo}`,
-        i18n,
+        // no language switcher in light local development (see `lib/dev-mode.ts`)
+        i18n: isLightDev ? false : i18n,
         links: [
             {
                 type: "icon",
