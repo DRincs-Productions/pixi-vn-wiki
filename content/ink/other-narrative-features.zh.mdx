@@ -1,0 +1,102 @@
+---
+title: 其他叙事功能
+description: |
+  介绍 `pause` 和 `continue` 等功能，以及它们如何影响 `steps` 和对话流程。
+---
+
+## 暂停
+
+执行“# script”后，系统会执行 <DynamicLink href="/start/labels-flow#continue">`continue`</DynamicLink> 以进入下一个 `step`。例如，在这种情况下，你会看到图像和对话文本。
+
+```ink title="ink/start.ink"
+=== start ===
+# show image alien eggHead
+Hello, world!
+-> DONE
+```
+
+你可以使用 `# pause` 暂停进入下一个 `step`，并清除对话文本，直到流程恢复。当你需要显示图像或更改状态而不显示任何对话时，这很有用。
+
+语法如下：
+
+```ink tab="ink"
+# pause
+```
+
+```txt tab="CLI"
+# pause
+```
+
+例如：
+
+```ink tab="ink/start.ink"
+=== start ===
+# show image alien eggHead
+# pause
+Hello, world!
+-> DONE
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "eggHead",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<PixiVnExample path="ink/narration/pause" ink />
+
+## 继续
+
+通常，当对话后出现选项时，叙事会使用两个 `steps`：第一个仅显示对话，第二个则显示对话和选项。
+
+```ink title="ink/start.ink"
+=== start ===
+Who are we going to rescue: the kitten or the wizard?
+* [workplace_midground_kitten] 
+    -> END
+* [workplace_midground_wizard]
+    -> END
+```
+
+要在同一个 `step` 中显示对话和选项，请在对话行末尾添加 `<># continue`。这样可以省去一个额外的 `step`。
+
+```ink tab="ink"
+Who are we going to rescue: the kitten or the wizard?<># continue
+```
+
+```txt tab="CLI"
+<text><># continue
+
+where:
+    text = the dialogue text
+```
+
+例如：
+
+```ink title="ink/start.ink"
+=== start ===
+Who are we going to rescue: the kitten or the wizard?<># continue
+* [workplace_midground_kitten] 
+    -> END
+* [workplace_midground_wizard]
+    -> END
+```
+
+<PixiVnExample path="ink/narration/continue" ink />

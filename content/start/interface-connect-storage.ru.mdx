@@ -1,0 +1,128 @@
+---
+title: Переменные UI
+description: Как подключить компоненты UI к настройкам, доступным только для чтения игровым данным и доступным для чтения/записи переменным игрового хранилища с помощью TanStack Query/Store, а также как синхронизировать UI с помощью storage.setStorageHandler.
+---
+
+В UI Pixi’VN переменные, которые вы отображаете или редактируете, обычно делятся на три категории, и для каждой из них есть свой рекомендуемый подход. <DynamicLink href="/start/templates">Шаблоны</DynamicLink> Pixi’VN уже используют эти паттерны в `src/lib/stores/` и `src/lib/query/` — их стоит открыть как реальные, рабочие примеры.
+
+## Переменные настроек
+
+Такие параметры, как скорость текста, размер шрифта или задержка автопрокрутки, **не** являются частью <DynamicLink href="/start/storage">игрового хранилища</DynamicLink>: они должны сохраняться в каждом прохождении (и даже до создания сохранения), поэтому они хранятся в `localStorage`, отражаясь в [TanStack Store](https://tanstack.com/store/latest), чтобы компоненты могли реагировать на изменения.
+
+```ts title="src/lib/stores/auto-settings-store.ts"
+import { Store } from "@tanstack/store";
+
+type AutoSettingsStore = {
+    enabled: boolean;
+    time: number;
+};
+
+export namespace AutoSettings {
+    export const store = new Store<AutoSettingsStore>({
+        enabled: Boolean(localStorage.getItem("auto_forward_enabled") ?? false),
+        time: Number(localStorage.getItem("auto_forward_second") ?? 1),
+    });
+
+    export function setEnabled(value: boolean) {
+        localStorage.setItem("auto_forward_enabled", value.toString());
+        store.setState((state) => ({ ...state, enabled: value }));
+    }
+
+    export function setTime(value: number) {
+        localStorage.setItem("auto_forward_second", value.toString());
+        store.setState((state) => ({ ...state, time: value }));
+    }
+}
+```
+
+```tsx
+import { useSelector } from "@tanstack/react-store";
+import { AutoSettings } from "@/lib/stores/auto-settings-store";
+
+function AutoForwardToggle() {
+    const enabled = useSelector(AutoSettings.store, (state) => state.enabled);
+    return (
+        <Switch checked={enabled} onCheckedChange={AutoSettings.setEnabled} />
+    );
+}
+```
+
+## Игровые переменные только для чтения
+
+Для переменных, которые нужно только **отображать** (характеристику, флаг, фрагмент диалога), считывайте их напрямую из <DynamicLink href="/start/storage">игрового хранилища</DynamicLink> внутри `queryFn` из [TanStack Query](https://tanstack.com/query/latest).
+
+```ts
+import { useQuery } from "@tanstack/react-query";
+import { storage } from "@drincs/pixi-vn";
+
+export function useQueryAffection() {
+    return useQuery({
+        queryKey: ["affection_use_query_key"],
+        queryFn: async () => storage.get<number>("affection") ?? 0,
+    });
+}
+```
+
+Переменные игрового хранилища изменяются только во время <DynamicLink href="/start/labels#continue-and-go-back">нарративного шага (`step`) / go back</DynamicLink>, при запуске <DynamicLink href="/start/labels#run-a-label">нарративного узла (`label`)</DynamicLink> или при <DynamicLink href="/start/save#load">загрузке сохранения</DynamicLink> — Pixi’VN не может знать, что у вас есть запрос, зависящий от этих данных, поэтому ваш UI должен запросить у TanStack Query повторную загрузку данных после этих событий. Вместо того чтобы аннулировать каждый ключ запроса по отдельности, проще аннулировать всё сразу в нескольких местах вызова (после `narration.continue()`/`goNext`, `stepHistory.back()`, `narration.call()`/`jump`, а также после восстановления сохранения):
+
+```ts
+const queryClient = useQueryClient();
+
+narration.continue({}).then(() => {
+    queryClient.invalidateQueries();
+});
+```
+
+## Переменные игры для чтения и записи
+
+Для переменных, которые может изменять сам UI (выбранный вариант, переключатель, связанный с флагом квеста), используйте ту же обёртку TanStack Store, что и для настроек, но привяжите её к <DynamicLink href="/start/storage">игровому хранилищу</DynamicLink> вместо `localStorage`, чтобы значение сохранялось при сохранениях и `go back`:
+
+```ts
+import { storage } from "@drincs/pixi-vn";
+import { Store } from "@tanstack/store";
+
+const SELECTED_QUEST_KEY = "selectedQuestId";
+
+export namespace Memo {
+    export const store = new Store<{ selectedQuestId: string | undefined }>({
+        selectedQuestId: storage.get<string>(SELECTED_QUEST_KEY),
+    });
+
+    export function setSelectedQuestId(id: string | undefined) {
+        storage.set(SELECTED_QUEST_KEY, id);
+        store.setState((state) => ({ ...state, selectedQuestId: id }));
+    }
+}
+```
+
+Поскольку сеттер обновляет Store напрямую, UI автоматически остаётся синхронизированным для изменений, сделанных **через этот же сеттер** — ручное обновление не требуется.
+
+## Синхронизация UI с изменениями хранилища, сделанными в другом месте
+
+Паттерн Store, описанный выше, синхронизирует UI только тогда, когда сам UI вызывает `storage.set`. Если нарративный узел (`label`), нарративный шаг (`step`), или любая другая часть игры изменяет ту же переменную игрового хранилища, ничто не сообщает Store — или `useQuery`, читающему этот ключ, — о необходимости обновления.
+
+Чтобы перехватывать **каждую** запись в игровое хранилище в одном месте, используйте [`storage.setStorageHandler`](/jsdoc/pixi-vn/index/interfaces/StorageManagerInterface#setstoragehandler). Он позволяет регистрировать колбэки, которые срабатывают при установке или удалении переменной, а также при истечении срока действия временной переменной — в любом месте игры, а не только в UI:
+
+```ts
+import { storage } from "@drincs/pixi-vn";
+
+storage.setStorageHandler({
+    onSetVariable: (key, value) => {
+        queryClient.invalidateQueries();
+    },
+    onRemoveVariable: (key) => {
+        queryClient.invalidateQueries();
+    },
+    onClearOldTempVariable: (key) => {
+        queryClient.invalidateQueries();
+    },
+});
+```
+
+:::warning[Только один обработчик одновременно]
+
+`setStorageHandler` не накапливает обработчики — внутри хранится только один, и каждый вызов **заменяет** предыдущий. Если вызывать его из нескольких файлов, реально сработает только последний зарегистрированный обработчик; более ранние молча перестают срабатывать.Устанавливайте его **один раз**, в одном месте рядом с запуском приложения (например, в вашем корневом провайдере), с единственным обработчиком, который делает всё необходимое для UI (аннулирует запросы, обновляет stores и т.д.). Поскольку он срабатывает при каждой записи в хранилище по всей игре, предпочитайте этот широкий, централизованный обработчик множеству точечных — его легко анализировать, и нет риска, что один перезапишет другой.
+
+Устанавливайте его **один раз**, в одном месте рядом с запуском приложения (например, в вашем корневом провайдере), с единственным обработчиком, который делает всё необходимое для UI (аннулирует запросы, обновляет stores и т.д.). Поскольку он срабатывает при каждой записи в хранилище по всей игре, предпочитайте этот широкий, централизованный обработчик множеству точечных — его легко анализировать, и нет риска, что один перезапишет другой.
+
+:::

@@ -1,0 +1,128 @@
+---
+title: UI 변수
+description: UI 구성 요소를 설정(settings), 읽기 전용 게임 데이터, 그리고 TanStack Query/Store를 사용하는 읽기/쓰기 게임 저장소 변수에 연결하는 방법과, storage.setStorageHandler를 사용하여 UI를 동기화된 상태로 유지하는 방법.
+---
+
+Pixi’VN UI에서 표시하거나 편집하는 변수는 일반적으로 세 가지 범주로 나뉘며, 각 범주마다 권장되는 패턴이 다릅니다. Pixi’VN <DynamicLink href="/start/templates">템플릿</DynamicLink>은 이미 `src/lib/stores/`와 `src/lib/query/` 전반에서 이러한 패턴을 사용하고 있으므로, 실제로 동작하는 예제로 열어볼 가치가 있습니다.
+
+## 설정 변수
+
+텍스트 속도, 글꼴 크기, 자동 진행 지연 시간 같은 항목은 <DynamicLink href="/start/storage">게임 저장소</DynamicLink>의 일부가 **아닙니다**: 이러한 값은 모든 플레이스루에 걸쳐(심지어 세이브가 존재하기 전부터도) 유지되어야 하므로 `localStorage`에 저장되며, 구성 요소가 변경 사항에 반응할 수 있도록 [TanStack Store](https://tanstack.com/store/latest)에 미러링됩니다.
+
+```ts title="src/lib/stores/auto-settings-store.ts"
+import { Store } from "@tanstack/store";
+
+type AutoSettingsStore = {
+    enabled: boolean;
+    time: number;
+};
+
+export namespace AutoSettings {
+    export const store = new Store<AutoSettingsStore>({
+        enabled: Boolean(localStorage.getItem("auto_forward_enabled") ?? false),
+        time: Number(localStorage.getItem("auto_forward_second") ?? 1),
+    });
+
+    export function setEnabled(value: boolean) {
+        localStorage.setItem("auto_forward_enabled", value.toString());
+        store.setState((state) => ({ ...state, enabled: value }));
+    }
+
+    export function setTime(value: number) {
+        localStorage.setItem("auto_forward_second", value.toString());
+        store.setState((state) => ({ ...state, time: value }));
+    }
+}
+```
+
+```tsx
+import { useSelector } from "@tanstack/react-store";
+import { AutoSettings } from "@/lib/stores/auto-settings-store";
+
+function AutoForwardToggle() {
+    const enabled = useSelector(AutoSettings.store, (state) => state.enabled);
+    return (
+        <Switch checked={enabled} onCheckedChange={AutoSettings.setEnabled} />
+    );
+}
+```
+
+## 읽기 전용 게임 변수
+
+**표시**만 하면 되는 변수(스탯, 플래그, 대사 등)의 경우 [TanStack Query](https://tanstack.com/query/latest)의 `queryFn` 안에서 <DynamicLink href="/start/storage">게임 저장소</DynamicLink>로부터 바로 읽어옵니다.
+
+```ts
+import { useQuery } from "@tanstack/react-query";
+import { storage } from "@drincs/pixi-vn";
+
+export function useQueryAffection() {
+    return useQuery({
+        queryKey: ["affection_use_query_key"],
+        queryFn: async () => storage.get<number>("affection") ?? 0,
+    });
+}
+```
+
+게임 저장소 변수는 <DynamicLink href="/start/labels#continue-and-go-back">내러티브 단계 (`step`) / go back</DynamicLink> 중이거나, <DynamicLink href="/start/labels#run-a-label">내러티브 노드 (`label`)</DynamicLink>를 실행할 때, 또는 <DynamicLink href="/start/save#load">세이브를 불러올 때</DynamicLink>에만 변경됩니다 — Pixi’VN은 해당 데이터에 의존하는 쿼리가 있는지 알 방법이 없으므로, UI 쪽에서 이러한 이벤트 이후 TanStack Query에 다시 가져오기를 요청해야 합니다. 쿼리 키를 하나씩 무효화하는 대신, 몇 군데의 호출 지점(`narration.continue()`/`goNext` 이후, `stepHistory.back()` 이후, `narration.call()`/`jump` 이후, 그리고 세이브 복원 이후)에서 한 번에 모두 무효화하는 편이 더 간단합니다:
+
+```ts
+const queryClient = useQueryClient();
+
+narration.continue({}).then(() => {
+    queryClient.invalidateQueries();
+});
+```
+
+## 읽기/쓰기 게임 변수
+
+UI 자체에서 변경할 수 있는 변수(선택된 옵션, 퀘스트 플래그에 연결된 토글 등)의 경우, 설정에서와 동일한 TanStack Store 래퍼를 사용하되 `localStorage` 대신 <DynamicLink href="/start/storage">게임 저장소</DynamicLink>를 사용하여 값이 세이브와 `go back` 이후에도 유지되도록 합니다:
+
+```ts
+import { storage } from "@drincs/pixi-vn";
+import { Store } from "@tanstack/store";
+
+const SELECTED_QUEST_KEY = "selectedQuestId";
+
+export namespace Memo {
+    export const store = new Store<{ selectedQuestId: string | undefined }>({
+        selectedQuestId: storage.get<string>(SELECTED_QUEST_KEY),
+    });
+
+    export function setSelectedQuestId(id: string | undefined) {
+        storage.set(SELECTED_QUEST_KEY, id);
+        store.setState((state) => ({ ...state, selectedQuestId: id }));
+    }
+}
+```
+
+세터(setter)가 Store를 직접 업데이트하기 때문에, **바로 이 세터를 통해** 이루어진 변경에 대해서는 UI가 자동으로 동기화되며 별도의 수동 새로고침이 필요하지 않습니다.
+
+## 다른 곳에서 이루어진 저장소 변경 사항과 UI를 동기화하기
+
+위의 Store 패턴은 UI 자신이 `storage.set`을 호출하는 경우에만 UI를 동기화된 상태로 유지합니다. 내러티브 노드 (`label`), 내러티브 단계 (`step`), 또는 게임의 다른 부분이 동일한 게임 저장소 변수를 변경하더라도, 해당 Store나 그 키를 읽는 `useQuery`에는 아무런 새로고침 신호도 전달되지 않습니다.
+
+**모든** 게임 저장소 쓰기 작업을 한곳에서 포착하려면 [`storage.setStorageHandler`](/jsdoc/pixi-vn/index/interfaces/StorageManagerInterface#setstoragehandler)를 사용하세요. 이를 통해 변수가 설정되거나 제거되거나, 임시 변수가 만료될 때마다 실행되는 콜백을 등록할 수 있습니다 — UI뿐 아니라 게임 어디에서든 말이죠:
+
+```ts
+import { storage } from "@drincs/pixi-vn";
+
+storage.setStorageHandler({
+    onSetVariable: (key, value) => {
+        queryClient.invalidateQueries();
+    },
+    onRemoveVariable: (key) => {
+        queryClient.invalidateQueries();
+    },
+    onClearOldTempVariable: (key) => {
+        queryClient.invalidateQueries();
+    },
+});
+```
+
+:::warning[한 번에 하나의 핸들러만]
+
+`setStorageHandler`는 핸들러를 누적(stack)하지 않습니다 — 내부적으로 단 하나만 유지하며, 호출할 때마다 이전 핸들러를 **교체**합니다. 여러 파일에서 이를 호출하면 마지막으로 등록된 핸들러만 실제로 실행되며, 이전 핸들러들은 아무 알림 없이 더 이상 실행되지 않습니다.앱 시작 시점과 가까운 한 곳(예: 루트 프로바이더)에서 **한 번만** 설정하고, UI에 필요한 모든 작업(쿼리 무효화, Store 업데이트 등)을 수행하는 하나의 핸들러를 사용하세요. 게임 전체의 모든 저장소 쓰기 작업마다 다시 실행되므로, 여러 개의 개별적인 핸들러를 여기저기에 흩어 두기보다는 이렇게 폭넓고 중앙 집중화된 핸들러를 하나 사용하는 편이 좋습니다 — 이해하기 쉽고, 서로 덮어쓸 위험도 없습니다.
+
+앱 시작 시점과 가까운 한 곳(예: 루트 프로바이더)에서 **한 번만** 설정하고, UI에 필요한 모든 작업(쿼리 무효화, Store 업데이트 등)을 수행하는 하나의 핸들러를 사용하세요. 게임 전체의 모든 저장소 쓰기 작업마다 다시 실행되므로, 여러 개의 개별적인 핸들러를 여기저기에 흩어 두기보다는 이렇게 폭넓고 중앙 집중화된 핸들러를 하나 사용하는 편이 좋습니다 — 이해하기 쉽고, 서로 덮어쓸 위험도 없습니다.
+
+:::

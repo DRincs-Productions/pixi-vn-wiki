@@ -1,0 +1,247 @@
+---
+title: Knots
+description: |
+  Pixi’VN에서 knot와 label이 작동하는 방식, ink 스크립트나 JavaScript에서 실행하는 방법, 기본 ink와 Pixi’VN 통합의 차이점을 알아보세요.
+---
+
+<Accordions>
+
+<Accordion title="`knot`이란 무엇인가요?" id="what-is-a-knot">
+
+[공식 문서](https://www.inklestudios.com/ink/web-tutorial/)에 설명된 대로, 스토리는 서로 연결된 여러 섹션으로 구성되며, ***ink* 용어**로 이러한 섹션을 `knots`라고 부릅니다. ***ink***&#xC5D0;서는 `knot` 이름 왼쪽에 등호를 최소 두 개 넣어 `knot`의 시작을 나타냅니다. 오른쪽에도 등호를 넣을 수 있지만 필수는 아닙니다.
+
+```ink tab="ink"
+=== london ===
+```
+
+```txt tab="CLI"
+=== <knot_name> ===
+
+where:
+    knot_name = the name of the knot
+```
+
+</Accordion>
+
+<Accordion title="`label`과 `knot`에 차이가 있나요?" id="label-vs-knot">
+
+아니요, 둘은 같습니다. Pixi’VN에서 ***ink***&#xB85C; `knot`을 만들면 내부적으로 `label`이 생성되어 레지스트리에 저장됩니다.
+
+</Accordion>
+
+</Accordions>
+
+## knot 실행하기
+
+`knot`을 실행하려면 다음 방법을 사용할 수 있습니다:
+
+<Accordions>
+
+<Accordion title="Diverts `-> start` (`label`로 이동)" id="jump">
+
+Divert 연산자를 사용하면 `-> start` 구문으로 `knot`을 실행할 수 있습니다. 이는 Pixi’VN 라이브러리의 <DynamicLink href="/start/labels#jump-to-a-label">`jump` 기능</DynamicLink>에 해당합니다.
+
+```ink tab="ink"
+-> after
+```
+
+```txt tab="CLI"
+-> <knot_name>
+
+where:
+    knot_name = the name of the knot to jump to
+```
+
+예를 들어:
+
+```ink title="ink/start.ink"
+=== start ===
+Start
+-> after
+
+=== after ===
+After
+End
+-> DONE
+```
+
+<PixiVnExample path="ink/narration/jump" ink />
+
+</Accordion>
+
+<Accordion title="Tunnels `-> start ->` 또는 Threads `<- start`  (`label` 호출)" id="call">
+
+Tunnels 연산자를 사용하면 `-> start ->` 구문으로 `knot`을 실행할 수 있습니다. 이는 Pixi’VN 라이브러리의 <DynamicLink href="/start/labels#call-to-a-label">`call` 기능</DynamicLink>에 해당합니다.
+
+```ink tab="ink"
+-> guard_dialogue ->
+```
+
+```txt tab="CLI"
+-> <knot_name> ->
+
+where:
+    knot_name = the name of the knot to call
+```
+
+또는 Threads 구문을 사용해 `\<-` 기호 뒤에 `knot` 이름을 작성할 수 있습니다:
+
+```ink tab="ink"
+<- guard_dialogue
+```
+
+```txt tab="CLI"
+<- <knot_name>
+
+where:
+    knot_name = the name of the knot to call
+```
+
+:::tip[Threads]
+
+**기본 ink**와 달리 **ink + Pixi’VN 통합**에서는 "Threads"를 지원하지 않습니다. 따라서 `\<-` 기호는 "Thread" 연산자가 아니라 `knot` 호출을 의미합니다.
+
+:::
+
+:::tip
+
+간단하게 하기 위해 **ink + Pixi’VN 통합**에서는 `->->`와 `-> DONE`이 모두 `label`을 올바르게 종료하며, 두 구문은 동일하게 동작합니다.
+
+:::
+
+예를 들어:
+
+```ink title="ink/start.ink"
+VAR reputation = 0
+
+-> start
+=== start ===
+You are in the square.
+
+* [Talk to the guard]
+    -> guard_dialogue ->
+    You return to the square.
+    -> start
+    You don't see this line because you are sent back to the city before.
+
+* {reputation >= 1} [Ask for a favor]
+    The guard helps you.
+    -> END
+
+=== guard_dialogue ===
+The guard looks at you.
+
+* [Greet]
+    "Hello citizen."
+    ~ reputation += 1
+->->
+
+* [Insult]
+    "Hey you!"
+    ~ reputation -= 1
+
+->->
+```
+
+<PixiVnExample path="ink/narration/call" ink />
+
+</Accordion>
+
+</Accordions>
+
+## 기타 기능
+
+<Accordions>
+
+<Accordion title="매개변수" id="parameters">
+
+특히 유용한 임시 변수의 형태는 **매개변수**입니다. 모든 knot 또는 stitch는 값을 매개변수로 받을 수 있으며, 이 값은 해당 knot 내부에서 지역 임시 변수로 취급됩니다:
+
+```ink title="ink/start.ink"
+=== start ===
+*   [Accuse Hastings]
+        -> accuse("Hastings")
+*   [Accuse Mrs Black]
+        -> accuse("Claudia")
+*   [Accuse myself]
+        -> accuse("myself")
+
+=== accuse(who) ===
+    "I accuse {who}!" Poirot declared.
+    "Really?" Japp replied. "{who == "myself":You did it?|{who}?}"
+    "And why not?" Poirot shot back.
+```
+
+한 knot나 stitch에서 다른 knot나 stitch로 임시 값을 전달하려면 매개변수를 사용하는 것이 올바른 방법입니다. 일반적인 `temp` 변수는 선언된 stitch 밖에서는 접근할 수 없기 때문입니다.
+
+</Accordion>
+
+<Accordion title="매개변수를 사용하는 재귀적 knots" id="recursive-knots-with-parameters">
+
+임시 변수(매개변수 포함)는 재귀적인 knot에서도 안전하게 사용할 수 있습니다:
+
+```ink title="ink/start.ink"
+-> add_one_to_one_hundred(0, 1)
+
+=== add_one_to_one_hundred(total, x) ===
+    ~ total = total + x
+    { x == 100:
+        -> finished(total)
+    - else:
+        -> add_one_to_one_hundred(total, x + 1)
+    }
+
+=== finished(total) ===
+    "The result is {total}!" you announce.
+    -> END
+```
+
+</Accordion>
+
+<Accordion title="이동 대상을 매개변수로 전달하기" id="sending-divert-targets-as-parameters">
+
+knot의 주소도 매개변수로 전달할 수 있습니다. `->`를 사용하여 매개변수가 이동 대상임을 나타냅니다:
+
+```ink title="ink/start.ink"
+=== sleeping_in_hut ===
+    You lie down and close your eyes.
+    -> generic_sleep(-> waking_in_the_hut)
+
+=== generic_sleep(-> waking) ===
+    You sleep perchance to dream etc. etc.
+    -> waking
+
+=== waking_in_the_hut ===
+    You get back to your feet, ready to continue your journey.
+```
+
+</Accordion>
+
+<Accordion title="동일한 `step`에서 이동하기" id="diverting-in-the-same-step">
+
+기본적으로 다른 `knot`으로 이동하는 동작은 다음 `step`에서 실행되므로, 이동한 대상의 내용은 흐름이 계속된 후에만 표시됩니다:
+
+```ink title="ink/start.ink"
+=== start ===
+It is, first and foremost...
+-> add2
+
+=== add2 ===
+...a story about the twelve labors of Hercules.
+-> DONE
+```
+
+이동 구문을 텍스트 바로 뒤에 줄바꿈 없이 배치하면 대상 `knot`이 앞선 텍스트와 동일한 `step`에서 실행되므로 둘 다 함께 표시됩니다:
+
+```ink title="ink/start.ink"
+=== start ===
+It is, first and foremost...-> add2
+
+=== add2 ===
+...a story about the twelve labors of Hercules.
+-> DONE
+```
+
+</Accordion>
+
+</Accordions>

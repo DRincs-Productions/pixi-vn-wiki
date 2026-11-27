@@ -1,0 +1,112 @@
+---
+title: 스토리지
+description: Keyv 연동을 포함하여 Pixi’VN에서 영구 변수와 임시 변수를 저장, 조회 및 관리하는 방법.
+---
+
+<Accordions>
+
+<Accordion title="게임 스토리지란 무엇인가요?" id="what-is-storage">
+
+게임 스토리지는 게임 세션 간에 유지하고 싶은 변수를 저장할 수 있는 공간입니다.
+
+</Accordion>
+
+</Accordions>
+
+변수가 게임 메모리에 저장되어 있지 않으면, <DynamicLink href="/start/save#load">저장된 게임을 불러오거나</DynamicLink> <DynamicLink href="/start/labels-flow#go-back">이전으로 돌아갈 때</DynamicLink> 엔진이 해당 변수를 처리할 수 없다는 점을 이해하는 것이 중요합니다.
+
+또한 게임 아카이브에는 `class`와 `function`을 제외한(JSON으로 변환할 수 없기 때문에) 모든 유형의 변수, 예를 들어 `string`, `number`, `boolean`, `object`, `array` 등을 저장할 수 있습니다. "플래그"(불리언 값)를 저장하려면, 매우 높은 성능의 플래그 관리 시스템인 <DynamicLink href="/start/flags">플래그 기능</DynamicLink>을 사용하는 것을 권장합니다.
+
+<Callout title="ink" type="info">
+
+이 메서드는 *ink* 문법과 함께 사용할 수 있습니다. 자세한 내용은 <DynamicLink href="/ink/storage">여기</DynamicLink>에서 확인하세요.
+
+</Callout>
+
+## 설정
+
+게임 스토리지에 변수를 설정하려면 [`storage.set`](/jsdoc/pixi-vn/index/interfaces/StorageManagerInterface#set)을 사용하세요.
+
+```ts
+import { storage } from "@drincs/pixi-vn";
+
+storage.set("myVariable", 42);
+```
+
+## 가져오기
+
+게임 스토리지에서 변수를 가져오려면 [`storage.get`](/jsdoc/pixi-vn/index/interfaces/StorageManagerInterface#get)을 사용하세요.
+
+```ts
+import { storage } from "@drincs/pixi-vn";
+
+const myVariable = storage.get("myVariable");
+```
+
+## 제거
+
+게임 스토리지에서 변수를 제거하려면 [`storage.remove`](/jsdoc/pixi-vn/index/interfaces/StorageManagerInterface#remove)을 사용하세요.
+
+```ts
+import { storage } from "@drincs/pixi-vn";
+
+storage.remove("myVariable");
+```
+
+## 기타 기능
+
+<Accordions>
+
+<Accordion title="시스템 변수" id="system-variables">
+
+게임 스토리지에는 게임 엔진이 사용하는 몇 가지 시스템 변수가 있습니다. 모든 시스템 변수는 `___` 접두사로 시작합니다.
+따라서 사용자 변수에 이 접두사를 사용하지 않도록 주의하세요.
+
+[`SYSTEM_RESERVED_STORAGE_KEYS`](/jsdoc/pixi-vn/index/variables/SYSTEM_RESERVED_STORAGE_KEYS) 상수에서 모든 시스템 변수 키를 가져올 수 있습니다.
+
+</Accordion>
+
+<Accordion title="Keyv" id="keyv">
+
+전체 스토리지 시스템은 네이티브 JavaScript 객체인 `Map`을 사용하여 개발되었으므로, Keyv를 사용하여 게임 스토리지와 상호작용할 수 있습니다.
+
+**Keyv란 무엇인가요?** Keyv는 간단한 키-값 스토리지입니다. 매우 사용하기 쉬운 시스템으로, Node.js 커뮤니티에서 매우 인기가 있습니다. Keyv는 [Cacheable](https://cacheable.org/)(Keyv 기반의 Node.js용 캐싱)과 같은 다른 라이브러리와 결합할 수 있습니다. 자세한 내용은 [Keyv 웹사이트](https://keyv.org/)에서 확인할 수 있습니다.
+
+**Pixi’VN에서 Keyv를 사용하는 방법은?** Keyv의 새 인스턴스를 생성하고 스토리지 객체를 매개변수로 전달하여 Pixi’VN에서 Keyv를 사용할 수 있습니다.
+
+```ts
+import { storage } from "@drincs/pixi-vn";
+import Keyv from "keyv";
+
+const keyvStorage = new Keyv({ store: storage.base });
+
+keyvStorage.get<string>("myValue").then((value) => {
+    console.log(value);
+});
+```
+
+</Accordion>
+
+<Accordion title="기본 스토리지 변수" id="default-storage-variables">
+
+스토리지 변수의 초기값을 설정할 수 있습니다.
+
+이러한 변수는 다음과 같은 특성을 가집니다.
+
+* 제거되거나 undefined 또는 null로 설정되면, 값은 자동으로 기본값으로 설정됩니다(따라서 절대 undefined나 null이 될 수 없습니다).
+* 기본값은 저장 데이터에 저장되지 않으므로, 아무 문제 없이 버전 간에 변경할 수 있습니다.
+
+[`storage.default`](/jsdoc/pixi-vn/index/interfaces/StorageManagerInterface#default) 객체를 사용하여 기본 스토리지 변수를 설정할 수 있습니다.
+
+```ts
+import { storage } from "@drincs/pixi-vn";
+
+storage.default = {
+    myVariable: 42,
+    anotherVariable: "Hello, world!",
+};
+```
+
+</Accordion>
+
+</Accordions>

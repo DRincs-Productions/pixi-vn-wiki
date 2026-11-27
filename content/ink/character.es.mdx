@@ -1,0 +1,248 @@
+---
+title: Personajes
+description: |
+  Aprende a definir, utilizar y personalizar personajes en los scripts ink de Pixi’VN, incluida su asociación a diálogos, la sustitución de nombres, el cambio de nombre y las emociones.
+---
+
+:::tip
+
+Antes de leer esta sección, te recomendamos consultar <DynamicLink href="/start/character#initialize">cómo crear y utilizar personajes en Pixi’VN</DynamicLink>.
+
+:::
+
+## Uso
+
+### Asociar un personaje a un diálogo
+
+Puedes asociar un personaje a un diálogo en ***ink***. To do this, you need to use the following syntax:
+
+```ink tab="ink"
+mc: Hello
+```
+
+```txt tab="CLI"
+<character_id>: <text>
+
+where:
+    character_id = character identifier
+    text = any text message
+```
+
+Por ejemplo:
+
+```ink tab="ink/start.ink"
+=== start ===
+mc: Hello, I'm Liam.
+-> DONE
+```
+
+```ts tab="values/characters.ts"
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
+
+export const mc = new CharacterBaseModel("mc", {
+    name: "Liam",
+});
+
+RegisteredCharacters.add(mc);
+```
+
+<PixiVnExample path="ink/character/dialogue" ink />
+
+### Utilizar el nombre del personaje en el texto de los diálogos
+
+Puedes utilizar el nombre del personaje en los diálogos. To do this, you need to use the following syntax:
+
+```ink tab="ink"
+Hello, [mc].
+```
+
+```txt tab="CLI"
+[<character_id>]
+
+where:
+    character_id = character identifier
+```
+
+Por ejemplo:
+
+```ink tab="ink/start.ink"
+=== start ===
+Hello, [mc].
+-> DONE
+```
+
+```ts tab="values/characters.ts"
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
+
+export const mc = new CharacterBaseModel("mc", {
+    name: "Liam",
+});
+
+RegisteredCharacters.add(mc);
+```
+
+<Accordions>
+
+<Accordion title="Implementación" id="replace-implementation">
+
+Para utilizar esta sintaxis, debes registrar una <DynamicLink href="/ink/replacement">sustitución de texto</DynamicLink> que reemplace el identificador del personaje por su nombre.
+
+:::tip[Plantillas]
+
+Esta sustitución de texto ya está incluida en todas las plantillas.
+
+:::
+
+Por ejemplo, puedes añadir la siguiente sustitución de texto:
+
+```ts title="content/ink/text-replaces.ts"
+import { TextReplaces } from "@drincs/pixi-vn-ink";
+import { RegisteredCharacters } from "@drincs/pixi-vn/characters";
+
+TextReplaces.add((key) => RegisteredCharacters.get(key)?.name, {
+    name: "character name",
+    validation: "characterId",
+    type: "after-translation",
+    i18nInterpolation: true,
+    description:
+        "Replaces a character ID with the character's name in the game.",
+});
+```
+
+</Accordion>
+
+</Accordions>
+
+<PixiVnExample path="ink/character/dialogue-text" ink />
+
+## Editar
+
+Puedes editar la información de un personaje en ***ink***; por ejemplo, puedes cambiar su nombre. To do this, you need to use the following syntax:
+
+```ink tab="ink"
+# rename mc Liam
+```
+
+```txt tab="CLI"
+# rename <character_id> <new_name>
+
+where:
+    character_id = character identifier
+    new_name = the new name for the character
+```
+
+Por ejemplo:
+
+```ink tab="ink/start.ink"
+=== start ===
+mc: Hello, I'm [mc].
+# request input string
+mc: My name is:
+# rename mc {_input_value_}
+mc: My name is [mc]
+-> DONE
+```
+
+```ts tab="values/characters.ts"
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
+
+export const mc = new CharacterBaseModel("mc", {
+    name: "Liam",
+});
+
+RegisteredCharacters.add(mc);
+```
+
+<Accordions>
+
+<Accordion title="Implementación" id="rename-implementation">
+
+Para utilizar esta sintaxis, debes registrar un <DynamicLink href="/ink/hashtag">comando hashtag</DynamicLink> que cambie el nombre del personaje.
+
+:::tip[Plantillas]
+
+Este comando hashtag ya está incluido en todas las plantillas.
+
+:::
+
+Por ejemplo, puedes añadir el siguiente comando hashtag:
+
+```ts title="content/ink/hashtag-commands.ts"
+import { characterIdsEnum } from "@/pixi-vn.keys.gen";
+import { HashtagCommands } from "@drincs/pixi-vn-ink";
+import { RegisteredCharacters } from "@drincs/pixi-vn/characters";
+import zod from "zod";
+
+HashtagCommands.add(
+    async (script) => {
+        const character = RegisteredCharacters.get(script[1]);
+        if (character) {
+            character.name = script[2];
+        }
+        return true;
+    },
+    {
+        name: "character rename",
+        description: `Renames a character in the game.
+
+\`\`\`ink
+# rename <characterId> <newName>
+\`\`\``,
+        validation: zod.tuple([
+            zod.literal("rename"),
+            zod.enum(characterIdsEnum),
+            zod.string(),
+        ]),
+    },
+);
+```
+
+</Accordion>
+
+</Accordions>
+
+<PixiVnExample path="ink/character/edit" ink />
+
+## Emociones de los personajes
+
+Puedes utilizar las <DynamicLink href="/start/character#character-emotions">emociones de los personajes</DynamicLink> en ***ink***. Para hacerlo, solo necesitas utilizar un identificador especial compuesto por el identificador del personaje, el separador `@` y la emoción:
+
+```ink tab="ink"
+mc@happy: Hi, I'm Liam. I'm very happy today.
+```
+
+```txt tab="CLI"
+<character_id>@<emotion>: <text>
+
+where:
+    character_id = character identifier
+    emotion = the emotion defined in JavaScript/TypeScript
+    text = any text message
+```
+
+Por ejemplo:
+
+```ink tab="ink/start.ink"
+=== start ===
+mc@happy: Hi, I'm Liam. I'm very happy today.
+-> DONE
+```
+
+```ts tab="values/characters.ts"
+import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
+
+export const mc = new CharacterBaseModel("mc", {
+    name: "Liam",
+});
+
+export const mcHappy = new CharacterBaseModel(
+    { id: "mc", emotion: "happy" },
+    {
+        name: "Liam happy",
+    },
+);
+
+RegisteredCharacters.add([mc, mcHappy]);
+```
+
+<PixiVnExample path="ink/character/emotions" ink />

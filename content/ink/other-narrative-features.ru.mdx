@@ -1,0 +1,102 @@
+---
+title: Другие возможности повествования
+description: |
+  Описывает такие возможности, как `pause` и `continue`, и их влияние на `steps` и ход диалогов.
+---
+
+## Пауза
+
+После выполнения «# script» система выполняет <DynamicLink href="/start/labels-flow#continue">`continue`</DynamicLink>, чтобы перейти к следующему `step`. Например, в этом случае вы увидите изображение и текст диалога.
+
+```ink title="ink/start.ink"
+=== start ===
+# show image alien eggHead
+Hello, world!
+-> DONE
+```
+
+Вы можете использовать `# pause`, чтобы остановить переход к следующему `step` и очистить текст диалога до возобновления повествования. Это полезно, когда нужно показать изображение или изменить состояние, не отображая диалог.
+
+Синтаксис:
+
+```ink tab="ink"
+# pause
+```
+
+```txt tab="CLI"
+# pause
+```
+
+Например:
+
+```ink tab="ink/start.ink"
+=== start ===
+# show image alien eggHead
+# pause
+Hello, world!
+-> DONE
+```
+
+```ts tab="assets/manifest.ts"
+import { AssetsManifest } from "@drincs/pixi-vn";
+
+/**
+ * Manifest for the assets used in the game.
+ * You can read more about the manifest here: https://pixijs.com/8.x/guides/components/assets#loading-multiple-assets
+ */
+const manifest: AssetsManifest = {
+    bundles: [
+        {
+            name: "start",
+            assets: [
+                {
+                    alias: "eggHead",
+                    src: "https://pixijs.com/assets/eggHead.png",
+                },
+            ],
+        },
+    ],
+};
+export default manifest;
+```
+
+<PixiVnExample path="ink/narration/pause" ink />
+
+## Продолжение
+
+Обычно, когда после диалога появляется выбор, повествование использует два `steps`: первый показывает только диалог, а второй — диалог вместе с вариантами выбора.
+
+```ink title="ink/start.ink"
+=== start ===
+Who are we going to rescue: the kitten or the wizard?
+* [workplace_midground_kitten] 
+    -> END
+* [workplace_midground_wizard]
+    -> END
+```
+
+Чтобы показать диалог и варианты выбора в одном `step`, добавьте `<># continue` в конец строки диалога. Это позволяет обойтись без лишнего `step`.
+
+```ink tab="ink"
+Who are we going to rescue: the kitten or the wizard?<># continue
+```
+
+```txt tab="CLI"
+<text><># continue
+
+where:
+    text = the dialogue text
+```
+
+Например:
+
+```ink title="ink/start.ink"
+=== start ===
+Who are we going to rescue: the kitten or the wizard?<># continue
+* [workplace_midground_kitten] 
+    -> END
+* [workplace_midground_wizard]
+    -> END
+```
+
+<PixiVnExample path="ink/narration/continue" ink />

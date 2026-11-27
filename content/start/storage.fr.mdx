@@ -1,0 +1,112 @@
+---
+title: Stockage
+description: Comment stocker, récupérer et gérer des variables persistantes et temporaires dans Pixi’VN, y compris l'intégration de Keyv.
+---
+
+<Accordions>
+
+<Accordion title="Qu'est-ce que le stockage de jeu ?" id="what-is-storage">
+
+Le stockage de jeu est un endroit où vous pouvez enregistrer des variables que vous souhaitez conserver entre les sessions de jeu.
+
+</Accordion>
+
+</Accordions>
+
+Il est essentiel de comprendre que si les variables ne sont pas enregistrées dans la mémoire du jeu, le moteur ne pourra pas les gérer lorsque vous <DynamicLink href="/start/save#load">chargez une sauvegarde</DynamicLink> ou lorsque vous <DynamicLink href="/start/labels-flow#go-back">revenez en arrière</DynamicLink>.
+
+De plus, dans les archives du jeu, vous pouvez enregistrer tout type de variable, sauf `class` et `function` (car elles ne peuvent pas être converties en JSON), comme : `string`, `number`, `boolean`, `object`, `array`, etc. Si vous voulez enregistrer des "flags" (booléens), il est recommandé d'utiliser la <DynamicLink href="/start/flags">fonctionnalité des flags</DynamicLink>, un système de gestion des flags très performant.
+
+<Callout title="ink" type="info">
+
+Vous pouvez utiliser cette méthode avec la syntaxe *ink*. Voir plus <DynamicLink href="/ink/storage">ici</DynamicLink>.
+
+</Callout>
+
+## Définir
+
+Pour définir une variable dans le stockage de jeu, utilisez [`storage.set`](/jsdoc/pixi-vn/index/interfaces/StorageManagerInterface#set).
+
+```ts
+import { storage } from "@drincs/pixi-vn";
+
+storage.set("myVariable", 42);
+```
+
+## Obtenir
+
+Pour récupérer une variable du stockage de jeu, utilisez [`storage.get`](/jsdoc/pixi-vn/index/interfaces/StorageManagerInterface#get).
+
+```ts
+import { storage } from "@drincs/pixi-vn";
+
+const myVariable = storage.get("myVariable");
+```
+
+## Supprimer
+
+Pour supprimer une variable du stockage de jeu, utilisez [`storage.remove`](/jsdoc/pixi-vn/index/interfaces/StorageManagerInterface#remove).
+
+```ts
+import { storage } from "@drincs/pixi-vn";
+
+storage.remove("myVariable");
+```
+
+## Autres fonctionnalités
+
+<Accordions>
+
+<Accordion title="Variables système" id="system-variables">
+
+Dans le stockage de jeu, il existe des variables système utilisées par le moteur de jeu. Toutes les variables système commencent par le préfixe `___`.
+Évitez donc d'utiliser ce préfixe dans vos variables.
+
+Vous pouvez obtenir toutes les clés des variables système à partir de la constante [`SYSTEM_RESERVED_STORAGE_KEYS`](/jsdoc/pixi-vn/index/variables/SYSTEM_RESERVED_STORAGE_KEYS).
+
+</Accordion>
+
+<Accordion title="Keyv" id="keyv">
+
+L'ensemble du système de stockage a été développé avec `Map`, un objet natif de JavaScript, vous pouvez donc utiliser Keyv pour interagir avec le stockage de jeu.
+
+**Qu'est-ce que Keyv ?** Keyv est un système de stockage clé-valeur simple. C'est un système très facile à utiliser et très populaire dans la communauté Node.js. Keyv peut être combiné avec d'autres bibliothèques, comme [Cacheable](https://cacheable.org/) (mise en cache pour Node.js basée sur Keyv). Vous pouvez en savoir plus sur le [site de Keyv](https://keyv.org/).
+
+**Comment utiliser Keyv avec Pixi’VN ?** Vous pouvez utiliser Keyv avec Pixi’VN en créant une nouvelle instance de Keyv et en passant l'objet de stockage en paramètre.
+
+```ts
+import { storage } from "@drincs/pixi-vn";
+import Keyv from "keyv";
+
+const keyvStorage = new Keyv({ store: storage.base });
+
+keyvStorage.get<string>("myValue").then((value) => {
+    console.log(value);
+});
+```
+
+</Accordion>
+
+<Accordion title="Variables de stockage par défaut" id="default-storage-variables">
+
+Vous pouvez définir la valeur initiale des variables de stockage.
+
+Ces variables auront les caractéristiques suivantes :
+
+* Si elles sont supprimées ou définies sur undefined ou null, la valeur sera automatiquement définie sur la valeur par défaut (elles ne pourront donc jamais être undefined ou null).
+* Les valeurs par défaut ne seront pas enregistrées dans les sauvegardes, vous pouvez donc les modifier d'une version à l'autre sans aucun problème.
+
+Vous pouvez définir les variables de stockage par défaut en utilisant l'objet [`storage.default`](/jsdoc/pixi-vn/index/interfaces/StorageManagerInterface#default).
+
+```ts
+import { storage } from "@drincs/pixi-vn";
+
+storage.default = {
+    myVariable: 42,
+    anotherVariable: "Hello, world!",
+};
+```
+
+</Accordion>
+
+</Accordions>
